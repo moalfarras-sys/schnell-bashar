@@ -1,0 +1,11 @@
+
+> schnell-sicher-umzug@0.1.0 dev
+> tsx scripts/dev-db-check.ts && next dev --webpack
+
+[db:doctor] Checking database connection...
+[db:doctor] DATABASE_URL=postgresql://postgres:****@localhost:5432/schnell_sicher_umzug?schema=public
+prisma:error 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+

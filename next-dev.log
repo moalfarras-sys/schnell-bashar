@@ -1,0 +1,585 @@
+
+> schnell-sicher-umzug@0.1.0 dev
+> tsx scripts/dev-db-check.ts && next dev --webpack
+
+[db:doctor] Checking database connection...
+[db:doctor] DATABASE_URL=postgresql://postgres:****@localhost:5432/schnell_sicher_umzug?schema=public
+[db:doctor] Connection OK.
+[db:doctor] pricing(active)=1, availabilityRules(active)=6, availabilityExceptions=0
+▲ Next.js 16.1.6 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.3.16:3000
+- Environments: .env
+- Experiments (use with caution):
+  · optimizePackageImports
+
+✓ Starting...
+✓ Ready in 2.6s
+○ Compiling / ...
+ GET / 200 in 8.4s (compile: 6.6s, render: 1848ms)
+ GET / 200 in 1137ms (compile: 349ms, render: 788ms)
+ GET /admin/login?next=%2Fadmin 200 in 2.6s (compile: 1981ms, proxy.ts: 18ms, render: 556ms)
+ GET / 200 in 645ms (compile: 38ms, render: 606ms)
+ GET /admin 200 in 1601ms (compile: 997ms, proxy.ts: 22ms, render: 582ms)
+ POST /admin/login?next=%2Fadmin 303 in 1792ms (compile: 10ms, proxy.ts: 28ms, render: 1755ms)
+ GET /admin 200 in 596ms (compile: 136ms, proxy.ts: 39ms, render: 421ms)
+ GET /icon?8a20f03c4e19bc93 200 in 794ms
+ GET /icon?8a20f03c4e19bc93 200 in 52ms
+ GET / 200 in 805ms (compile: 92ms, render: 712ms)
+ GET /admin/jobs 200 in 1360ms (compile: 1196ms, proxy.ts: 17ms, render: 148ms)
+ GET /icon?8a20f03c4e19bc93 200 in 776ms
+ GET /api/admin/jobs 200 in 2.6s (compile: 2.5s, render: 60ms)
+ GET /api/admin/jobs 200 in 33ms (compile: 13ms, render: 20ms)
+ GET /admin/jobs 200 in 806ms (compile: 112ms, proxy.ts: 347ms, render: 346ms)
+ GET /api/admin/jobs 200 in 69ms (compile: 38ms, render: 31ms)
+ GET / 200 in 732ms (compile: 45ms, render: 687ms)
+ GET /icon?8a20f03c4e19bc93 200 in 277ms
+ GET /admin/media/slots 200 in 1880ms (compile: 1590ms, proxy.ts: 16ms, render: 274ms)
+ GET /media/brand/company-signature.jpg 404 in 3.3s (compile: 2.6s, render: 628ms)
+ GET /media/brand/company-signature-stamp.png 404 in 3.2s (compile: 2.6s, render: 643ms)
+ GET /media/brand/company-signature-stamp.jpg 404 in 3.2s (compile: 2.6s, render: 646ms)
+ GET /media/brand/company-signature-stamp.jpeg 404 in 3.2s (compile: 2.6s, render: 651ms)
+ GET /media/brand/company-signature.png 404 in 3.2s (compile: 2.6s, render: 655ms)
+ GET /media/brand/company-stamp.jpg 404 in 3.2s (compile: 2.5s, render: 661ms)
+ GET /media/brand/company-stamp.png 404 in 591ms (compile: 38ms, render: 554ms)
+ GET /admin/media/slots 200 in 878ms (compile: 190ms, proxy.ts: 466ms, render: 221ms)
+ GET / 200 in 947ms (compile: 172ms, render: 775ms)
+ GET /admin/media 200 in 2.6s (compile: 2.1s, proxy.ts: 13ms, render: 460ms)
+ GET /admin/media 200 in 129ms (compile: 13ms, proxy.ts: 26ms, render: 90ms)
+ GET / 200 in 460ms (compile: 61ms, render: 400ms)
+ GET /admin/media/slots 200 in 185ms (compile: 31ms, proxy.ts: 22ms, render: 131ms)
+ GET /media/brand/company-signature.jpg 404 in 652ms (compile: 73ms, render: 579ms)
+ GET /media/brand/company-stamp.jpg 404 in 615ms (compile: 29ms, render: 586ms)
+ GET /media/brand/company-signature-stamp.png 404 in 622ms (compile: 33ms, render: 589ms)
+ GET /media/brand/company-signature-stamp.jpg 404 in 628ms (compile: 36ms, render: 592ms)
+ GET /media/brand/company-signature-stamp.jpeg 404 in 634ms (compile: 40ms, render: 594ms)
+ GET /media/brand/company-signature.png 404 in 659ms (compile: 63ms, render: 596ms)
+ GET /media/brand/company-stamp.png 404 in 89ms (compile: 7ms, render: 82ms)
+○ Compiling /preise ...
+ GET /admin/media/slots 200 in 550ms (compile: 212ms, proxy.ts: 58ms, render: 279ms)
+ GET /preise 200 in 4.8s (compile: 4.1s, render: 767ms)
+ GET /preise 200 in 527ms (compile: 97ms, render: 430ms)
+ POST /api/price/calc 200 in 1858ms (compile: 1800ms, render: 57ms)
+ POST /api/price/calc 200 in 2.2s (compile: 7ms, render: 2.2s)
+ POST /api/price/calc 200 in 72ms (compile: 4ms, render: 69ms)
+ POST /api/price/calc 200 in 78ms (compile: 5ms, render: 73ms)
+ POST /api/price/calc 200 in 76ms (compile: 4ms, render: 72ms)
+ POST /api/price/calc 200 in 92ms (compile: 5ms, render: 87ms)
+ POST /api/price/calc 200 in 72ms (compile: 5ms, render: 67ms)
+○ Compiling /buchung/termin ...
+ GET /buchung/termin 200 in 4.9s (compile: 4.7s, render: 198ms)
+ GET /api/availability/dates?from=2026-02-21&to=2027-02-21&speed=STANDARD&volumeM3=12 200 in 3.1s (compile: 2.9s, render: 198ms)
+ GET /api/availability/slots?date=2026-04-16&speed=STANDARD&volumeM3=12 200 in 1753ms (compile: 1709ms, render: 44ms)
+[mailer] Email sent to nguyenxuan7368@gmail.com
+[booking/confirm] Offer cmlwx4rf500018otyqcl5g283 created and email sent to nguyenxuan7368@gmail.com
+ POST /api/booking/confirm 200 in 5.1s (compile: 3.3s, render: 1725ms)
+ GET /buchung/bestaetigt?code=AUF-20260221-2356-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMS0yMzU2LTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTQ2MDcsImV4cCI6MTc3MjMxOTQwN30.yx32cgzaU3LKrrmnnQd3KY7n47Nhp9zLg-MJnIpcfSI 200 in 3.2s (compile: 3.0s, render: 225ms)
+ GET /admin/media/slots 200 in 388ms (compile: 151ms, proxy.ts: 51ms, render: 186ms)
+ GET /buchung/bestaetigt?code=AUF-20260221-2356-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMS0yMzU2LTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTQ2MDcsImV4cCI6MTc3MjMxOTQwN30.yx32cgzaU3LKrrmnnQd3KY7n47Nhp9zLg-MJnIpcfSI 200 in 346ms (compile: 18ms, render: 328ms)
+ GET /karriere 200 in 2.0s (compile: 1800ms, render: 231ms)
+ GET /admin/jobs 200 in 2.6s (compile: 2.4s, proxy.ts: 34ms, render: 120ms)
+ GET /api/admin/jobs 200 in 1846ms (compile: 1791ms, render: 55ms)
+ GET /api/admin/jobs 200 in 23ms (compile: 6ms, render: 17ms)
+○ Compiling /offer/[token] ...
+ GET /admin/jobs 200 in 467ms (compile: 47ms, proxy.ts: 289ms, render: 131ms)
+ GET /karriere 200 in 480ms (compile: 57ms, render: 422ms)
+ GET /offer/6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 5.8s (compile: 5.2s, render: 547ms)
+ GET /icon?8a20f03c4e19bc93 200 in 599ms
+ GET /karriere 200 in 1048ms (compile: 7ms, render: 1041ms)
+ GET /admin/jobs 200 in 804ms (compile: 551ms, proxy.ts: 45ms, render: 207ms)
+ GET /icon?8a20f03c4e19bc93 200 in 26ms
+○ Compiling /api/offers/[offerId]/accept ...
+ GET /api/admin/jobs 200 in 5.0s (compile: 5.0s, render: 47ms)
+[mailer] Email sent to nguyenxuan7368@gmail.com
+[signing] provider=INTERNAL link_created=true email_sent=true
+ POST /api/offers/cmlwx4rf500018otyqcl5g283/accept 200 in 6.9s (compile: 5.8s, render: 1156ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 3.3s (compile: 2.7s, render: 554ms)
+ GET /icon?8a20f03c4e19bc93 200 in 720ms
+ GET /admin/jobs 200 in 1075ms (compile: 319ms, proxy.ts: 24ms, render: 732ms)
+ GET /karriere 200 in 1085ms (compile: 47ms, render: 1038ms)
+ GET /icon?8a20f03c4e19bc93 200 in 31ms
+ GET /icon?8a20f03c4e19bc93 200 in 24ms
+ GET /api/admin/jobs 200 in 52ms (compile: 27ms, render: 25ms)
+[fallback-sign] Signed PDF saved locally: /uploads/signed-contracts/signed-contract-VER-20260221-2356-001-1771714763670.pdf
+[mailer] Email sent to nguyenxuan7368@gmail.com
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 1446ms (compile: 134ms, render: 1312ms)
+ GET /admin/jobs 200 in 1643ms (compile: 262ms, proxy.ts: 1036ms, render: 345ms)
+ GET /karriere 200 in 1670ms (compile: 391ms, render: 1279ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 328ms (compile: 24ms, render: 303ms)
+ GET /admin/jobs 200 in 377ms (compile: 151ms, proxy.ts: 110ms, render: 117ms)
+ GET /karriere 200 in 302ms (compile: 74ms, render: 228ms)
+[mailer] Email sent to kontakt@schnellsicherumzug.de
+ POST /api/contracts/sign/fallback 200 in 6.2s (compile: 1848ms, render: 4.3s)
+ GET /admin/orders 200 in 3.3s (compile: 2.9s, proxy.ts: 14ms, render: 439ms)
+○ Compiling /admin/offers ...
+ GET /admin/offers 200 in 4.7s (compile: 3.6s, proxy.ts: 15ms, render: 1028ms)
+ GET /admin/offers 200 in 813ms (compile: 322ms, proxy.ts: 39ms, render: 452ms)
+ GET /admin/offers?status=cancelled 200 in 255ms (compile: 29ms, proxy.ts: 25ms, render: 202ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 443ms (compile: 48ms, render: 394ms)
+ GET /karriere 200 in 461ms (compile: 168ms, render: 293ms)
+ GET /admin/offers?status=cancelled 200 in 514ms (compile: 50ms, proxy.ts: 268ms, render: 197ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 406ms (compile: 87ms, render: 318ms)
+ GET /karriere 200 in 799ms (compile: 176ms, render: 622ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 1241ms (compile: 271ms, render: 970ms)
+ GET /karriere 200 in 1436ms (compile: 512ms, render: 925ms)
+ GET /admin/offers?status=cancelled 200 in 5.5s (compile: 703ms, proxy.ts: 4.0s, render: 756ms)
+ GET /admin/offers?status=cancelled 200 in 469ms (compile: 110ms, proxy.ts: 194ms, render: 166ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 940ms (compile: 63ms, render: 876ms)
+ GET /karriere 200 in 1188ms (compile: 172ms, render: 1016ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 374ms (compile: 110ms, render: 264ms)
+ GET /karriere 200 in 500ms (compile: 102ms, render: 398ms)
+ GET /admin/offers?status=cancelled 200 in 1396ms (compile: 81ms, proxy.ts: 675ms, render: 639ms)
+ GET /admin/offers?status=cancelled 200 in 466ms (compile: 122ms, proxy.ts: 129ms, render: 215ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 452ms (compile: 27ms, render: 425ms)
+ GET /karriere 200 in 478ms (compile: 123ms, render: 355ms)
+ GET /admin/offers?status=cancelled 200 in 545ms (compile: 118ms, proxy.ts: 225ms, render: 202ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 929ms (compile: 206ms, render: 723ms)
+ GET /karriere 200 in 940ms (compile: 447ms, render: 493ms)
+ GET /admin/offers?status=cancelled 200 in 937ms (compile: 80ms, proxy.ts: 571ms, render: 285ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 958ms (compile: 188ms, render: 770ms)
+ GET /karriere 200 in 965ms (compile: 432ms, render: 533ms)
+ GET /admin/offers?status=cancelled 200 in 1064ms (compile: 83ms, proxy.ts: 620ms, render: 361ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 727ms (compile: 90ms, render: 638ms)
+ GET /karriere 200 in 748ms (compile: 268ms, render: 480ms)
+ GET /admin/offers?status=cancelled 200 in 755ms (compile: 106ms, proxy.ts: 410ms, render: 239ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 816ms (compile: 190ms, render: 626ms)
+ GET /karriere 200 in 830ms (compile: 393ms, render: 437ms)
+ GET /admin/offers?status=cancelled 200 in 904ms (compile: 83ms, proxy.ts: 532ms, render: 289ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 798ms (compile: 172ms, render: 625ms)
+ GET /karriere 200 in 833ms (compile: 381ms, render: 452ms)
+ GET /admin/offers?status=cancelled 200 in 839ms (compile: 67ms, proxy.ts: 528ms, render: 244ms)
+ GET /admin/jobs 200 in 2.3s (compile: 2.2s, proxy.ts: 13ms, render: 164ms)
+○ Compiling /api/admin/jobs ...
+ GET /api/admin/jobs 200 in 4.2s (compile: 4.1s, render: 92ms)
+○ Compiling /admin/media/slots ...
+ GET /api/admin/jobs 200 in 4.8s (compile: 4.6s, render: 212ms)
+ GET /admin/media/slots 200 in 5.2s (compile: 4.6s, proxy.ts: 306ms, render: 262ms)
+○ Compiling /_not-found ...
+ GET /media/brand/company-signature.jpg 404 in 10.1s (compile: 9.3s, render: 814ms)
+ GET /media/brand/company-stamp.jpg 404 in 10.0s (compile: 9.2s, render: 824ms)
+ GET /media/brand/company-signature-stamp.png 404 in 10.1s (compile: 9.2s, render: 826ms)
+ GET /media/brand/company-signature-stamp.jpg 404 in 10.1s (compile: 9.3s, render: 828ms)
+ GET /media/brand/company-signature-stamp.jpeg 404 in 10.1s (compile: 9.3s, render: 831ms)
+ GET /media/brand/company-signature.png 404 in 10.1s (compile: 9.3s, render: 835ms)
+○ Compiling /api/admin/media/slots ...
+ GET /media/brand/company-stamp.png 404 in 7.7s (compile: 7.3s, render: 406ms)
+ GET /karriere 500 in 52s (compile: 51s, render: 517ms)
+ GET /admin/media/slots 500 in 51s (compile: 51s, proxy.ts: 118ms, render: 518ms)
+ PATCH /api/admin/media/slots 500 in 48s (compile: 47s, render: 519ms)
+ PATCH /api/admin/media/slots 500 in 41s (compile: 41s, render: 520ms)
+ PATCH /api/admin/media/slots 500 in 59s (compile: 59s, render: 532ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 500 in 52s (compile: 51s, render: 531ms)
+ PATCH /api/admin/media/slots 500 in 193ms (compile: 93ms, render: 100ms)
+ PATCH /api/admin/media/slots 500 in 191ms (compile: 90ms, render: 101ms)
+ GET /karriere 500 in 364ms (compile: 164ms, render: 199ms)
+ GET /karriere 500 in 455ms (compile: 232ms, render: 224ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 500 in 397ms (compile: 168ms, render: 229ms)
+ GET /admin/media/slots 500 in 669ms (compile: 208ms, proxy.ts: 388ms, render: 73ms)
+ GET /admin/media/slots 500 in 550ms (compile: 120ms, proxy.ts: 358ms, render: 72ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 500 in 62ms (compile: 28ms, render: 34ms)
+ GET /karriere 500 in 156ms (compile: 83ms, render: 73ms)
+ GET /admin/media/slots 500 in 135ms (compile: 53ms, proxy.ts: 57ms, render: 25ms)
+ GET /admin/media/slots 500 in 1026ms (proxy.ts: 741ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 500 in 3.1s
+ GET /karriere 500 in 1930ms
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 500 in 1380ms
+ GET /karriere 500 in 1477ms
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 500 in 649ms (compile: 470ms, render: 179ms)
+ GET /karriere 500 in 659ms (compile: 476ms, render: 183ms)
+ GET /admin/media/slots 500 in 651ms (compile: 397ms, proxy.ts: 71ms, render: 183ms)
+ GET /admin/media/slots 500 in 98ms (compile: 25ms, proxy.ts: 40ms, render: 33ms)
+ GET /karriere 500 in 55ms (compile: 34ms, render: 22ms)
+○ Compiling / ...
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 500 in 1008ms (compile: 898ms, render: 110ms)
+ GET /karriere 500 in 1678ms (compile: 1568ms, render: 109ms)
+ GET /admin/media/slots 500 in 303ms (proxy.ts: 194ms)
+ GET /admin/media/slots 500 in 2.8s (proxy.ts: 1853ms)
+ GET /admin/media/slots 500 in 506ms (compile: 353ms, proxy.ts: 94ms, render: 59ms)
+ GET / 500 in 19.1s (compile: 19.1s, render: 23ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 500 in 1621ms
+ GET /admin/media/slots 500 in 827ms (proxy.ts: 509ms)
+ GET / 200 in 7.4s (compile: 5.6s, render: 1809ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 4.7s (compile: 1951ms, render: 2.8s)
+ GET /karriere 200 in 4.6s (compile: 1797ms, render: 2.8s)
+ GET /admin/media/slots 200 in 831ms (compile: 108ms, proxy.ts: 325ms, render: 398ms)
+ GET /media/brand/company-signature.png 404 in 263ms (compile: 22ms, render: 241ms)
+ GET /media/brand/company-signature.jpg 404 in 279ms (compile: 32ms, render: 246ms)
+ GET /media/brand/company-signature-stamp.jpeg 404 in 194ms (compile: 23ms, render: 171ms)
+ GET /media/brand/company-signature-stamp.jpg 404 in 188ms (compile: 6ms, render: 182ms)
+ GET /media/brand/company-stamp.jpg 404 in 185ms (compile: 13ms, render: 171ms)
+ GET /media/brand/company-signature-stamp.png 404 in 193ms (compile: 19ms, render: 174ms)
+ GET /media/brand/company-stamp.png 404 in 104ms (compile: 7ms, render: 97ms)
+ GET /icon?8a20f03c4e19bc93 200 in 757ms
+ GET /icon?8a20f03c4e19bc93 200 in 31ms
+ GET /icon?8a20f03c4e19bc93 200 in 27ms
+ GET /admin/offers 200 in 1018ms (compile: 206ms, proxy.ts: 97ms, render: 716ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 1147ms (compile: 342ms, render: 804ms)
+ GET /karriere 200 in 1147ms (compile: 642ms, render: 505ms)
+ GET /admin/offers 200 in 1509ms (compile: 89ms, proxy.ts: 806ms, render: 614ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 1230ms (compile: 292ms, render: 939ms)
+ GET /karriere 200 in 1906ms (compile: 550ms, render: 1356ms)
+ GET /admin/offers 200 in 1963ms (compile: 112ms, proxy.ts: 686ms, render: 1165ms)
+ GET / 200 in 2.6s (compile: 2.1s, render: 458ms)
+ GET / 200 in 289ms (compile: 8ms, render: 280ms)
+ GET / 200 in 191ms (compile: 8ms, render: 183ms)
+ GET / 200 in 257ms (compile: 11ms, render: 246ms)
+ GET /karriere 200 in 128ms (compile: 32ms, render: 96ms)
+○ Compiling /admin/jobs ...
+ GET /admin/jobs 200 in 4.4s (compile: 4.1s, proxy.ts: 15ms, render: 288ms)
+ GET /admin/jobs 200 in 96ms (compile: 13ms, proxy.ts: 30ms, render: 53ms)
+○ Compiling /api/admin/jobs ...
+ GET /api/admin/jobs 200 in 4.4s (compile: 4.3s, render: 70ms)
+ GET /api/admin/jobs 200 in 35ms (compile: 7ms, render: 28ms)
+ POST /api/admin/jobs 201 in 61ms (compile: 8ms, render: 53ms)
+ GET /api/admin/jobs 200 in 40ms (compile: 8ms, render: 32ms)
+ GET /karriere 200 in 746ms (compile: 119ms, render: 626ms)
+ GET /icon?8a20f03c4e19bc93 200 in 757ms
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 1167ms (compile: 32ms, render: 1135ms)
+ GET /admin/jobs 200 in 1052ms (compile: 717ms, proxy.ts: 82ms, render: 253ms)
+ GET /icon?8a20f03c4e19bc93 200 in 34ms
+ GET /api/admin/jobs 200 in 27ms (compile: 6ms, render: 22ms)
+○ Compiling /preise ...
+ GET /preise 200 in 6.9s (compile: 6.5s, render: 384ms)
+ POST /api/price/calc 200 in 3.3s (compile: 3.2s, render: 36ms)
+ POST /api/price/calc 200 in 50ms (compile: 8ms, render: 41ms)
+ POST /api/price/calc 200 in 24ms (compile: 5ms, render: 18ms)
+ POST /api/price/calc 200 in 151ms (compile: 9ms, render: 143ms)
+ POST /api/price/calc 200 in 132ms (compile: 5ms, render: 127ms)
+ POST /api/price/calc 200 in 88ms (compile: 5ms, render: 83ms)
+ POST /api/price/calc 200 in 77ms (compile: 5ms, render: 72ms)
+ POST /api/price/calc 200 in 105ms (compile: 10ms, render: 95ms)
+○ Compiling /buchung/termin ...
+ GET /buchung/termin 200 in 9.4s (compile: 9.1s, render: 261ms)
+ GET /buchung/termin 200 in 103ms (compile: 30ms, render: 73ms)
+○ Compiling /api/availability/dates ...
+ GET /api/availability/dates?from=2026-02-22&to=2027-02-22&speed=STANDARD&volumeM3=19 200 in 4.2s (compile: 3.9s, render: 221ms)
+ GET /api/availability/slots?date=2026-04-16&speed=STANDARD&volumeM3=19 200 in 2.3s (compile: 2.3s, render: 55ms)
+○ Compiling /api/booking/confirm ...
+[mailer] Email sent to nguyenxuan7368@gmail.com
+[booking/confirm] Offer cmlwy2o7f00058oty7d8n4i8w created and email sent to nguyenxuan7368@gmail.com
+ POST /api/booking/confirm 200 in 9.2s (compile: 7.5s, render: 1629ms)
+○ Compiling /buchung/bestaetigt ...
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 5.3s (compile: 5.1s, render: 202ms)
+○ Compiling /offer/[token] ...
+ GET /offer/TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 7.3s (compile: 4.5s, render: 2.8s)
+○ Compiling /api/offers/[offerId]/accept ...
+[mailer] Email sent to nguyenxuan7368@gmail.com
+[signing] provider=INTERNAL link_created=true email_sent=true
+ POST /api/offers/cmlwy2o7f00058oty7d8n4i8w/accept 200 in 8.5s (compile: 6.9s, render: 1601ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 596ms (compile: 121ms, render: 475ms)
+[fallback-sign] Signed PDF saved locally: /uploads/signed-contracts/signed-contract-VER-20260222-0023-001-1771716265228.pdf
+[mailer] Email sent to nguyenxuan7368@gmail.com
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 710ms (compile: 127ms, render: 583ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 752ms (compile: 121ms, render: 631ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 802ms (compile: 394ms, render: 407ms)
+ GET /admin/jobs 200 in 795ms (compile: 51ms, proxy.ts: 514ms, render: 230ms)
+[mailer] Email sent to kontakt@schnellsicherumzug.de
+ POST /api/contracts/sign/fallback 200 in 6.7s (compile: 1791ms, render: 4.9s)
+○ Compiling /admin/offers ...
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 848ms (compile: 67ms, render: 781ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 864ms (compile: 73ms, render: 791ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 947ms (compile: 261ms, render: 686ms)
+ GET /admin/offers 200 in 10.0s (compile: 7.9s, proxy.ts: 12ms, render: 2.0s)
+ GET /admin/offers 200 in 830ms (compile: 47ms, proxy.ts: 58ms, render: 725ms)
+○ Compiling /api/admin/offers/[offerId]/close ...
+ POST /api/admin/offers/cmlwy2o7f00058oty7d8n4i8w/close 200 in 4.5s (compile: 4.4s, render: 89ms)
+ GET /admin/offers 200 in 694ms (compile: 78ms, proxy.ts: 17ms, render: 599ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1081ms (compile: 288ms, render: 792ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 1085ms (compile: 284ms, render: 801ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 1108ms (compile: 610ms, render: 499ms)
+ GET /admin/offers 200 in 1514ms (compile: 95ms, proxy.ts: 767ms, render: 652ms)
+○ Compiling /api/admin/offers/[offerId]/hard-delete ...
+ POST /api/admin/offers/cmlwx4rf500018otyqcl5g283/hard-delete 409 in 6.3s (compile: 6.2s, render: 103ms)
+ GET /admin/offers 200 in 1085ms (compile: 95ms, proxy.ts: 15ms, render: 975ms)
+ GET /admin/offers 200 in 787ms (compile: 266ms, proxy.ts: 39ms, render: 483ms)
+ POST /api/admin/offers/cmlwv4o8x000ah0ty8dvu1emk/hard-delete 200 in 75ms (compile: 18ms, render: 57ms)
+ GET /admin/offers 200 in 876ms (compile: 9ms, proxy.ts: 16ms, render: 851ms)
+ GET /admin/offers 200 in 758ms (compile: 248ms, proxy.ts: 43ms, render: 468ms)
+ POST /api/admin/offers/cmlwugip80007h0ty44eemm12/hard-delete 200 in 66ms (compile: 22ms, render: 44ms)
+ GET /admin/offers 200 in 772ms (compile: 11ms, proxy.ts: 14ms, render: 748ms)
+ GET /admin/offers 200 in 468ms (compile: 12ms, proxy.ts: 42ms, render: 415ms)
+ POST /api/admin/offers/cmlwtbx2t0004h0ty2ts6iidh/hard-delete 200 in 62ms (compile: 23ms, render: 39ms)
+ GET /admin/offers 200 in 711ms (compile: 10ms, proxy.ts: 14ms, render: 687ms)
+ GET /admin/offers 200 in 450ms (compile: 14ms, proxy.ts: 35ms, render: 401ms)
+ POST /api/admin/offers/cmlwsa4de0001h0ty5d1obc9m/hard-delete 200 in 61ms (compile: 23ms, render: 38ms)
+ GET /admin/offers 200 in 752ms (compile: 10ms, proxy.ts: 15ms, render: 727ms)
+ GET /admin/offers 200 in 460ms (compile: 21ms, proxy.ts: 27ms, render: 412ms)
+ POST /api/admin/offers/cmlwma9ba0004xoty2latk2eq/hard-delete 200 in 54ms (compile: 20ms, render: 34ms)
+ GET /admin/offers 200 in 689ms (compile: 10ms, proxy.ts: 26ms, render: 654ms)
+ GET /admin/offers 200 in 420ms (compile: 11ms, proxy.ts: 26ms, render: 383ms)
+ POST /api/admin/offers/cmlwltnkl0001xotyrfpx5qy9/hard-delete 200 in 55ms (compile: 19ms, render: 36ms)
+ GET /admin/offers 200 in 649ms (compile: 10ms, proxy.ts: 14ms, render: 626ms)
+ GET /admin/offers 200 in 376ms (compile: 12ms, proxy.ts: 23ms, render: 341ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 2.2s (compile: 76ms, render: 2.1s)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 2.2s (compile: 84ms, render: 2.1s)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 2.5s (compile: 439ms, render: 2.1s)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 413ms (compile: 30ms, render: 383ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 424ms (compile: 35ms, render: 388ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 828ms (compile: 248ms, render: 580ms)
+ GET /admin/offers 200 in 3.4s (compile: 977ms, proxy.ts: 675ms, render: 1777ms)
+ GET /admin/offers 200 in 798ms (compile: 46ms, proxy.ts: 188ms, render: 565ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 2.2s (compile: 95ms, render: 2.1s)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 2.2s (compile: 82ms, render: 2.1s)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 2.5s (compile: 378ms, render: 2.1s)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 515ms (compile: 31ms, render: 484ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 548ms (compile: 56ms, render: 492ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 972ms (compile: 238ms, render: 734ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 620ms (compile: 46ms, render: 574ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 619ms (compile: 41ms, render: 578ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 882ms (compile: 242ms, render: 640ms)
+ GET /admin/offers 200 in 5.6s (compile: 876ms, proxy.ts: 617ms, render: 4.1s)
+ GET /admin/offers 200 in 3.3s (compile: 61ms, proxy.ts: 338ms, render: 2.9s)
+ GET /admin/offers 200 in 1092ms (compile: 43ms, proxy.ts: 346ms, render: 704ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1850ms (compile: 48ms, render: 1802ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 1858ms (compile: 51ms, render: 1807ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 2.0s (compile: 270ms, render: 1777ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 558ms (compile: 39ms, render: 519ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 568ms (compile: 42ms, render: 526ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 770ms (compile: 132ms, render: 638ms)
+ GET /admin/offers 200 in 5.1s (compile: 804ms, proxy.ts: 441ms, render: 3.8s)
+ GET /admin/offers 200 in 3.1s (compile: 148ms, proxy.ts: 268ms, render: 2.7s)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 1650ms (compile: 409ms, render: 1241ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1661ms (compile: 414ms, render: 1247ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 1709ms (compile: 944ms, render: 764ms)
+ GET /admin/offers 200 in 2.1s (compile: 153ms, proxy.ts: 1140ms, render: 827ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 2.4s (compile: 71ms, render: 2.3s)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 2.4s (compile: 66ms, render: 2.3s)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 2.6s (compile: 477ms, render: 2.1s)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 435ms (compile: 11ms, render: 424ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 474ms (compile: 44ms, render: 430ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 913ms (compile: 246ms, render: 667ms)
+ GET /admin/offers 200 in 3.6s (compile: 977ms, proxy.ts: 763ms, render: 1834ms)
+ GET /admin/offers 200 in 862ms (compile: 45ms, proxy.ts: 229ms, render: 588ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1960ms (compile: 106ms, render: 1854ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 1961ms (compile: 102ms, render: 1859ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 2.2s (compile: 300ms, render: 1871ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 559ms (compile: 27ms, render: 532ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 600ms (compile: 61ms, render: 538ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 873ms (compile: 305ms, render: 568ms)
+ GET /admin/offers 200 in 7.2s (compile: 964ms, proxy.ts: 432ms, render: 5.8s)
+ GET /admin/offers 200 in 5.1s (compile: 186ms, proxy.ts: 287ms, render: 4.6s)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 2.2s (compile: 54ms, render: 2.1s)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 2.2s (compile: 57ms, render: 2.1s)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 2.4s (compile: 336ms, render: 2.0s)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 556ms (compile: 55ms, render: 501ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 563ms (compile: 59ms, render: 504ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 896ms (compile: 260ms, render: 636ms)
+ GET /admin/offers 200 in 3.3s (compile: 960ms, proxy.ts: 494ms, render: 1892ms)
+ GET /admin/offers 200 in 1026ms (compile: 35ms, proxy.ts: 413ms, render: 578ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1291ms (compile: 288ms, render: 1003ms)
+ GET /sign/contract?token=7ad7bde6f6ea7451b5dac90ee840956faef13646fd9716c0ecec12dcd2bf3930&offer=6-e5i8LWT17cj8F_GDxDKk4kmS5ztipH 200 in 1308ms (compile: 297ms, render: 1011ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 1598ms (compile: 709ms, render: 889ms)
+ GET /admin/offers 200 in 1655ms (compile: 108ms, proxy.ts: 846ms, render: 700ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 2.5s (compile: 1240ms, render: 1299ms)
+ GET /admin/offers 200 in 10.5s (compile: 213ms, proxy.ts: 1406ms, render: 8.9s)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 500 in 11.3s (compile: 11.2s, render: 91ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1231ms (compile: 285ms, render: 947ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1701ms (compile: 270ms, render: 1431ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 1737ms (compile: 901ms, render: 836ms)
+ GET /admin/offers 200 in 1882ms (compile: 184ms, proxy.ts: 1088ms, render: 610ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 1800ms (compile: 37ms, render: 1764ms)
+ GET /admin/offers 200 in 8.7s (compile: 49ms, proxy.ts: 423ms, render: 8.2s)
+○ Compiling /icon ...
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 500 in 37.6s (compile: 36.9s, render: 696ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 21.3s (compile: 20.8s, render: 456ms)
+ GET /icon?8a20f03c4e19bc93 200 in 22.5s
+ GET /icon?8a20f03c4e19bc93 200 in 1087ms
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 2.3s (compile: 1163ms, render: 1106ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 2.3s (compile: 832ms, render: 1481ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 618ms (compile: 54ms, render: 565ms)
+ GET /admin/offers 200 in 4.5s (compile: 195ms, proxy.ts: 1360ms, render: 2.9s)
+ GET /admin/offers 200 in 783ms (compile: 47ms, proxy.ts: 173ms, render: 562ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 1447ms (compile: 46ms, render: 1401ms)
+ GET /admin/offers 200 in 1853ms (compile: 37ms, proxy.ts: 460ms, render: 1356ms)
+ GET /icon?8a20f03c4e19bc93 200 in 602ms
+ GET /icon?8a20f03c4e19bc93 200 in 31ms
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1439ms (compile: 47ms, render: 1392ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 1921ms (compile: 239ms, render: 1682ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 914ms (compile: 174ms, render: 739ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 993ms (compile: 312ms, render: 681ms)
+ GET /admin/offers 200 in 2.7s (compile: 737ms, proxy.ts: 368ms, render: 1586ms)
+ GET /admin/offers 200 in 933ms (compile: 73ms, proxy.ts: 309ms, render: 551ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 2.6s (compile: 798ms, render: 1830ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 2.9s (compile: 996ms, render: 1888ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 776ms (compile: 63ms, render: 713ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 819ms (compile: 183ms, render: 636ms)
+ GET /admin/offers 200 in 3.0s (compile: 811ms, proxy.ts: 464ms, render: 1759ms)
+ GET /admin/offers 200 in 910ms (compile: 64ms, proxy.ts: 321ms, render: 524ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 2.5s (compile: 446ms, render: 2.1s)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 3.0s (compile: 798ms, render: 2.2s)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 796ms (compile: 69ms, render: 727ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 875ms (compile: 194ms, render: 681ms)
+ GET /admin/offers 200 in 3.9s (compile: 889ms, proxy.ts: 1133ms, render: 1903ms)
+ GET /admin/offers 200 in 977ms (compile: 74ms, proxy.ts: 306ms, render: 598ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1581ms (compile: 49ms, render: 1532ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 2.1s (compile: 188ms, render: 1918ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 669ms (compile: 99ms, render: 569ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 864ms (compile: 244ms, render: 620ms)
+ GET /admin/offers 200 in 3.0s (compile: 851ms, proxy.ts: 341ms, render: 1834ms)
+ GET /admin/offers 200 in 951ms (compile: 75ms, proxy.ts: 389ms, render: 488ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 893ms (compile: 44ms, render: 849ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 924ms (compile: 190ms, render: 734ms)
+ GET /admin/offers 200 in 1328ms (compile: 196ms, proxy.ts: 498ms, render: 634ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1671ms (compile: 38ms, render: 1633ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 2.0s (compile: 157ms, render: 1893ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 676ms (compile: 36ms, render: 640ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 717ms (compile: 148ms, render: 569ms)
+ GET /admin/offers 200 in 2.8s (compile: 956ms, proxy.ts: 302ms, render: 1578ms)
+ GET /admin/offers 200 in 814ms (compile: 80ms, proxy.ts: 240ms, render: 494ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1933ms (compile: 54ms, render: 1878ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 2.4s (compile: 245ms, render: 2.2s)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1003ms (compile: 50ms, render: 953ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 1063ms (compile: 208ms, render: 856ms)
+ GET /admin/offers 200 in 3.5s (compile: 1039ms, proxy.ts: 459ms, render: 2.0s)
+ GET /admin/offers 200 in 1170ms (compile: 123ms, proxy.ts: 390ms, render: 657ms)
+ GET /admin/offers 200 in 1313ms (compile: 17ms, proxy.ts: 41ms, render: 1254ms)
+ GET /icon?8a20f03c4e19bc93 200 in 1019ms
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 1232ms (compile: 16ms, render: 1216ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 1254ms (compile: 154ms, render: 1100ms)
+ GET /icon?8a20f03c4e19bc93 200 in 36ms
+ GET /icon?8a20f03c4e19bc93 200 in 32ms
+ GET /admin/offers 200 in 1149ms (compile: 24ms, proxy.ts: 18ms, render: 1108ms)
+ GET /icon?8a20f03c4e19bc93 200 in 30ms
+○ Compiling /admin/content ...
+ GET /admin/content 200 in 10.1s (compile: 9.8s, proxy.ts: 16ms, render: 276ms)
+○ Compiling /api/admin/content ...
+ GET /api/admin/content 200 in 6.6s (compile: 6.5s, render: 100ms)
+ GET /api/admin/content 200 in 30ms (compile: 8ms, render: 22ms)
+ GET /admin/jobs 200 in 256ms (compile: 96ms, proxy.ts: 26ms, render: 134ms)
+ GET /api/admin/jobs 200 in 1741ms (compile: 1675ms, render: 66ms)
+ GET /api/admin/jobs 200 in 25ms (compile: 6ms, render: 19ms)
+ DELETE /api/admin/jobs/cmlwy0liw00038otyxkchlxj5 200 in 2.5s (compile: 2.4s, render: 56ms)
+ GET /api/admin/jobs 200 in 45ms (compile: 18ms, render: 26ms)
+○ Compiling /admin/media/slots ...
+ GET /admin/media/slots 200 in 5.3s (compile: 4.8s, proxy.ts: 36ms, render: 478ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 282ms (compile: 47ms, render: 235ms)
+ GET /admin/media/slots 200 in 334ms (compile: 25ms, proxy.ts: 119ms, render: 190ms)
+○ Compiling /_not-found ...
+ GET /media/brand/company-signature.jpg 404 in 4.7s (compile: 3.9s, render: 810ms)
+ GET /media/brand/company-signature-stamp.jpg 404 in 4.7s (compile: 3.9s, render: 830ms)
+ GET /media/brand/company-signature-stamp.jpeg 404 in 4.8s (compile: 3.9s, render: 833ms)
+ GET /media/brand/company-signature.png 404 in 4.8s (compile: 3.9s, render: 837ms)
+ GET /media/brand/company-stamp.jpg 404 in 4.7s (compile: 3.9s, render: 841ms)
+ GET /media/brand/company-signature-stamp.png 404 in 4.7s (compile: 3.9s, render: 844ms)
+ GET /media/brand/company-stamp.png 404 in 319ms (compile: 151ms, render: 167ms)
+ GET /sign/contract?token=8a0fd4d8e91641eea4e06c50e256904a8caead7e4abd7113c542079773b4d431&offer=TzHf3MhF0Yyn6YzIZDlkIy8mWaiySKY9 200 in 626ms (compile: 74ms, render: 552ms)
+ GET /admin/media/slots 200 in 617ms (compile: 88ms, proxy.ts: 310ms, render: 219ms)
+○ Compiling /admin/availability ...
+ GET /admin/availability 200 in 3.9s (compile: 3.5s, proxy.ts: 12ms, render: 410ms)
+ GET /admin/pricing 200 in 2.1s (compile: 1801ms, proxy.ts: 15ms, render: 245ms)
+○ Compiling /admin/catalog ...
+ GET /admin/catalog 200 in 3.9s (compile: 3.3s, proxy.ts: 29ms, render: 541ms)
+○ Compiling /admin/offers ...
+ GET /admin/offers 200 in 5.0s (compile: 3.9s, proxy.ts: 19ms, render: 1093ms)
+ GET /admin/offers 200 in 775ms (compile: 32ms, proxy.ts: 47ms, render: 696ms)
+○ Compiling /api/admin/offers/[offerId]/hard-delete ...
+ POST /api/admin/offers/cmltfgr8s0002y0tyfrawut9d/hard-delete 200 in 5.5s (compile: 5.4s, render: 104ms)
+ GET /admin/offers 200 in 1222ms (compile: 112ms, proxy.ts: 16ms, render: 1093ms)
+ GET /admin/offers 200 in 877ms (compile: 253ms, proxy.ts: 69ms, render: 554ms)
+○ Compiling /admin/orders ...
+ GET /admin/orders 200 in 6.2s (compile: 5.1s, proxy.ts: 19ms, render: 1035ms)
+ GET /admin/orders 200 in 514ms (compile: 31ms, proxy.ts: 31ms, render: 452ms)
+○ Compiling /admin ...
+ GET /admin 200 in 20.2s (compile: 19.3s, proxy.ts: 14ms, render: 833ms)
+ GET /admin 200 in 615ms (compile: 32ms, proxy.ts: 188ms, render: 395ms)
+ GET /admin 200 in 261ms (compile: 19ms, proxy.ts: 32ms, render: 210ms)
+ GET /admin/orders 200 in 1562ms (compile: 40ms, proxy.ts: 18ms, render: 1504ms)
+ GET /icon?8a20f03c4e19bc93 200 in 607ms
+○ Compiling /buchung/bestaetigt ...
+ GET / 200 in 54s (compile: 52s, render: 1734ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 36.2s (compile: 34.4s, render: 1742ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 35.8s (compile: 34.0s, render: 1744ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 57s (compile: 55s, render: 1744ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 35.7s (compile: 33.9s, render: 1750ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0023-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMDIzLTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MTYxODksImV4cCI6MTc3MjMyMDk4OX0.RwTvMzrhWZ3r9K33qlGs4VU6y03lKrBvDoyvyUR_uAg 200 in 58s (compile: 55s, render: 2.6s)
+ GET /admin/orders 200 in 884ms (compile: 75ms, proxy.ts: 257ms, render: 551ms)
+ GET /icon?8a20f03c4e19bc93 200 in 725ms
+ GET / 200 in 200ms (compile: 7ms, render: 192ms)
+○ Compiling /entsorgung ...
+ GET /entsorgung 200 in 17.8s (compile: 17.3s, render: 484ms)
+○ Compiling /preise ...
+ GET /preise 200 in 13.1s (compile: 12.0s, render: 1156ms)
+ GET /preise 200 in 906ms (compile: 127ms, render: 779ms)
+ GET /admin/orders 200 in 987ms (compile: 370ms, proxy.ts: 49ms, render: 569ms)
+○ Compiling /api/price/calc ...
+ POST /api/price/calc 200 in 7.3s (compile: 7.2s, render: 45ms)
+ POST /api/price/calc 200 in 42ms (compile: 5ms, render: 37ms)
+ POST /api/price/calc 200 in 40ms (compile: 5ms, render: 35ms)
+ POST /api/price/calc 200 in 76ms (compile: 54ms, render: 22ms)
+ POST /api/price/calc 200 in 33ms (compile: 12ms, render: 20ms)
+ POST /api/price/calc 200 in 2.8s (compile: 8ms, render: 2.8s)
+ GET /preise 200 in 1128ms (compile: 122ms, render: 1006ms)
+ POST /api/price/calc 200 in 118ms (compile: 84ms, render: 33ms)
+ GET /admin/orders 200 in 1496ms (compile: 42ms, proxy.ts: 30ms, render: 1424ms)
+ GET /icon?8a20f03c4e19bc93 200 in 628ms
+○ Compiling /kontakt ...
+ GET /kontakt 200 in 13.6s (compile: 13.3s, render: 362ms)
+○ Compiling /galerie ...
+ GET /galerie 200 in 4.8s (compile: 4.1s, render: 730ms)
+ GET /icon?8a20f03c4e19bc93 200 in 883ms
+ GET /preise 200 in 207ms (compile: 44ms, render: 164ms)
+ POST /api/price/calc 200 in 2.4s (compile: 2.3s, render: 41ms)
+ GET /preise 200 in 277ms (compile: 85ms, render: 192ms)
+○ Compiling /anfrage ...
+ GET /anfrage 200 in 10.4s (compile: 10.1s, render: 353ms)
+○ Compiling /ueber-uns ...
+ GET /ueber-uns 200 in 10.9s (compile: 10.4s, render: 426ms)
+ GET /preise 200 in 228ms (compile: 44ms, render: 183ms)
+ POST /api/price/calc 200 in 2.7s (compile: 2.6s, render: 28ms)
+ POST /api/price/calc 200 in 44ms (compile: 7ms, render: 37ms)
+ POST /api/price/calc 200 in 27ms (compile: 5ms, render: 21ms)
+ POST /api/price/calc 200 in 177ms (compile: 5ms, render: 172ms)
+ POST /api/price/calc 200 in 81ms (compile: 6ms, render: 75ms)
+ POST /api/price/calc 200 in 88ms (compile: 5ms, render: 83ms)
+ POST /api/price/calc 200 in 120ms (compile: 28ms, render: 92ms)
+ POST /api/price/calc 200 in 81ms (compile: 5ms, render: 76ms)
+ POST /api/price/calc 200 in 90ms (compile: 6ms, render: 84ms)
+○ Compiling /buchung/termin ...
+ GET /buchung/termin 200 in 15.3s (compile: 14.9s, render: 355ms)
+ GET /buchung/termin 200 in 913ms (compile: 44ms, render: 869ms)
+ GET /admin/orders 200 in 1059ms (compile: 221ms, proxy.ts: 58ms, render: 780ms)
+○ Compiling /api/availability/dates ...
+ GET /api/availability/dates?from=2026-02-22&to=2027-02-22&speed=STANDARD&volumeM3=16 200 in 9.6s (compile: 7.4s, render: 2.2s)
+○ Compiling /api/availability/slots ...
+ GET /api/availability/slots?date=2026-03-10&speed=STANDARD&volumeM3=16 200 in 7.3s (compile: 7.2s, render: 92ms)
+○ Compiling /api/booking/confirm ...
+ GET /buchung/termin 200 in 1170ms (compile: 168ms, render: 1002ms)
+ GET /admin/orders 200 in 1539ms (compile: 96ms, proxy.ts: 435ms, render: 1008ms)
+[mailer] Email sent to nguyenxuan7368@gmail.com
+[booking/confirm] Offer cmlx0s8w500088oty8gh81zlk created and email sent to nguyenxuan7368@gmail.com
+ POST /api/booking/confirm 200 in 16.3s (compile: 13.5s, render: 2.9s)
+○ Compiling /buchung/bestaetigt ...
+ GET /buchung/bestaetigt?code=AUF-20260222-0139-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMTM5LTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MjA3NDIsImV4cCI6MTc3MjMyNTU0Mn0.OR9S4fpElVSXk7gD-r7QiphQiijxeQ5s2rrf-1Zkz-I 200 in 12.9s (compile: 10.2s, render: 2.7s)
+○ Compiling /api/orders/[publicId]/pdf ...
+ GET /api/orders/AUF-20260222-0139-001/pdf?token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMTM5LTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MjA3NDIsImV4cCI6MTc3MjMyNTU0Mn0.OR9S4fpElVSXk7gD-r7QiphQiijxeQ5s2rrf-1Zkz-I 200 in 12.5s (compile: 12.2s, render: 226ms)
+○ Compiling /offer/[token] ...
+ GET /offer/uiGdBcTFyiY9vHF-FMBfghckj0RP1Z3A 200 in 9.8s (compile: 9.0s, render: 794ms)
+ GET /icon?8a20f03c4e19bc93 200 in 886ms
+ GET /buchung/bestaetigt?code=AUF-20260222-0139-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMTM5LTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MjA3NDIsImV4cCI6MTc3MjMyNTU0Mn0.OR9S4fpElVSXk7gD-r7QiphQiijxeQ5s2rrf-1Zkz-I 200 in 1940ms (compile: 88ms, render: 1852ms)
+ GET /admin/orders 200 in 2.3s (compile: 429ms, proxy.ts: 45ms, render: 1872ms)
+ GET /icon?8a20f03c4e19bc93 200 in 36ms
+ GET /buchung/bestaetigt?code=AUF-20260222-0139-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMTM5LTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MjA3NDIsImV4cCI6MTc3MjMyNTU0Mn0.OR9S4fpElVSXk7gD-r7QiphQiijxeQ5s2rrf-1Zkz-I 200 in 1458ms (compile: 603ms, render: 855ms)
+ GET /offer/uiGdBcTFyiY9vHF-FMBfghckj0RP1Z3A 200 in 1277ms (compile: 152ms, render: 1125ms)
+ GET /admin/orders 200 in 1606ms (compile: 189ms, proxy.ts: 767ms, render: 651ms)
+[mailer] Email sent to nguyenxuan7368@gmail.com
+[signing] provider=INTERNAL link_created=true email_sent=true
+ POST /api/offers/cmlx0s8w500088oty8gh81zlk/accept 200 in 7.6s (compile: 3.3s, render: 4.3s)
+○ Compiling /sign/contract ...
+ GET /sign/contract?token=edb86c55d695052782f766a182a0e10da3fecbb5e4d5e068e5773ae35fb8bb22&offer=uiGdBcTFyiY9vHF-FMBfghckj0RP1Z3A 200 in 13.4s (compile: 7.0s, render: 6.3s)
+○ Compiling /api/contracts/sign/fallback ...
+ GET /sign/contract?token=edb86c55d695052782f766a182a0e10da3fecbb5e4d5e068e5773ae35fb8bb22&offer=uiGdBcTFyiY9vHF-FMBfghckj0RP1Z3A 200 in 938ms (compile: 148ms, render: 790ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0139-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMTM5LTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MjA3NDIsImV4cCI6MTc3MjMyNTU0Mn0.OR9S4fpElVSXk7gD-r7QiphQiijxeQ5s2rrf-1Zkz-I 200 in 1201ms (compile: 370ms, render: 831ms)
+ GET /admin/orders 200 in 1425ms (compile: 68ms, proxy.ts: 520ms, render: 837ms)
+[fallback-sign] Signed PDF saved locally: /uploads/signed-contracts/signed-contract-VER-20260222-0139-001-1771720860808.pdf
+ GET /sign/contract?token=edb86c55d695052782f766a182a0e10da3fecbb5e4d5e068e5773ae35fb8bb22&offer=uiGdBcTFyiY9vHF-FMBfghckj0RP1Z3A 200 in 675ms (compile: 34ms, render: 641ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0139-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMTM5LTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MjA3NDIsImV4cCI6MTc3MjMyNTU0Mn0.OR9S4fpElVSXk7gD-r7QiphQiijxeQ5s2rrf-1Zkz-I 200 in 708ms (compile: 153ms, render: 555ms)
+[mailer] Email sent to nguyenxuan7368@gmail.com
+ GET /admin/orders 200 in 827ms (compile: 94ms, proxy.ts: 273ms, render: 460ms)
+[mailer] Email sent to kontakt@schnellsicherumzug.de
+ POST /api/contracts/sign/fallback 200 in 13.4s (compile: 8.9s, render: 4.5s)
+○ Compiling /admin/offers ...
+ GET /sign/contract?token=edb86c55d695052782f766a182a0e10da3fecbb5e4d5e068e5773ae35fb8bb22&offer=uiGdBcTFyiY9vHF-FMBfghckj0RP1Z3A 200 in 891ms (compile: 81ms, render: 810ms)
+ GET /buchung/bestaetigt?code=AUF-20260222-0139-001&token=eyJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNJZCI6IkFVRi0yMDI2MDIyMi0wMTM5LTAwMSIsInB1cnBvc2UiOiJwZGYiLCJpYXQiOjE3NzE3MjA3NDIsImV4cCI6MTc3MjMyNTU0Mn0.OR9S4fpElVSXk7gD-r7QiphQiijxeQ5s2rrf-1Zkz-I 200 in 1180ms (compile: 238ms, render: 941ms)
+ GET /admin/offers 200 in 14.0s (compile: 12.0s, proxy.ts: 14ms, render: 1995ms)
+ GET /admin/offers 200 in 1651ms (compile: 97ms, proxy.ts: 392ms, render: 1162ms)
+ GET /admin/offers 200 in 800ms (compile: 207ms, proxy.ts: 95ms, render: 498ms)

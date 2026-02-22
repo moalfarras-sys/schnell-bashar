@@ -1,0 +1,107 @@
+[accept] Supabase storage unavailable: Supabase admin not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env
+[fallback-sign] Supabase upload unavailable: Supabase admin not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env
+⨯ ./src/app/admin/orders/page.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\Moalfarras\Desktop\bashar\src\app\admin\orders\page.tsx
+    1: stream did not contain valid UTF-8
+
+Import trace for requested module:
+./src/app/admin/orders/page.tsx
+⨯ ./src/app/admin/orders/page.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\Moalfarras\Desktop\bashar\src\app\admin\orders\page.tsx
+    1: stream did not contain valid UTF-8
+
+Import trace for requested module:
+./src/app/admin/orders/page.tsx
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz_' -> 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz_' -> 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz_' -> 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz_' -> 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz_' -> 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz'
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⨯ ./src/app/admin/orders/page.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\Moalfarras\Desktop\bashar\src\app\admin\orders\page.tsx
+    1: stream did not contain valid UTF-8
+
+Import trace for requested module:
+./src/app/admin/orders/page.tsx
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./src/app/admin/orders/page.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\Moalfarras\Desktop\bashar\src\app\admin\orders\page.tsx
+    1: stream did not contain valid UTF-8
+
+Import trace for requested module:
+./src/app/admin/orders/page.tsx
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⨯ ./src/app/admin/orders/page.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\Moalfarras\Desktop\bashar\src\app\admin\orders\page.tsx
+    1: stream did not contain valid UTF-8
+
+Import trace for requested module:
+./src/app/admin/orders/page.tsx
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[accept] Supabase storage unavailable: Supabase admin not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env
+[fallback-sign] Supabase upload unavailable: Supabase admin not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz_' -> 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz_' -> 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz_' -> 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz_' -> 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz_' -> 'C:\Users\Moalfarras\Desktop\bashar\.next\dev\cache\webpack\client-development-fallback\0.pack.gz'
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/sign/contract'
+}
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/sign/contract'
+}
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[accept] Supabase storage unavailable: Supabase admin not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env
+[fallback-sign] Supabase upload unavailable: Supabase admin not configured. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env

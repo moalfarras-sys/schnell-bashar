@@ -1,0 +1,23 @@
+[db:doctor] Database is not reachable.
+[db:doctor] 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+
+[db:doctor] details=PrismaClientKnownRequestError: 
+Invalid `prisma.$queryRawUnsafe()` invocation:
+
+
+
+    at zr.handleRequestError (C:\Users\Moalfarras\Desktop\bashar\node_modules\@prisma\client\src\runtime\RequestHandler.ts:228:13)
+    at zr.handleAndLogRequestError (C:\Users\Moalfarras\Desktop\bashar\node_modules\@prisma\client\src\runtime\RequestHandler.ts:174:12)
+    at zr.request (C:\Users\Moalfarras\Desktop\bashar\node_modules\@prisma\client\src\runtime\RequestHandler.ts:143:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async a (C:\Users\Moalfarras\Desktop\bashar\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:807:24)
+    at async main (C:\Users\Moalfarras\Desktop\bashar\scripts\dev-db-check.ts:53:5) {
+  code: 'ECONNREFUSED',
+  meta: undefined,
+  clientVersion: '7.4.0'
+}
+[db:doctor] Start local PostgreSQL on localhost:5432 and ensure database `schnell_sicher_umzug` exists.
+[db:doctor] Then run: npm run prisma:generate && npm run prisma:migrate && npm run db:seed

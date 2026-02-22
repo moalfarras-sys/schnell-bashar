@@ -1,0 +1,452 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ServiceType {
+  MOVING
+  DISPOSAL
+  BOTH
+}
+
+enum SpeedType {
+  ECONOMY
+  STANDARD
+  EXPRESS
+}
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum ContactPreference {
+  PHONE
+  WHATSAPP
+  EMAIL
+}
+
+model CatalogItem {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  categoryKey         String
+  nameDe              String
+  defaultVolumeM3     Float
+  laborMinutesPerUnit Int
+  isHeavy             Boolean  @default(false)
+  sortOrder           Int      @default(0)
+  active              Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  orderLines OrderLine[]
+}
+
+model PricingConfig {
+  id                                String   @id @default(cuid())
+  active                            Boolean  @default(true)
+  currency                          String   @default("EUR")
+
+  movingBaseFeeCents                Int
+  disposalBaseFeeCents              Int
+  hourlyRateCents                   Int
+  perM3MovingCents                  Int
+  perM3DisposalCents                Int
+  perKmCents                        Int
+  heavyItemSurchargeCents           Int
+  stairsSurchargePerFloorCents      Int
+  carryDistanceSurchargePer25mCents Int
+  parkingSurchargeMediumCents       Int
+  parkingSurchargeHardCents         Int
+  elevatorDiscountSmallCents        Int
+  elevatorDiscountLargeCents        Int
+
+  uncertaintyPercent Int @default(12)
+
+  economyMultiplier  Float
+  standardMultiplier Float
+  expressMultiplier  Float
+  economyLeadDays    Int
+  standardLeadDays   Int
+  expressLeadDays    Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AvailabilityRule {
+  id          String   @id @default(cuid())
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  slotMinutes Int
+  capacity    Int
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AvailabilityException {
+  id               String   @id @default(cuid())
+  date             DateTime @db.Date
+  closed           Boolean  @default(false)
+  overrideCapacity Int?
+  note             String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Order {
+  id       String @id @default(cuid())
+  publicId String @unique
+  orderNo  String? @unique
+
+  serviceType ServiceType
+  speed       SpeedType
+  status      OrderStatus @default(NEW)
+
+  customerName      String
+  customerPhone     String
+  customerEmail     String
+  contactPreference ContactPreference
+  note              String?
+
+  slotStart DateTime
+  slotEnd   DateTime
+
+  volumeM3      Float
+  laborHours    Float
+  distanceKm    Float?
+  priceMinCents Int
+  priceMaxCents Int
+
+  wizardData Json
+  deletedAt  DateTime?
+  deletedBy  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lines    OrderLine[]
+  uploads  OrderUpload[]
+  offer    Offer?
+  invoices Invoice[]
+
+  @@index([slotStart])
+  @@index([status])
+}
+
+model OrderLine {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  catalogItemId String
+  catalogItem   CatalogItem @relation(fields: [catalogItemId], references: [id])
+
+  qty          Int
+  unitVolumeM3 Float
+  lineVolumeM3 Float
+  isDisposal   Boolean @default(false)
+}
+
+model OrderUpload {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  fileName  String
+  filePath  String
+  mimeType  String
+  sizeBytes Int
+  createdAt DateTime @default(now())
+}
+
+model WhatsAppConversation {
+  id          String   @id @default(cuid())
+  phoneNumber String
+  state       String
+  data        Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([phoneNumber])
+}
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
+}
+
+enum ContractStatus {
+  PENDING_SIGNATURE
+  SIGNED
+  CANCELLED
+}
+
+enum SignatureProvider {
+  DOCUSIGN
+  INTERNAL
+}
+
+enum DocumentScope {
+  ORDER
+  OFFER
+  CONTRACT
+}
+
+model Offer {
+  id      String @id @default(cuid())
+  token   String @unique
+  orderId String? @unique
+  offerNo String? @unique
+
+  order Order? @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  status OfferStatus @default(PENDING)
+
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  customerAddress String?
+
+  moveFrom     String?
+  moveTo       String?
+  moveDate     DateTime?
+  floorFrom    Int?
+  floorTo      Int?
+  elevatorFrom Boolean @default(false)
+  elevatorTo   Boolean @default(false)
+  notes        String?
+
+  services Json
+
+  netCents   Int
+  vatCents   Int
+  grossCents Int
+
+  discountPercent Float?
+  discountCents   Int?
+  discountNote    String?
+  customNote      String?
+  isManual        Boolean @default(false)
+
+  pdfUrl String?
+
+  validUntil DateTime
+  expiresAt  DateTime
+
+  acceptedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contract Contract?
+  invoices Invoice[]
+
+  @@index([token])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model Contract {
+  id         String @id @default(cuid())
+  offerId    String @unique
+  contractNo String? @unique
+
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  status            ContractStatus    @default(PENDING_SIGNATURE)
+  signatureProvider SignatureProvider @default(DOCUSIGN)
+
+  docusignEnvelopeId String? @unique
+  docusignStatus     String?
+
+  contractPdfUrl String?
+  signedPdfUrl   String?
+  auditTrailUrl  String?
+
+  signingUrl              String?
+  signatureTokenHash      String?
+  signatureTokenExpiresAt DateTime?
+  fallbackSignedName      String?
+  fallbackSignedAt        DateTime?
+  fallbackSignerIp        String?
+  fallbackSignerUserAgent String?
+  fallbackAgbAccepted     Boolean   @default(false)
+  signatureImageUrl       String?
+  sentForSigningAt        DateTime?
+  signedAt                DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoices Invoice[]
+
+  @@index([docusignEnvelopeId])
+  @@index([status])
+}
+
+model RouteDistanceCache {
+  id             String   @id @default(cuid())
+  fromPostalCode String
+  toPostalCode   String
+  profile        String   @default("driving-car")
+  distanceKm     Float
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([fromPostalCode, toPostalCode, profile])
+  @@index([expiresAt])
+}
+
+model DocumentSequence {
+  id         String        @id @default(cuid())
+  scope      DocumentScope
+  timeBucket String
+  counter    Int           @default(0)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@unique([scope, timeBucket])
+  @@index([scope, timeBucket])
+}
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  filename  String
+  path      String   @unique
+  alt       String?
+  title     String?
+  mime      String
+  size      Int
+  width     Int?
+  height    Int?
+  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  slots ContentSlot[]
+}
+
+model ContentSlot {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  type       String   @default("image")
+  assetId    String?
+  value      String?
+  alt        String?
+  meta       Json?
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+
+  asset MediaAsset? @relation(fields: [assetId], references: [id], onDelete: SetNull)
+}
+
+model SlotRegistry {
+  id             String   @id @default(cuid())
+  key            String   @unique
+  defaultPath    String
+  discoveredFrom String
+  usageType      String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model JobPosting {
+  id           String   @id @default(cuid())
+  title        String
+  department   String?
+  location     String   @default("Berlin")
+  type         String   @default("Vollzeit")
+  description  String   @db.Text
+  requirements String?  @db.Text
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CASH
+  CARD
+  PAYPAL
+  OTHER
+}
+
+model Invoice {
+  id        String @id @default(cuid())
+  invoiceNo String? @unique
+
+  contractId String?
+  contract   Contract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
+
+  offerId String?
+  offer   Offer? @relation(fields: [offerId], references: [id], onDelete: SetNull)
+
+  orderId String?
+  order   Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  isManual Boolean @default(false)
+
+  customerName  String
+  customerEmail String
+  customerPhone String?
+  address       String?
+
+  description String? @db.Text
+  lineItems   Json?
+
+  issuedAt DateTime @default(now())
+  dueAt    DateTime
+
+  netCents   Int
+  vatCents   Int
+  grossCents Int
+
+  paidCents Int @default(0)
+
+  status InvoiceStatus @default(UNPAID)
+  pdfUrl String?
+
+  payments Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([issuedAt])
+  @@index([dueAt])
+}
+
+model Payment {
+  id        String @id @default(cuid())
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  amountCents Int
+  method      PaymentMethod @default(BANK_TRANSFER)
+  reference   String?
+  paidAt      DateTime      @default(now())
+  notes       String?
+
+  createdAt DateTime @default(now())
+}
