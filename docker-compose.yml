@@ -1,7 +1,6 @@
 services:
   db:
     image: postgres:16
-    container_name: schnell-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -23,16 +22,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: schnell-web
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     environment:
       NODE_ENV: production
-      # عدّلها إذا مشروعك يستخدم DATABASE_URL
       DATABASE_URL: postgresql://postgres:postgres@db:5432/schnell_sicher_umzug
-      # إذا next محتاج host
       HOSTNAME: "0.0.0.0"
       PORT: "3000"
     ports:
