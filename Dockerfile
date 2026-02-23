@@ -17,6 +17,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npx prisma generate || true
 # Seed optional, bricht Build nicht:
+ARG DATABASE_URL
+ARG NEXT_PUBLIC_BASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
 RUN npm run db:seed || echo "Seed skipped"
 RUN npm run build
 
