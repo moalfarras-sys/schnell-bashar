@@ -1,4 +1,3 @@
-
 import { Briefcase, MapPin, Clock } from "lucide-react";
 import { Container } from "@/components/container";
 import { prisma } from "@/server/db/prisma";
@@ -7,119 +6,81 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata = {
-  title: "Karriere – Schnell Sicher Umzug",
-  description:
-    "Werde Teil unseres Teams! Aktuelle Stellenangebote bei Schnell Sicher Umzug in Berlin.",
+ title: "Karriere – Schnell Sicher Umzug",
+ description:
+ "Werde Teil unseres Teams! Aktuelle Stellenangebote bei Schnell Sicher Umzug in Berlin.",
 };
 
-// revalidate is now set to 0 above
+export default async function KarrierePage() {
+ let jobs: any[] = [];
 
-  let jobs = [];
-  try {
-    jobs = await prisma.jobPosting.findMany({
-      where: { isActive: true },
-      orderBy: { createdAt: "desc" },
-    });
-  } catch (e) {
-    // Fallback: leeres Array, Seite bricht nicht
-    jobs = [];
-  }
+ try {
+ jobs = await prisma.jobPosting.findMany({
+ where: { isActive: true },
+ orderBy: { createdAt: "desc" },
+ });
+ } catch {
+ jobs = [];
+ }
 
-  return (
-    <Container className="py-14">
-      <div className="max-w-3xl">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
-          Karriere
-        </h1>
-        <p className="mt-4 text-base text-slate-700 dark:text-slate-300">
-          Wir suchen motivierte Mitarbeiter, die unser Team in Berlin verstärken. Schnell Sicher
-          Umzug wächst — und du kannst Teil davon werden.
-        </p>
-      </div>
+ return (
+ <Container className="py-14">
+ <div className="max-w-3xl">
+ <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
+ Karriere
+ </h1>
+ <p className="mt-4 text-base text-slate-700 dark:text-slate-300">
+ Werde Teil unseres Teams! Hier findest du unsere aktuellen Stellenangebote.
+ </p>
 
-      {jobs.length === 0 ? (
-        <div className="premium-surface mt-10 rounded-2xl p-10 text-center">
-          <Briefcase className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500" />
-          <h2 className="mt-4 text-lg font-bold text-slate-800 dark:text-white">
-            Aktuell keine offenen Stellen
-          </h2>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            Initiativbewerbungen sind jederzeit willkommen — schreiben Sie uns an{" "}
-            <a
-              href="mailto:kontakt@schnellsicherumzug.de"
-              className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
-            >
-              kontakt@schnellsicherumzug.de
-            </a>
-          </p>
-        </div>
-      ) : (
-        <div className="mt-10 grid gap-6">
-          {jobs.map((job) => (
-            <article
-              key={job.id}
-              className="premium-surface rounded-2xl border border-slate-200/60 p-6 dark:border-slate-700/60"
-            >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                    {job.title}
-                  </h2>
-                  <div className="mt-2 flex flex-wrap gap-3 text-sm text-slate-600 dark:text-slate-400">
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5" /> {job.location}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5" /> {job.type}
-                    </span>
-                    {job.department && (
-                      <span className="flex items-center gap-1">
-                        <Briefcase className="h-3.5 w-3.5" /> {job.department}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
+ <div className="mt-10 space-y-6">
+ {jobs.length === 0 ? (
+ <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
+ Aktuell haben wir keine offenen Stellen.
+ </div>
+ ) : (
+ jobs.map((job: any) => (
+ <div
+ key={job.id}
+ className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+ >
+ <h2 className="text-xl font-semibold text-slate-950 dark:text-white">
+ {job.title}
+ </h2>
 
-              <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-                {job.description}
-              </p>
+ <div className="mt-3 flex flex-wrap gap-4 text-sm text-slate-700 dark:text-slate-300">
+ {job.location ? (
+ <span className="inline-flex items-center gap-2">
+ <MapPin className="h-4 w-4" />
+ {job.location}
+ </span>
+ ) : null}
 
-              {job.requirements && (
-                <div className="mt-4">
-                  <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                    Anforderungen
-                  </h3>
-                  <p className="mt-1 whitespace-pre-line text-sm text-slate-600 dark:text-slate-400">
-                    {job.requirements}
-                  </p>
-                </div>
-              )}
+ {job.type ? (
+ <span className="inline-flex items-center gap-2">
+ <Briefcase className="h-4 w-4" />
+ {job.type}
+ </span>
+ ) : null}
 
-              <div className="mt-5">
-                <a
-                  href={`mailto:kontakt@schnellsicherumzug.de?subject=Bewerbung: ${encodeURIComponent(job.title)}`}
-                  className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
-                >
-                  Jetzt bewerben
-                </a>
-              </div>
-            </article>
-          ))}
+ {job.hours ? (
+ <span className="inline-flex items-center gap-2">
+ <Clock className="h-4 w-4" />
+ {job.hours}
+ </span>
+ ) : null}
+ </div>
 
-          <div className="mt-4 rounded-xl bg-blue-50 p-5 text-center dark:bg-blue-950/30">
-            <p className="text-sm text-slate-700 dark:text-slate-300">
-              Keine passende Stelle gefunden? Initiativbewerbungen an{" "}
-              <a
-                href="mailto:kontakt@schnellsicherumzug.de"
-                className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
-              >
-                kontakt@schnellsicherumzug.de
-              </a>
-            </p>
-          </div>
-        </div>
-      )}
-    </Container>
-  );
+ {job.description ? (
+ <div className="prose prose-slate mt-4 max-w-none dark:prose-invert">
+ <p>{job.description}</p>
+ </div>
+ ) : null}
+ </div>
+ ))
+ )}
+ </div>
+ </div>
+ </Container>
+ );
 }
