@@ -19,9 +19,12 @@ services:
       - db_data:/var/lib/postgresql/data
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  build:
+    context: .
+    dockerfile: Dockerfile
+    args:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/schnell_sicher_umzug
+      NEXT_PUBLIC_BASE_URL: https://schnellsicherumzug.de
     restart: unless-stopped
     depends_on:
       db:
