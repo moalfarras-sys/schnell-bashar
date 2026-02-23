@@ -1,7 +1,10 @@
-import { Briefcase, MapPin, Clock } from "lucide-react";
 
+import { Briefcase, MapPin, Clock } from "lucide-react";
 import { Container } from "@/components/container";
 import { prisma } from "@/server/db/prisma";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata = {
   title: "Karriere – Schnell Sicher Umzug",
@@ -9,13 +12,18 @@ export const metadata = {
     "Werde Teil unseres Teams! Aktuelle Stellenangebote bei Schnell Sicher Umzug in Berlin.",
 };
 
-export const revalidate = 300;
+// revalidate is now set to 0 above
 
-export default async function KarrierePage() {
-  const jobs = await prisma.jobPosting.findMany({
-    where: { isActive: true },
-    orderBy: { createdAt: "desc" },
-  });
+  let jobs = [];
+  try {
+    jobs = await prisma.jobPosting.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (e) {
+    // Fallback: leeres Array, Seite bricht nicht
+    jobs = [];
+  }
 
   return (
     <Container className="py-14">
