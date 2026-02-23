@@ -19,5 +19,24 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: schnell-web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      # عدّلها إذا مشروعك يستخدم DATABASE_URL
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/schnell_sicher_umzug
+      # إذا next محتاج host
+      HOSTNAME: "0.0.0.0"
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+
 volumes:
   db_data:
