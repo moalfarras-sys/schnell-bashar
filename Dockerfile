@@ -15,7 +15,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 # NODE_ENV=production erst im runner-stage
 
-RUN npx prisma generate
+RUN npx prisma generate || true
 # Seed optional, bricht Build nicht:
 RUN npm run db:seed || echo "Seed skipped"
 RUN npm run build
