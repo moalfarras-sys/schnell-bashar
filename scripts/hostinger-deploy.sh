@@ -2,7 +2,7 @@
 set -euo pipefail
 
 APP_NAME="schnell-sicher-umzug"
-APP_DIR="/var/www/schnell-sicher-umzug"
+APP_DIR="/var/www/schnell-bashar"
 DOMAIN="${1:-}"
 
 if [[ -z "$DOMAIN" ]]; then
@@ -13,27 +13,36 @@ fi
 echo "==> Deploying ${APP_NAME} in ${APP_DIR}"
 cd "$APP_DIR"
 
-echo "==> Installing dependencies"
-npm ci
+echo "==> Stopping PM2 web app processes (PM2 reserved for workers only)"
+pm2 delete schnell >/dev/null 2>&1 || true
+pm2 delete schnell-web >/dev/null 2>&1 || true
+pm2 delete "$APP_NAME" >/dev/null 2>&1 || true
+pm2 save || true
 
-echo "==> Prisma generate + migrate deploy"
-npm run prisma:generate
-npm run prisma:deploy
+echo "==> Restarting Docker stack"
+docker compose down --remove-orphans
+docker compose up -d
 
-echo "==> Building Next.js production bundle"
-npm run build
+echo "==> Waiting for app startup"
+sleep 20
 
-echo "==> Starting/reloading PM2 app"
-if pm2 describe "$APP_NAME" >/dev/null 2>&1; then
-  pm2 reload "$APP_NAME"
-else
-  pm2 start ecosystem.config.cjs --only "$APP_NAME"
-fi
-pm2 save
+echo "==> Running post-deploy invoice backfill (idempotent)"
+docker compose exec -T web npm run accounting:backfill:invoices || true
 
 echo "==> Smoke checks"
-curl -fI "https://${DOMAIN}/"
-curl -fI "https://${DOMAIN}/buchen"
-curl -fI "https://${DOMAIN}/admin/login"
+wget -S --spider "https://${DOMAIN}/"
+wget -S --spider "https://${DOMAIN}/buchen"
+wget -S --spider "https://${DOMAIN}/admin/login"
+wget -qO- "https://${DOMAIN}/api/availability/dates?from=2026-03-01&to=2026-03-05&speed=STANDARD&volumeM3=10" > /tmp/availability-dates.json
+wget -qO- "https://${DOMAIN}/api/availability/slots?date=2026-03-03&speed=STANDARD&volumeM3=10" > /tmp/availability-slots.json
+
+if grep -q '"demoMode":true' /tmp/availability-dates.json || grep -q '"demoMode":true' /tmp/availability-slots.json; then
+  echo "ERROR: Booking APIs are still in demo mode."
+  echo "dates: $(cat /tmp/availability-dates.json)"
+  echo "slots: $(cat /tmp/availability-slots.json)"
+  exit 1
+fi
+
+echo "==> Booking APIs are live (demoMode=false)"
 
 echo "==> Deployment finished successfully"

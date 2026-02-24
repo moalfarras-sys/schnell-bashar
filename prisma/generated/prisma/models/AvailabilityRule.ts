@@ -46,6 +46,8 @@ export type AvailabilityRuleMinAggregateOutputType = {
   slotMinutes: number | null
   capacity: number | null
   active: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +60,8 @@ export type AvailabilityRuleMaxAggregateOutputType = {
   slotMinutes: number | null
   capacity: number | null
   active: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -70,6 +74,8 @@ export type AvailabilityRuleCountAggregateOutputType = {
   slotMinutes: number
   capacity: number
   active: number
+  deletedAt: number
+  deletedBy: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -96,6 +102,8 @@ export type AvailabilityRuleMinAggregateInputType = {
   slotMinutes?: true
   capacity?: true
   active?: true
+  deletedAt?: true
+  deletedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -108,6 +116,8 @@ export type AvailabilityRuleMaxAggregateInputType = {
   slotMinutes?: true
   capacity?: true
   active?: true
+  deletedAt?: true
+  deletedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -120,6 +130,8 @@ export type AvailabilityRuleCountAggregateInputType = {
   slotMinutes?: true
   capacity?: true
   active?: true
+  deletedAt?: true
+  deletedBy?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -219,6 +231,8 @@ export type AvailabilityRuleGroupByOutputType = {
   slotMinutes: number
   capacity: number
   active: boolean
+  deletedAt: Date | null
+  deletedBy: string | null
   createdAt: Date
   updatedAt: Date
   _count: AvailabilityRuleCountAggregateOutputType | null
@@ -254,6 +268,8 @@ export type AvailabilityRuleWhereInput = {
   slotMinutes?: Prisma.IntFilter<"AvailabilityRule"> | number
   capacity?: Prisma.IntFilter<"AvailabilityRule"> | number
   active?: Prisma.BoolFilter<"AvailabilityRule"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"AvailabilityRule"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"AvailabilityRule"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AvailabilityRule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AvailabilityRule"> | Date | string
 }
@@ -266,6 +282,8 @@ export type AvailabilityRuleOrderByWithRelationInput = {
   slotMinutes?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -281,6 +299,8 @@ export type AvailabilityRuleWhereUniqueInput = Prisma.AtLeast<{
   slotMinutes?: Prisma.IntFilter<"AvailabilityRule"> | number
   capacity?: Prisma.IntFilter<"AvailabilityRule"> | number
   active?: Prisma.BoolFilter<"AvailabilityRule"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"AvailabilityRule"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"AvailabilityRule"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AvailabilityRule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AvailabilityRule"> | Date | string
 }, "id">
@@ -293,6 +313,8 @@ export type AvailabilityRuleOrderByWithAggregationInput = {
   slotMinutes?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AvailabilityRuleCountOrderByAggregateInput
@@ -313,6 +335,8 @@ export type AvailabilityRuleScalarWhereWithAggregatesInput = {
   slotMinutes?: Prisma.IntWithAggregatesFilter<"AvailabilityRule"> | number
   capacity?: Prisma.IntWithAggregatesFilter<"AvailabilityRule"> | number
   active?: Prisma.BoolWithAggregatesFilter<"AvailabilityRule"> | boolean
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AvailabilityRule"> | Date | string | null
+  deletedBy?: Prisma.StringNullableWithAggregatesFilter<"AvailabilityRule"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AvailabilityRule"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"AvailabilityRule"> | Date | string
 }
@@ -325,6 +349,8 @@ export type AvailabilityRuleCreateInput = {
   slotMinutes: number
   capacity: number
   active?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -337,6 +363,8 @@ export type AvailabilityRuleUncheckedCreateInput = {
   slotMinutes: number
   capacity: number
   active?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -349,6 +377,8 @@ export type AvailabilityRuleUpdateInput = {
   slotMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -361,6 +391,8 @@ export type AvailabilityRuleUncheckedUpdateInput = {
   slotMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -373,6 +405,8 @@ export type AvailabilityRuleCreateManyInput = {
   slotMinutes: number
   capacity: number
   active?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -385,6 +419,8 @@ export type AvailabilityRuleUpdateManyMutationInput = {
   slotMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -397,6 +433,8 @@ export type AvailabilityRuleUncheckedUpdateManyInput = {
   slotMinutes?: Prisma.IntFieldUpdateOperationsInput | number
   capacity?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -409,6 +447,8 @@ export type AvailabilityRuleCountOrderByAggregateInput = {
   slotMinutes?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -427,6 +467,8 @@ export type AvailabilityRuleMaxOrderByAggregateInput = {
   slotMinutes?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -439,6 +481,8 @@ export type AvailabilityRuleMinOrderByAggregateInput = {
   slotMinutes?: Prisma.SortOrder
   capacity?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -459,6 +503,8 @@ export type AvailabilityRuleSelect<ExtArgs extends runtime.Types.Extensions.Inte
   slotMinutes?: boolean
   capacity?: boolean
   active?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["availabilityRule"]>
@@ -471,6 +517,8 @@ export type AvailabilityRuleSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   slotMinutes?: boolean
   capacity?: boolean
   active?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["availabilityRule"]>
@@ -483,6 +531,8 @@ export type AvailabilityRuleSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   slotMinutes?: boolean
   capacity?: boolean
   active?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["availabilityRule"]>
@@ -495,11 +545,13 @@ export type AvailabilityRuleSelectScalar = {
   slotMinutes?: boolean
   capacity?: boolean
   active?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AvailabilityRuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "dayOfWeek" | "startTime" | "endTime" | "slotMinutes" | "capacity" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["availabilityRule"]>
+export type AvailabilityRuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "dayOfWeek" | "startTime" | "endTime" | "slotMinutes" | "capacity" | "active" | "deletedAt" | "deletedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["availabilityRule"]>
 
 export type $AvailabilityRulePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AvailabilityRule"
@@ -512,6 +564,8 @@ export type $AvailabilityRulePayload<ExtArgs extends runtime.Types.Extensions.In
     slotMinutes: number
     capacity: number
     active: boolean
+    deletedAt: Date | null
+    deletedBy: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["availabilityRule"]>
@@ -944,6 +998,8 @@ export interface AvailabilityRuleFieldRefs {
   readonly slotMinutes: Prisma.FieldRef<"AvailabilityRule", 'Int'>
   readonly capacity: Prisma.FieldRef<"AvailabilityRule", 'Int'>
   readonly active: Prisma.FieldRef<"AvailabilityRule", 'Boolean'>
+  readonly deletedAt: Prisma.FieldRef<"AvailabilityRule", 'DateTime'>
+  readonly deletedBy: Prisma.FieldRef<"AvailabilityRule", 'String'>
   readonly createdAt: Prisma.FieldRef<"AvailabilityRule", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"AvailabilityRule", 'DateTime'>
 }

@@ -211,6 +211,7 @@ export type ContentSlotWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"ContentSlot"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ContentSlot"> | Date | string
   asset?: Prisma.XOR<Prisma.MediaAssetNullableScalarRelationFilter, Prisma.MediaAssetWhereInput> | null
+  revisions?: Prisma.ContentRevisionListRelationFilter
 }
 
 export type ContentSlotOrderByWithRelationInput = {
@@ -224,6 +225,7 @@ export type ContentSlotOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   asset?: Prisma.MediaAssetOrderByWithRelationInput
+  revisions?: Prisma.ContentRevisionOrderByRelationAggregateInput
 }
 
 export type ContentSlotWhereUniqueInput = Prisma.AtLeast<{
@@ -240,6 +242,7 @@ export type ContentSlotWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"ContentSlot"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"ContentSlot"> | Date | string
   asset?: Prisma.XOR<Prisma.MediaAssetNullableScalarRelationFilter, Prisma.MediaAssetWhereInput> | null
+  revisions?: Prisma.ContentRevisionListRelationFilter
 }, "id" | "key">
 
 export type ContentSlotOrderByWithAggregationInput = {
@@ -282,6 +285,7 @@ export type ContentSlotCreateInput = {
   updatedAt?: Date | string
   createdAt?: Date | string
   asset?: Prisma.MediaAssetCreateNestedOneWithoutSlotsInput
+  revisions?: Prisma.ContentRevisionCreateNestedManyWithoutSlotInput
 }
 
 export type ContentSlotUncheckedCreateInput = {
@@ -294,6 +298,7 @@ export type ContentSlotUncheckedCreateInput = {
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string
   createdAt?: Date | string
+  revisions?: Prisma.ContentRevisionUncheckedCreateNestedManyWithoutSlotInput
 }
 
 export type ContentSlotUpdateInput = {
@@ -306,6 +311,7 @@ export type ContentSlotUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   asset?: Prisma.MediaAssetUpdateOneWithoutSlotsNestedInput
+  revisions?: Prisma.ContentRevisionUpdateManyWithoutSlotNestedInput
 }
 
 export type ContentSlotUncheckedUpdateInput = {
@@ -318,6 +324,7 @@ export type ContentSlotUncheckedUpdateInput = {
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  revisions?: Prisma.ContentRevisionUncheckedUpdateManyWithoutSlotNestedInput
 }
 
 export type ContentSlotCreateManyInput = {
@@ -399,6 +406,11 @@ export type ContentSlotMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
 }
 
+export type ContentSlotScalarRelationFilter = {
+  is?: Prisma.ContentSlotWhereInput
+  isNot?: Prisma.ContentSlotWhereInput
+}
+
 export type ContentSlotCreateNestedManyWithoutAssetInput = {
   create?: Prisma.XOR<Prisma.ContentSlotCreateWithoutAssetInput, Prisma.ContentSlotUncheckedCreateWithoutAssetInput> | Prisma.ContentSlotCreateWithoutAssetInput[] | Prisma.ContentSlotUncheckedCreateWithoutAssetInput[]
   connectOrCreate?: Prisma.ContentSlotCreateOrConnectWithoutAssetInput | Prisma.ContentSlotCreateOrConnectWithoutAssetInput[]
@@ -441,6 +453,20 @@ export type ContentSlotUncheckedUpdateManyWithoutAssetNestedInput = {
   deleteMany?: Prisma.ContentSlotScalarWhereInput | Prisma.ContentSlotScalarWhereInput[]
 }
 
+export type ContentSlotCreateNestedOneWithoutRevisionsInput = {
+  create?: Prisma.XOR<Prisma.ContentSlotCreateWithoutRevisionsInput, Prisma.ContentSlotUncheckedCreateWithoutRevisionsInput>
+  connectOrCreate?: Prisma.ContentSlotCreateOrConnectWithoutRevisionsInput
+  connect?: Prisma.ContentSlotWhereUniqueInput
+}
+
+export type ContentSlotUpdateOneRequiredWithoutRevisionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentSlotCreateWithoutRevisionsInput, Prisma.ContentSlotUncheckedCreateWithoutRevisionsInput>
+  connectOrCreate?: Prisma.ContentSlotCreateOrConnectWithoutRevisionsInput
+  upsert?: Prisma.ContentSlotUpsertWithoutRevisionsInput
+  connect?: Prisma.ContentSlotWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ContentSlotUpdateToOneWithWhereWithoutRevisionsInput, Prisma.ContentSlotUpdateWithoutRevisionsInput>, Prisma.ContentSlotUncheckedUpdateWithoutRevisionsInput>
+}
+
 export type ContentSlotCreateWithoutAssetInput = {
   id?: string
   key: string
@@ -450,6 +476,7 @@ export type ContentSlotCreateWithoutAssetInput = {
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string
   createdAt?: Date | string
+  revisions?: Prisma.ContentRevisionCreateNestedManyWithoutSlotInput
 }
 
 export type ContentSlotUncheckedCreateWithoutAssetInput = {
@@ -461,6 +488,7 @@ export type ContentSlotUncheckedCreateWithoutAssetInput = {
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Date | string
   createdAt?: Date | string
+  revisions?: Prisma.ContentRevisionUncheckedCreateNestedManyWithoutSlotInput
 }
 
 export type ContentSlotCreateOrConnectWithoutAssetInput = {
@@ -504,6 +532,70 @@ export type ContentSlotScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"ContentSlot"> | Date | string
 }
 
+export type ContentSlotCreateWithoutRevisionsInput = {
+  id?: string
+  key: string
+  type?: string
+  value?: string | null
+  alt?: string | null
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  updatedAt?: Date | string
+  createdAt?: Date | string
+  asset?: Prisma.MediaAssetCreateNestedOneWithoutSlotsInput
+}
+
+export type ContentSlotUncheckedCreateWithoutRevisionsInput = {
+  id?: string
+  key: string
+  type?: string
+  assetId?: string | null
+  value?: string | null
+  alt?: string | null
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  updatedAt?: Date | string
+  createdAt?: Date | string
+}
+
+export type ContentSlotCreateOrConnectWithoutRevisionsInput = {
+  where: Prisma.ContentSlotWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContentSlotCreateWithoutRevisionsInput, Prisma.ContentSlotUncheckedCreateWithoutRevisionsInput>
+}
+
+export type ContentSlotUpsertWithoutRevisionsInput = {
+  update: Prisma.XOR<Prisma.ContentSlotUpdateWithoutRevisionsInput, Prisma.ContentSlotUncheckedUpdateWithoutRevisionsInput>
+  create: Prisma.XOR<Prisma.ContentSlotCreateWithoutRevisionsInput, Prisma.ContentSlotUncheckedCreateWithoutRevisionsInput>
+  where?: Prisma.ContentSlotWhereInput
+}
+
+export type ContentSlotUpdateToOneWithWhereWithoutRevisionsInput = {
+  where?: Prisma.ContentSlotWhereInput
+  data: Prisma.XOR<Prisma.ContentSlotUpdateWithoutRevisionsInput, Prisma.ContentSlotUncheckedUpdateWithoutRevisionsInput>
+}
+
+export type ContentSlotUpdateWithoutRevisionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  asset?: Prisma.MediaAssetUpdateOneWithoutSlotsNestedInput
+}
+
+export type ContentSlotUncheckedUpdateWithoutRevisionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  assetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  value?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ContentSlotCreateManyAssetInput = {
   id?: string
   key: string
@@ -524,6 +616,7 @@ export type ContentSlotUpdateWithoutAssetInput = {
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  revisions?: Prisma.ContentRevisionUpdateManyWithoutSlotNestedInput
 }
 
 export type ContentSlotUncheckedUpdateWithoutAssetInput = {
@@ -535,6 +628,7 @@ export type ContentSlotUncheckedUpdateWithoutAssetInput = {
   meta?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  revisions?: Prisma.ContentRevisionUncheckedUpdateManyWithoutSlotNestedInput
 }
 
 export type ContentSlotUncheckedUpdateManyWithoutAssetInput = {
@@ -549,6 +643,35 @@ export type ContentSlotUncheckedUpdateManyWithoutAssetInput = {
 }
 
 
+/**
+ * Count Type ContentSlotCountOutputType
+ */
+
+export type ContentSlotCountOutputType = {
+  revisions: number
+}
+
+export type ContentSlotCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  revisions?: boolean | ContentSlotCountOutputTypeCountRevisionsArgs
+}
+
+/**
+ * ContentSlotCountOutputType without action
+ */
+export type ContentSlotCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentSlotCountOutputType
+   */
+  select?: Prisma.ContentSlotCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ContentSlotCountOutputType without action
+ */
+export type ContentSlotCountOutputTypeCountRevisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContentRevisionWhereInput
+}
+
 
 export type ContentSlotSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -561,6 +684,8 @@ export type ContentSlotSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   updatedAt?: boolean
   createdAt?: boolean
   asset?: boolean | Prisma.ContentSlot$assetArgs<ExtArgs>
+  revisions?: boolean | Prisma.ContentSlot$revisionsArgs<ExtArgs>
+  _count?: boolean | Prisma.ContentSlotCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contentSlot"]>
 
 export type ContentSlotSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -604,6 +729,8 @@ export type ContentSlotSelectScalar = {
 export type ContentSlotOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "key" | "type" | "assetId" | "value" | "alt" | "meta" | "updatedAt" | "createdAt", ExtArgs["result"]["contentSlot"]>
 export type ContentSlotInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   asset?: boolean | Prisma.ContentSlot$assetArgs<ExtArgs>
+  revisions?: boolean | Prisma.ContentSlot$revisionsArgs<ExtArgs>
+  _count?: boolean | Prisma.ContentSlotCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ContentSlotIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   asset?: boolean | Prisma.ContentSlot$assetArgs<ExtArgs>
@@ -616,6 +743,7 @@ export type $ContentSlotPayload<ExtArgs extends runtime.Types.Extensions.Interna
   name: "ContentSlot"
   objects: {
     asset: Prisma.$MediaAssetPayload<ExtArgs> | null
+    revisions: Prisma.$ContentRevisionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1022,6 +1150,7 @@ readonly fields: ContentSlotFieldRefs;
 export interface Prisma__ContentSlotClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   asset<T extends Prisma.ContentSlot$assetArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentSlot$assetArgs<ExtArgs>>): Prisma.Prisma__MediaAssetClient<runtime.Types.Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  revisions<T extends Prisma.ContentSlot$revisionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentSlot$revisionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentRevisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1472,6 +1601,30 @@ export type ContentSlot$assetArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   include?: Prisma.MediaAssetInclude<ExtArgs> | null
   where?: Prisma.MediaAssetWhereInput
+}
+
+/**
+ * ContentSlot.revisions
+ */
+export type ContentSlot$revisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentRevision
+   */
+  select?: Prisma.ContentRevisionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContentRevision
+   */
+  omit?: Prisma.ContentRevisionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentRevisionInclude<ExtArgs> | null
+  where?: Prisma.ContentRevisionWhereInput
+  orderBy?: Prisma.ContentRevisionOrderByWithRelationInput | Prisma.ContentRevisionOrderByWithRelationInput[]
+  cursor?: Prisma.ContentRevisionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContentRevisionScalarFieldEnum | Prisma.ContentRevisionScalarFieldEnum[]
 }
 
 /**

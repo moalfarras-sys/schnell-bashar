@@ -43,6 +43,8 @@ model CatalogItem {
   isHeavy             Boolean  @default(false)
   sortOrder           Int      @default(0)
   active              Boolean  @default(true)
+  deletedAt           DateTime?
+  deletedBy           String?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
@@ -52,6 +54,8 @@ model CatalogItem {
 model PricingConfig {
   id                                String   @id @default(cuid())
   active                            Boolean  @default(true)
+  deletedAt                         DateTime?
+  deletedBy                         String?
   currency                          String   @default("EUR")
 
   movingBaseFeeCents                Int
@@ -89,6 +93,8 @@ model AvailabilityRule {
   slotMinutes Int
   capacity    Int
   active      Boolean  @default(true)
+  deletedAt   DateTime?
+  deletedBy   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -99,6 +105,8 @@ model AvailabilityException {
   closed           Boolean  @default(false)
   overrideCapacity Int?
   note             String?
+  deletedAt        DateTime?
+  deletedBy        String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
@@ -130,6 +138,7 @@ model Order {
   wizardData Json
   deletedAt  DateTime?
   deletedBy  String?
+  version    Int      @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -239,6 +248,9 @@ model Offer {
   discountNote    String?
   customNote      String?
   isManual        Boolean @default(false)
+  deletedAt       DateTime?
+  deletedBy       String?
+  version         Int      @default(1)
 
   pdfUrl String?
 
@@ -264,9 +276,14 @@ model Contract {
   contractNo String? @unique
 
   offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  isManual     Boolean          @default(false)
+  manualPayload Json?
 
   status            ContractStatus    @default(PENDING_SIGNATURE)
   signatureProvider SignatureProvider @default(DOCUSIGN)
+  deletedAt         DateTime?
+  deletedBy         String?
+  version           Int               @default(1)
 
   docusignEnvelopeId String? @unique
   docusignStatus     String?
@@ -337,6 +354,30 @@ model MediaAsset {
   updatedAt DateTime @updatedAt
 
   slots ContentSlot[]
+  variants MediaAssetVariant[]
+}
+
+enum MediaVariantKind {
+  hero
+  gallery
+  thumbnail
+  custom
+}
+
+model MediaAssetVariant {
+  id        String           @id @default(cuid())
+  assetId    String
+  asset      MediaAsset       @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  kind      MediaVariantKind
+  path      String           @unique
+  mimeType  String
+  sizeBytes Int
+  width     Int?
+  height    Int?
+  createdAt DateTime         @default(now())
+
+  @@index([assetId])
+  @@unique([assetId, kind])
 }
 
 model ContentSlot {
@@ -350,7 +391,8 @@ model ContentSlot {
   updatedAt  DateTime @updatedAt
   createdAt  DateTime @default(now())
 
-  asset MediaAsset? @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  asset     MediaAsset?       @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  revisions ContentRevision[]
 }
 
 model SlotRegistry {
@@ -372,6 +414,9 @@ model JobPosting {
   description  String   @db.Text
   requirements String?  @db.Text
   isActive     Boolean  @default(true)
+  deletedAt    DateTime?
+  deletedBy    String?
+  version      Int      @default(1)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -426,6 +471,9 @@ model Invoice {
 
   status InvoiceStatus @default(UNPAID)
   pdfUrl String?
+  deletedAt DateTime?
+  deletedBy String?
+  version   Int      @default(1)
 
   payments Payment[]
 
@@ -449,4 +497,104 @@ model Payment {
   notes       String?
 
   createdAt DateTime @default(now())
+}
+
+model AdminUser {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String
+  passwordHash      String
+  avatarUrl         String?
+  isActive          Boolean  @default(true)
+  failedLoginCount  Int      @default(0)
+  lockedUntil       DateTime?
+  lastLoginAt       DateTime?
+  notifications     Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?
+
+  roles     UserRole[]
+  auditLogs AuditLog[] @relation("AuditActor")
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  label       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roles RolePermission[]
+}
+
+model UserRole {
+  id        String   @id @default(cuid())
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+  deletedAt DateTime?
+
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+}
+
+model RolePermission {
+  id           String   @id @default(cuid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime @default(now())
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String?
+  path        String?
+  ip          String?
+  userAgent   String?
+  before      Json?
+  after       Json?
+  createdAt   DateTime @default(now())
+
+  actor AdminUser? @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model ContentRevision {
+  id          String   @id @default(cuid())
+  slotId      String
+  editorEmail String?
+  value       String?
+  meta        Json?
+  createdAt   DateTime @default(now())
+
+  slot ContentSlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+
+  @@index([slotId, createdAt])
 }

@@ -64,11 +64,19 @@ export const ModelName = {
   RouteDistanceCache: 'RouteDistanceCache',
   DocumentSequence: 'DocumentSequence',
   MediaAsset: 'MediaAsset',
+  MediaAssetVariant: 'MediaAssetVariant',
   ContentSlot: 'ContentSlot',
   SlotRegistry: 'SlotRegistry',
   JobPosting: 'JobPosting',
   Invoice: 'Invoice',
-  Payment: 'Payment'
+  Payment: 'Payment',
+  AdminUser: 'AdminUser',
+  Role: 'Role',
+  Permission: 'Permission',
+  UserRole: 'UserRole',
+  RolePermission: 'RolePermission',
+  AuditLog: 'AuditLog',
+  ContentRevision: 'ContentRevision'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -97,6 +105,8 @@ export const CatalogItemScalarFieldEnum = {
   isHeavy: 'isHeavy',
   sortOrder: 'sortOrder',
   active: 'active',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -107,6 +117,8 @@ export type CatalogItemScalarFieldEnum = (typeof CatalogItemScalarFieldEnum)[key
 export const PricingConfigScalarFieldEnum = {
   id: 'id',
   active: 'active',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
   currency: 'currency',
   movingBaseFeeCents: 'movingBaseFeeCents',
   disposalBaseFeeCents: 'disposalBaseFeeCents',
@@ -143,6 +155,8 @@ export const AvailabilityRuleScalarFieldEnum = {
   slotMinutes: 'slotMinutes',
   capacity: 'capacity',
   active: 'active',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -156,6 +170,8 @@ export const AvailabilityExceptionScalarFieldEnum = {
   closed: 'closed',
   overrideCapacity: 'overrideCapacity',
   note: 'note',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -185,6 +201,7 @@ export const OrderScalarFieldEnum = {
   wizardData: 'wizardData',
   deletedAt: 'deletedAt',
   deletedBy: 'deletedBy',
+  version: 'version',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -257,6 +274,9 @@ export const OfferScalarFieldEnum = {
   discountNote: 'discountNote',
   customNote: 'customNote',
   isManual: 'isManual',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  version: 'version',
   pdfUrl: 'pdfUrl',
   validUntil: 'validUntil',
   expiresAt: 'expiresAt',
@@ -272,8 +292,13 @@ export const ContractScalarFieldEnum = {
   id: 'id',
   offerId: 'offerId',
   contractNo: 'contractNo',
+  isManual: 'isManual',
+  manualPayload: 'manualPayload',
   status: 'status',
   signatureProvider: 'signatureProvider',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  version: 'version',
   docusignEnvelopeId: 'docusignEnvelopeId',
   docusignStatus: 'docusignStatus',
   contractPdfUrl: 'contractPdfUrl',
@@ -341,6 +366,21 @@ export const MediaAssetScalarFieldEnum = {
 export type MediaAssetScalarFieldEnum = (typeof MediaAssetScalarFieldEnum)[keyof typeof MediaAssetScalarFieldEnum]
 
 
+export const MediaAssetVariantScalarFieldEnum = {
+  id: 'id',
+  assetId: 'assetId',
+  kind: 'kind',
+  path: 'path',
+  mimeType: 'mimeType',
+  sizeBytes: 'sizeBytes',
+  width: 'width',
+  height: 'height',
+  createdAt: 'createdAt'
+} as const
+
+export type MediaAssetVariantScalarFieldEnum = (typeof MediaAssetVariantScalarFieldEnum)[keyof typeof MediaAssetVariantScalarFieldEnum]
+
+
 export const ContentSlotScalarFieldEnum = {
   id: 'id',
   key: 'key',
@@ -378,6 +418,9 @@ export const JobPostingScalarFieldEnum = {
   description: 'description',
   requirements: 'requirements',
   isActive: 'isActive',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  version: 'version',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -406,6 +449,9 @@ export const InvoiceScalarFieldEnum = {
   paidCents: 'paidCents',
   status: 'status',
   pdfUrl: 'pdfUrl',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  version: 'version',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -425,6 +471,100 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const AdminUserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  name: 'name',
+  passwordHash: 'passwordHash',
+  avatarUrl: 'avatarUrl',
+  isActive: 'isActive',
+  failedLoginCount: 'failedLoginCount',
+  lockedUntil: 'lockedUntil',
+  lastLoginAt: 'lastLoginAt',
+  notifications: 'notifications',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy'
+} as const
+
+export type AdminUserScalarFieldEnum = (typeof AdminUserScalarFieldEnum)[keyof typeof AdminUserScalarFieldEnum]
+
+
+export const RoleScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
+
+
+export const PermissionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  label: 'label',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum]
+
+
+export const UserRoleScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  roleId: 'roleId',
+  createdAt: 'createdAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type UserRoleScalarFieldEnum = (typeof UserRoleScalarFieldEnum)[keyof typeof UserRoleScalarFieldEnum]
+
+
+export const RolePermissionScalarFieldEnum = {
+  id: 'id',
+  roleId: 'roleId',
+  permissionId: 'permissionId',
+  createdAt: 'createdAt'
+} as const
+
+export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum]
+
+
+export const AuditLogScalarFieldEnum = {
+  id: 'id',
+  actorUserId: 'actorUserId',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  path: 'path',
+  ip: 'ip',
+  userAgent: 'userAgent',
+  before: 'before',
+  after: 'after',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const ContentRevisionScalarFieldEnum = {
+  id: 'id',
+  slotId: 'slotId',
+  editorEmail: 'editorEmail',
+  value: 'value',
+  meta: 'meta',
+  createdAt: 'createdAt'
+} as const
+
+export type ContentRevisionScalarFieldEnum = (typeof ContentRevisionScalarFieldEnum)[keyof typeof ContentRevisionScalarFieldEnum]
 
 
 export const SortOrder = {

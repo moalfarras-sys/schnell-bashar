@@ -281,6 +281,7 @@ export type MediaAssetWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"MediaAsset"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MediaAsset"> | Date | string
   slots?: Prisma.ContentSlotListRelationFilter
+  variants?: Prisma.MediaAssetVariantListRelationFilter
 }
 
 export type MediaAssetOrderByWithRelationInput = {
@@ -297,6 +298,7 @@ export type MediaAssetOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   slots?: Prisma.ContentSlotOrderByRelationAggregateInput
+  variants?: Prisma.MediaAssetVariantOrderByRelationAggregateInput
 }
 
 export type MediaAssetWhereUniqueInput = Prisma.AtLeast<{
@@ -316,6 +318,7 @@ export type MediaAssetWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"MediaAsset"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MediaAsset"> | Date | string
   slots?: Prisma.ContentSlotListRelationFilter
+  variants?: Prisma.MediaAssetVariantListRelationFilter
 }, "id" | "path">
 
 export type MediaAssetOrderByWithAggregationInput = {
@@ -370,6 +373,7 @@ export type MediaAssetCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   slots?: Prisma.ContentSlotCreateNestedManyWithoutAssetInput
+  variants?: Prisma.MediaAssetVariantCreateNestedManyWithoutAssetInput
 }
 
 export type MediaAssetUncheckedCreateInput = {
@@ -386,6 +390,7 @@ export type MediaAssetUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   slots?: Prisma.ContentSlotUncheckedCreateNestedManyWithoutAssetInput
+  variants?: Prisma.MediaAssetVariantUncheckedCreateNestedManyWithoutAssetInput
 }
 
 export type MediaAssetUpdateInput = {
@@ -402,6 +407,7 @@ export type MediaAssetUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   slots?: Prisma.ContentSlotUpdateManyWithoutAssetNestedInput
+  variants?: Prisma.MediaAssetVariantUpdateManyWithoutAssetNestedInput
 }
 
 export type MediaAssetUncheckedUpdateInput = {
@@ -418,6 +424,7 @@ export type MediaAssetUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   slots?: Prisma.ContentSlotUncheckedUpdateManyWithoutAssetNestedInput
+  variants?: Prisma.MediaAssetVariantUncheckedUpdateManyWithoutAssetNestedInput
 }
 
 export type MediaAssetCreateManyInput = {
@@ -522,9 +529,28 @@ export type MediaAssetSumOrderByAggregateInput = {
   height?: Prisma.SortOrder
 }
 
+export type MediaAssetScalarRelationFilter = {
+  is?: Prisma.MediaAssetWhereInput
+  isNot?: Prisma.MediaAssetWhereInput
+}
+
 export type MediaAssetNullableScalarRelationFilter = {
   is?: Prisma.MediaAssetWhereInput | null
   isNot?: Prisma.MediaAssetWhereInput | null
+}
+
+export type MediaAssetCreateNestedOneWithoutVariantsInput = {
+  create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutVariantsInput, Prisma.MediaAssetUncheckedCreateWithoutVariantsInput>
+  connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutVariantsInput
+  connect?: Prisma.MediaAssetWhereUniqueInput
+}
+
+export type MediaAssetUpdateOneRequiredWithoutVariantsNestedInput = {
+  create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutVariantsInput, Prisma.MediaAssetUncheckedCreateWithoutVariantsInput>
+  connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutVariantsInput
+  upsert?: Prisma.MediaAssetUpsertWithoutVariantsInput
+  connect?: Prisma.MediaAssetWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MediaAssetUpdateToOneWithWhereWithoutVariantsInput, Prisma.MediaAssetUpdateWithoutVariantsInput>, Prisma.MediaAssetUncheckedUpdateWithoutVariantsInput>
 }
 
 export type MediaAssetCreateNestedOneWithoutSlotsInput = {
@@ -543,6 +569,86 @@ export type MediaAssetUpdateOneWithoutSlotsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MediaAssetUpdateToOneWithWhereWithoutSlotsInput, Prisma.MediaAssetUpdateWithoutSlotsInput>, Prisma.MediaAssetUncheckedUpdateWithoutSlotsInput>
 }
 
+export type MediaAssetCreateWithoutVariantsInput = {
+  id?: string
+  filename: string
+  path: string
+  alt?: string | null
+  title?: string | null
+  mime: string
+  size: number
+  width?: number | null
+  height?: number | null
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slots?: Prisma.ContentSlotCreateNestedManyWithoutAssetInput
+}
+
+export type MediaAssetUncheckedCreateWithoutVariantsInput = {
+  id?: string
+  filename: string
+  path: string
+  alt?: string | null
+  title?: string | null
+  mime: string
+  size: number
+  width?: number | null
+  height?: number | null
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slots?: Prisma.ContentSlotUncheckedCreateNestedManyWithoutAssetInput
+}
+
+export type MediaAssetCreateOrConnectWithoutVariantsInput = {
+  where: Prisma.MediaAssetWhereUniqueInput
+  create: Prisma.XOR<Prisma.MediaAssetCreateWithoutVariantsInput, Prisma.MediaAssetUncheckedCreateWithoutVariantsInput>
+}
+
+export type MediaAssetUpsertWithoutVariantsInput = {
+  update: Prisma.XOR<Prisma.MediaAssetUpdateWithoutVariantsInput, Prisma.MediaAssetUncheckedUpdateWithoutVariantsInput>
+  create: Prisma.XOR<Prisma.MediaAssetCreateWithoutVariantsInput, Prisma.MediaAssetUncheckedCreateWithoutVariantsInput>
+  where?: Prisma.MediaAssetWhereInput
+}
+
+export type MediaAssetUpdateToOneWithWhereWithoutVariantsInput = {
+  where?: Prisma.MediaAssetWhereInput
+  data: Prisma.XOR<Prisma.MediaAssetUpdateWithoutVariantsInput, Prisma.MediaAssetUncheckedUpdateWithoutVariantsInput>
+}
+
+export type MediaAssetUpdateWithoutVariantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  filename?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.StringFieldUpdateOperationsInput | string
+  alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mime?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slots?: Prisma.ContentSlotUpdateManyWithoutAssetNestedInput
+}
+
+export type MediaAssetUncheckedUpdateWithoutVariantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  filename?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.StringFieldUpdateOperationsInput | string
+  alt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mime?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.IntFieldUpdateOperationsInput | number
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slots?: Prisma.ContentSlotUncheckedUpdateManyWithoutAssetNestedInput
+}
+
 export type MediaAssetCreateWithoutSlotsInput = {
   id?: string
   filename: string
@@ -556,6 +662,7 @@ export type MediaAssetCreateWithoutSlotsInput = {
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  variants?: Prisma.MediaAssetVariantCreateNestedManyWithoutAssetInput
 }
 
 export type MediaAssetUncheckedCreateWithoutSlotsInput = {
@@ -571,6 +678,7 @@ export type MediaAssetUncheckedCreateWithoutSlotsInput = {
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  variants?: Prisma.MediaAssetVariantUncheckedCreateNestedManyWithoutAssetInput
 }
 
 export type MediaAssetCreateOrConnectWithoutSlotsInput = {
@@ -602,6 +710,7 @@ export type MediaAssetUpdateWithoutSlotsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  variants?: Prisma.MediaAssetVariantUpdateManyWithoutAssetNestedInput
 }
 
 export type MediaAssetUncheckedUpdateWithoutSlotsInput = {
@@ -617,6 +726,7 @@ export type MediaAssetUncheckedUpdateWithoutSlotsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  variants?: Prisma.MediaAssetVariantUncheckedUpdateManyWithoutAssetNestedInput
 }
 
 
@@ -626,10 +736,12 @@ export type MediaAssetUncheckedUpdateWithoutSlotsInput = {
 
 export type MediaAssetCountOutputType = {
   slots: number
+  variants: number
 }
 
 export type MediaAssetCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   slots?: boolean | MediaAssetCountOutputTypeCountSlotsArgs
+  variants?: boolean | MediaAssetCountOutputTypeCountVariantsArgs
 }
 
 /**
@@ -649,6 +761,13 @@ export type MediaAssetCountOutputTypeCountSlotsArgs<ExtArgs extends runtime.Type
   where?: Prisma.ContentSlotWhereInput
 }
 
+/**
+ * MediaAssetCountOutputType without action
+ */
+export type MediaAssetCountOutputTypeCountVariantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MediaAssetVariantWhereInput
+}
+
 
 export type MediaAssetSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -664,6 +783,7 @@ export type MediaAssetSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   createdAt?: boolean
   updatedAt?: boolean
   slots?: boolean | Prisma.MediaAsset$slotsArgs<ExtArgs>
+  variants?: boolean | Prisma.MediaAsset$variantsArgs<ExtArgs>
   _count?: boolean | Prisma.MediaAssetCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mediaAsset"]>
 
@@ -715,6 +835,7 @@ export type MediaAssetSelectScalar = {
 export type MediaAssetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "filename" | "path" | "alt" | "title" | "mime" | "size" | "width" | "height" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["mediaAsset"]>
 export type MediaAssetInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   slots?: boolean | Prisma.MediaAsset$slotsArgs<ExtArgs>
+  variants?: boolean | Prisma.MediaAsset$variantsArgs<ExtArgs>
   _count?: boolean | Prisma.MediaAssetCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MediaAssetIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -724,6 +845,7 @@ export type $MediaAssetPayload<ExtArgs extends runtime.Types.Extensions.Internal
   name: "MediaAsset"
   objects: {
     slots: Prisma.$ContentSlotPayload<ExtArgs>[]
+    variants: Prisma.$MediaAssetVariantPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1133,6 +1255,7 @@ readonly fields: MediaAssetFieldRefs;
 export interface Prisma__MediaAssetClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   slots<T extends Prisma.MediaAsset$slotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$slotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  variants<T extends Prisma.MediaAsset$variantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$variantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaAssetVariantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1583,6 +1706,30 @@ export type MediaAsset$slotsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.ContentSlotScalarFieldEnum | Prisma.ContentSlotScalarFieldEnum[]
+}
+
+/**
+ * MediaAsset.variants
+ */
+export type MediaAsset$variantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MediaAssetVariant
+   */
+  select?: Prisma.MediaAssetVariantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MediaAssetVariant
+   */
+  omit?: Prisma.MediaAssetVariantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MediaAssetVariantInclude<ExtArgs> | null
+  where?: Prisma.MediaAssetVariantWhereInput
+  orderBy?: Prisma.MediaAssetVariantOrderByWithRelationInput | Prisma.MediaAssetVariantOrderByWithRelationInput[]
+  cursor?: Prisma.MediaAssetVariantWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MediaAssetVariantScalarFieldEnum | Prisma.MediaAssetVariantScalarFieldEnum[]
 }
 
 /**

@@ -156,10 +156,16 @@ function ceilToGrid(minutes: number, grid: number) {
   return Math.ceil(minutes / grid) * grid;
 }
 
-export function BookingWizard(props: { catalog: CatalogItem[]; pricing: PricingForWizard }) {
+export function BookingWizard(props: {
+  catalog: CatalogItem[];
+  pricing: PricingForWizard;
+  initialServiceType?: WizardPayload["serviceType"];
+}) {
   const router = useRouter();
 
-  const [serviceType, setServiceType] = useState<WizardPayload["serviceType"]>("MOVING");
+  const [serviceType, setServiceType] = useState<WizardPayload["serviceType"]>(
+    props.initialServiceType ?? "MOVING",
+  );
   const [addons, setAddons] = useState<WizardPayload["addons"]>([]);
 
   const [startAddress, setStartAddress] = useState<AddressOption | undefined>();

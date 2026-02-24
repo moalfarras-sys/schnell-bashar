@@ -105,6 +105,11 @@ export type DocumentSequence = Prisma.DocumentSequenceModel
  */
 export type MediaAsset = Prisma.MediaAssetModel
 /**
+ * Model MediaAssetVariant
+ * 
+ */
+export type MediaAssetVariant = Prisma.MediaAssetVariantModel
+/**
  * Model ContentSlot
  * 
  */
@@ -129,3 +134,38 @@ export type Invoice = Prisma.InvoiceModel
  * 
  */
 export type Payment = Prisma.PaymentModel
+/**
+ * Model AdminUser
+ * 
+ */
+export type AdminUser = Prisma.AdminUserModel
+/**
+ * Model Role
+ * 
+ */
+export type Role = Prisma.RoleModel
+/**
+ * Model Permission
+ * 
+ */
+export type Permission = Prisma.PermissionModel
+/**
+ * Model UserRole
+ * 
+ */
+export type UserRole = Prisma.UserRoleModel
+/**
+ * Model RolePermission
+ * 
+ */
+export type RolePermission = Prisma.RolePermissionModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model ContentRevision
+ * 
+ */
+export type ContentRevision = Prisma.ContentRevisionModel

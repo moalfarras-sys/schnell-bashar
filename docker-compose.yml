@@ -39,7 +39,10 @@ services:
       npm run prisma:generate &&
       npm run prisma:deploy &&
       npm run build &&
-      npm run start"
+      mkdir -p .next/standalone/.next &&
+      cp -r .next/static .next/standalone/.next/static &&
+      cp -r public .next/standalone/public &&
+      node .next/standalone/server.js"
     ports:
       - "${WEB_PORT:-3001}:3000"
 

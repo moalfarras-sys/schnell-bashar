@@ -40,6 +40,8 @@ export type AvailabilityExceptionMinAggregateOutputType = {
   closed: boolean | null
   overrideCapacity: number | null
   note: string | null
+  deletedAt: Date | null
+  deletedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +52,8 @@ export type AvailabilityExceptionMaxAggregateOutputType = {
   closed: boolean | null
   overrideCapacity: number | null
   note: string | null
+  deletedAt: Date | null
+  deletedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +64,8 @@ export type AvailabilityExceptionCountAggregateOutputType = {
   closed: number
   overrideCapacity: number
   note: number
+  deletedAt: number
+  deletedBy: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -80,6 +86,8 @@ export type AvailabilityExceptionMinAggregateInputType = {
   closed?: true
   overrideCapacity?: true
   note?: true
+  deletedAt?: true
+  deletedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -90,6 +98,8 @@ export type AvailabilityExceptionMaxAggregateInputType = {
   closed?: true
   overrideCapacity?: true
   note?: true
+  deletedAt?: true
+  deletedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +110,8 @@ export type AvailabilityExceptionCountAggregateInputType = {
   closed?: true
   overrideCapacity?: true
   note?: true
+  deletedAt?: true
+  deletedBy?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -197,6 +209,8 @@ export type AvailabilityExceptionGroupByOutputType = {
   closed: boolean
   overrideCapacity: number | null
   note: string | null
+  deletedAt: Date | null
+  deletedBy: string | null
   createdAt: Date
   updatedAt: Date
   _count: AvailabilityExceptionCountAggregateOutputType | null
@@ -230,6 +244,8 @@ export type AvailabilityExceptionWhereInput = {
   closed?: Prisma.BoolFilter<"AvailabilityException"> | boolean
   overrideCapacity?: Prisma.IntNullableFilter<"AvailabilityException"> | number | null
   note?: Prisma.StringNullableFilter<"AvailabilityException"> | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"AvailabilityException"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"AvailabilityException"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AvailabilityException"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AvailabilityException"> | Date | string
 }
@@ -240,6 +256,8 @@ export type AvailabilityExceptionOrderByWithRelationInput = {
   closed?: Prisma.SortOrder
   overrideCapacity?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -253,6 +271,8 @@ export type AvailabilityExceptionWhereUniqueInput = Prisma.AtLeast<{
   closed?: Prisma.BoolFilter<"AvailabilityException"> | boolean
   overrideCapacity?: Prisma.IntNullableFilter<"AvailabilityException"> | number | null
   note?: Prisma.StringNullableFilter<"AvailabilityException"> | string | null
+  deletedAt?: Prisma.DateTimeNullableFilter<"AvailabilityException"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"AvailabilityException"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AvailabilityException"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AvailabilityException"> | Date | string
 }, "id">
@@ -263,6 +283,8 @@ export type AvailabilityExceptionOrderByWithAggregationInput = {
   closed?: Prisma.SortOrder
   overrideCapacity?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AvailabilityExceptionCountOrderByAggregateInput
@@ -281,6 +303,8 @@ export type AvailabilityExceptionScalarWhereWithAggregatesInput = {
   closed?: Prisma.BoolWithAggregatesFilter<"AvailabilityException"> | boolean
   overrideCapacity?: Prisma.IntNullableWithAggregatesFilter<"AvailabilityException"> | number | null
   note?: Prisma.StringNullableWithAggregatesFilter<"AvailabilityException"> | string | null
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AvailabilityException"> | Date | string | null
+  deletedBy?: Prisma.StringNullableWithAggregatesFilter<"AvailabilityException"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AvailabilityException"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"AvailabilityException"> | Date | string
 }
@@ -291,6 +315,8 @@ export type AvailabilityExceptionCreateInput = {
   closed?: boolean
   overrideCapacity?: number | null
   note?: string | null
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -301,6 +327,8 @@ export type AvailabilityExceptionUncheckedCreateInput = {
   closed?: boolean
   overrideCapacity?: number | null
   note?: string | null
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -311,6 +339,8 @@ export type AvailabilityExceptionUpdateInput = {
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   overrideCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -321,6 +351,8 @@ export type AvailabilityExceptionUncheckedUpdateInput = {
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   overrideCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -331,6 +363,8 @@ export type AvailabilityExceptionCreateManyInput = {
   closed?: boolean
   overrideCapacity?: number | null
   note?: string | null
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -341,6 +375,8 @@ export type AvailabilityExceptionUpdateManyMutationInput = {
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   overrideCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -351,6 +387,8 @@ export type AvailabilityExceptionUncheckedUpdateManyInput = {
   closed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   overrideCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -361,6 +399,8 @@ export type AvailabilityExceptionCountOrderByAggregateInput = {
   closed?: Prisma.SortOrder
   overrideCapacity?: Prisma.SortOrder
   note?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -375,6 +415,8 @@ export type AvailabilityExceptionMaxOrderByAggregateInput = {
   closed?: Prisma.SortOrder
   overrideCapacity?: Prisma.SortOrder
   note?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -385,6 +427,8 @@ export type AvailabilityExceptionMinOrderByAggregateInput = {
   closed?: Prisma.SortOrder
   overrideCapacity?: Prisma.SortOrder
   note?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -401,10 +445,6 @@ export type NullableIntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 
 
 export type AvailabilityExceptionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -413,6 +453,8 @@ export type AvailabilityExceptionSelect<ExtArgs extends runtime.Types.Extensions
   closed?: boolean
   overrideCapacity?: boolean
   note?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["availabilityException"]>
@@ -423,6 +465,8 @@ export type AvailabilityExceptionSelectCreateManyAndReturn<ExtArgs extends runti
   closed?: boolean
   overrideCapacity?: boolean
   note?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["availabilityException"]>
@@ -433,6 +477,8 @@ export type AvailabilityExceptionSelectUpdateManyAndReturn<ExtArgs extends runti
   closed?: boolean
   overrideCapacity?: boolean
   note?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["availabilityException"]>
@@ -443,11 +489,13 @@ export type AvailabilityExceptionSelectScalar = {
   closed?: boolean
   overrideCapacity?: boolean
   note?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AvailabilityExceptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "date" | "closed" | "overrideCapacity" | "note" | "createdAt" | "updatedAt", ExtArgs["result"]["availabilityException"]>
+export type AvailabilityExceptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "date" | "closed" | "overrideCapacity" | "note" | "deletedAt" | "deletedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["availabilityException"]>
 
 export type $AvailabilityExceptionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AvailabilityException"
@@ -458,6 +506,8 @@ export type $AvailabilityExceptionPayload<ExtArgs extends runtime.Types.Extensio
     closed: boolean
     overrideCapacity: number | null
     note: string | null
+    deletedAt: Date | null
+    deletedBy: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["availabilityException"]>
@@ -888,6 +938,8 @@ export interface AvailabilityExceptionFieldRefs {
   readonly closed: Prisma.FieldRef<"AvailabilityException", 'Boolean'>
   readonly overrideCapacity: Prisma.FieldRef<"AvailabilityException", 'Int'>
   readonly note: Prisma.FieldRef<"AvailabilityException", 'String'>
+  readonly deletedAt: Prisma.FieldRef<"AvailabilityException", 'DateTime'>
+  readonly deletedBy: Prisma.FieldRef<"AvailabilityException", 'String'>
   readonly createdAt: Prisma.FieldRef<"AvailabilityException", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"AvailabilityException", 'DateTime'>
 }

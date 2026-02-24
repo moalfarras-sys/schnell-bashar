@@ -6,7 +6,19 @@ import { Container } from "@/components/container";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function BookingPage() {
+export default async function BookingPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ service?: string }>;
+}) {
+  const sp = (await searchParams) ?? {};
+  const requestedService = String(sp.service ?? "").toUpperCase();
+  const initialServiceType =
+    requestedService === "DISPOSAL" || requestedService === "ENTSORGUNG"
+      ? ("DISPOSAL" as const)
+      : requestedService === "BOTH" || requestedService === "KOMBI"
+        ? ("BOTH" as const)
+        : ("MOVING" as const);
   let pricing:
     | Awaited<ReturnType<typeof prisma.pricingConfig.findFirst>>
     | null = null;
@@ -49,6 +61,7 @@ export default async function BookingPage() {
 
   return (
     <BookingWizard
+      initialServiceType={initialServiceType}
       catalog={catalog}
       pricing={{
         currency: pricing.currency,

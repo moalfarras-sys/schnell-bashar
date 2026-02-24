@@ -20,16 +20,30 @@ export type ContractModel = runtime.Types.Result.DefaultSelection<Prisma.$Contra
 
 export type AggregateContract = {
   _count: ContractCountAggregateOutputType | null
+  _avg: ContractAvgAggregateOutputType | null
+  _sum: ContractSumAggregateOutputType | null
   _min: ContractMinAggregateOutputType | null
   _max: ContractMaxAggregateOutputType | null
+}
+
+export type ContractAvgAggregateOutputType = {
+  version: number | null
+}
+
+export type ContractSumAggregateOutputType = {
+  version: number | null
 }
 
 export type ContractMinAggregateOutputType = {
   id: string | null
   offerId: string | null
   contractNo: string | null
+  isManual: boolean | null
   status: $Enums.ContractStatus | null
   signatureProvider: $Enums.SignatureProvider | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  version: number | null
   docusignEnvelopeId: string | null
   docusignStatus: string | null
   contractPdfUrl: string | null
@@ -54,8 +68,12 @@ export type ContractMaxAggregateOutputType = {
   id: string | null
   offerId: string | null
   contractNo: string | null
+  isManual: boolean | null
   status: $Enums.ContractStatus | null
   signatureProvider: $Enums.SignatureProvider | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  version: number | null
   docusignEnvelopeId: string | null
   docusignStatus: string | null
   contractPdfUrl: string | null
@@ -80,8 +98,13 @@ export type ContractCountAggregateOutputType = {
   id: number
   offerId: number
   contractNo: number
+  isManual: number
+  manualPayload: number
   status: number
   signatureProvider: number
+  deletedAt: number
+  deletedBy: number
+  version: number
   docusignEnvelopeId: number
   docusignStatus: number
   contractPdfUrl: number
@@ -104,12 +127,24 @@ export type ContractCountAggregateOutputType = {
 }
 
 
+export type ContractAvgAggregateInputType = {
+  version?: true
+}
+
+export type ContractSumAggregateInputType = {
+  version?: true
+}
+
 export type ContractMinAggregateInputType = {
   id?: true
   offerId?: true
   contractNo?: true
+  isManual?: true
   status?: true
   signatureProvider?: true
+  deletedAt?: true
+  deletedBy?: true
+  version?: true
   docusignEnvelopeId?: true
   docusignStatus?: true
   contractPdfUrl?: true
@@ -134,8 +169,12 @@ export type ContractMaxAggregateInputType = {
   id?: true
   offerId?: true
   contractNo?: true
+  isManual?: true
   status?: true
   signatureProvider?: true
+  deletedAt?: true
+  deletedBy?: true
+  version?: true
   docusignEnvelopeId?: true
   docusignStatus?: true
   contractPdfUrl?: true
@@ -160,8 +199,13 @@ export type ContractCountAggregateInputType = {
   id?: true
   offerId?: true
   contractNo?: true
+  isManual?: true
+  manualPayload?: true
   status?: true
   signatureProvider?: true
+  deletedAt?: true
+  deletedBy?: true
+  version?: true
   docusignEnvelopeId?: true
   docusignStatus?: true
   contractPdfUrl?: true
@@ -221,6 +265,18 @@ export type ContractAggregateArgs<ExtArgs extends runtime.Types.Extensions.Inter
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: ContractAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: ContractSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: ContractMinAggregateInputType
@@ -251,6 +307,8 @@ export type ContractGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   _count?: ContractCountAggregateInputType | true
+  _avg?: ContractAvgAggregateInputType
+  _sum?: ContractSumAggregateInputType
   _min?: ContractMinAggregateInputType
   _max?: ContractMaxAggregateInputType
 }
@@ -259,8 +317,13 @@ export type ContractGroupByOutputType = {
   id: string
   offerId: string
   contractNo: string | null
+  isManual: boolean
+  manualPayload: runtime.JsonValue | null
   status: $Enums.ContractStatus
   signatureProvider: $Enums.SignatureProvider
+  deletedAt: Date | null
+  deletedBy: string | null
+  version: number
   docusignEnvelopeId: string | null
   docusignStatus: string | null
   contractPdfUrl: string | null
@@ -280,6 +343,8 @@ export type ContractGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   _count: ContractCountAggregateOutputType | null
+  _avg: ContractAvgAggregateOutputType | null
+  _sum: ContractSumAggregateOutputType | null
   _min: ContractMinAggregateOutputType | null
   _max: ContractMaxAggregateOutputType | null
 }
@@ -306,8 +371,13 @@ export type ContractWhereInput = {
   id?: Prisma.StringFilter<"Contract"> | string
   offerId?: Prisma.StringFilter<"Contract"> | string
   contractNo?: Prisma.StringNullableFilter<"Contract"> | string | null
+  isManual?: Prisma.BoolFilter<"Contract"> | boolean
+  manualPayload?: Prisma.JsonNullableFilter<"Contract">
   status?: Prisma.EnumContractStatusFilter<"Contract"> | $Enums.ContractStatus
   signatureProvider?: Prisma.EnumSignatureProviderFilter<"Contract"> | $Enums.SignatureProvider
+  deletedAt?: Prisma.DateTimeNullableFilter<"Contract"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Contract"> | string | null
+  version?: Prisma.IntFilter<"Contract"> | number
   docusignEnvelopeId?: Prisma.StringNullableFilter<"Contract"> | string | null
   docusignStatus?: Prisma.StringNullableFilter<"Contract"> | string | null
   contractPdfUrl?: Prisma.StringNullableFilter<"Contract"> | string | null
@@ -334,8 +404,13 @@ export type ContractOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   offerId?: Prisma.SortOrder
   contractNo?: Prisma.SortOrderInput | Prisma.SortOrder
+  isManual?: Prisma.SortOrder
+  manualPayload?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   signatureProvider?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  version?: Prisma.SortOrder
   docusignEnvelopeId?: Prisma.SortOrderInput | Prisma.SortOrder
   docusignStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   contractPdfUrl?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -366,8 +441,13 @@ export type ContractWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ContractWhereInput | Prisma.ContractWhereInput[]
   OR?: Prisma.ContractWhereInput[]
   NOT?: Prisma.ContractWhereInput | Prisma.ContractWhereInput[]
+  isManual?: Prisma.BoolFilter<"Contract"> | boolean
+  manualPayload?: Prisma.JsonNullableFilter<"Contract">
   status?: Prisma.EnumContractStatusFilter<"Contract"> | $Enums.ContractStatus
   signatureProvider?: Prisma.EnumSignatureProviderFilter<"Contract"> | $Enums.SignatureProvider
+  deletedAt?: Prisma.DateTimeNullableFilter<"Contract"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Contract"> | string | null
+  version?: Prisma.IntFilter<"Contract"> | number
   docusignStatus?: Prisma.StringNullableFilter<"Contract"> | string | null
   contractPdfUrl?: Prisma.StringNullableFilter<"Contract"> | string | null
   signedPdfUrl?: Prisma.StringNullableFilter<"Contract"> | string | null
@@ -393,8 +473,13 @@ export type ContractOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   offerId?: Prisma.SortOrder
   contractNo?: Prisma.SortOrderInput | Prisma.SortOrder
+  isManual?: Prisma.SortOrder
+  manualPayload?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   signatureProvider?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  version?: Prisma.SortOrder
   docusignEnvelopeId?: Prisma.SortOrderInput | Prisma.SortOrder
   docusignStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   contractPdfUrl?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -414,8 +499,10 @@ export type ContractOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ContractCountOrderByAggregateInput
+  _avg?: Prisma.ContractAvgOrderByAggregateInput
   _max?: Prisma.ContractMaxOrderByAggregateInput
   _min?: Prisma.ContractMinOrderByAggregateInput
+  _sum?: Prisma.ContractSumOrderByAggregateInput
 }
 
 export type ContractScalarWhereWithAggregatesInput = {
@@ -425,8 +512,13 @@ export type ContractScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Contract"> | string
   offerId?: Prisma.StringWithAggregatesFilter<"Contract"> | string
   contractNo?: Prisma.StringNullableWithAggregatesFilter<"Contract"> | string | null
+  isManual?: Prisma.BoolWithAggregatesFilter<"Contract"> | boolean
+  manualPayload?: Prisma.JsonNullableWithAggregatesFilter<"Contract">
   status?: Prisma.EnumContractStatusWithAggregatesFilter<"Contract"> | $Enums.ContractStatus
   signatureProvider?: Prisma.EnumSignatureProviderWithAggregatesFilter<"Contract"> | $Enums.SignatureProvider
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Contract"> | Date | string | null
+  deletedBy?: Prisma.StringNullableWithAggregatesFilter<"Contract"> | string | null
+  version?: Prisma.IntWithAggregatesFilter<"Contract"> | number
   docusignEnvelopeId?: Prisma.StringNullableWithAggregatesFilter<"Contract"> | string | null
   docusignStatus?: Prisma.StringNullableWithAggregatesFilter<"Contract"> | string | null
   contractPdfUrl?: Prisma.StringNullableWithAggregatesFilter<"Contract"> | string | null
@@ -450,8 +542,13 @@ export type ContractScalarWhereWithAggregatesInput = {
 export type ContractCreateInput = {
   id?: string
   contractNo?: string | null
+  isManual?: boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.ContractStatus
   signatureProvider?: $Enums.SignatureProvider
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   docusignEnvelopeId?: string | null
   docusignStatus?: string | null
   contractPdfUrl?: string | null
@@ -478,8 +575,13 @@ export type ContractUncheckedCreateInput = {
   id?: string
   offerId: string
   contractNo?: string | null
+  isManual?: boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.ContractStatus
   signatureProvider?: $Enums.SignatureProvider
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   docusignEnvelopeId?: string | null
   docusignStatus?: string | null
   contractPdfUrl?: string | null
@@ -504,8 +606,13 @@ export type ContractUncheckedCreateInput = {
 export type ContractUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   contractNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
   signatureProvider?: Prisma.EnumSignatureProviderFieldUpdateOperationsInput | $Enums.SignatureProvider
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   docusignEnvelopeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docusignStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractPdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -532,8 +639,13 @@ export type ContractUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   offerId?: Prisma.StringFieldUpdateOperationsInput | string
   contractNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
   signatureProvider?: Prisma.EnumSignatureProviderFieldUpdateOperationsInput | $Enums.SignatureProvider
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   docusignEnvelopeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docusignStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractPdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -559,8 +671,13 @@ export type ContractCreateManyInput = {
   id?: string
   offerId: string
   contractNo?: string | null
+  isManual?: boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.ContractStatus
   signatureProvider?: $Enums.SignatureProvider
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   docusignEnvelopeId?: string | null
   docusignStatus?: string | null
   contractPdfUrl?: string | null
@@ -584,8 +701,13 @@ export type ContractCreateManyInput = {
 export type ContractUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   contractNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
   signatureProvider?: Prisma.EnumSignatureProviderFieldUpdateOperationsInput | $Enums.SignatureProvider
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   docusignEnvelopeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docusignStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractPdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -610,8 +732,13 @@ export type ContractUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   offerId?: Prisma.StringFieldUpdateOperationsInput | string
   contractNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
   signatureProvider?: Prisma.EnumSignatureProviderFieldUpdateOperationsInput | $Enums.SignatureProvider
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   docusignEnvelopeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docusignStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractPdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -641,8 +768,13 @@ export type ContractCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   offerId?: Prisma.SortOrder
   contractNo?: Prisma.SortOrder
+  isManual?: Prisma.SortOrder
+  manualPayload?: Prisma.SortOrder
   status?: Prisma.SortOrder
   signatureProvider?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   docusignEnvelopeId?: Prisma.SortOrder
   docusignStatus?: Prisma.SortOrder
   contractPdfUrl?: Prisma.SortOrder
@@ -663,12 +795,20 @@ export type ContractCountOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type ContractAvgOrderByAggregateInput = {
+  version?: Prisma.SortOrder
+}
+
 export type ContractMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   offerId?: Prisma.SortOrder
   contractNo?: Prisma.SortOrder
+  isManual?: Prisma.SortOrder
   status?: Prisma.SortOrder
   signatureProvider?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   docusignEnvelopeId?: Prisma.SortOrder
   docusignStatus?: Prisma.SortOrder
   contractPdfUrl?: Prisma.SortOrder
@@ -693,8 +833,12 @@ export type ContractMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   offerId?: Prisma.SortOrder
   contractNo?: Prisma.SortOrder
+  isManual?: Prisma.SortOrder
   status?: Prisma.SortOrder
   signatureProvider?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   docusignEnvelopeId?: Prisma.SortOrder
   docusignStatus?: Prisma.SortOrder
   contractPdfUrl?: Prisma.SortOrder
@@ -713,6 +857,10 @@ export type ContractMinOrderByAggregateInput = {
   signedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ContractSumOrderByAggregateInput = {
+  version?: Prisma.SortOrder
 }
 
 export type ContractCreateNestedOneWithoutOfferInput = {
@@ -774,8 +922,13 @@ export type ContractUpdateOneWithoutInvoicesNestedInput = {
 export type ContractCreateWithoutOfferInput = {
   id?: string
   contractNo?: string | null
+  isManual?: boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.ContractStatus
   signatureProvider?: $Enums.SignatureProvider
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   docusignEnvelopeId?: string | null
   docusignStatus?: string | null
   contractPdfUrl?: string | null
@@ -800,8 +953,13 @@ export type ContractCreateWithoutOfferInput = {
 export type ContractUncheckedCreateWithoutOfferInput = {
   id?: string
   contractNo?: string | null
+  isManual?: boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.ContractStatus
   signatureProvider?: $Enums.SignatureProvider
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   docusignEnvelopeId?: string | null
   docusignStatus?: string | null
   contractPdfUrl?: string | null
@@ -842,8 +1000,13 @@ export type ContractUpdateToOneWithWhereWithoutOfferInput = {
 export type ContractUpdateWithoutOfferInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   contractNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
   signatureProvider?: Prisma.EnumSignatureProviderFieldUpdateOperationsInput | $Enums.SignatureProvider
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   docusignEnvelopeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docusignStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractPdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -868,8 +1031,13 @@ export type ContractUpdateWithoutOfferInput = {
 export type ContractUncheckedUpdateWithoutOfferInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   contractNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
   signatureProvider?: Prisma.EnumSignatureProviderFieldUpdateOperationsInput | $Enums.SignatureProvider
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   docusignEnvelopeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docusignStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractPdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -894,8 +1062,13 @@ export type ContractUncheckedUpdateWithoutOfferInput = {
 export type ContractCreateWithoutInvoicesInput = {
   id?: string
   contractNo?: string | null
+  isManual?: boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.ContractStatus
   signatureProvider?: $Enums.SignatureProvider
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   docusignEnvelopeId?: string | null
   docusignStatus?: string | null
   contractPdfUrl?: string | null
@@ -921,8 +1094,13 @@ export type ContractUncheckedCreateWithoutInvoicesInput = {
   id?: string
   offerId: string
   contractNo?: string | null
+  isManual?: boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.ContractStatus
   signatureProvider?: $Enums.SignatureProvider
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   docusignEnvelopeId?: string | null
   docusignStatus?: string | null
   contractPdfUrl?: string | null
@@ -962,8 +1140,13 @@ export type ContractUpdateToOneWithWhereWithoutInvoicesInput = {
 export type ContractUpdateWithoutInvoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   contractNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
   signatureProvider?: Prisma.EnumSignatureProviderFieldUpdateOperationsInput | $Enums.SignatureProvider
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   docusignEnvelopeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docusignStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractPdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -989,8 +1172,13 @@ export type ContractUncheckedUpdateWithoutInvoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   offerId?: Prisma.StringFieldUpdateOperationsInput | string
   contractNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  manualPayload?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
   signatureProvider?: Prisma.EnumSignatureProviderFieldUpdateOperationsInput | $Enums.SignatureProvider
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   docusignEnvelopeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docusignStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contractPdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1046,8 +1234,13 @@ export type ContractSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   id?: boolean
   offerId?: boolean
   contractNo?: boolean
+  isManual?: boolean
+  manualPayload?: boolean
   status?: boolean
   signatureProvider?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  version?: boolean
   docusignEnvelopeId?: boolean
   docusignStatus?: boolean
   contractPdfUrl?: boolean
@@ -1075,8 +1268,13 @@ export type ContractSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   offerId?: boolean
   contractNo?: boolean
+  isManual?: boolean
+  manualPayload?: boolean
   status?: boolean
   signatureProvider?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  version?: boolean
   docusignEnvelopeId?: boolean
   docusignStatus?: boolean
   contractPdfUrl?: boolean
@@ -1102,8 +1300,13 @@ export type ContractSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   offerId?: boolean
   contractNo?: boolean
+  isManual?: boolean
+  manualPayload?: boolean
   status?: boolean
   signatureProvider?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  version?: boolean
   docusignEnvelopeId?: boolean
   docusignStatus?: boolean
   contractPdfUrl?: boolean
@@ -1129,8 +1332,13 @@ export type ContractSelectScalar = {
   id?: boolean
   offerId?: boolean
   contractNo?: boolean
+  isManual?: boolean
+  manualPayload?: boolean
   status?: boolean
   signatureProvider?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  version?: boolean
   docusignEnvelopeId?: boolean
   docusignStatus?: boolean
   contractPdfUrl?: boolean
@@ -1151,7 +1359,7 @@ export type ContractSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ContractOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "offerId" | "contractNo" | "status" | "signatureProvider" | "docusignEnvelopeId" | "docusignStatus" | "contractPdfUrl" | "signedPdfUrl" | "auditTrailUrl" | "signingUrl" | "signatureTokenHash" | "signatureTokenExpiresAt" | "fallbackSignedName" | "fallbackSignedAt" | "fallbackSignerIp" | "fallbackSignerUserAgent" | "fallbackAgbAccepted" | "signatureImageUrl" | "sentForSigningAt" | "signedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["contract"]>
+export type ContractOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "offerId" | "contractNo" | "isManual" | "manualPayload" | "status" | "signatureProvider" | "deletedAt" | "deletedBy" | "version" | "docusignEnvelopeId" | "docusignStatus" | "contractPdfUrl" | "signedPdfUrl" | "auditTrailUrl" | "signingUrl" | "signatureTokenHash" | "signatureTokenExpiresAt" | "fallbackSignedName" | "fallbackSignedAt" | "fallbackSignerIp" | "fallbackSignerUserAgent" | "fallbackAgbAccepted" | "signatureImageUrl" | "sentForSigningAt" | "signedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["contract"]>
 export type ContractInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   offer?: boolean | Prisma.OfferDefaultArgs<ExtArgs>
   invoices?: boolean | Prisma.Contract$invoicesArgs<ExtArgs>
@@ -1174,8 +1382,13 @@ export type $ContractPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     id: string
     offerId: string
     contractNo: string | null
+    isManual: boolean
+    manualPayload: runtime.JsonValue | null
     status: $Enums.ContractStatus
     signatureProvider: $Enums.SignatureProvider
+    deletedAt: Date | null
+    deletedBy: string | null
+    version: number
     docusignEnvelopeId: string | null
     docusignStatus: string | null
     contractPdfUrl: string | null
@@ -1622,8 +1835,13 @@ export interface ContractFieldRefs {
   readonly id: Prisma.FieldRef<"Contract", 'String'>
   readonly offerId: Prisma.FieldRef<"Contract", 'String'>
   readonly contractNo: Prisma.FieldRef<"Contract", 'String'>
+  readonly isManual: Prisma.FieldRef<"Contract", 'Boolean'>
+  readonly manualPayload: Prisma.FieldRef<"Contract", 'Json'>
   readonly status: Prisma.FieldRef<"Contract", 'ContractStatus'>
   readonly signatureProvider: Prisma.FieldRef<"Contract", 'SignatureProvider'>
+  readonly deletedAt: Prisma.FieldRef<"Contract", 'DateTime'>
+  readonly deletedBy: Prisma.FieldRef<"Contract", 'String'>
+  readonly version: Prisma.FieldRef<"Contract", 'Int'>
   readonly docusignEnvelopeId: Prisma.FieldRef<"Contract", 'String'>
   readonly docusignStatus: Prisma.FieldRef<"Contract", 'String'>
   readonly contractPdfUrl: Prisma.FieldRef<"Contract", 'String'>

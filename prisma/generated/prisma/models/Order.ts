@@ -32,6 +32,7 @@ export type OrderAvgAggregateOutputType = {
   distanceKm: number | null
   priceMinCents: number | null
   priceMaxCents: number | null
+  version: number | null
 }
 
 export type OrderSumAggregateOutputType = {
@@ -40,6 +41,7 @@ export type OrderSumAggregateOutputType = {
   distanceKm: number | null
   priceMinCents: number | null
   priceMaxCents: number | null
+  version: number | null
 }
 
 export type OrderMinAggregateOutputType = {
@@ -63,6 +65,7 @@ export type OrderMinAggregateOutputType = {
   priceMaxCents: number | null
   deletedAt: Date | null
   deletedBy: string | null
+  version: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -88,6 +91,7 @@ export type OrderMaxAggregateOutputType = {
   priceMaxCents: number | null
   deletedAt: Date | null
   deletedBy: string | null
+  version: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -114,6 +118,7 @@ export type OrderCountAggregateOutputType = {
   wizardData: number
   deletedAt: number
   deletedBy: number
+  version: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -126,6 +131,7 @@ export type OrderAvgAggregateInputType = {
   distanceKm?: true
   priceMinCents?: true
   priceMaxCents?: true
+  version?: true
 }
 
 export type OrderSumAggregateInputType = {
@@ -134,6 +140,7 @@ export type OrderSumAggregateInputType = {
   distanceKm?: true
   priceMinCents?: true
   priceMaxCents?: true
+  version?: true
 }
 
 export type OrderMinAggregateInputType = {
@@ -157,6 +164,7 @@ export type OrderMinAggregateInputType = {
   priceMaxCents?: true
   deletedAt?: true
   deletedBy?: true
+  version?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -182,6 +190,7 @@ export type OrderMaxAggregateInputType = {
   priceMaxCents?: true
   deletedAt?: true
   deletedBy?: true
+  version?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -208,6 +217,7 @@ export type OrderCountAggregateInputType = {
   wizardData?: true
   deletedAt?: true
   deletedBy?: true
+  version?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -321,6 +331,7 @@ export type OrderGroupByOutputType = {
   wizardData: runtime.JsonValue
   deletedAt: Date | null
   deletedBy: string | null
+  version: number
   createdAt: Date
   updatedAt: Date
   _count: OrderCountAggregateOutputType | null
@@ -370,6 +381,7 @@ export type OrderWhereInput = {
   wizardData?: Prisma.JsonFilter<"Order">
   deletedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   deletedBy?: Prisma.StringNullableFilter<"Order"> | string | null
+  version?: Prisma.IntFilter<"Order"> | number
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   lines?: Prisma.OrderLineListRelationFilter
@@ -400,6 +412,7 @@ export type OrderOrderByWithRelationInput = {
   wizardData?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   lines?: Prisma.OrderLineOrderByRelationAggregateInput
@@ -433,6 +446,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   wizardData?: Prisma.JsonFilter<"Order">
   deletedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   deletedBy?: Prisma.StringNullableFilter<"Order"> | string | null
+  version?: Prisma.IntFilter<"Order"> | number
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   lines?: Prisma.OrderLineListRelationFilter
@@ -463,6 +477,7 @@ export type OrderOrderByWithAggregationInput = {
   wizardData?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.OrderCountOrderByAggregateInput
@@ -497,6 +512,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   wizardData?: Prisma.JsonWithAggregatesFilter<"Order">
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
   deletedBy?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  version?: Prisma.IntWithAggregatesFilter<"Order"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
 }
@@ -523,6 +539,7 @@ export type OrderCreateInput = {
   wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Date | string | null
   deletedBy?: string | null
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineCreateNestedManyWithoutOrderInput
@@ -553,6 +570,7 @@ export type OrderUncheckedCreateInput = {
   wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Date | string | null
   deletedBy?: string | null
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineUncheckedCreateNestedManyWithoutOrderInput
@@ -583,6 +601,7 @@ export type OrderUpdateInput = {
   wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUpdateManyWithoutOrderNestedInput
@@ -613,6 +632,7 @@ export type OrderUncheckedUpdateInput = {
   wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUncheckedUpdateManyWithoutOrderNestedInput
@@ -643,6 +663,7 @@ export type OrderCreateManyInput = {
   wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Date | string | null
   deletedBy?: string | null
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -669,6 +690,7 @@ export type OrderUpdateManyMutationInput = {
   wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -695,6 +717,7 @@ export type OrderUncheckedUpdateManyInput = {
   wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -721,6 +744,7 @@ export type OrderCountOrderByAggregateInput = {
   wizardData?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   deletedBy?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -731,6 +755,7 @@ export type OrderAvgOrderByAggregateInput = {
   distanceKm?: Prisma.SortOrder
   priceMinCents?: Prisma.SortOrder
   priceMaxCents?: Prisma.SortOrder
+  version?: Prisma.SortOrder
 }
 
 export type OrderMaxOrderByAggregateInput = {
@@ -754,6 +779,7 @@ export type OrderMaxOrderByAggregateInput = {
   priceMaxCents?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   deletedBy?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -779,6 +805,7 @@ export type OrderMinOrderByAggregateInput = {
   priceMaxCents?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
   deletedBy?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -789,6 +816,7 @@ export type OrderSumOrderByAggregateInput = {
   distanceKm?: Prisma.SortOrder
   priceMinCents?: Prisma.SortOrder
   priceMaxCents?: Prisma.SortOrder
+  version?: Prisma.SortOrder
 }
 
 export type OrderScalarRelationFilter = {
@@ -823,10 +851,6 @@ export type NullableFloatFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
-}
-
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
 }
 
 export type OrderCreateNestedOneWithoutLinesInput = {
@@ -911,6 +935,7 @@ export type OrderCreateWithoutLinesInput = {
   wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Date | string | null
   deletedBy?: string | null
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.OrderUploadCreateNestedManyWithoutOrderInput
@@ -940,6 +965,7 @@ export type OrderUncheckedCreateWithoutLinesInput = {
   wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Date | string | null
   deletedBy?: string | null
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.OrderUploadUncheckedCreateNestedManyWithoutOrderInput
@@ -985,6 +1011,7 @@ export type OrderUpdateWithoutLinesInput = {
   wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.OrderUploadUpdateManyWithoutOrderNestedInput
@@ -1014,6 +1041,7 @@ export type OrderUncheckedUpdateWithoutLinesInput = {
   wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.OrderUploadUncheckedUpdateManyWithoutOrderNestedInput
@@ -1043,6 +1071,7 @@ export type OrderCreateWithoutUploadsInput = {
   wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Date | string | null
   deletedBy?: string | null
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineCreateNestedManyWithoutOrderInput
@@ -1072,6 +1101,7 @@ export type OrderUncheckedCreateWithoutUploadsInput = {
   wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Date | string | null
   deletedBy?: string | null
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineUncheckedCreateNestedManyWithoutOrderInput
@@ -1117,6 +1147,7 @@ export type OrderUpdateWithoutUploadsInput = {
   wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUpdateManyWithoutOrderNestedInput
@@ -1146,6 +1177,7 @@ export type OrderUncheckedUpdateWithoutUploadsInput = {
   wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUncheckedUpdateManyWithoutOrderNestedInput
@@ -1175,6 +1207,7 @@ export type OrderCreateWithoutOfferInput = {
   wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Date | string | null
   deletedBy?: string | null
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineCreateNestedManyWithoutOrderInput
@@ -1204,6 +1237,7 @@ export type OrderUncheckedCreateWithoutOfferInput = {
   wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Date | string | null
   deletedBy?: string | null
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineUncheckedCreateNestedManyWithoutOrderInput
@@ -1249,6 +1283,7 @@ export type OrderUpdateWithoutOfferInput = {
   wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUpdateManyWithoutOrderNestedInput
@@ -1278,6 +1313,7 @@ export type OrderUncheckedUpdateWithoutOfferInput = {
   wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUncheckedUpdateManyWithoutOrderNestedInput
@@ -1307,6 +1343,7 @@ export type OrderCreateWithoutInvoicesInput = {
   wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Date | string | null
   deletedBy?: string | null
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineCreateNestedManyWithoutOrderInput
@@ -1336,6 +1373,7 @@ export type OrderUncheckedCreateWithoutInvoicesInput = {
   wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Date | string | null
   deletedBy?: string | null
+  version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineUncheckedCreateNestedManyWithoutOrderInput
@@ -1381,6 +1419,7 @@ export type OrderUpdateWithoutInvoicesInput = {
   wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUpdateManyWithoutOrderNestedInput
@@ -1410,6 +1449,7 @@ export type OrderUncheckedUpdateWithoutInvoicesInput = {
   wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUncheckedUpdateManyWithoutOrderNestedInput
@@ -1488,6 +1528,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   wizardData?: boolean
   deletedAt?: boolean
   deletedBy?: boolean
+  version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   lines?: boolean | Prisma.Order$linesArgs<ExtArgs>
@@ -1519,6 +1560,7 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   wizardData?: boolean
   deletedAt?: boolean
   deletedBy?: boolean
+  version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["order"]>
@@ -1545,6 +1587,7 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   wizardData?: boolean
   deletedAt?: boolean
   deletedBy?: boolean
+  version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["order"]>
@@ -1571,11 +1614,12 @@ export type OrderSelectScalar = {
   wizardData?: boolean
   deletedAt?: boolean
   deletedBy?: boolean
+  version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "publicId" | "orderNo" | "serviceType" | "speed" | "status" | "customerName" | "customerPhone" | "customerEmail" | "contactPreference" | "note" | "slotStart" | "slotEnd" | "volumeM3" | "laborHours" | "distanceKm" | "priceMinCents" | "priceMaxCents" | "wizardData" | "deletedAt" | "deletedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "publicId" | "orderNo" | "serviceType" | "speed" | "status" | "customerName" | "customerPhone" | "customerEmail" | "contactPreference" | "note" | "slotStart" | "slotEnd" | "volumeM3" | "laborHours" | "distanceKm" | "priceMinCents" | "priceMaxCents" | "wizardData" | "deletedAt" | "deletedBy" | "version" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lines?: boolean | Prisma.Order$linesArgs<ExtArgs>
   uploads?: boolean | Prisma.Order$uploadsArgs<ExtArgs>
@@ -1616,6 +1660,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     wizardData: runtime.JsonValue
     deletedAt: Date | null
     deletedBy: string | null
+    version: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["order"]>
@@ -2066,6 +2111,7 @@ export interface OrderFieldRefs {
   readonly wizardData: Prisma.FieldRef<"Order", 'Json'>
   readonly deletedAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly deletedBy: Prisma.FieldRef<"Order", 'String'>
+  readonly version: Prisma.FieldRef<"Order", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Order", 'DateTime'>
 }

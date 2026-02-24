@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,6 +17,9 @@ import {
   BarChart3,
   Wallet,
   PlusCircle,
+  Shield,
+  Users,
+  ScrollText,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -33,6 +36,7 @@ const navItems: NavItem[] = [
   { href: "/admin/orders", label: "Aufträge", icon: ClipboardList },
   { href: "/admin/offers", label: "Angebote & Verträge", icon: FileText },
   { href: "/admin/offers/new", label: "Neues Angebot", icon: PlusCircle },
+  { href: "/admin/contracts/manual", label: "Neuer Vertrag (manuell)", icon: PlusCircle },
   { href: "/admin/catalog", label: "Katalog", icon: Package },
   { href: "/admin/pricing", label: "Preise", icon: Tag },
   { href: "/admin/availability", label: "Zeitfenster", icon: Calendar },
@@ -40,6 +44,9 @@ const navItems: NavItem[] = [
   { href: "/admin/media/slots", label: "Image Slots", icon: LayoutTemplate },
   { href: "/admin/content", label: "Inhalte", icon: Type },
   { href: "/admin/jobs", label: "Stellenangebote", icon: Briefcase },
+  { href: "/admin/users", label: "Benutzer", icon: Users },
+  { href: "/admin/roles", label: "Rollen & Rechte", icon: Shield },
+  { href: "/admin/audit", label: "Audit-Log", icon: ScrollText },
   { href: "/admin/accounting", label: "Buchhaltung", icon: Wallet, section: "accounting" },
   { href: "/admin/accounting/invoices", label: "Rechnungen", icon: Receipt, section: "accounting" },
   { href: "/admin/accounting/reports", label: "Berichte", icon: BarChart3, section: "accounting" },

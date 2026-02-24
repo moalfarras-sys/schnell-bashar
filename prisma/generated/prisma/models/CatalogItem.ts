@@ -48,6 +48,8 @@ export type CatalogItemMinAggregateOutputType = {
   isHeavy: boolean | null
   sortOrder: number | null
   active: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +64,8 @@ export type CatalogItemMaxAggregateOutputType = {
   isHeavy: boolean | null
   sortOrder: number | null
   active: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -76,6 +80,8 @@ export type CatalogItemCountAggregateOutputType = {
   isHeavy: number
   sortOrder: number
   active: number
+  deletedAt: number
+  deletedBy: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -104,6 +110,8 @@ export type CatalogItemMinAggregateInputType = {
   isHeavy?: true
   sortOrder?: true
   active?: true
+  deletedAt?: true
+  deletedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -118,6 +126,8 @@ export type CatalogItemMaxAggregateInputType = {
   isHeavy?: true
   sortOrder?: true
   active?: true
+  deletedAt?: true
+  deletedBy?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -132,6 +142,8 @@ export type CatalogItemCountAggregateInputType = {
   isHeavy?: true
   sortOrder?: true
   active?: true
+  deletedAt?: true
+  deletedBy?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -233,6 +245,8 @@ export type CatalogItemGroupByOutputType = {
   isHeavy: boolean
   sortOrder: number
   active: boolean
+  deletedAt: Date | null
+  deletedBy: string | null
   createdAt: Date
   updatedAt: Date
   _count: CatalogItemCountAggregateOutputType | null
@@ -270,6 +284,8 @@ export type CatalogItemWhereInput = {
   isHeavy?: Prisma.BoolFilter<"CatalogItem"> | boolean
   sortOrder?: Prisma.IntFilter<"CatalogItem"> | number
   active?: Prisma.BoolFilter<"CatalogItem"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"CatalogItem"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"CatalogItem"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CatalogItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CatalogItem"> | Date | string
   orderLines?: Prisma.OrderLineListRelationFilter
@@ -285,6 +301,8 @@ export type CatalogItemOrderByWithRelationInput = {
   isHeavy?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   orderLines?: Prisma.OrderLineOrderByRelationAggregateInput
@@ -303,6 +321,8 @@ export type CatalogItemWhereUniqueInput = Prisma.AtLeast<{
   isHeavy?: Prisma.BoolFilter<"CatalogItem"> | boolean
   sortOrder?: Prisma.IntFilter<"CatalogItem"> | number
   active?: Prisma.BoolFilter<"CatalogItem"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"CatalogItem"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"CatalogItem"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CatalogItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CatalogItem"> | Date | string
   orderLines?: Prisma.OrderLineListRelationFilter
@@ -318,6 +338,8 @@ export type CatalogItemOrderByWithAggregationInput = {
   isHeavy?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CatalogItemCountOrderByAggregateInput
@@ -340,6 +362,8 @@ export type CatalogItemScalarWhereWithAggregatesInput = {
   isHeavy?: Prisma.BoolWithAggregatesFilter<"CatalogItem"> | boolean
   sortOrder?: Prisma.IntWithAggregatesFilter<"CatalogItem"> | number
   active?: Prisma.BoolWithAggregatesFilter<"CatalogItem"> | boolean
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CatalogItem"> | Date | string | null
+  deletedBy?: Prisma.StringNullableWithAggregatesFilter<"CatalogItem"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CatalogItem"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CatalogItem"> | Date | string
 }
@@ -354,6 +378,8 @@ export type CatalogItemCreateInput = {
   isHeavy?: boolean
   sortOrder?: number
   active?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   orderLines?: Prisma.OrderLineCreateNestedManyWithoutCatalogItemInput
@@ -369,6 +395,8 @@ export type CatalogItemUncheckedCreateInput = {
   isHeavy?: boolean
   sortOrder?: number
   active?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   orderLines?: Prisma.OrderLineUncheckedCreateNestedManyWithoutCatalogItemInput
@@ -384,6 +412,8 @@ export type CatalogItemUpdateInput = {
   isHeavy?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orderLines?: Prisma.OrderLineUpdateManyWithoutCatalogItemNestedInput
@@ -399,6 +429,8 @@ export type CatalogItemUncheckedUpdateInput = {
   isHeavy?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   orderLines?: Prisma.OrderLineUncheckedUpdateManyWithoutCatalogItemNestedInput
@@ -414,6 +446,8 @@ export type CatalogItemCreateManyInput = {
   isHeavy?: boolean
   sortOrder?: number
   active?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -428,6 +462,8 @@ export type CatalogItemUpdateManyMutationInput = {
   isHeavy?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -442,6 +478,8 @@ export type CatalogItemUncheckedUpdateManyInput = {
   isHeavy?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -456,6 +494,8 @@ export type CatalogItemCountOrderByAggregateInput = {
   isHeavy?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -476,6 +516,8 @@ export type CatalogItemMaxOrderByAggregateInput = {
   isHeavy?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -490,6 +532,8 @@ export type CatalogItemMinOrderByAggregateInput = {
   isHeavy?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -529,6 +573,14 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
@@ -557,6 +609,8 @@ export type CatalogItemCreateWithoutOrderLinesInput = {
   isHeavy?: boolean
   sortOrder?: number
   active?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -571,6 +625,8 @@ export type CatalogItemUncheckedCreateWithoutOrderLinesInput = {
   isHeavy?: boolean
   sortOrder?: number
   active?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -601,6 +657,8 @@ export type CatalogItemUpdateWithoutOrderLinesInput = {
   isHeavy?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -615,6 +673,8 @@ export type CatalogItemUncheckedUpdateWithoutOrderLinesInput = {
   isHeavy?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -660,6 +720,8 @@ export type CatalogItemSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   isHeavy?: boolean
   sortOrder?: boolean
   active?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   orderLines?: boolean | Prisma.CatalogItem$orderLinesArgs<ExtArgs>
@@ -676,6 +738,8 @@ export type CatalogItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   isHeavy?: boolean
   sortOrder?: boolean
   active?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["catalogItem"]>
@@ -690,6 +754,8 @@ export type CatalogItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   isHeavy?: boolean
   sortOrder?: boolean
   active?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["catalogItem"]>
@@ -704,11 +770,13 @@ export type CatalogItemSelectScalar = {
   isHeavy?: boolean
   sortOrder?: boolean
   active?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CatalogItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "categoryKey" | "nameDe" | "defaultVolumeM3" | "laborMinutesPerUnit" | "isHeavy" | "sortOrder" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["catalogItem"]>
+export type CatalogItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "categoryKey" | "nameDe" | "defaultVolumeM3" | "laborMinutesPerUnit" | "isHeavy" | "sortOrder" | "active" | "deletedAt" | "deletedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["catalogItem"]>
 export type CatalogItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orderLines?: boolean | Prisma.CatalogItem$orderLinesArgs<ExtArgs>
   _count?: boolean | Prisma.CatalogItemCountOutputTypeDefaultArgs<ExtArgs>
@@ -731,6 +799,8 @@ export type $CatalogItemPayload<ExtArgs extends runtime.Types.Extensions.Interna
     isHeavy: boolean
     sortOrder: number
     active: boolean
+    deletedAt: Date | null
+    deletedBy: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["catalogItem"]>
@@ -1166,6 +1236,8 @@ export interface CatalogItemFieldRefs {
   readonly isHeavy: Prisma.FieldRef<"CatalogItem", 'Boolean'>
   readonly sortOrder: Prisma.FieldRef<"CatalogItem", 'Int'>
   readonly active: Prisma.FieldRef<"CatalogItem", 'Boolean'>
+  readonly deletedAt: Prisma.FieldRef<"CatalogItem", 'DateTime'>
+  readonly deletedBy: Prisma.FieldRef<"CatalogItem", 'String'>
   readonly createdAt: Prisma.FieldRef<"CatalogItem", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CatalogItem", 'DateTime'>
 }

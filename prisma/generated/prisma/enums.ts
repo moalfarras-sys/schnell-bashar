@@ -83,6 +83,16 @@ export const DocumentScope = {
 export type DocumentScope = (typeof DocumentScope)[keyof typeof DocumentScope]
 
 
+export const MediaVariantKind = {
+  hero: 'hero',
+  gallery: 'gallery',
+  thumbnail: 'thumbnail',
+  custom: 'custom'
+} as const
+
+export type MediaVariantKind = (typeof MediaVariantKind)[keyof typeof MediaVariantKind]
+
+
 export const InvoiceStatus = {
   UNPAID: 'UNPAID',
   PARTIAL: 'PARTIAL',

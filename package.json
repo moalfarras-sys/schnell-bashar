@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx scripts/dev-db-check.ts && next dev --webpack",
-    "build": "next build --webpack",
+    "build": "npm run prisma:generate && next build --webpack",
     "start": "next start",
     "lint": "eslint .",
     "db:up": "docker compose up -d db",
@@ -15,6 +15,8 @@
     "db:doctor": "tsx scripts/dev-db-check.ts",
     "db:migrate:supabase": "tsx scripts/migrate-to-supabase.ts",
     "db:backfill:docnos": "tsx scripts/backfill-document-numbers.ts",
+    "accounting:backfill:invoices": "tsx scripts/backfill-invoices.ts",
+    "audit:retention": "tsx scripts/audit-retention.ts",
     "admin:hash": "tsx scripts/hash-admin-password.ts",
     "db:check-slots": "tsx scripts/check-time-slots.ts",
     "ors:diag": "tsx scripts/ors-diagnostics.ts",
@@ -30,6 +32,7 @@
     "slots:sync": "tsx scripts/sync-image-slots.ts",
     "slots:sync:prune": "tsx scripts/sync-image-slots.ts --apply-prune",
     "slots:placeholders": "tsx scripts/generate-image-placeholders.ts",
+    "images:check": "tsx scripts/check-broken-image-paths.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
@@ -61,6 +64,7 @@
     "react-hook-form": "^7.71.1",
     "react-signature-canvas": "^1.1.0-alpha.2",
     "recharts": "^3.7.0",
+    "sharp": "^0.34.4",
     "tailwind-merge": "^3.4.1",
     "zod": "^4.3.6"
   },

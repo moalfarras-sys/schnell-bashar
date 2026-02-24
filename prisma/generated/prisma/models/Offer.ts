@@ -34,6 +34,7 @@ export type OfferAvgAggregateOutputType = {
   grossCents: number | null
   discountPercent: number | null
   discountCents: number | null
+  version: number | null
 }
 
 export type OfferSumAggregateOutputType = {
@@ -44,6 +45,7 @@ export type OfferSumAggregateOutputType = {
   grossCents: number | null
   discountPercent: number | null
   discountCents: number | null
+  version: number | null
 }
 
 export type OfferMinAggregateOutputType = {
@@ -72,6 +74,9 @@ export type OfferMinAggregateOutputType = {
   discountNote: string | null
   customNote: string | null
   isManual: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  version: number | null
   pdfUrl: string | null
   validUntil: Date | null
   expiresAt: Date | null
@@ -106,6 +111,9 @@ export type OfferMaxAggregateOutputType = {
   discountNote: string | null
   customNote: string | null
   isManual: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
+  version: number | null
   pdfUrl: string | null
   validUntil: Date | null
   expiresAt: Date | null
@@ -141,6 +149,9 @@ export type OfferCountAggregateOutputType = {
   discountNote: number
   customNote: number
   isManual: number
+  deletedAt: number
+  deletedBy: number
+  version: number
   pdfUrl: number
   validUntil: number
   expiresAt: number
@@ -159,6 +170,7 @@ export type OfferAvgAggregateInputType = {
   grossCents?: true
   discountPercent?: true
   discountCents?: true
+  version?: true
 }
 
 export type OfferSumAggregateInputType = {
@@ -169,6 +181,7 @@ export type OfferSumAggregateInputType = {
   grossCents?: true
   discountPercent?: true
   discountCents?: true
+  version?: true
 }
 
 export type OfferMinAggregateInputType = {
@@ -197,6 +210,9 @@ export type OfferMinAggregateInputType = {
   discountNote?: true
   customNote?: true
   isManual?: true
+  deletedAt?: true
+  deletedBy?: true
+  version?: true
   pdfUrl?: true
   validUntil?: true
   expiresAt?: true
@@ -231,6 +247,9 @@ export type OfferMaxAggregateInputType = {
   discountNote?: true
   customNote?: true
   isManual?: true
+  deletedAt?: true
+  deletedBy?: true
+  version?: true
   pdfUrl?: true
   validUntil?: true
   expiresAt?: true
@@ -266,6 +285,9 @@ export type OfferCountAggregateInputType = {
   discountNote?: true
   customNote?: true
   isManual?: true
+  deletedAt?: true
+  deletedBy?: true
+  version?: true
   pdfUrl?: true
   validUntil?: true
   expiresAt?: true
@@ -388,6 +410,9 @@ export type OfferGroupByOutputType = {
   discountNote: string | null
   customNote: string | null
   isManual: boolean
+  deletedAt: Date | null
+  deletedBy: string | null
+  version: number
   pdfUrl: string | null
   validUntil: Date
   expiresAt: Date
@@ -446,6 +471,9 @@ export type OfferWhereInput = {
   discountNote?: Prisma.StringNullableFilter<"Offer"> | string | null
   customNote?: Prisma.StringNullableFilter<"Offer"> | string | null
   isManual?: Prisma.BoolFilter<"Offer"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Offer"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Offer"> | string | null
+  version?: Prisma.IntFilter<"Offer"> | number
   pdfUrl?: Prisma.StringNullableFilter<"Offer"> | string | null
   validUntil?: Prisma.DateTimeFilter<"Offer"> | Date | string
   expiresAt?: Prisma.DateTimeFilter<"Offer"> | Date | string
@@ -484,6 +512,9 @@ export type OfferOrderByWithRelationInput = {
   discountNote?: Prisma.SortOrderInput | Prisma.SortOrder
   customNote?: Prisma.SortOrderInput | Prisma.SortOrder
   isManual?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  version?: Prisma.SortOrder
   pdfUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   validUntil?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -525,6 +556,9 @@ export type OfferWhereUniqueInput = Prisma.AtLeast<{
   discountNote?: Prisma.StringNullableFilter<"Offer"> | string | null
   customNote?: Prisma.StringNullableFilter<"Offer"> | string | null
   isManual?: Prisma.BoolFilter<"Offer"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"Offer"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"Offer"> | string | null
+  version?: Prisma.IntFilter<"Offer"> | number
   pdfUrl?: Prisma.StringNullableFilter<"Offer"> | string | null
   validUntil?: Prisma.DateTimeFilter<"Offer"> | Date | string
   expiresAt?: Prisma.DateTimeFilter<"Offer"> | Date | string
@@ -563,6 +597,9 @@ export type OfferOrderByWithAggregationInput = {
   discountNote?: Prisma.SortOrderInput | Prisma.SortOrder
   customNote?: Prisma.SortOrderInput | Prisma.SortOrder
   isManual?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  version?: Prisma.SortOrder
   pdfUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   validUntil?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -606,6 +643,9 @@ export type OfferScalarWhereWithAggregatesInput = {
   discountNote?: Prisma.StringNullableWithAggregatesFilter<"Offer"> | string | null
   customNote?: Prisma.StringNullableWithAggregatesFilter<"Offer"> | string | null
   isManual?: Prisma.BoolWithAggregatesFilter<"Offer"> | boolean
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Offer"> | Date | string | null
+  deletedBy?: Prisma.StringNullableWithAggregatesFilter<"Offer"> | string | null
+  version?: Prisma.IntWithAggregatesFilter<"Offer"> | number
   pdfUrl?: Prisma.StringNullableWithAggregatesFilter<"Offer"> | string | null
   validUntil?: Prisma.DateTimeWithAggregatesFilter<"Offer"> | Date | string
   expiresAt?: Prisma.DateTimeWithAggregatesFilter<"Offer"> | Date | string
@@ -640,6 +680,9 @@ export type OfferCreateInput = {
   discountNote?: string | null
   customNote?: string | null
   isManual?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   pdfUrl?: string | null
   validUntil: Date | string
   expiresAt: Date | string
@@ -678,6 +721,9 @@ export type OfferUncheckedCreateInput = {
   discountNote?: string | null
   customNote?: string | null
   isManual?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   pdfUrl?: string | null
   validUntil: Date | string
   expiresAt: Date | string
@@ -714,6 +760,9 @@ export type OfferUpdateInput = {
   discountNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -752,6 +801,9 @@ export type OfferUncheckedUpdateInput = {
   discountNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -789,6 +841,9 @@ export type OfferCreateManyInput = {
   discountNote?: string | null
   customNote?: string | null
   isManual?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   pdfUrl?: string | null
   validUntil: Date | string
   expiresAt: Date | string
@@ -823,6 +878,9 @@ export type OfferUpdateManyMutationInput = {
   discountNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -858,6 +916,9 @@ export type OfferUncheckedUpdateManyInput = {
   discountNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -898,6 +959,9 @@ export type OfferCountOrderByAggregateInput = {
   discountNote?: Prisma.SortOrder
   customNote?: Prisma.SortOrder
   isManual?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   pdfUrl?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -914,6 +978,7 @@ export type OfferAvgOrderByAggregateInput = {
   grossCents?: Prisma.SortOrder
   discountPercent?: Prisma.SortOrder
   discountCents?: Prisma.SortOrder
+  version?: Prisma.SortOrder
 }
 
 export type OfferMaxOrderByAggregateInput = {
@@ -942,6 +1007,9 @@ export type OfferMaxOrderByAggregateInput = {
   discountNote?: Prisma.SortOrder
   customNote?: Prisma.SortOrder
   isManual?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   pdfUrl?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -976,6 +1044,9 @@ export type OfferMinOrderByAggregateInput = {
   discountNote?: Prisma.SortOrder
   customNote?: Prisma.SortOrder
   isManual?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   pdfUrl?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -992,6 +1063,7 @@ export type OfferSumOrderByAggregateInput = {
   grossCents?: Prisma.SortOrder
   discountPercent?: Prisma.SortOrder
   discountCents?: Prisma.SortOrder
+  version?: Prisma.SortOrder
 }
 
 export type OfferScalarRelationFilter = {
@@ -1091,6 +1163,9 @@ export type OfferCreateWithoutOrderInput = {
   discountNote?: string | null
   customNote?: string | null
   isManual?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   pdfUrl?: string | null
   validUntil: Date | string
   expiresAt: Date | string
@@ -1127,6 +1202,9 @@ export type OfferUncheckedCreateWithoutOrderInput = {
   discountNote?: string | null
   customNote?: string | null
   isManual?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   pdfUrl?: string | null
   validUntil: Date | string
   expiresAt: Date | string
@@ -1179,6 +1257,9 @@ export type OfferUpdateWithoutOrderInput = {
   discountNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1215,6 +1296,9 @@ export type OfferUncheckedUpdateWithoutOrderInput = {
   discountNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1251,6 +1335,9 @@ export type OfferCreateWithoutContractInput = {
   discountNote?: string | null
   customNote?: string | null
   isManual?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   pdfUrl?: string | null
   validUntil: Date | string
   expiresAt: Date | string
@@ -1288,6 +1375,9 @@ export type OfferUncheckedCreateWithoutContractInput = {
   discountNote?: string | null
   customNote?: string | null
   isManual?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   pdfUrl?: string | null
   validUntil: Date | string
   expiresAt: Date | string
@@ -1339,6 +1429,9 @@ export type OfferUpdateWithoutContractInput = {
   discountNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1376,6 +1469,9 @@ export type OfferUncheckedUpdateWithoutContractInput = {
   discountNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1411,6 +1507,9 @@ export type OfferCreateWithoutInvoicesInput = {
   discountNote?: string | null
   customNote?: string | null
   isManual?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   pdfUrl?: string | null
   validUntil: Date | string
   expiresAt: Date | string
@@ -1448,6 +1547,9 @@ export type OfferUncheckedCreateWithoutInvoicesInput = {
   discountNote?: string | null
   customNote?: string | null
   isManual?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
   pdfUrl?: string | null
   validUntil: Date | string
   expiresAt: Date | string
@@ -1499,6 +1601,9 @@ export type OfferUpdateWithoutInvoicesInput = {
   discountNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1536,6 +1641,9 @@ export type OfferUncheckedUpdateWithoutInvoicesInput = {
   discountNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isManual?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1603,6 +1711,9 @@ export type OfferSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   discountNote?: boolean
   customNote?: boolean
   isManual?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  version?: boolean
   pdfUrl?: boolean
   validUntil?: boolean
   expiresAt?: boolean
@@ -1642,6 +1753,9 @@ export type OfferSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   discountNote?: boolean
   customNote?: boolean
   isManual?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  version?: boolean
   pdfUrl?: boolean
   validUntil?: boolean
   expiresAt?: boolean
@@ -1678,6 +1792,9 @@ export type OfferSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   discountNote?: boolean
   customNote?: boolean
   isManual?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  version?: boolean
   pdfUrl?: boolean
   validUntil?: boolean
   expiresAt?: boolean
@@ -1714,6 +1831,9 @@ export type OfferSelectScalar = {
   discountNote?: boolean
   customNote?: boolean
   isManual?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
+  version?: boolean
   pdfUrl?: boolean
   validUntil?: boolean
   expiresAt?: boolean
@@ -1722,7 +1842,7 @@ export type OfferSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OfferOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "token" | "orderId" | "offerNo" | "status" | "customerName" | "customerEmail" | "customerPhone" | "customerAddress" | "moveFrom" | "moveTo" | "moveDate" | "floorFrom" | "floorTo" | "elevatorFrom" | "elevatorTo" | "notes" | "services" | "netCents" | "vatCents" | "grossCents" | "discountPercent" | "discountCents" | "discountNote" | "customNote" | "isManual" | "pdfUrl" | "validUntil" | "expiresAt" | "acceptedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["offer"]>
+export type OfferOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "token" | "orderId" | "offerNo" | "status" | "customerName" | "customerEmail" | "customerPhone" | "customerAddress" | "moveFrom" | "moveTo" | "moveDate" | "floorFrom" | "floorTo" | "elevatorFrom" | "elevatorTo" | "notes" | "services" | "netCents" | "vatCents" | "grossCents" | "discountPercent" | "discountCents" | "discountNote" | "customNote" | "isManual" | "deletedAt" | "deletedBy" | "version" | "pdfUrl" | "validUntil" | "expiresAt" | "acceptedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["offer"]>
 export type OfferInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.Offer$orderArgs<ExtArgs>
   contract?: boolean | Prisma.Offer$contractArgs<ExtArgs>
@@ -1770,6 +1890,9 @@ export type $OfferPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     discountNote: string | null
     customNote: string | null
     isManual: boolean
+    deletedAt: Date | null
+    deletedBy: string | null
+    version: number
     pdfUrl: string | null
     validUntil: Date
     expiresAt: Date
@@ -2228,6 +2351,9 @@ export interface OfferFieldRefs {
   readonly discountNote: Prisma.FieldRef<"Offer", 'String'>
   readonly customNote: Prisma.FieldRef<"Offer", 'String'>
   readonly isManual: Prisma.FieldRef<"Offer", 'Boolean'>
+  readonly deletedAt: Prisma.FieldRef<"Offer", 'DateTime'>
+  readonly deletedBy: Prisma.FieldRef<"Offer", 'String'>
+  readonly version: Prisma.FieldRef<"Offer", 'Int'>
   readonly pdfUrl: Prisma.FieldRef<"Offer", 'String'>
   readonly validUntil: Prisma.FieldRef<"Offer", 'DateTime'>
   readonly expiresAt: Prisma.FieldRef<"Offer", 'DateTime'>

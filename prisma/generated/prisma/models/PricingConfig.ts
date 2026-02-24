@@ -75,6 +75,8 @@ export type PricingConfigSumAggregateOutputType = {
 export type PricingConfigMinAggregateOutputType = {
   id: string | null
   active: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
   currency: string | null
   movingBaseFeeCents: number | null
   disposalBaseFeeCents: number | null
@@ -103,6 +105,8 @@ export type PricingConfigMinAggregateOutputType = {
 export type PricingConfigMaxAggregateOutputType = {
   id: string | null
   active: boolean | null
+  deletedAt: Date | null
+  deletedBy: string | null
   currency: string | null
   movingBaseFeeCents: number | null
   disposalBaseFeeCents: number | null
@@ -131,6 +135,8 @@ export type PricingConfigMaxAggregateOutputType = {
 export type PricingConfigCountAggregateOutputType = {
   id: number
   active: number
+  deletedAt: number
+  deletedBy: number
   currency: number
   movingBaseFeeCents: number
   disposalBaseFeeCents: number
@@ -207,6 +213,8 @@ export type PricingConfigSumAggregateInputType = {
 export type PricingConfigMinAggregateInputType = {
   id?: true
   active?: true
+  deletedAt?: true
+  deletedBy?: true
   currency?: true
   movingBaseFeeCents?: true
   disposalBaseFeeCents?: true
@@ -235,6 +243,8 @@ export type PricingConfigMinAggregateInputType = {
 export type PricingConfigMaxAggregateInputType = {
   id?: true
   active?: true
+  deletedAt?: true
+  deletedBy?: true
   currency?: true
   movingBaseFeeCents?: true
   disposalBaseFeeCents?: true
@@ -263,6 +273,8 @@ export type PricingConfigMaxAggregateInputType = {
 export type PricingConfigCountAggregateInputType = {
   id?: true
   active?: true
+  deletedAt?: true
+  deletedBy?: true
   currency?: true
   movingBaseFeeCents?: true
   disposalBaseFeeCents?: true
@@ -378,6 +390,8 @@ export type PricingConfigGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 export type PricingConfigGroupByOutputType = {
   id: string
   active: boolean
+  deletedAt: Date | null
+  deletedBy: string | null
   currency: string
   movingBaseFeeCents: number
   disposalBaseFeeCents: number
@@ -429,6 +443,8 @@ export type PricingConfigWhereInput = {
   NOT?: Prisma.PricingConfigWhereInput | Prisma.PricingConfigWhereInput[]
   id?: Prisma.StringFilter<"PricingConfig"> | string
   active?: Prisma.BoolFilter<"PricingConfig"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"PricingConfig"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"PricingConfig"> | string | null
   currency?: Prisma.StringFilter<"PricingConfig"> | string
   movingBaseFeeCents?: Prisma.IntFilter<"PricingConfig"> | number
   disposalBaseFeeCents?: Prisma.IntFilter<"PricingConfig"> | number
@@ -457,6 +473,8 @@ export type PricingConfigWhereInput = {
 export type PricingConfigOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   currency?: Prisma.SortOrder
   movingBaseFeeCents?: Prisma.SortOrder
   disposalBaseFeeCents?: Prisma.SortOrder
@@ -488,6 +506,8 @@ export type PricingConfigWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.PricingConfigWhereInput[]
   NOT?: Prisma.PricingConfigWhereInput | Prisma.PricingConfigWhereInput[]
   active?: Prisma.BoolFilter<"PricingConfig"> | boolean
+  deletedAt?: Prisma.DateTimeNullableFilter<"PricingConfig"> | Date | string | null
+  deletedBy?: Prisma.StringNullableFilter<"PricingConfig"> | string | null
   currency?: Prisma.StringFilter<"PricingConfig"> | string
   movingBaseFeeCents?: Prisma.IntFilter<"PricingConfig"> | number
   disposalBaseFeeCents?: Prisma.IntFilter<"PricingConfig"> | number
@@ -516,6 +536,8 @@ export type PricingConfigWhereUniqueInput = Prisma.AtLeast<{
 export type PricingConfigOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deletedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   currency?: Prisma.SortOrder
   movingBaseFeeCents?: Prisma.SortOrder
   disposalBaseFeeCents?: Prisma.SortOrder
@@ -552,6 +574,8 @@ export type PricingConfigScalarWhereWithAggregatesInput = {
   NOT?: Prisma.PricingConfigScalarWhereWithAggregatesInput | Prisma.PricingConfigScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"PricingConfig"> | string
   active?: Prisma.BoolWithAggregatesFilter<"PricingConfig"> | boolean
+  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PricingConfig"> | Date | string | null
+  deletedBy?: Prisma.StringNullableWithAggregatesFilter<"PricingConfig"> | string | null
   currency?: Prisma.StringWithAggregatesFilter<"PricingConfig"> | string
   movingBaseFeeCents?: Prisma.IntWithAggregatesFilter<"PricingConfig"> | number
   disposalBaseFeeCents?: Prisma.IntWithAggregatesFilter<"PricingConfig"> | number
@@ -580,6 +604,8 @@ export type PricingConfigScalarWhereWithAggregatesInput = {
 export type PricingConfigCreateInput = {
   id?: string
   active?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   currency?: string
   movingBaseFeeCents: number
   disposalBaseFeeCents: number
@@ -608,6 +634,8 @@ export type PricingConfigCreateInput = {
 export type PricingConfigUncheckedCreateInput = {
   id?: string
   active?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   currency?: string
   movingBaseFeeCents: number
   disposalBaseFeeCents: number
@@ -636,6 +664,8 @@ export type PricingConfigUncheckedCreateInput = {
 export type PricingConfigUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   movingBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
   disposalBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
@@ -664,6 +694,8 @@ export type PricingConfigUpdateInput = {
 export type PricingConfigUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   movingBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
   disposalBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
@@ -692,6 +724,8 @@ export type PricingConfigUncheckedUpdateInput = {
 export type PricingConfigCreateManyInput = {
   id?: string
   active?: boolean
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
   currency?: string
   movingBaseFeeCents: number
   disposalBaseFeeCents: number
@@ -720,6 +754,8 @@ export type PricingConfigCreateManyInput = {
 export type PricingConfigUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   movingBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
   disposalBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
@@ -748,6 +784,8 @@ export type PricingConfigUpdateManyMutationInput = {
 export type PricingConfigUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   movingBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
   disposalBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
@@ -776,6 +814,8 @@ export type PricingConfigUncheckedUpdateManyInput = {
 export type PricingConfigCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   movingBaseFeeCents?: Prisma.SortOrder
   disposalBaseFeeCents?: Prisma.SortOrder
@@ -827,6 +867,8 @@ export type PricingConfigAvgOrderByAggregateInput = {
 export type PricingConfigMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   movingBaseFeeCents?: Prisma.SortOrder
   disposalBaseFeeCents?: Prisma.SortOrder
@@ -855,6 +897,8 @@ export type PricingConfigMaxOrderByAggregateInput = {
 export type PricingConfigMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  deletedAt?: Prisma.SortOrder
+  deletedBy?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   movingBaseFeeCents?: Prisma.SortOrder
   disposalBaseFeeCents?: Prisma.SortOrder
@@ -908,6 +952,8 @@ export type PricingConfigSumOrderByAggregateInput = {
 export type PricingConfigSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   active?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   currency?: boolean
   movingBaseFeeCents?: boolean
   disposalBaseFeeCents?: boolean
@@ -936,6 +982,8 @@ export type PricingConfigSelect<ExtArgs extends runtime.Types.Extensions.Interna
 export type PricingConfigSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   active?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   currency?: boolean
   movingBaseFeeCents?: boolean
   disposalBaseFeeCents?: boolean
@@ -964,6 +1012,8 @@ export type PricingConfigSelectCreateManyAndReturn<ExtArgs extends runtime.Types
 export type PricingConfigSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   active?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   currency?: boolean
   movingBaseFeeCents?: boolean
   disposalBaseFeeCents?: boolean
@@ -992,6 +1042,8 @@ export type PricingConfigSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
 export type PricingConfigSelectScalar = {
   id?: boolean
   active?: boolean
+  deletedAt?: boolean
+  deletedBy?: boolean
   currency?: boolean
   movingBaseFeeCents?: boolean
   disposalBaseFeeCents?: boolean
@@ -1017,7 +1069,7 @@ export type PricingConfigSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PricingConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "active" | "currency" | "movingBaseFeeCents" | "disposalBaseFeeCents" | "hourlyRateCents" | "perM3MovingCents" | "perM3DisposalCents" | "perKmCents" | "heavyItemSurchargeCents" | "stairsSurchargePerFloorCents" | "carryDistanceSurchargePer25mCents" | "parkingSurchargeMediumCents" | "parkingSurchargeHardCents" | "elevatorDiscountSmallCents" | "elevatorDiscountLargeCents" | "uncertaintyPercent" | "economyMultiplier" | "standardMultiplier" | "expressMultiplier" | "economyLeadDays" | "standardLeadDays" | "expressLeadDays" | "createdAt" | "updatedAt", ExtArgs["result"]["pricingConfig"]>
+export type PricingConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "active" | "deletedAt" | "deletedBy" | "currency" | "movingBaseFeeCents" | "disposalBaseFeeCents" | "hourlyRateCents" | "perM3MovingCents" | "perM3DisposalCents" | "perKmCents" | "heavyItemSurchargeCents" | "stairsSurchargePerFloorCents" | "carryDistanceSurchargePer25mCents" | "parkingSurchargeMediumCents" | "parkingSurchargeHardCents" | "elevatorDiscountSmallCents" | "elevatorDiscountLargeCents" | "uncertaintyPercent" | "economyMultiplier" | "standardMultiplier" | "expressMultiplier" | "economyLeadDays" | "standardLeadDays" | "expressLeadDays" | "createdAt" | "updatedAt", ExtArgs["result"]["pricingConfig"]>
 
 export type $PricingConfigPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PricingConfig"
@@ -1025,6 +1077,8 @@ export type $PricingConfigPayload<ExtArgs extends runtime.Types.Extensions.Inter
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     active: boolean
+    deletedAt: Date | null
+    deletedBy: string | null
     currency: string
     movingBaseFeeCents: number
     disposalBaseFeeCents: number
@@ -1473,6 +1527,8 @@ export interface Prisma__PricingConfigClient<T, Null = never, ExtArgs extends ru
 export interface PricingConfigFieldRefs {
   readonly id: Prisma.FieldRef<"PricingConfig", 'String'>
   readonly active: Prisma.FieldRef<"PricingConfig", 'Boolean'>
+  readonly deletedAt: Prisma.FieldRef<"PricingConfig", 'DateTime'>
+  readonly deletedBy: Prisma.FieldRef<"PricingConfig", 'String'>
   readonly currency: Prisma.FieldRef<"PricingConfig", 'String'>
   readonly movingBaseFeeCents: Prisma.FieldRef<"PricingConfig", 'Int'>
   readonly disposalBaseFeeCents: Prisma.FieldRef<"PricingConfig", 'Int'>
