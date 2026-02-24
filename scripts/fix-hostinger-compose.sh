@@ -1,3 +1,15 @@
+﻿#!/usr/bin/env bash
+set -euo pipefail
+
+APP_DIR="/var/www/schnell-bashar"
+if [[ ! -d "$APP_DIR" ]]; then
+  APP_DIR="$HOME/schnell-bashar"
+fi
+
+cd "$APP_DIR"
+
+echo "==> Writing docker-compose.yml (no local image dependency)"
+cat > docker-compose.yml <<'EOF'
 services:
   db:
     image: postgres:16
@@ -45,3 +57,24 @@ services:
 
 volumes:
   db_data:
+EOF
+
+echo "==> Verifying compose config for web service"
+docker compose config | sed -n '/web:/,/^[^ ]/p'
+
+echo "==> Restarting docker stack"
+docker compose down --remove-orphans || true
+docker compose pull || true
+docker compose up -d
+
+echo "==> Status"
+docker compose ps
+
+echo "==> Web logs (tail)"
+docker compose logs web --tail=120 || true
+
+echo "==> HTTP checks"
+curl -I "http://127.0.0.1:${WEB_PORT:-3001}" || true
+curl -I https://schnellsicherumzug.de || true
+
+echo "==> Done"
