@@ -1,4 +1,4 @@
-﻿-- Enums for accounting
+-- Enums for accounting
 DO $$ BEGIN
   CREATE TYPE "InvoiceStatus" AS ENUM ('UNPAID', 'PARTIAL', 'PAID', 'OVERDUE', 'CANCELLED');
 EXCEPTION WHEN duplicate_object THEN NULL;
