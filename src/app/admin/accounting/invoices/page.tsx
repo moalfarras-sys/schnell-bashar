@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -88,28 +88,40 @@ export default async function InvoicesListPage({
 
   const params = await searchParams;
 
-  const where: Record<string, unknown> = {};
+  const andFilters: Record<string, unknown>[] = [];
   if (params.status && params.status !== "all") {
     if (params.status === "overdue") {
-      where.OR = [{ status: "UNPAID" }, { status: "PARTIAL" }];
-      where.dueAt = { lt: new Date() };
+      andFilters.push({ OR: [{ status: "UNPAID" }, { status: "PARTIAL" }] });
+      andFilters.push({ dueAt: { lt: new Date() } });
     } else {
-      where.status = params.status.toUpperCase();
+      andFilters.push({ status: params.status.toUpperCase() });
     }
   }
-  if (params.search) {
-    where.OR = [
-      { customerName: { contains: params.search, mode: "insensitive" } },
-      { customerEmail: { contains: params.search, mode: "insensitive" } },
-      { invoiceNo: { contains: params.search, mode: "insensitive" } },
-    ];
+  if (params.search?.trim()) {
+    const query = params.search.trim();
+    andFilters.push({
+      OR: [
+        { customerName: { contains: query, mode: "insensitive" } },
+        { customerEmail: { contains: query, mode: "insensitive" } },
+        { invoiceNo: { contains: query, mode: "insensitive" } },
+      ],
+    });
   }
+  const where = andFilters.length > 0 ? { AND: andFilters } : {};
 
-  const invoices = await prisma.invoice.findMany({
-    where,
-    include: { payments: true },
-    orderBy: { createdAt: "desc" },
-  });
+  let dbWarning: string | null = null;
+  let invoices: Awaited<ReturnType<typeof prisma.invoice.findMany>> = [];
+  try {
+    invoices = await prisma.invoice.findMany({
+      where,
+      include: { payments: true },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.error("[admin/accounting/invoices] failed to load invoices", error);
+    dbWarning =
+      "Rechnungen konnten gerade nicht geladen werden. Bitte Datenbankverbindung prüfen.";
+  }
 
   const stats = {
     total: invoices.length,
@@ -162,16 +174,18 @@ export default async function InvoicesListPage({
 
         <InvoiceFilterBar />
 
+        {dbWarning ? (
+          <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            {dbWarning}
+          </div>
+        ) : null}
+
         <div className="space-y-3">
           {invoices.length === 0 ? (
             <div className="rounded-xl border-2 border-slate-200 bg-white p-12 text-center shadow-sm">
               <Receipt className="mx-auto h-12 w-12 text-slate-400" />
-              <h3 className="mt-4 text-lg font-semibold text-slate-900">
-                Keine Rechnungen gefunden
-              </h3>
-              <p className="mt-2 text-sm text-slate-600">
-                Erstellen Sie eine neue Rechnung oder ändern Sie die Filter.
-              </p>
+              <h3 className="mt-4 text-lg font-semibold text-slate-900">Keine Rechnungen gefunden</h3>
+              <p className="mt-2 text-sm text-slate-600">Erstellen Sie eine neue Rechnung oder ändern Sie die Filter.</p>
             </div>
           ) : (
             invoices.map((inv) => {
@@ -184,9 +198,7 @@ export default async function InvoicesListPage({
                 >
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-sm font-bold text-slate-900">
-                        {inv.invoiceNo || inv.id.slice(0, 8)}
-                      </span>
+                      <span className="text-sm font-bold text-slate-900">{inv.invoiceNo || inv.id.slice(0, 8)}</span>
                       {statusBadge(inv.status, inv.dueAt)}
                     </div>
                     <div className="mt-1 text-sm text-slate-600">{inv.customerName}</div>
@@ -197,13 +209,9 @@ export default async function InvoicesListPage({
                   </div>
                   <div className="flex items-center gap-6">
                     <div className="text-right">
-                      <div className="text-lg font-bold text-slate-900">
-                        {formatEuro(inv.grossCents)}
-                      </div>
+                      <div className="text-lg font-bold text-slate-900">{formatEuro(inv.grossCents)}</div>
                       {outstanding > 0 && outstanding < inv.grossCents && (
-                        <div className="text-xs text-red-600">
-                          Offen: {formatEuro(outstanding)}
-                        </div>
+                        <div className="text-xs text-red-600">Offen: {formatEuro(outstanding)}</div>
                       )}
                     </div>
                     <a

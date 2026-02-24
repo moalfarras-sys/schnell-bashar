@@ -5,8 +5,18 @@ import { revalidatePath } from "next/cache";
 
 import { prisma } from "@/server/db/prisma";
 import { writeAuditLog } from "@/server/audit/log";
+import { requireAdminPermission } from "@/server/auth/require-admin";
+
+async function ensureUsersUpdatePermission() {
+  const session = await requireAdminPermission("users.update");
+  if (!session.ok) {
+    throw new Error("Nicht berechtigt");
+  }
+}
 
 export async function createAdminUserAction(formData: FormData) {
+  await ensureUsersUpdatePermission();
+
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "").trim();
@@ -38,6 +48,8 @@ export async function createAdminUserAction(formData: FormData) {
 }
 
 export async function toggleAdminUserAction(formData: FormData) {
+  await ensureUsersUpdatePermission();
+
   const userId = String(formData.get("userId") ?? "").trim();
   if (!userId) return;
 
@@ -62,6 +74,8 @@ export async function toggleAdminUserAction(formData: FormData) {
 }
 
 export async function resetAdminPasswordAction(formData: FormData) {
+  await ensureUsersUpdatePermission();
+
   const userId = String(formData.get("userId") ?? "").trim();
   const password = String(formData.get("password") ?? "").trim();
   if (!userId || !password) return;
@@ -87,6 +101,8 @@ export async function resetAdminPasswordAction(formData: FormData) {
 }
 
 export async function setAdminRoleAction(formData: FormData) {
+  await ensureUsersUpdatePermission();
+
   const userId = String(formData.get("userId") ?? "").trim();
   const roleId = String(formData.get("roleId") ?? "").trim();
   if (!userId || !roleId) return;
