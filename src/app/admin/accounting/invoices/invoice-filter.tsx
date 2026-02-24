@@ -14,6 +14,7 @@ export function InvoiceFilterBar() {
 
   function handleStatusChange(value: string) {
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("page");
     if (value === "all") {
       params.delete("status");
     } else {
@@ -29,6 +30,7 @@ export function InvoiceFilterBar() {
     const form = new FormData(e.currentTarget);
     const query = (form.get("search") as string) || "";
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("page");
     if (query) {
       params.set("search", query);
     } else {

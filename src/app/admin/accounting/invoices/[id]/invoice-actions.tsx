@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,7 @@ export function PaymentForm({
     const paidAt = form.get("paidAt") as string;
 
     if (amountCents <= 0) {
-      setError("Betrag muss größer als 0 sein.");
+      setError("Betrag muss groesser als 0 sein.");
       setLoading(false);
       return;
     }
@@ -65,7 +65,7 @@ export function PaymentForm({
     <form onSubmit={handleSubmit} className="space-y-3">
       <div>
         <label className="mb-1 block text-xs font-semibold text-slate-700">
-          Betrag (EUR) <span className="text-slate-400">— offen: {formatEuro(outstandingCents)}</span>
+          Betrag (EUR) <span className="text-slate-400">- offen: {formatEuro(outstandingCents)}</span>
         </label>
         <input
           type="number"
@@ -85,7 +85,7 @@ export function PaymentForm({
           defaultValue="BANK_TRANSFER"
           className="w-full rounded-lg border-2 border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 focus:border-brand-500 focus:outline-none"
         >
-          <option value="BANK_TRANSFER">Überweisung</option>
+          <option value="BANK_TRANSFER">Ueberweisung</option>
           <option value="CASH">Bargeld</option>
           <option value="CARD">Karte</option>
           <option value="PAYPAL">PayPal</option>
@@ -174,3 +174,4 @@ export function CancelInvoiceButton({ invoiceId }: { invoiceId: string }) {
     </Button>
   );
 }
+

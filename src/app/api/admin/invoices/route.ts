@@ -3,22 +3,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { addDays } from "date-fns";
 import { prisma } from "@/server/db/prisma";
 import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
+import { hasPermission } from "@/server/auth/admin-permissions";
 import { nextDocumentNumber } from "@/server/ids/document-number";
 
-async function verifyAdmin() {
+async function verifyAdmin(requiredPermission: string) {
   const cookieStore = await cookies();
   const token = cookieStore.get(adminCookieName())?.value;
   if (!token) return false;
   try {
-    await verifyAdminToken(token);
-    return true;
+    const claims = await verifyAdminToken(token);
+    return hasPermission(claims.roles, claims.permissions, requiredPermission);
   } catch {
     return false;
   }
 }
 
 export async function GET() {
-  if (!(await verifyAdmin())) {
+  if (!(await verifyAdmin("accounting.read"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -31,7 +32,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  if (!(await verifyAdmin())) {
+  if (!(await verifyAdmin("accounting.update"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

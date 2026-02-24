@@ -75,7 +75,7 @@ function statusBadge(status: string, dueAt: Date) {
 export default async function InvoicesListPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; search?: string }>;
+  searchParams: Promise<{ status?: string; search?: string; page?: string; pageSize?: string }>;
 }) {
   const cookieStore = await cookies();
   const token = cookieStore.get(adminCookieName())?.value;
@@ -87,6 +87,8 @@ export default async function InvoicesListPage({
   }
 
   const params = await searchParams;
+  const page = Math.max(1, Number(params.page ?? "1") || 1);
+  const pageSize = Math.min(100, Math.max(10, Number(params.pageSize ?? "20") || 20));
 
   const andFilters: Record<string, unknown>[] = [];
   if (params.status && params.status !== "all") {
@@ -107,16 +109,40 @@ export default async function InvoicesListPage({
       ],
     });
   }
-  const where = andFilters.length > 0 ? { AND: andFilters } : {};
+  const where: Record<string, unknown> = andFilters.length > 0 ? { AND: andFilters } : {};
 
   let dbWarning: string | null = null;
   let invoices: Awaited<ReturnType<typeof prisma.invoice.findMany>> = [];
+  let totalCount = 0;
+  let unpaidCount = 0;
+  let partialCount = 0;
+  let paidCount = 0;
+  let overdueCount = 0;
   try {
-    invoices = await prisma.invoice.findMany({
-      where,
-      include: { payments: true },
-      orderBy: { createdAt: "desc" },
-    });
+    const [rows, count, unpaid, partial, paid, overdue] = await prisma.$transaction([
+      prisma.invoice.findMany({
+        where,
+        include: { payments: true },
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.invoice.count({ where }),
+      prisma.invoice.count({ where: { AND: [...andFilters, { status: "UNPAID" }] } }),
+      prisma.invoice.count({ where: { AND: [...andFilters, { status: "PARTIAL" }] } }),
+      prisma.invoice.count({ where: { AND: [...andFilters, { status: "PAID" }] } }),
+      prisma.invoice.count({
+        where: {
+          AND: [...andFilters, { OR: [{ status: "UNPAID" }, { status: "PARTIAL" }] }, { dueAt: { lt: new Date() } }],
+        },
+      }),
+    ]);
+    invoices = rows;
+    totalCount = count;
+    unpaidCount = unpaid;
+    partialCount = partial;
+    paidCount = paid;
+    overdueCount = overdue;
   } catch (error) {
     console.error("[admin/accounting/invoices] failed to load invoices", error);
     dbWarning =
@@ -124,14 +150,23 @@ export default async function InvoicesListPage({
   }
 
   const stats = {
-    total: invoices.length,
-    unpaid: invoices.filter((i) => i.status === "UNPAID").length,
-    partial: invoices.filter((i) => i.status === "PARTIAL").length,
-    paid: invoices.filter((i) => i.status === "PAID").length,
-    overdue: invoices.filter(
-      (i) => (i.status === "UNPAID" || i.status === "PARTIAL") && i.dueAt < new Date(),
-    ).length,
+    total: totalCount,
+    unpaid: unpaidCount,
+    partial: partialCount,
+    paid: paidCount,
+    overdue: overdueCount,
   };
+  const totalPages = Math.max(1, Math.ceil((totalCount || 0) / pageSize));
+
+  const paramsFor = (nextPage: number) => {
+    const qs = new URLSearchParams();
+    if (params.status && params.status !== "all") qs.set("status", params.status);
+    if (params.search?.trim()) qs.set("search", params.search.trim());
+    if (params.pageSize && params.pageSize !== "20") qs.set("pageSize", params.pageSize);
+    if (nextPage > 1) qs.set("page", String(nextPage));
+    return qs.toString();
+  };
+  const exportQuery = paramsFor(page);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -141,12 +176,20 @@ export default async function InvoicesListPage({
             <h1 className="text-3xl font-bold text-slate-900">Rechnungen</h1>
             <p className="mt-2 text-slate-600">Alle Rechnungen verwalten und Zahlungen erfassen</p>
           </div>
-          <Link href="/admin/accounting/invoices/new">
-            <Button size="sm" className="gap-2">
-              <PlusCircle className="h-4 w-4" />
-              Neue Rechnung
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            <a href={`/admin/accounting/invoices/export${exportQuery ? `?${exportQuery}` : ""}`}>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Download className="h-4 w-4" />
+                CSV Export
+              </Button>
+            </a>
+            <Link href="/admin/accounting/invoices/new">
+              <Button size="sm" className="gap-2">
+                <PlusCircle className="h-4 w-4" />
+                Neue Rechnung
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -231,6 +274,30 @@ export default async function InvoicesListPage({
             })
           )}
         </div>
+
+        {totalPages > 1 ? (
+          <div className="mt-6 flex items-center justify-between rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-sm shadow-sm">
+            <span className="text-slate-600">
+              Seite {page} von {totalPages} - {totalCount} Rechnungen
+            </span>
+            <div className="flex items-center gap-2">
+              <Link
+                href={`/admin/accounting/invoices${paramsFor(Math.max(1, page - 1)) ? `?${paramsFor(Math.max(1, page - 1))}` : ""}`}
+              >
+                <Button variant="outline" size="sm" disabled={page <= 1}>
+                  Zurueck
+                </Button>
+              </Link>
+              <Link
+                href={`/admin/accounting/invoices${paramsFor(Math.min(totalPages, page + 1)) ? `?${paramsFor(Math.min(totalPages, page + 1))}` : ""}`}
+              >
+                <Button variant="outline" size="sm" disabled={page >= totalPages}>
+                  Weiter
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ) : null}
       </Container>
     </div>
   );

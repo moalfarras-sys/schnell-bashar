@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
@@ -29,7 +29,7 @@ function formatEuro(cents: number): string {
 }
 
 const methodLabels: Record<string, { label: string; icon: any }> = {
-  BANK_TRANSFER: { label: "Überweisung", icon: Building },
+  BANK_TRANSFER: { label: "Ueberweisung", icon: Building },
   CASH: { label: "Bargeld", icon: Banknote },
   CARD: { label: "Karte", icon: CreditCard },
   PAYPAL: { label: "PayPal", icon: Wallet },
@@ -51,15 +51,43 @@ export default async function InvoiceDetailPage({
   }
 
   const { id } = await params;
-  const invoice = await prisma.invoice.findUnique({
-    where: { id },
-    include: {
-      payments: { orderBy: { paidAt: "desc" } },
-      contract: true,
-      offer: true,
-      order: true,
-    },
-  });
+  let dbWarning: string | null = null;
+  let invoice: any = null;
+  try {
+    invoice = await prisma.invoice.findUnique({
+      where: { id },
+      include: {
+        payments: { orderBy: { paidAt: "desc" } },
+        contract: true,
+        offer: true,
+        order: true,
+      },
+    });
+  } catch (error) {
+    dbWarning =
+      error instanceof Error
+        ? `Datenbankfehler: ${error.message}`
+        : "Datenbankfehler: Rechnung konnte nicht geladen werden.";
+  }
+
+  if (dbWarning) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <Container className="py-8">
+          <Link
+            href="/admin/accounting/invoices"
+            className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Zurueck zu Rechnungen
+          </Link>
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            {dbWarning}
+          </div>
+        </Container>
+      </div>
+    );
+  }
 
   if (!invoice) notFound();
 
@@ -77,7 +105,7 @@ export default async function InvoiceDetailPage({
             className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900"
           >
             <ArrowLeft className="h-4 w-4" />
-            Zurück zu Rechnungen
+            Zurueck zu Rechnungen
           </Link>
         </div>
 
@@ -90,7 +118,7 @@ export default async function InvoiceDetailPage({
               {isOverdue ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-800">
                   <AlertTriangle className="h-3 w-3" />
-                  Überfällig
+                  Ueberfaellig
                 </span>
               ) : invoice.status === "PAID" ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
@@ -212,7 +240,7 @@ export default async function InvoiceDetailPage({
                   Zahlungsverlauf
                 </h2>
                 <div className="space-y-3">
-                  {invoice.payments.map((payment) => {
+                  {invoice.payments.map((payment: any) => {
                     const methodInfo = methodLabels[payment.method] || methodLabels.OTHER;
                     const MethodIcon = methodInfo.icon;
                     return (
@@ -229,7 +257,7 @@ export default async function InvoiceDetailPage({
                           </div>
                           <div className="text-xs text-slate-500">
                             {methodInfo.label}
-                            {payment.reference && ` — ${payment.reference}`}
+                            {payment.reference && ` - ${payment.reference}`}
                           </div>
                           {payment.notes && (
                             <div className="mt-1 text-xs text-slate-400">{payment.notes}</div>
@@ -255,7 +283,7 @@ export default async function InvoiceDetailPage({
                 <div>
                   <span className="text-slate-500">Rechnungsnr.</span>
                   <div className="font-semibold text-slate-900">
-                    {invoice.invoiceNo || "—"}
+                    {invoice.invoiceNo || "-"}
                   </div>
                 </div>
                 <div>
@@ -265,7 +293,7 @@ export default async function InvoiceDetailPage({
                   </div>
                 </div>
                 <div>
-                  <span className="text-slate-500">Fällig am</span>
+                  <span className="text-slate-500">Faellig am</span>
                   <div className={`font-semibold ${isOverdue ? "text-red-600" : "text-slate-900"}`}>
                     {format(invoice.dueAt, "dd.MM.yyyy", { locale: de })}
                   </div>
@@ -298,3 +326,4 @@ export default async function InvoiceDetailPage({
     </div>
   );
 }
+

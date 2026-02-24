@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/prisma";
 import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
+import { hasPermission } from "@/server/auth/admin-permissions";
 import { generateInvoicePDF } from "@/server/pdf/generate-invoice";
 
 export async function GET(
@@ -14,7 +15,10 @@ export async function GET(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
-    await verifyAdminToken(token);
+    const claims = await verifyAdminToken(token);
+    if (!hasPermission(claims.roles, claims.permissions, "accounting.read")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
