@@ -22,35 +22,50 @@ function eur(cents: number) {
 export default async function AdminOrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; deleted?: string; sort?: string }>;
+  searchParams: Promise<{ status?: string; deleted?: string; sort?: string; context?: string }>;
 }) {
-  const { status: statusParam, deleted, sort: sortParam } = await searchParams;
+  const { status: statusParam, deleted, sort: sortParam, context: contextParam } = await searchParams;
   const status = (statusParam ?? "").toUpperCase();
+  const context = (contextParam ?? "").toUpperCase();
   const sort = sortParam === "oldest" ? "oldest" : "newest";
   const showDeleted = deleted === "1";
   const where: Record<string, unknown> = {
     deletedAt: showDeleted ? { not: null } : null,
   };
   if (status) where.status = status;
+  if (context === "MONTAGE" || context === "ENTSORGUNG" || context === "STANDARD") {
+    where.wizardData = {
+      path: ["bookingContext"],
+      equals: context,
+    };
+  }
 
-  const orders = await prisma.order.findMany({
-    where,
-    orderBy: { createdAt: sort === "oldest" ? "asc" : "desc" },
-    take: 200,
-    select: {
-      publicId: true,
-      orderNo: true,
-      createdAt: true,
-      serviceType: true,
-      speed: true,
-      status: true,
-      customerName: true,
-      priceMinCents: true,
-      priceMaxCents: true,
-      slotStart: true,
-      slotEnd: true,
-    },
-  });
+  let dbWarning: string | null = null;
+  let orders: Array<any> = [];
+  try {
+    orders = await prisma.order.findMany({
+      where,
+        orderBy: { createdAt: sort === "oldest" ? "asc" : "desc" },
+        take: 200,
+        select: {
+        publicId: true,
+        orderNo: true,
+        createdAt: true,
+        serviceType: true,
+        speed: true,
+        status: true,
+          customerName: true,
+          priceMinCents: true,
+          priceMaxCents: true,
+          slotStart: true,
+          slotEnd: true,
+          wizardData: true,
+        },
+      });
+  } catch (error) {
+    console.error("[admin/orders] failed to load orders", error);
+    dbWarning = "Aufträge konnten gerade nicht geladen werden. Bitte Datenbankverbindung prüfen.";
+  }
 
   return (
     <div className="grid gap-6">
@@ -82,6 +97,16 @@ export default async function AdminOrdersPage({
                 <option value="CANCELLED">CANCELLED</option>
               </Select>
               <Select
+                name="context"
+                defaultValue={context || ""}
+                className="h-10 border-2 border-slate-600 bg-slate-700 text-white"
+              >
+                <option value="">Alle Bereiche</option>
+                <option value="STANDARD">Standard</option>
+                <option value="MONTAGE">Montage</option>
+                <option value="ENTSORGUNG">Entsorgung</option>
+              </Select>
+              <Select
                 name="sort"
                 defaultValue={sort}
                 className="h-10 border-2 border-slate-600 bg-slate-700 text-white"
@@ -106,6 +131,12 @@ export default async function AdminOrdersPage({
       <div className="rounded-xl border border-slate-600 bg-slate-700/40 px-4 py-2 text-sm text-slate-200">
         Sortierung: <span className="font-extrabold">{sort === "oldest" ? "Älteste zuerst" : "Neueste zuerst"}</span>
       </div>
+
+      {dbWarning ? (
+        <div className="rounded-xl border border-amber-300 bg-amber-100/95 px-4 py-3 text-sm font-semibold text-amber-900">
+          {dbWarning}
+        </div>
+      ) : null}
 
       <div className="overflow-hidden rounded-3xl border-2 border-slate-600 bg-slate-800 shadow-lg">
         <div className="overflow-auto">
@@ -142,6 +173,15 @@ export default async function AdminOrdersPage({
                   </td>
                   <td className="px-4 py-3 text-slate-200">
                     {o.serviceType} · {o.speed}
+                    {typeof o.wizardData === "object" &&
+                    o.wizardData &&
+                    "bookingContext" in o.wizardData &&
+                    (o.wizardData.bookingContext === "MONTAGE" ||
+                      o.wizardData.bookingContext === "ENTSORGUNG") ? (
+                      <span className="ml-2 rounded-full border border-brand-300 bg-brand-500/20 px-2 py-0.5 text-[10px] font-extrabold text-brand-100">
+                        {o.wizardData.bookingContext}
+                      </span>
+                    ) : null}
                   </td>
                   <td className="px-4 py-3 text-slate-200">{o.customerName}</td>
                   <td className="px-4 py-3 font-semibold text-white">

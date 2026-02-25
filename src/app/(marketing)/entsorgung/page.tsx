@@ -70,20 +70,21 @@ export default async function EntsorgungPage() {
       />
 
       {/* Hero */}
-      <section className="relative min-h-[50vh] overflow-hidden">
+      <section className="relative min-h-[56vh] overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src={hero.src}
             alt="Sperrmüll-Container und Abholung"
             fill
             priority
-            className="object-cover"
+            className="object-cover hero-bg-image"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-slate-950/50 to-slate-950/30" />
+          <div className="hero-overlay-light absolute inset-0 dark:hidden" />
+          <div className="hero-overlay-dark absolute inset-0 hidden dark:block" />
         </div>
 
-        <Container className="relative z-10 flex min-h-[50vh] flex-col justify-end pb-16 pt-28">
+        <Container className="relative z-10 flex min-h-[56vh] flex-col justify-end pb-14 pt-24 sm:pb-16 sm:pt-28">
           <Reveal>
             <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-amber-500/20 px-4 py-1.5 text-xs font-bold text-amber-100 backdrop-blur-sm">
               <Recycle className="h-4 w-4" />
@@ -97,7 +98,7 @@ export default async function EntsorgungPage() {
               entsorgen umweltbewusst. Schnelle Rückmeldung und faire Preise.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/preise?service=ENTSORGUNG">
+              <Link href="/entsorgung/buchen">
                 <Button size="lg" className="gap-2">
                   <Recycle className="h-5 w-5" />
                   Abholung anfragen
@@ -215,7 +216,7 @@ export default async function EntsorgungPage() {
           </Reveal>
 
           <Reveal className="mt-12 text-center">
-            <Link href="/preise?service=ENTSORGUNG">
+            <Link href="/entsorgung/buchen">
               <Button size="lg" className="gap-2">
                 Jetzt Abholung anfragen
                 <CheckCircle2 className="h-5 w-5" />

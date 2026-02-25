@@ -47,6 +47,8 @@ type PricingForWizard = PricingConfigLite & {
   expressLeadDays: number;
 };
 
+type BookingVariant = "default" | "montage" | "entsorgung";
+
 type RoutePricingState = {
   distanceKm: number;
   source: "ors" | "cache" | "fallback";
@@ -160,13 +162,27 @@ export function BookingWizard(props: {
   catalog: CatalogItem[];
   pricing: PricingForWizard;
   initialServiceType?: WizardPayload["serviceType"];
+  variant?: BookingVariant;
 }) {
   const router = useRouter();
+  const variant = props.variant ?? "default";
+  const lockedServiceType: WizardPayload["serviceType"] | undefined =
+    variant === "montage" ? "MOVING" : variant === "entsorgung" ? "DISPOSAL" : undefined;
+  const forcedAddons: WizardPayload["addons"] =
+    variant === "montage" ? ["DISMANTLE_ASSEMBLE"] : [];
+  const hideServiceStep = variant !== "default";
+  const bookingContext: WizardPayload["bookingContext"] =
+    variant === "montage"
+      ? "MONTAGE"
+      : variant === "entsorgung"
+        ? "ENTSORGUNG"
+        : "STANDARD";
+  const storageKey = `ssu_wizard_v2_${variant}`;
 
   const [serviceType, setServiceType] = useState<WizardPayload["serviceType"]>(
-    props.initialServiceType ?? "MOVING",
+    lockedServiceType ?? props.initialServiceType ?? "MOVING",
   );
-  const [addons, setAddons] = useState<WizardPayload["addons"]>([]);
+  const [addons, setAddons] = useState<WizardPayload["addons"]>(forcedAddons);
 
   const [startAddress, setStartAddress] = useState<AddressOption | undefined>();
   const [destinationAddress, setDestinationAddress] = useState<AddressOption | undefined>();
@@ -229,6 +245,21 @@ export function BookingWizard(props: {
     setSlots([]);
     setSlotsError(null);
   }, [serviceType]);
+
+  useEffect(() => {
+    if (lockedServiceType && serviceType !== lockedServiceType) {
+      setServiceType(lockedServiceType);
+    }
+  }, [lockedServiceType, serviceType]);
+
+  useEffect(() => {
+    if (forcedAddons.length === 0) return;
+    setAddons((prev) => {
+      const next = new Set(prev);
+      for (const addon of forcedAddons) next.add(addon);
+      return [...next] as WizardPayload["addons"];
+    });
+  }, [forcedAddons.length]);
 
   const effectivePickup = serviceType === "BOTH" && samePickupAsStart ? startAddress : pickupAddress;
 
@@ -317,6 +348,7 @@ export function BookingWizard(props: {
 
   const estimate = useMemo(() => {
     const payloadForEstimate: WizardPayload = {
+      bookingContext,
       serviceType,
       addons,
       pickupAddress: effectivePickup,
@@ -365,6 +397,7 @@ export function BookingWizard(props: {
         }
       : undefined);
   }, [
+    bookingContext,
     serviceType,
     addons,
     effectivePickup,
@@ -434,7 +467,7 @@ export function BookingWizard(props: {
     }
 
     // only fetch once user reaches timing step or summary
-    const visibleSteps = getSteps(serviceType);
+    const visibleSteps = getSteps(serviceType, { hideServiceStep });
     const timingIndex = visibleSteps.findIndex((s) => s.key === "timing");
     if (step < timingIndex) return;
     run();
@@ -443,7 +476,7 @@ export function BookingWizard(props: {
     };
   }, [serviceType, speed, preferredFrom, preferredTo, jobDurationMinutes, step, selectedSlotStart]);
 
-  const steps = useMemo(() => getSteps(serviceType), [serviceType]);
+  const steps = useMemo(() => getSteps(serviceType, { hideServiceStep }), [serviceType, hideServiceStep]);
   const current = steps[step] ?? steps[0];
 
   const canNext = useMemo(() => {
@@ -491,6 +524,7 @@ export function BookingWizard(props: {
       if (!selectedSlotStart) throw new Error("slot required");
 
       const payload: WizardPayload = {
+        bookingContext,
         serviceType,
         addons,
         pickupAddress: serviceType === "DISPOSAL" ? pickupAddress : effectivePickup,
@@ -539,7 +573,7 @@ export function BookingWizard(props: {
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || "Senden fehlgeschlagen.");
 
-      localStorage.removeItem("ssu_wizard_v1");
+      localStorage.removeItem(storageKey);
       const params = new URLSearchParams({ order: json.publicId });
       if (json.pdfToken) params.set("token", json.pdfToken);
       router.push(`/buchen/bestaetigt?${params.toString()}`);
@@ -577,7 +611,7 @@ export function BookingWizard(props: {
       contactPreference,
       note,
     };
-    localStorage.setItem("ssu_wizard_v1", JSON.stringify(data));
+    localStorage.setItem(storageKey, JSON.stringify(data));
   }, [
     serviceType,
     addons,
@@ -606,11 +640,15 @@ export function BookingWizard(props: {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("ssu_wizard_v1");
+      const raw = localStorage.getItem(storageKey);
       if (!raw) return;
       const d = JSON.parse(raw);
-      if (d.serviceType) setServiceType(d.serviceType);
-      if (Array.isArray(d.addons)) setAddons(d.addons);
+      if (d.serviceType && !lockedServiceType) setServiceType(d.serviceType);
+      if (Array.isArray(d.addons)) {
+        const next = new Set<WizardPayload["addons"][number]>(d.addons);
+        for (const addon of forcedAddons) next.add(addon);
+        setAddons([...next] as WizardPayload["addons"]);
+      }
       setStartAddress(d.startAddress);
       setDestinationAddress(d.destinationAddress);
       setPickupAddress(d.pickupAddress);
@@ -636,10 +674,30 @@ export function BookingWizard(props: {
       // ignore
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [storageKey]);
 
   return (
     <Container className="py-10 lg:py-12">
+      {variant !== "default" ? (
+        <div className="mb-6 rounded-3xl border border-brand-300 bg-brand-50 px-5 py-4 text-sm text-brand-900">
+          {variant === "montage" ? (
+            <div>
+              <div className="text-base font-extrabold">Montage-Buchung</div>
+              <div className="mt-1 font-semibold">
+                Dieser Ablauf ist speziell für Möbelmontage optimiert. Die Leistung
+                <span className="font-extrabold"> "Möbel Demontage/Montage"</span> ist bereits enthalten.
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div className="text-base font-extrabold">Entsorgungs-Buchung</div>
+              <div className="mt-1 font-semibold">
+                Dieser Ablauf ist auf Sperrmüll und Entsorgung ausgelegt, inklusive Kategorien, Verbots-Check und Foto-Upload.
+              </div>
+            </div>
+          )}
+        </div>
+      ) : null}
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="glass-card-solid rounded-3xl">
           <WizardHeader steps={steps} step={step} />
@@ -651,6 +709,7 @@ export function BookingWizard(props: {
                 setServiceType={setServiceType}
                 addons={addons}
                 setAddons={setAddons}
+                forcedAddons={forcedAddons}
               />
             ) : null}
 
@@ -876,11 +935,14 @@ export function BookingWizard(props: {
   );
 }
 
-function getSteps(serviceType: WizardPayload["serviceType"]) {
+function getSteps(
+  serviceType: WizardPayload["serviceType"],
+  options?: { hideServiceStep?: boolean },
+) {
   const base = [
     { key: "service" as const, title: "Leistung" },
     { key: "location" as const, title: "Adresse & Zugang" },
-    { key: "items" as const, title: "Gegenstände" },
+    { key: "items" as const, title: "Gegenstaende" },
   ];
   const disposal = { key: "disposal" as const, title: "Entsorgung" };
   const rest = [
@@ -889,9 +951,16 @@ function getSteps(serviceType: WizardPayload["serviceType"]) {
     { key: "summary" as const, title: "Zusammenfassung" },
   ];
 
-  if (serviceType === "DISPOSAL") return [...base, disposal, ...rest];
-  if (serviceType === "BOTH") return [...base, disposal, ...rest];
-  return [...base, ...rest];
+  const withService =
+    serviceType === "DISPOSAL" || serviceType === "BOTH"
+      ? [...base, disposal, ...rest]
+      : [...base, ...rest];
+
+  if (options?.hideServiceStep) {
+    return withService.filter((step) => step.key !== "service");
+  }
+
+  return withService;
 }
 
 function WizardHeader(props: { steps: { key: string; title: string }[]; step: number }) {
@@ -946,6 +1015,7 @@ function StepService(props: {
   setServiceType: (v: WizardPayload["serviceType"]) => void;
   addons: WizardPayload["addons"];
   setAddons: (v: WizardPayload["addons"]) => void;
+  forcedAddons: WizardPayload["addons"];
 }) {
   return (
     <div>
@@ -953,21 +1023,21 @@ function StepService(props: {
         <ServiceCard
           active={props.serviceType === "MOVING"}
           title="Umzug"
-          desc="Transport & Planung — privat oder gewerblich."
+          desc="Transport und Planung - privat oder gewerblich."
           icon={Truck}
           onClick={() => props.setServiceType("MOVING")}
         />
         <ServiceCard
           active={props.serviceType === "DISPOSAL"}
-          title="Entsorgung / Sperrmüll"
-          desc="Abholung & Entsorgung — klar strukturiert."
+          title="Entsorgung / Sperrmuell"
+          desc="Abholung und Entsorgung - klar strukturiert."
           icon={Recycle}
           onClick={() => props.setServiceType("DISPOSAL")}
         />
         <ServiceCard
           active={props.serviceType === "BOTH"}
           title="Umzug + Entsorgung"
-          desc="Beides kombiniert — weniger Aufwand."
+          desc="Beides kombiniert - weniger Aufwand."
           icon={Package}
           onClick={() => props.setServiceType("BOTH")}
         />
@@ -978,8 +1048,9 @@ function StepService(props: {
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {addonDefs.map((a) => {
             const checked = props.addons.includes(a.key);
+            const forced = props.forcedAddons.includes(a.key);
             return (
-                <label
+              <label
                 key={a.key}
                 className={cn(
                   "glass-card-solid glass-card-hover flex cursor-pointer items-start gap-3 rounded-2xl border-2 p-4 transition-all duration-300",
@@ -988,6 +1059,7 @@ function StepService(props: {
               >
                 <Checkbox
                   checked={checked}
+                  disabled={forced}
                   onChange={(e) => {
                     const next = e.target.checked
                       ? [...props.addons, a.key]
@@ -998,7 +1070,9 @@ function StepService(props: {
                 <div>
                   <div className="text-sm font-extrabold text-slate-900">{a.label}</div>
                   <div className="mt-1 text-xs font-semibold text-slate-600">
-                    Als strukturierte Option — Details klären wir im Angebot.
+                    {forced
+                      ? "In diesem Buchungsweg automatisch enthalten."
+                      : "Als strukturierte Option - Details klaeren wir im Angebot."}
                   </div>
                 </div>
               </label>

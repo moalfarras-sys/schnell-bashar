@@ -30,6 +30,12 @@ function eur(cents: number) {
   );
 }
 
+function bookingContextLabel(context: WizardPayload["bookingContext"]) {
+  if (context === "MONTAGE") return "Montage";
+  if (context === "ENTSORGUNG") return "Entsorgung";
+  return "Standard";
+}
+
 function ceilToGrid(minutes: number, grid: number) {
   return Math.ceil(minutes / grid) * grid;
 }
@@ -438,7 +444,7 @@ export async function POST(req: Request) {
   }
 
   const waText = encodeURIComponent(
-    `Hallo! Ich habe eine Anfrage über die Website gesendet. Auftrags-ID: ${order.publicId}.`,
+    `Hallo! Ich habe eine Anfrage ueber die Website gesendet (${bookingContextLabel(payload.bookingContext)}). Auftrags-ID: ${order.publicId}.`,
   );
   const waUrl = `https://wa.me/491729573681?text=${waText}`;
 

@@ -3,6 +3,7 @@ import { z } from "zod";
 export const serviceTypeSchema = z.enum(["MOVING", "DISPOSAL", "BOTH"]);
 export const speedTypeSchema = z.enum(["ECONOMY", "STANDARD", "EXPRESS"]);
 export const contactPreferenceSchema = z.enum(["PHONE", "WHATSAPP", "EMAIL"]);
+export const bookingContextSchema = z.enum(["STANDARD", "MONTAGE", "ENTSORGUNG"]);
 
 export const addonKeySchema = z.enum([
   "PACKING",
@@ -61,6 +62,7 @@ export const customerSchema = z.object({
 });
 
 export const wizardPayloadSchema = z.object({
+  bookingContext: bookingContextSchema.default("STANDARD"),
   serviceType: serviceTypeSchema,
   addons: z.array(addonKeySchema).default([]),
 

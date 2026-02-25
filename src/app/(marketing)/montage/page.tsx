@@ -59,7 +59,7 @@ const trustItems = [
 export default async function MontagePage() {
   const hero = await getImageSlot({
     key: "img.montage.hero.bg",
-    fallbackSrc: "/media/gallery/workshop.jpeg",
+    fallbackSrc: "/media/gallery/montage.jpeg",
     fallbackAlt: "Moebelmontage und Aufbau",
   });
   return (
@@ -70,20 +70,21 @@ export default async function MontagePage() {
       />
 
       {/* Hero */}
-      <section className="relative min-h-[50vh] overflow-hidden">
+      <section className="relative min-h-[56vh] overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src={hero.src}
             alt="Möbelmontage und Aufbau"
             fill
             priority
-            className="object-cover"
+            className="object-cover hero-bg-image"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-slate-950/50 to-slate-950/30" />
+          <div className="hero-overlay-light absolute inset-0 dark:hidden" />
+          <div className="hero-overlay-dark absolute inset-0 hidden dark:block" />
         </div>
 
-        <Container className="relative z-10 flex min-h-[50vh] flex-col justify-end pb-16 pt-28">
+        <Container className="relative z-10 flex min-h-[56vh] flex-col justify-end pb-14 pt-24 sm:pb-16 sm:pt-28">
           <Reveal>
             <div className="inline-flex items-center gap-2 rounded-full border border-brand-400/40 bg-brand-500/20 px-4 py-1.5 text-xs font-bold text-brand-100 backdrop-blur-sm">
               <Wrench className="h-4 w-4" />
@@ -97,7 +98,7 @@ export default async function MontagePage() {
               Einzelaufbau – wir erledigen es professionell.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/preise?service=UMZUG&addons=DISMANTLE_ASSEMBLE">
+              <Link href="/montage/buchen">
                 <Button size="lg" className="gap-2">
                   <Wrench className="h-5 w-5" />
                   Montage anfragen
@@ -201,7 +202,7 @@ export default async function MontagePage() {
           </Reveal>
 
           <Reveal className="mt-12 text-center">
-            <Link href="/preise?service=UMZUG&addons=DISMANTLE_ASSEMBLE">
+            <Link href="/montage/buchen">
               <Button size="lg" className="gap-2">
                 Jetzt Montage anfragen
                 <CheckCircle2 className="h-5 w-5" />

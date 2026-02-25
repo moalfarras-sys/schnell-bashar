@@ -1,7 +1,7 @@
-import { prisma } from "@/server/db/prisma";
 import { BookingWizard } from "@/app/(wizard)/buchen/wizard-client";
 import { BookingFallbackForm } from "@/app/(wizard)/buchen/fallback-form";
 import { Container } from "@/components/container";
+import { loadBookingConfig } from "@/server/booking/load-booking-config";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -19,73 +19,26 @@ export default async function BookingPage({
       : requestedService === "BOTH" || requestedService === "KOMBI"
         ? ("BOTH" as const)
         : ("MOVING" as const);
-  let pricing:
-    | Awaited<ReturnType<typeof prisma.pricingConfig.findFirst>>
-    | null = null;
-  let catalog: Array<{
-    id: string;
-    slug: string;
-    categoryKey: string;
-    nameDe: string;
-    defaultVolumeM3: number;
-    laborMinutesPerUnit: number;
-    isHeavy: boolean;
-  }> = [];
 
+  let config: Awaited<ReturnType<typeof loadBookingConfig>> = null;
   try {
-    const [pricingData, catalogData] = await Promise.all([
-      prisma.pricingConfig.findFirst({ where: { active: true }, orderBy: { updatedAt: "desc" } }),
-      prisma.catalogItem.findMany({
-        where: { active: true },
-        orderBy: [{ sortOrder: "asc" }, { nameDe: "asc" }],
-        select: {
-          id: true,
-          slug: true,
-          categoryKey: true,
-          nameDe: true,
-          defaultVolumeM3: true,
-          laborMinutesPerUnit: true,
-          isHeavy: true,
-        },
-      }),
-    ]);
-    pricing = pricingData;
-    catalog = catalogData;
+    config = await loadBookingConfig();
   } catch {
-    return <BookingUnavailable reason="Das Buchungssystem ist kurzfristig nicht vollständig verfügbar (Datenbankverbindung)." />;
+    return (
+      <BookingUnavailable reason="Das Buchungssystem ist kurzfristig nicht vollständig verfügbar (Datenbankverbindung)." />
+    );
   }
 
-  if (!pricing || catalog.length === 0) {
+  if (!config) {
     return <BookingUnavailable reason="Die Preis- und Katalogdaten sind aktuell nicht verfügbar." />;
   }
 
   return (
     <BookingWizard
+      variant="default"
       initialServiceType={initialServiceType}
-      catalog={catalog}
-      pricing={{
-        currency: pricing.currency,
-        movingBaseFeeCents: pricing.movingBaseFeeCents,
-        disposalBaseFeeCents: pricing.disposalBaseFeeCents,
-        hourlyRateCents: pricing.hourlyRateCents,
-        perM3MovingCents: pricing.perM3MovingCents,
-        perM3DisposalCents: pricing.perM3DisposalCents,
-        perKmCents: pricing.perKmCents,
-        heavyItemSurchargeCents: pricing.heavyItemSurchargeCents,
-        stairsSurchargePerFloorCents: pricing.stairsSurchargePerFloorCents,
-        carryDistanceSurchargePer25mCents: pricing.carryDistanceSurchargePer25mCents,
-        parkingSurchargeMediumCents: pricing.parkingSurchargeMediumCents,
-        parkingSurchargeHardCents: pricing.parkingSurchargeHardCents,
-        elevatorDiscountSmallCents: pricing.elevatorDiscountSmallCents,
-        elevatorDiscountLargeCents: pricing.elevatorDiscountLargeCents,
-        uncertaintyPercent: pricing.uncertaintyPercent,
-        economyMultiplier: pricing.economyMultiplier,
-        standardMultiplier: pricing.standardMultiplier,
-        expressMultiplier: pricing.expressMultiplier,
-        economyLeadDays: pricing.economyLeadDays,
-        standardLeadDays: pricing.standardLeadDays,
-        expressLeadDays: pricing.expressLeadDays,
-      }}
+      catalog={config.catalog}
+      pricing={config.pricing}
     />
   );
 }
@@ -98,7 +51,7 @@ function BookingUnavailable(props: { reason: string }) {
           Buchung gerade eingeschränkt
         </h1>
         <p className="mt-3 text-sm font-semibold text-slate-700">
-          {props.reason} Bitte senden Sie uns direkt eine Schnellanfrage – wir melden uns schnellstmöglich.
+          {props.reason} Bitte senden Sie uns direkt eine Schnellanfrage - wir melden uns schnellstmöglich.
         </p>
         <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-700">
           Tipp: Alternativ erreichen Sie uns sofort unter{" "}
