@@ -1,4 +1,4 @@
-﻿-- Add request-first scheduling status.
+-- Add request-first scheduling status.
 ALTER TYPE "OrderStatus" ADD VALUE IF NOT EXISTS 'REQUESTED';
 
 -- Add preferred time window enum for scheduling requests.
