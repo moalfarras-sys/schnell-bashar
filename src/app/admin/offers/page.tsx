@@ -344,7 +344,7 @@ export default async function AdminOffersPage({
                         </div>
                         {offer.moveFrom && offer.moveTo && (
                           <div>
-                            <span className="font-semibold">Route:</span> {offer.moveFrom} â†’{" "}
+                            <span className="font-semibold">Route:</span> {offer.moveFrom} →{" "}
                             {offer.moveTo}
                           </div>
                         )}
