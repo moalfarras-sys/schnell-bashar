@@ -378,6 +378,7 @@ export async function POST(req: Request) {
         ...offerDataBase,
         offerNo,
       },
+      select: { id: true },
     });
     createdOfferId = offer.id;
 

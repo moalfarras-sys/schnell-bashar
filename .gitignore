@@ -5,6 +5,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .env
+.env.*
+!.env.example
+!.env.production.example
+!.env.*.example
 .env.*.local
 
 # Prisma
@@ -13,3 +17,7 @@ prisma/dev.db-journal
 
 # Uploads (store outside repo in production)
 public/uploads
+
+# Never commit runtime private keys
+docusign-private.key
+docusign-private.key.pub
