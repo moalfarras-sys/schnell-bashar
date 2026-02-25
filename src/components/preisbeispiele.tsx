@@ -84,32 +84,64 @@ function eur(n: number) {
   }).format(n);
 }
 
-export function Preisbeispiele({ service = "ALL" }: { service?: ServiceFilter }) {
+export type PreisbeispieleStarts = {
+  movingFromEur?: number;
+  disposalFromEur?: number;
+  montageFromEur?: number;
+};
+
+export function Preisbeispiele({
+  service = "ALL",
+  starts,
+}: {
+  service?: ServiceFilter;
+  starts?: PreisbeispieleStarts;
+}) {
+  const movingExamples = [...UMZUG_EXAMPLES];
+  const disposalExamples = [...ENTSORGUNG_EXAMPLES];
+  const montageExamples = [...MONTAGE_EXAMPLES];
+
+  if (starts?.movingFromEur != null) {
+    movingExamples[0] = { ...movingExamples[0], minEur: Math.max(0, starts.movingFromEur) };
+  }
+  if (starts?.disposalFromEur != null) {
+    disposalExamples[0] = {
+      ...disposalExamples[0],
+      minEur: Math.max(0, starts.disposalFromEur),
+    };
+  }
+  if (starts?.montageFromEur != null) {
+    montageExamples[0] = {
+      ...montageExamples[0],
+      minEur: Math.max(0, starts.montageFromEur),
+    };
+  }
+
   const sections =
     service === "ALL"
       ? [
-          { title: "Umzug", examples: UMZUG_EXAMPLES, href: "/preise?service=UMZUG" },
-          { title: "Entsorgung", examples: ENTSORGUNG_EXAMPLES, href: "/preise?service=ENTSORGUNG" },
+          { title: "Umzug", examples: movingExamples, href: "/preise?service=UMZUG" },
+          { title: "Entsorgung", examples: disposalExamples, href: "/preise?service=ENTSORGUNG" },
           {
             title: "Montage",
-            examples: MONTAGE_EXAMPLES,
+            examples: montageExamples,
             href: "/preise?service=UMZUG&addons=DISMANTLE_ASSEMBLE",
           },
         ]
       : service === "UMZUG"
-        ? [{ title: "Umzug", examples: UMZUG_EXAMPLES, href: "/preise?service=UMZUG" }]
+        ? [{ title: "Umzug", examples: movingExamples, href: "/preise?service=UMZUG" }]
         : service === "ENTSORGUNG"
           ? [
               {
                 title: "Entsorgung",
-                examples: ENTSORGUNG_EXAMPLES,
+                examples: disposalExamples,
                 href: "/preise?service=ENTSORGUNG",
               },
             ]
           : [
               {
                 title: "Montage",
-                examples: MONTAGE_EXAMPLES,
+                examples: montageExamples,
                 href: "/preise?service=UMZUG&addons=DISMANTLE_ASSEMBLE",
               },
             ];

@@ -10,6 +10,7 @@ import { PreiseCalculatorSection } from "@/components/preise-calculator-section"
 import { Reveal } from "@/components/motion/reveal";
 import { prisma } from "@/server/db/prisma";
 import { getImageSlot } from "@/server/content/slots";
+import { loadOperationalSettings } from "@/server/settings/operational-settings";
 
 export const dynamic = "force-dynamic";
 
@@ -75,12 +76,15 @@ async function getPricing(): Promise<PricingData | null> {
 }
 
 export default async function PreisePage() {
-  const banner = await getImageSlot({
-    key: "img.preise.banner",
-    fallbackSrc: "/media/gallery/money.jpeg",
-    fallbackAlt: "Transparente Preise",
-  });
-  const pricing = await getPricing();
+  const [banner, pricing, settings] = await Promise.all([
+    getImageSlot({
+      key: "img.preise.banner",
+      fallbackSrc: "/media/gallery/money.jpeg",
+      fallbackAlt: "Transparente Preise",
+    }),
+    getPricing(),
+    loadOperationalSettings(),
+  ]);
 
   return (
     <Container className="py-14">
@@ -92,6 +96,17 @@ export default async function PreisePage() {
           Transparente Richtpreise ohne versteckte Kosten. Der endgültige Preis wird immer über
           ein verbindliches Angebot bestätigt.
         </p>
+        <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold">
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+            Umzug ab {settings.movingFromPriceEur} €
+          </span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+            Entsorgung ab {settings.disposalFromPriceEur} €
+          </span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+            Montage ab {settings.montageFromPriceEur} €
+          </span>
+        </div>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <a href="#price-calculator">
             <Button size="lg">
@@ -144,7 +159,13 @@ export default async function PreisePage() {
 
       <PreiseCalculatorSection pricing={pricing} />
 
-      <Preisbeispiele />
+      <Preisbeispiele
+        starts={{
+          movingFromEur: settings.movingFromPriceEur,
+          disposalFromEur: settings.disposalFromPriceEur,
+          montageFromEur: settings.montageFromPriceEur,
+        }}
+      />
 
       <div className="mt-10 rounded-3xl border-2 border-slate-300 bg-slate-50 p-6 text-sm font-semibold text-slate-800 shadow-sm dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
         Richtpreis-Hinweis: Alle Werte sind unverbindliche Orientierung auf Basis Ihrer Angaben.

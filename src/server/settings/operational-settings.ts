@@ -8,6 +8,9 @@ export type OperationalSettings = {
   whatsappTemplate: string;
   supportPhone: string;
   supportEmail: string;
+  movingFromPriceEur: number;
+  disposalFromPriceEur: number;
+  montageFromPriceEur: number;
 };
 
 const SETTINGS_KEYS = {
@@ -19,6 +22,9 @@ const SETTINGS_KEYS = {
   whatsappTemplate: "config.notifications.whatsapp_template",
   supportPhone: "config.notifications.support_phone",
   supportEmail: "config.notifications.support_email",
+  movingFromPriceEur: "config.pricing.public.moving_from_eur",
+  disposalFromPriceEur: "config.pricing.public.disposal_from_eur",
+  montageFromPriceEur: "config.pricing.public.montage_from_eur",
 } as const;
 
 const DEFAULT_SETTINGS: OperationalSettings = {
@@ -30,6 +36,9 @@ const DEFAULT_SETTINGS: OperationalSettings = {
     "Hallo! Ich habe eine Anfrage über die Website gesendet ({context}). Auftrags-ID: {publicId}.",
   supportPhone: "+49 172 9573681",
   supportEmail: "kontakt@schnellsicherumzug.de",
+  movingFromPriceEur: 89,
+  disposalFromPriceEur: 79,
+  montageFromPriceEur: 69,
 };
 
 function toBool(value: string | null | undefined, fallback: boolean) {
@@ -43,6 +52,13 @@ function toBool(value: string | null | undefined, fallback: boolean) {
 function normalizePhoneDigits(value: string, fallback: string) {
   const digits = value.replace(/[^\d]/g, "");
   return digits.length >= 8 ? digits : fallback;
+}
+
+function toInt(value: string | null | undefined, fallback: number) {
+  if (value == null) return fallback;
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.max(0, Math.round(n));
 }
 
 export async function loadOperationalSettings(): Promise<OperationalSettings> {
@@ -80,6 +96,18 @@ export async function loadOperationalSettings(): Promise<OperationalSettings> {
       map.get(SETTINGS_KEYS.supportPhone)?.trim() || DEFAULT_SETTINGS.supportPhone,
     supportEmail:
       map.get(SETTINGS_KEYS.supportEmail)?.trim() || DEFAULT_SETTINGS.supportEmail,
+    movingFromPriceEur: toInt(
+      map.get(SETTINGS_KEYS.movingFromPriceEur),
+      DEFAULT_SETTINGS.movingFromPriceEur,
+    ),
+    disposalFromPriceEur: toInt(
+      map.get(SETTINGS_KEYS.disposalFromPriceEur),
+      DEFAULT_SETTINGS.disposalFromPriceEur,
+    ),
+    montageFromPriceEur: toInt(
+      map.get(SETTINGS_KEYS.montageFromPriceEur),
+      DEFAULT_SETTINGS.montageFromPriceEur,
+    ),
   };
 }
 
@@ -97,6 +125,20 @@ export async function saveOperationalSettings(
       incoming.whatsappTemplate?.trim() || DEFAULT_SETTINGS.whatsappTemplate,
     supportPhone: incoming.supportPhone?.trim() || DEFAULT_SETTINGS.supportPhone,
     supportEmail: incoming.supportEmail?.trim() || DEFAULT_SETTINGS.supportEmail,
+    movingFromPriceEur: Math.max(
+      0,
+      Math.round(incoming.movingFromPriceEur ?? DEFAULT_SETTINGS.movingFromPriceEur),
+    ),
+    disposalFromPriceEur: Math.max(
+      0,
+      Math.round(
+        incoming.disposalFromPriceEur ?? DEFAULT_SETTINGS.disposalFromPriceEur,
+      ),
+    ),
+    montageFromPriceEur: Math.max(
+      0,
+      Math.round(incoming.montageFromPriceEur ?? DEFAULT_SETTINGS.montageFromPriceEur),
+    ),
   };
 
   await Promise.all([
@@ -167,6 +209,33 @@ export async function saveOperationalSettings(
         type: "config",
         key: SETTINGS_KEYS.supportEmail,
         value: merged.supportEmail,
+      },
+    }),
+    prisma.contentSlot.upsert({
+      where: { key: SETTINGS_KEYS.movingFromPriceEur },
+      update: { type: "config", value: String(merged.movingFromPriceEur) },
+      create: {
+        type: "config",
+        key: SETTINGS_KEYS.movingFromPriceEur,
+        value: String(merged.movingFromPriceEur),
+      },
+    }),
+    prisma.contentSlot.upsert({
+      where: { key: SETTINGS_KEYS.disposalFromPriceEur },
+      update: { type: "config", value: String(merged.disposalFromPriceEur) },
+      create: {
+        type: "config",
+        key: SETTINGS_KEYS.disposalFromPriceEur,
+        value: String(merged.disposalFromPriceEur),
+      },
+    }),
+    prisma.contentSlot.upsert({
+      where: { key: SETTINGS_KEYS.montageFromPriceEur },
+      update: { type: "config", value: String(merged.montageFromPriceEur) },
+      create: {
+        type: "config",
+        key: SETTINGS_KEYS.montageFromPriceEur,
+        value: String(merged.montageFromPriceEur),
       },
     }),
   ]);

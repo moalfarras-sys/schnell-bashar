@@ -11,6 +11,9 @@ type SettingsModel = {
   whatsappTemplate: string;
   supportPhone: string;
   supportEmail: string;
+  movingFromPriceEur: number;
+  disposalFromPriceEur: number;
+  montageFromPriceEur: number;
 };
 
 export function SettingsClient(props: { initialSettings: SettingsModel }) {
@@ -85,6 +88,44 @@ export function SettingsClient(props: { initialSettings: SettingsModel }) {
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">
+              Umzug ab (EUR)
+            </label>
+            <input
+              type="number"
+              min={0}
+              value={form.movingFromPriceEur}
+              onChange={(e) => patch("movingFromPriceEur", Number(e.target.value || 0))}
+              className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">
+              Entsorgung ab (EUR)
+            </label>
+            <input
+              type="number"
+              min={0}
+              value={form.disposalFromPriceEur}
+              onChange={(e) =>
+                patch("disposalFromPriceEur", Number(e.target.value || 0))
+              }
+              className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">
+              Montage ab (EUR)
+            </label>
+            <input
+              type="number"
+              min={0}
+              value={form.montageFromPriceEur}
+              onChange={(e) => patch("montageFromPriceEur", Number(e.target.value || 0))}
+              className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white"
+            />
+          </div>
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">
               WhatsApp Nummer (E.164 ohne +)

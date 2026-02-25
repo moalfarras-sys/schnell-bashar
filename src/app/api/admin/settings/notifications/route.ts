@@ -15,6 +15,9 @@ const settingsSchema = z.object({
   whatsappTemplate: z.string().trim().min(10).max(500),
   supportPhone: z.string().trim().min(6).max(60),
   supportEmail: z.string().trim().email().max(160),
+  movingFromPriceEur: z.number().int().min(0).max(100000),
+  disposalFromPriceEur: z.number().int().min(0).max(100000),
+  montageFromPriceEur: z.number().int().min(0).max(100000),
 });
 
 export async function GET() {
