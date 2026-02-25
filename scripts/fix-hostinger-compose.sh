@@ -50,6 +50,7 @@ services:
       sh -c "npm ci --include=dev &&
       npm run prisma:generate &&
       npm run prisma:deploy &&
+      npm run db:seed:ensure-core &&
       npm run build &&
       mkdir -p .next/standalone/.next &&
       cp -r .next/static .next/standalone/.next/static &&

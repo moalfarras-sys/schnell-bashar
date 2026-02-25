@@ -12,6 +12,7 @@
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f db",
     "db:seed": "prisma db seed",
+    "db:seed:ensure-core": "tsx scripts/ensure-core-seed.ts",
     "db:doctor": "tsx scripts/dev-db-check.ts",
     "db:migrate:supabase": "tsx scripts/migrate-to-supabase.ts",
     "db:backfill:docnos": "tsx scripts/backfill-document-numbers.ts",
