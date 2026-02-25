@@ -49,7 +49,7 @@ export async function LocalBusinessSchema() {
       opens: "00:00",
       closes: "23:59",
     },
-    priceRange: "€€",
+    priceRange: "EUR EUR",
     currenciesAccepted: "EUR",
     paymentAccepted: "Cash, Bank Transfer",
     areaServed: [
