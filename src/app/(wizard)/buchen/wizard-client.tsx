@@ -621,16 +621,36 @@ export function BookingWizard(props: {
     }
 
     // only fetch once user reaches timing step or summary
-    const visibleSteps = getSteps(serviceType, { hideServiceStep });
+    const visibleSteps = getSteps(serviceType, {
+      hideServiceStep,
+      itemsTitle: variant === "default" ? "Gegenstände" : "Leistungen",
+    });
     const timingIndex = visibleSteps.findIndex((s) => s.key === "timing");
     if (step < timingIndex) return;
     run();
     return () => {
       cancelled = true;
     };
-  }, [serviceType, speed, preferredFrom, preferredTo, jobDurationMinutes, step, selectedSlotStart, hideServiceStep]);
+  }, [
+    serviceType,
+    speed,
+    preferredFrom,
+    preferredTo,
+    jobDurationMinutes,
+    step,
+    selectedSlotStart,
+    hideServiceStep,
+    variant,
+  ]);
 
-  const steps = useMemo(() => getSteps(serviceType, { hideServiceStep }), [serviceType, hideServiceStep]);
+  const steps = useMemo(
+    () =>
+      getSteps(serviceType, {
+        hideServiceStep,
+        itemsTitle: variant === "default" ? "Gegenstände" : "Leistungen",
+      }),
+    [serviceType, hideServiceStep, variant],
+  );
   const current = steps[step] ?? steps[0];
 
   const canNext = useMemo(() => {
@@ -1136,12 +1156,13 @@ export function BookingWizard(props: {
 
 function getSteps(
   serviceType: WizardPayload["serviceType"],
-  options?: { hideServiceStep?: boolean },
+  options?: { hideServiceStep?: boolean; itemsTitle?: string },
 ) {
+  const itemsTitle = options?.itemsTitle?.trim() || "Gegenstände";
   const base = [
     { key: "service" as const, title: "Leistung" },
     { key: "location" as const, title: "Adresse & Zugang" },
-    { key: "items" as const, title: "Gegenstände" },
+    { key: "items" as const, title: itemsTitle },
   ];
   const disposal = { key: "disposal" as const, title: "Entsorgung" };
   const packageStep = { key: "package" as const, title: "Paket & Angebot" };
