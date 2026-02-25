@@ -873,7 +873,7 @@ export function BookingWizard(props: {
   return (
     <Container className="py-10 lg:py-12">
       {variant !== "default" ? (
-        <div className="mb-6 rounded-3xl border border-brand-300 bg-brand-50 px-5 py-4 text-sm text-brand-900">
+        <div className="mb-6 rounded-3xl border border-brand-300/40 bg-gradient-to-r from-slate-900/95 via-slate-900/92 to-brand-950/40 px-5 py-4 text-sm text-slate-100 shadow-[0_10px_28px_rgba(2,8,23,0.45)]">
           {variant === "montage" ? (
             <div>
               <div className="text-base font-extrabold">Montage-Buchung</div>
@@ -1087,41 +1087,41 @@ export function BookingWizard(props: {
               )}
             </div>
 
-            <div className="mt-4 text-xs font-semibold text-slate-600">
+            <div className="mt-4 text-xs font-semibold text-slate-600 dark:text-slate-400">
               Hinweis: Preise sind Schätzwerte auf Basis Ihrer Auswahl. Nach Prüfung bestätigen wir das finale Angebot.
             </div>
           </div>
         </div>
 
         <aside className="glass-card-solid h-fit rounded-3xl p-6 lg:sticky lg:top-24">
-          <div className="text-sm font-extrabold text-slate-900">Live-Schätzung</div>
+          <div className="text-sm font-extrabold text-slate-900 dark:text-white">Live-Schätzung</div>
           <div className="mt-4 grid gap-3 text-sm">
-            <div className="rounded-2xl border-2 border-slate-300 bg-gradient-to-br from-slate-50 to-[color:var(--surface-elevated)] p-4 shadow-sm">
-              <div className="text-xs font-bold text-slate-700">Volumen</div>
-              <div className="mt-1 text-xl font-extrabold text-slate-900">{formatNumberDE(estimate.totalVolumeM3)} m³</div>
+            <div className="rounded-2xl border border-slate-300/80 bg-gradient-to-br from-slate-50 to-[color:var(--surface-elevated)] p-4 shadow-sm dark:border-slate-600 dark:from-slate-800/90 dark:to-slate-900/90">
+              <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Volumen</div>
+              <div className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">{formatNumberDE(estimate.totalVolumeM3)} m³</div>
             </div>
-            <div className="rounded-2xl border-2 border-slate-300 bg-gradient-to-br from-slate-50 to-[color:var(--surface-elevated)] p-4 shadow-sm">
-              <div className="text-xs font-bold text-slate-700">Arbeitszeit</div>
-              <div className="mt-1 text-xl font-extrabold text-slate-900">{formatNumberDE(estimate.laborHours)} Std.</div>
+            <div className="rounded-2xl border border-slate-300/80 bg-gradient-to-br from-slate-50 to-[color:var(--surface-elevated)] p-4 shadow-sm dark:border-slate-600 dark:from-slate-800/90 dark:to-slate-900/90">
+              <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Arbeitszeit</div>
+              <div className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">{formatNumberDE(estimate.laborHours)} Std.</div>
             </div>
-            <div className="rounded-2xl border-2 border-brand-400 bg-gradient-to-br from-brand-50 to-[color:var(--surface-elevated)] p-4 shadow-sm">
-              <div className="text-xs font-bold text-brand-700">Preisrahmen</div>
-              <div className="mt-1 text-lg font-extrabold text-brand-800">
+            <div className="rounded-2xl border border-brand-400/70 bg-gradient-to-br from-brand-50 to-[color:var(--surface-elevated)] p-4 shadow-sm dark:border-brand-500/70 dark:from-brand-900/25 dark:to-slate-900/95">
+              <div className="text-xs font-bold text-brand-700 dark:text-brand-300">Preisrahmen</div>
+              <div className="mt-1 text-lg font-extrabold text-brand-800 dark:text-brand-300">
                 {eur(estimate.priceMinCents)} – {eur(estimate.priceMaxCents)}
               </div>
               {estimate.distanceKm != null ? (
-                <div className="mt-1 text-xs font-semibold text-slate-600">
+                <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
                   Distanz ({distanceSourceLabel(estimate.distanceSource)}):{" "}
                   {formatNumberDE(estimate.distanceKm)} km
                 </div>
               ) : null}
               {(serviceType === "MOVING" || serviceType === "BOTH") && estimate.driveChargeCents > 0 ? (
-                <div className="mt-1 text-xs font-semibold text-slate-700">
+                <div className="mt-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Fahrkosten: {eur(estimate.driveChargeCents)}
                 </div>
               ) : null}
               {routeLoading ? (
-                <div className="mt-2 text-xs font-semibold text-slate-600">
+                <div className="mt-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
                   Distanz wird über OpenRouteService berechnet…
                 </div>
               ) : null}
@@ -1145,8 +1145,8 @@ export function BookingWizard(props: {
             </div>
           </div>
 
-          <div className="mt-6 text-xs font-semibold text-slate-600">
-            Probleme? <Link className="font-bold text-brand-700 hover:underline" href="/kontakt">Kontakt</Link>
+          <div className="mt-6 text-xs font-semibold text-slate-600 dark:text-slate-400">
+            Probleme? <Link className="font-bold text-brand-700 hover:underline dark:text-brand-300" href="/kontakt">Kontakt</Link>
           </div>
         </aside>
       </div>
@@ -1187,21 +1187,21 @@ function getSteps(
 function WizardHeader(props: { steps: { key: string; title: string }[]; step: number }) {
   const pct = Math.round(((props.step + 1) / props.steps.length) * 100);
   return (
-    <div className="border-b border-slate-300 bg-gradient-to-r from-[color:var(--surface-elevated)] via-brand-50/50 to-slate-50 p-6 sm:p-8">
+    <div className="border-b border-slate-300 bg-gradient-to-r from-[color:var(--surface-elevated)] via-brand-50/50 to-slate-50 p-6 sm:p-8 dark:border-slate-700 dark:from-slate-900/95 dark:via-slate-900/92 dark:to-brand-950/25">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <div className="text-xs font-bold text-brand-700">
+          <div className="text-xs font-bold text-brand-700 dark:text-brand-300">
             Schritt {props.step + 1} von {props.steps.length}
           </div>
-          <div className="mt-1 text-xl font-extrabold text-slate-950">
+          <div className="mt-1 text-xl font-extrabold text-slate-950 dark:text-white">
             {props.steps[props.step]?.title}
           </div>
         </div>
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-brand-50 text-sm font-extrabold text-brand-700 shadow-sm">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-brand-50 text-sm font-extrabold text-brand-700 shadow-sm dark:from-brand-900/50 dark:to-slate-800 dark:text-brand-300">
           {pct}%
         </div>
       </div>
-      <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+      <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
         <div
           className="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-700 transition-all duration-500 ease-out"
           style={{ width: `${pct}%` }}
@@ -1214,10 +1214,10 @@ function WizardHeader(props: { steps: { key: string; title: string }[]; step: nu
             className={cn(
               "rounded-full px-3 py-1.5 text-xs font-bold transition-all duration-300",
               idx === props.step
-                ? "bg-brand-600 text-white shadow-md shadow-brand-200"
+                ? "bg-brand-600 text-white shadow-md shadow-brand-200 dark:shadow-brand-900/40"
                 : idx < props.step
-                  ? "bg-brand-50 text-brand-800"
-                  : "bg-slate-100 text-slate-500",
+                  ? "bg-brand-50 text-brand-800 dark:bg-brand-900/35 dark:text-brand-300"
+                  : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
             )}
           >
             {idx < props.step ? (
