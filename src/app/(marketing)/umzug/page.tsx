@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 import {
   CheckCircle2,
@@ -104,7 +104,7 @@ export default async function UmzugPage() {
               und sichere Durchführung – von der ersten Anfrage bis zur Übergabe.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/preise?service=UMZUG">
+              <Link href="/buchen?context=MOVING">
                 <Button size="lg" className="gap-2">
                   <Truck className="h-5 w-5" />
                   Angebot berechnen
@@ -224,7 +224,7 @@ export default async function UmzugPage() {
           </Reveal>
 
           <Reveal className="mt-12 text-center">
-            <Link href="/preise?service=UMZUG">
+            <Link href="/buchen?context=MOVING">
               <Button size="lg" className="gap-2">
                 Jetzt Angebot anfordern
                 <CheckCircle2 className="h-5 w-5" />

@@ -1,6 +1,6 @@
-﻿import { getImageSlot } from "@/server/content/slots";
+import { getImageSlot } from "@/server/content/slots";
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellumzug-berlin.de";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellsicherumzug.de";
 
 export async function LocalBusinessSchema() {
   const logo = await getImageSlot({
@@ -131,4 +131,5 @@ export async function LocalBusinessSchema() {
     />
   );
 }
+
 

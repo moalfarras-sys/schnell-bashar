@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellumzug-berlin.de";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellsicherumzug.de";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -13,3 +13,4 @@ export default function robots(): MetadataRoute.Robots {
     host: baseUrl,
   };
 }
+

@@ -1,4 +1,4 @@
-﻿import { formatInTimeZone } from "date-fns-tz";
+import { formatInTimeZone } from "date-fns-tz";
 
 import { getMailer } from "@/server/email/mailer";
 import { generateQuotePdf } from "@/server/pdf/generate-quote";
@@ -48,7 +48,7 @@ export async function sendCustomerConfirmationEmail(args: {
   const from = process.env.SMTP_FROM || process.env.SMTP_USER;
   if (!from || !args.customerEmail) return { ok: false as const, skipped: true as const };
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellumzug-berlin.de";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellsicherumzug.de";
 
   const timingLabel =
     `${formatInTimeZone(args.requestedDateFrom, "Europe/Berlin", "dd.MM.yyyy")} bis ` +
@@ -223,6 +223,7 @@ export async function sendCustomerConfirmationEmail(args: {
 
   return { ok: true as const };
 }
+
 
 
 

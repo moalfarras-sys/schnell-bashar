@@ -1,7 +1,7 @@
-﻿import type { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 import { cities } from "@/data/cities";
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellumzug-berlin.de";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellsicherumzug.de";
 
 const routes = [
   "",
@@ -42,4 +42,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...baseEntries, ...cityEntries];
 }
+
 

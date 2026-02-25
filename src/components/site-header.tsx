@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -58,8 +58,8 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
           >
             Anfrage verfolgen
           </Link>
-          <Link href="/preise">
-            <Button size="sm">Angebot berechnen</Button>
+          <Link href="/buchen?context=MOVING">
+            <Button size="sm">Jetzt buchen</Button>
           </Link>
         </div>
 
@@ -87,8 +87,8 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
               >
                 Anfrage verfolgen
               </Link>
-              <Link href="/preise" onClick={closeMobile}>
-                <Button className="mt-2 w-full">Angebot berechnen</Button>
+              <Link href="/buchen?context=MOVING" onClick={closeMobile}>
+                <Button className="mt-2 w-full">Jetzt buchen</Button>
               </Link>
             </div>
           </Container>

@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -53,7 +53,7 @@ const services = [
 
 const tools = [
   { icon: Calculator, label: "Preisrechner", href: "/preise", desc: "Schnelle Orientierung" },
-  { icon: ClipboardList, label: "Angebot berechnen", href: "/preise", desc: "Preis + Termin" },
+  { icon: ClipboardList, label: "Anfrage starten", href: "/buchen?context=MOVING", desc: "Direkt buchen" },
   { icon: Search, label: "Anfrage verfolgen", href: "/anfrage", desc: "Status prüfen" },
   { icon: CalendarDays, label: "Termine", href: "/buchen?context=MOVING", desc: "Zeitfenster wählen" },
 ];
@@ -187,7 +187,7 @@ export default async function HomePage() {
               </p>
 
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                <Link href="/preise">
+                <Link href="/buchen?context=MOVING">
                   <Button size="xl" className="gap-2">
                     Kostenloses Angebot erhalten
                     <ArrowRight className="h-4 w-4" />
@@ -399,7 +399,7 @@ export default async function HomePage() {
                 </div>
 
                 <div className="mt-8">
-                  <Link href="/preise">
+                  <Link href="/buchen?context=MOVING">
                     <Button size="lg" className="gap-2">
                       Angebot anfordern
                       <ArrowRight className="h-4 w-4" />
@@ -522,7 +522,7 @@ export default async function HomePage() {
               {txt["text.home.cta.subtitle"]}
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link href="/preise">
+              <Link href="/buchen?context=MOVING">
                 <Button size="lg" variant="primary" className="gap-2">
                   Angebot berechnen
                   <ArrowRight className="h-4 w-4" />

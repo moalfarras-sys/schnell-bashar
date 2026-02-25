@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { LocalBusinessSchema } from "@/components/schema/local-business";
@@ -15,7 +15,7 @@ const manrope = Manrope({
   variable: "--font-manrope",
   weight: ["400", "500", "600", "700", "800"],
 });
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellumzug-berlin.de";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellsicherumzug.de";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -71,4 +71,5 @@ export default function RootLayout({
     </html>
   );
 }
+
 

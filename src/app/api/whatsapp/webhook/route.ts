@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const inMemoryConversationState = new Map<string, { state: string; updatedAt: number }>();
 
@@ -27,15 +27,15 @@ export async function POST(req: Request) {
   if (text === "1") {
     nextState = "service_selection";
     reply =
-      "Perfekt. Für Umzug starten Sie bitte hier: https://schnellumzug-berlin.de/buchen";
+      "Perfekt. Für Umzug starten Sie bitte hier: https://schnellsicherumzug.de/buchen?context=MOVING";
   } else if (text === "2") {
     nextState = "service_selection";
     reply =
-      "Für Entsorgung starten Sie bitte hier: https://schnellumzug-berlin.de/buchen";
+      "Für Entsorgung starten Sie bitte hier: https://schnellsicherumzug.de/buchen?context=ENTSORGUNG";
   } else if (text === "3" || text.includes("link")) {
     nextState = "awaiting_booking";
     reply =
-      "Hier ist Ihr Buchungslink: https://schnellumzug-berlin.de/buchen";
+      "Hier ist Ihr Buchungslink: https://schnellsicherumzug.de/buchen?context=MOVING";
   }
 
   inMemoryConversationState.set(phone, { state: nextState, updatedAt: Date.now() });
@@ -47,4 +47,5 @@ export async function POST(req: Request) {
     reply,
   });
 }
+
 

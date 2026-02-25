@@ -1,4 +1,4 @@
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellumzug-berlin.de";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellsicherumzug.de";
 
 interface BreadcrumbItem {
     name: string;
@@ -24,3 +24,4 @@ export function BreadcrumbSchema({ items }: { items: BreadcrumbItem[] }) {
         />
     );
 }
+
