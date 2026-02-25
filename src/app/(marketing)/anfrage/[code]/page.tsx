@@ -120,6 +120,12 @@ export default function AnfrageCodePage() {
               </span>
             </div>
 
+            {data.status === "REQUESTED" ? (
+              <div className="mt-4 rounded-2xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-900 dark:border-blue-500/40 dark:bg-blue-950/30 dark:text-blue-200">
+                Termin angefragt: Unser Team prüft die Anfrage und bestätigt Ihren finalen Termin zeitnah per E-Mail.
+              </div>
+            ) : null}
+
             <div className="mt-6 space-y-3 text-sm">
               <div>
                 <span className="font-semibold text-slate-600 dark:text-slate-400">Kunde:</span>{" "}

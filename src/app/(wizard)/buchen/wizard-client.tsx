@@ -1007,7 +1007,7 @@ export function BookingWizard(props: {
               </div>
             ) : null}
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-8 hidden flex-col gap-3 sm:flex sm:flex-row sm:items-center sm:justify-between">
               <Button
                 variant="outline"
                 onClick={() => setStep((s) => Math.max(0, s - 1))}
@@ -1038,10 +1038,49 @@ export function BookingWizard(props: {
             <div className="mt-4 text-xs font-semibold text-slate-600 dark:text-slate-400">
               Hinweis: Preise sind Schätzwerte auf Basis Ihrer Auswahl. Nach Prüfung bestätigen wir das finale Angebot.
             </div>
+            <div className="mt-6 rounded-2xl border border-slate-300 bg-[color:var(--surface-elevated)] p-4 sm:hidden">
+              <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Live-Schätzung</div>
+              <div className="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">
+                {eur(estimate.priceMinCents)} - {eur(estimate.priceMaxCents)}
+              </div>
+              <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                {formatNumberDE(estimate.totalVolumeM3)} m³ · {formatNumberDE(estimate.laborHours)} Std.
+              </div>
+            </div>
+
+            <div className="h-24 sm:hidden" />
+            <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-[color:var(--surface-elevated)]/95 px-4 py-3 backdrop-blur sm:hidden dark:border-slate-700">
+              <div className="mx-auto flex max-w-xl gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setStep((s) => Math.max(0, s - 1))}
+                  disabled={step === 0 || submitting}
+                  className="flex-1"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Zurück
+                </Button>
+                {current.key !== "summary" ? (
+                  <Button
+                    onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))}
+                    disabled={!canNext || submitting}
+                    className="flex-1"
+                  >
+                    Weiter
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button onClick={submit} disabled={submitting || !canNext} className="flex-1">
+                    {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                    Senden
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        <aside className="glass-card-solid h-fit rounded-3xl p-6 lg:sticky lg:top-24">
+        <aside className="glass-card-solid hidden h-fit rounded-3xl p-6 lg:sticky lg:top-24 lg:block">
           <div className="text-sm font-extrabold text-slate-900 dark:text-white">Live-Schätzung</div>
           <div className="mt-4 grid gap-3 text-sm">
             <div className="rounded-2xl border border-slate-300/80 bg-gradient-to-br from-slate-50 to-[color:var(--surface-elevated)] p-4 shadow-sm dark:border-slate-600 dark:from-slate-800/90 dark:to-slate-900/90">
@@ -1155,12 +1194,12 @@ function WizardHeader(props: { steps: { key: string; title: string }[]; step: nu
           style={{ width: `${pct}%` }}
         />
       </div>
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4 flex flex-nowrap gap-2 overflow-x-auto pb-1">
         {props.steps.map((s, idx) => (
           <div
             key={s.key}
             className={cn(
-              "rounded-full px-3 py-1.5 text-xs font-bold transition-all duration-300",
+              "whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold transition-all duration-300",
               idx === props.step
                 ? "bg-brand-600 text-white shadow-md shadow-brand-200 dark:shadow-brand-900/40"
                 : idx < props.step
@@ -1169,7 +1208,7 @@ function WizardHeader(props: { steps: { key: string; title: string }[]; step: nu
             )}
           >
             {idx < props.step ? (
-              <span className="mr-1">S</span>
+              <span className="mr-1">OK</span>
             ) : null}
             {s.title}
           </div>
@@ -1304,8 +1343,19 @@ function StepLocation(props: {
   accessPickup: Access;
   setAccessPickup: (v: Access) => void;
 }) {
+  const [showExtraAccess, setShowExtraAccess] = useState(false);
+
   return (
     <div className="grid gap-8">
+      <div className="rounded-2xl border border-slate-300 bg-[color:var(--surface-elevated)] p-4">
+        <div className="text-sm font-extrabold text-slate-900 dark:text-white">
+          Adresse zuerst, Details optional
+        </div>
+        <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
+          Für ein schnelles Angebot reichen die Adressen. Zugangsdaten können Sie optional ergänzen.
+        </div>
+      </div>
+
       {props.serviceType === "MOVING" || props.serviceType === "BOTH" ? (
         <div className="grid gap-6">
           <AddressAutocomplete
@@ -1314,18 +1364,12 @@ function StepLocation(props: {
             value={props.startAddress}
             onChange={props.setStartAddress}
           />
-          <AccessCard title="Zugang (Start)" value={props.accessStart} onChange={props.setAccessStart} />
 
           <AddressAutocomplete
             label="Zieladresse"
             required
             value={props.destinationAddress}
             onChange={props.setDestinationAddress}
-          />
-          <AccessCard
-            title="Zugang (Ziel)"
-            value={props.accessDestination}
-            onChange={props.setAccessDestination}
           />
         </div>
       ) : null}
@@ -1338,7 +1382,6 @@ function StepLocation(props: {
             value={props.pickupAddress}
             onChange={props.setPickupAddress}
           />
-          <AccessCard title="Zugang (Abholung)" value={props.accessPickup} onChange={props.setAccessPickup} />
         </div>
       ) : null}
 
@@ -1366,13 +1409,53 @@ function StepLocation(props: {
                 value={props.pickupAddress}
                 onChange={props.setPickupAddress}
               />
-              <AccessCard
-                title="Zugang (Abholung)"
-                value={props.accessPickup}
-                onChange={props.setAccessPickup}
-              />
             </div>
           ) : null}
+        </div>
+      ) : null}
+
+      <div className="rounded-2xl border border-slate-300 bg-[color:var(--surface-elevated)] p-4">
+        <button
+          type="button"
+          className="flex w-full items-center justify-between text-left"
+          onClick={() => setShowExtraAccess((prev) => !prev)}
+        >
+          <div>
+            <div className="text-sm font-extrabold text-slate-900 dark:text-white">
+              Weitere Angaben (optional)
+            </div>
+            <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
+              Zugang, Etage, Aufzug, Treppen, Parken und Trageweg.
+            </div>
+          </div>
+          <span className="text-xs font-extrabold text-brand-700 dark:text-brand-300">
+            {showExtraAccess ? "Ausblenden" : "Einblenden"}
+          </span>
+        </button>
+      </div>
+
+      {showExtraAccess ? (
+        <div className="grid gap-6">
+          {(props.serviceType === "MOVING" || props.serviceType === "BOTH") && (
+            <>
+              <AccessCard title="Zugang (Start)" value={props.accessStart} onChange={props.setAccessStart} />
+              <AccessCard
+                title="Zugang (Ziel)"
+                value={props.accessDestination}
+                onChange={props.setAccessDestination}
+              />
+            </>
+          )}
+          {props.serviceType === "DISPOSAL" && (
+            <AccessCard title="Zugang (Abholung)" value={props.accessPickup} onChange={props.setAccessPickup} />
+          )}
+          {props.serviceType === "BOTH" && !props.samePickupAsStart && (
+            <AccessCard
+              title="Zugang (Abholung)"
+              value={props.accessPickup}
+              onChange={props.setAccessPickup}
+            />
+          )}
         </div>
       ) : null}
     </div>
@@ -2350,5 +2433,6 @@ function SummaryServiceOptions(props: {
     </div>
   );
 }
+
 
 
