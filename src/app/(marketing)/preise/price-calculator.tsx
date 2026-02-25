@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -106,10 +106,10 @@ const speedDescriptions: Record<SpeedType, string> = {
 };
 
 function distanceSourceLabel(source?: CalculatedEstimate["distanceSource"]) {
-  if (source === "ors") return "OpenRouteService";
-  if (source === "cache") return "PLZ-Cache";
-  if (source === "fallback") return "Fallback";
-  return "Schtzung";
+  if (source === "ors") return "exakt berechnet";
+  if (source === "cache") return "berechnet";
+  if (source === "fallback") return "geschätzt";
+  return "geschätzt";
 }
 
 const INQUIRY_STORAGE_KEY = "ssu_inquiry";

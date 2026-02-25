@@ -1,12 +1,19 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 import {
+  Building2,
   CheckCircle2,
   Clock,
+  Home,
   MapPin,
+  Package,
   Recycle,
+  Refrigerator,
   ShieldCheck,
+  Sofa,
   Star,
+  TreePine,
+  Warehouse,
 } from "lucide-react";
 
 import { Container } from "@/components/container";
@@ -47,6 +54,19 @@ const steps = [
   { num: 1, title: "Menge beschreiben", desc: "Volumen oder Fotos – wir schätzen schnell und fair." },
   { num: 2, title: "Termin vereinbaren", desc: "Wir melden uns und planen die Abholung." },
   { num: 3, title: "Abholung vor Ort", desc: "Professionell, sauber und umweltbewusst entsorgt." },
+];
+
+const services = [
+  { icon: Refrigerator, name: "Elektrogerät entsorgen", price: "ab 59 € / Stück", desc: "Kühlschrank, Waschmaschine, Trockner", tag: "Beliebt" },
+  { icon: Package, name: "Sperrmüll-Paket Klein", price: "ab 99 €", desc: "Bis 1 m³ – einzelne Möbelstücke" },
+  { icon: Package, name: "Sperrmüll-Paket Mittel", price: "ab 199 €", desc: "1–3 m³ – nach einem Zimmerumbau" },
+  { icon: Sofa, name: "Einzelmöbel Abholung", price: "ab 39 € / Stück", desc: "Sofa, Schrank, Tisch, Matratze" },
+  { icon: Warehouse, name: "Kellerentrümpelung", price: "ab 299 €", desc: "Komplette Räumung des Kellers" },
+  { icon: Home, name: "Dachbodenentrümpelung", price: "ab 249 €", desc: "Räumung des gesamten Dachbodens" },
+  { icon: Home, name: "Wohnungsauflösung", price: "ab 15 € / m³", desc: "Teilweise oder komplette Auflösung" },
+  { icon: TreePine, name: "Gartenentsorgung", price: "ab 149 €", desc: "Grünschnitt, Gartenmöbel, Abfälle" },
+  { icon: Building2, name: "Büroauflösung", price: "ab 25 € / m³", desc: "Büromöbel, Technik, Akten" },
+  { icon: Home, name: "Komplette Haushaltsauflösung", price: "ab 19 € / m³", desc: "Vollständige Auflösung inkl. Besenreinigung" },
 ];
 
 const trustItems = [
@@ -181,9 +201,63 @@ export default async function EntsorgungPage() {
         </Container>
       </section>
 
-      {/* So funktioniert's */}
+      {/* Leistungen & Preise */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-b from-[color:var(--surface-elevated)] to-[color:var(--surface-soft)] dark:from-slate-950 dark:to-slate-900/50" />
+        <Container className="relative py-20">
+          <Reveal>
+            <div className="text-center">
+              <span className="inline-block rounded-full bg-amber-100/80 px-3 py-1 text-xs font-bold text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+                Leistungen & Preise
+              </span>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
+                Unsere Entsorgungs-Services
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
+                Alle Preise sind Richtwerte. Der finale Preis wird nach Prüfung Ihrer Anfrage individuell bestätigt.
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal className="mt-12">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {services.map((s) => (
+                <div
+                  key={s.name}
+                  className="group relative flex items-start gap-4 rounded-2xl border-2 border-slate-200 bg-[color:var(--surface-elevated)] p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-amber-500/40"
+                >
+                  {"tag" in s && s.tag && (
+                    <span className="absolute -top-2.5 right-4 rounded-full bg-amber-600 px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
+                      {s.tag}
+                    </span>
+                  )}
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400">
+                    <s.icon className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-extrabold text-slate-950 dark:text-white">{s.name}</div>
+                    <div className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{s.desc}</div>
+                    <div className="mt-1.5 text-lg font-extrabold text-amber-700 dark:text-amber-400">{s.price}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+
+          <Reveal className="mt-10 text-center">
+            <Link href="/entsorgung/buchen">
+              <Button size="lg" className="gap-2">
+                <Recycle className="h-5 w-5" />
+                Jetzt Abholung anfragen
+              </Button>
+            </Link>
+          </Reveal>
+        </Container>
+      </section>
+
+      {/* So funktioniert's */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-linear-to-b from-[color:var(--surface-soft)] to-[color:var(--surface-elevated)] dark:from-slate-900/50 dark:to-slate-950" />
         <Container className="relative py-20">
           <Reveal>
             <div className="text-center">

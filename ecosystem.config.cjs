@@ -1,3 +1,5 @@
+require("dotenv").config({ path: ".env" });
+
 module.exports = {
   apps: [
     {
@@ -12,8 +14,9 @@ module.exports = {
       merge_logs: true,
       time: true,
       env: {
+        ...process.env,
         NODE_ENV: "production",
-        PORT: 3000,
+        PORT: 3001,
         HOSTNAME: "0.0.0.0",
       },
     },

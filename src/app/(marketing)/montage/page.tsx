@@ -1,11 +1,16 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 import {
   CheckCircle2,
   Clock,
+  CookingPot,
   MapPin,
+  Monitor,
+  Package,
+  Refrigerator,
   ShieldCheck,
   Star,
+  WashingMachine,
   Wrench,
 } from "lucide-react";
 
@@ -47,6 +52,20 @@ const steps = [
   { num: 1, title: "Montage beschreiben", desc: "Anzahl und Art der Möbel – wir kalkulieren fair." },
   { num: 2, title: "Angebot erhalten", desc: "Schnelle Rückmeldung mit transparentem Preis." },
   { num: 3, title: "Montage durchführen", desc: "Unser Team kommt pünktlich und arbeitet zuverlässig." },
+];
+
+const services = [
+  { icon: CookingPot, name: "Küchenmontage komplett", price: "ab 299 €", tag: "Beliebt" },
+  { icon: Package, name: "Küchenmontage einfach (IKEA)", price: "ab 149 €" },
+  { icon: WashingMachine, name: "Waschmaschine anschließen", price: "ab 69 €" },
+  { icon: Refrigerator, name: "Kühlschrank aufstellen", price: "ab 49 €" },
+  { icon: Wrench, name: "Geschirrspüler anschließen", price: "ab 79 €" },
+  { icon: CookingPot, name: "Herd / Backofen anschließen", price: "ab 89 €" },
+  { icon: Package, name: "Kleiderschrank aufbauen", price: "ab 89 €" },
+  { icon: Package, name: "Bett aufbauen", price: "ab 69 €" },
+  { icon: Package, name: "Regal aufbauen", price: "ab 39 €" },
+  { icon: Monitor, name: "TV-Wandhalterung montieren", price: "ab 59 €" },
+  { icon: Wrench, name: "Sonstige Montagearbeiten", price: "ab 65 € / Std." },
 ];
 
 const trustItems = [
@@ -167,9 +186,62 @@ export default async function MontagePage() {
         </Container>
       </section>
 
-      {/* So funktioniert's */}
+      {/* Unsere Leistungen & Preise */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-b from-[color:var(--surface-elevated)] to-[color:var(--surface-soft)] dark:from-slate-950 dark:to-slate-900/50" />
+        <Container className="relative py-20">
+          <Reveal>
+            <div className="text-center">
+              <span className="inline-block rounded-full bg-brand-100/80 px-3 py-1 text-xs font-bold text-brand-700 dark:bg-brand-950/50 dark:text-brand-300">
+                Leistungen & Preise
+              </span>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
+                Unsere Montage-Services
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
+                Alle Preise sind Richtwerte. Der finale Preis wird nach Prüfung Ihrer Anfrage individuell bestätigt.
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal className="mt-12">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {services.map((s) => (
+                <div
+                  key={s.name}
+                  className="group relative flex items-start gap-4 rounded-2xl border-2 border-slate-200 bg-[color:var(--surface-elevated)] p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-brand-500/40"
+                >
+                  {"tag" in s && s.tag && (
+                    <span className="absolute -top-2.5 right-4 rounded-full bg-brand-600 px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
+                      {s.tag}
+                    </span>
+                  )}
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700 dark:bg-brand-950/50 dark:text-brand-400">
+                    <s.icon className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-extrabold text-slate-950 dark:text-white">{s.name}</div>
+                    <div className="mt-1 text-lg font-extrabold text-brand-700 dark:text-brand-400">{s.price}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+
+          <Reveal className="mt-10 text-center">
+            <Link href="/montage/buchen">
+              <Button size="lg" className="gap-2">
+                <Wrench className="h-5 w-5" />
+                Jetzt Montage anfragen
+              </Button>
+            </Link>
+          </Reveal>
+        </Container>
+      </section>
+
+      {/* So funktioniert's */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-linear-to-b from-[color:var(--surface-soft)] to-[color:var(--surface-elevated)] dark:from-slate-900/50 dark:to-slate-950" />
         <Container className="relative py-20">
           <Reveal>
             <div className="text-center">

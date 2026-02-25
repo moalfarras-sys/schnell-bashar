@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -179,10 +179,10 @@ const addonLabels: Record<WizardPayload["addons"][number], string> = {
 };
 
 function distanceSourceLabel(source?: "approx" | "ors" | "cache" | "fallback") {
-  if (source === "ors") return "OpenRouteService";
-  if (source === "cache") return "PLZ-Cache";
-  if (source === "fallback") return "Fallback";
-  return "Schätzung";
+  if (source === "ors") return "exakt berechnet";
+  if (source === "cache") return "berechnet";
+  if (source === "fallback") return "geschätzt";
+  return "geschätzt";
 }
 
 function eur(cents: number) {
@@ -526,7 +526,7 @@ export function BookingWizard(props: {
       customer: {
         name: customerName || "—",
         phone: customerPhone || "—",
-        email: customerEmail || "test@example.com",
+        email: customerEmail || "",
         contactPreference,
         note,
       },
@@ -1122,7 +1122,7 @@ export function BookingWizard(props: {
               ) : null}
               {routeLoading ? (
                 <div className="mt-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                  Distanz wird über OpenRouteService berechnet…
+                  Distanz wird berechnet…
                 </div>
               ) : null}
               {routeError ? (
@@ -2266,7 +2266,7 @@ function StepSummary(props: {
           ) : null}
           {props.routeLoading ? (
             <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
-              Distanz wird über OpenRouteService berechnet…
+              Distanz wird berechnet…
             </div>
           ) : null}
           {props.routeError ? (
