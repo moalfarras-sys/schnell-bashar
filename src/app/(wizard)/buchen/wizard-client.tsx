@@ -1070,7 +1070,7 @@ export function BookingWizard(props: {
               ) : null}
               {routeLoading ? (
                 <div className="mt-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                  Distanz wird berechnet⬦
+                  Distanz wird berechnet…
                 </div>
               ) : null}
               {routeError ? (
@@ -1117,7 +1117,7 @@ function getSteps(
   const rest = [
     { key: "timing" as const, title: "Wunschtermin" },
     { key: "customer" as const, title: "Kontakt" },
-    { key: "summary" as const, title: "Prfen & Senden" },
+    { key: "summary" as const, title: "Prüfen & Senden" },
   ];
 
   const withService =
@@ -1811,8 +1811,8 @@ function StepTiming(props: {
       <div className="grid gap-4 md:grid-cols-3">
         <SpeedCard
           active={props.speed === "ECONOMY"}
-          title="Gnstig"
-          desc="Gnstiger, lngere Vorlaufzeit."
+          title="Günstig"
+          desc="Günstiger, längere Vorlaufzeit."
           onClick={() => props.setSpeed("ECONOMY")}
         />
         <SpeedCard
@@ -1890,7 +1890,7 @@ function StepTiming(props: {
             })}
           </div>
           <div className="mt-3 rounded-2xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-900">
-            Termin angefragt: Wir besttigen den finalen Termin nach Prfung per E-Mail.
+            Termin angefragt: Wir bestätigen den finalen Termin nach Prüfung per E-Mail.
           </div>
         </div>
       </div>
@@ -2008,10 +2008,10 @@ function StepCustomer(props: {
         </div>
         <div>
           <div className="text-xs font-bold text-slate-700">Telefon *</div>
-          <Input value={props.customerPhone} onChange={(e) => props.setCustomerPhone(e.target.value)} placeholder="+49 ⬦" />
+          <Input value={props.customerPhone} onChange={(e) => props.setCustomerPhone(e.target.value)} placeholder="+49 …" />
         </div>
         <div>
-          <div className="text-xs font-bold text-slate-700">EMail *</div>
+          <div className="text-xs font-bold text-slate-700">E-Mail *</div>
           <Input type="email" value={props.customerEmail} onChange={(e) => props.setCustomerEmail(e.target.value)} placeholder="name@email.de" />
         </div>
         <div className="sm:col-span-2">
@@ -2029,7 +2029,7 @@ function StepCustomer(props: {
                 )}
                 onClick={() => props.setContactPreference(k)}
               >
-                {k === "PHONE" ? "Telefon" : k === "WHATSAPP" ? "WhatsApp" : "EMail"}
+                {k === "PHONE" ? "Telefon" : k === "WHATSAPP" ? "WhatsApp" : "E-Mail"}
               </button>
             ))}
           </div>
@@ -2201,7 +2201,7 @@ function StepSummary(props: {
           ) : null}
           {props.routeLoading ? (
             <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
-              Distanz wird berechnet⬦
+              Distanz wird berechnet…
             </div>
           ) : null}
           {props.routeError ? (
@@ -2249,7 +2249,7 @@ function StepSummary(props: {
             <span className="font-extrabold">Telefon:</span> {props.customerPhone || ""}
           </div>
           <div>
-            <span className="font-extrabold">EMail:</span> {props.customerEmail || ""}
+            <span className="font-extrabold">E-Mail:</span> {props.customerEmail || ""}
           </div>
           <div>
             <span className="font-extrabold">Kontaktweg:</span>{" "}

@@ -20,8 +20,8 @@ type SpeedType = "ECONOMY" | "STANDARD" | "EXPRESS";
 
 const ADDON_OPTIONS = [
   { key: "PACKING" as const, label: "Packservice" },
-  { key: "DISMANTLE_ASSEMBLE" as const, label: "Mbelmontage" },
-  { key: "ENTRUEMPELUNG" as const, label: "Entrmpelung" },
+  { key: "DISMANTLE_ASSEMBLE" as const, label: "Möbelmontage" },
+  { key: "ENTRUEMPELUNG" as const, label: "Entrümpelung" },
 ] as const;
 
 const ADDON_SURCHARGES_CENTS: Record<string, number> = {
@@ -89,19 +89,19 @@ function eur(cents: number) {
 
 const serviceLabels: Record<ServiceType, string> = {
   UMZUG: "Umzug",
-  ENTSORGUNG: "Entsorgung / Sperrmll",
+  ENTSORGUNG: "Entsorgung / Sperrmüll",
   KOMBI: "Umzug + Entsorgung",
 };
 
 const speedLabels: Record<SpeedType, string> = {
-  ECONOMY: "Gnstig",
+  ECONOMY: "Günstig",
   STANDARD: "Standard",
   EXPRESS: "Express",
 };
 
 const speedDescriptions: Record<SpeedType, string> = {
-  ECONOMY: "Gnstiger, flexibler Termin",
-  STANDARD: "Schnelle R?ckmeldung",
+  ECONOMY: "Günstiger, flexibler Termin",
+  STANDARD: "Schnelle Rückmeldung",
   EXPRESS: "Priorisierte Planung",
 };
 
@@ -507,7 +507,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="from-address" className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Von (PLZ + Straxe)
+            Von (PLZ + Straße)
           </label>
           <Input
             id="from-address"
@@ -519,7 +519,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
         </div>
         <div>
           <label htmlFor="to-address" className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Nach (PLZ + Straxe)
+            Nach (PLZ + Straße)
           </label>
           <Input
             id="to-address"
@@ -538,7 +538,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
       ) : null}
       {calcLoading ? (
         <div className="mt-3 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
-          Preis wird live berechnet⬦
+          Preis wird live berechnet…
         </div>
       ) : null}
       {calcError ? (
@@ -793,7 +793,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
       <div className="mt-4 flex items-start gap-2 text-xs text-slate-600 dark:text-slate-400">
         <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
         <span>
-          Das finale Angebot besttigen wir nach kurzer Prfung. Der Rechner dient als
+          Das finale Angebot bestätigen wir nach kurzer Prüfung. Der Rechner dient als
           unverbindliche Orientierung.
         </span>
       </div>
