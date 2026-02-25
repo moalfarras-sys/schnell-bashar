@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -507,7 +507,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="from-address" className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Von (PLZ + Stra?e)
+            Von (PLZ + Straße)
           </label>
           <Input
             id="from-address"
@@ -519,7 +519,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
         </div>
         <div>
           <label htmlFor="to-address" className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Nach (PLZ + Stra?e)
+            Nach (PLZ + Straße)
           </label>
           <Input
             id="to-address"
@@ -538,7 +538,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
       ) : null}
       {calcLoading ? (
         <div className="mt-3 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
-          Preis wird live berechnet⬦
+          Preis wird live berechnetâ¬¦
         </div>
       ) : null}
       {calcError ? (
@@ -707,7 +707,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
           <div className="flex justify-between text-slate-700 dark:text-slate-400">
             <span>Prioritt ({speedLabels[speed]})</span>
             <span className="font-semibold text-slate-900 dark:text-slate-100">
-              {speed === "ECONOMY" ? "10 %" : speed === "EXPRESS" ? "+30 %" : "±0 %"}
+              {speed === "ECONOMY" ? "10 %" : speed === "EXPRESS" ? "+30 %" : "Â±0 %"}
             </span>
           </div>
           <div className="my-1 border-t-2 border-slate-300 dark:border-slate-600" />
@@ -800,4 +800,5 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
     </div>
   );
 }
+
 

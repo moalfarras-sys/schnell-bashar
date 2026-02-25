@@ -28,7 +28,7 @@ export default async function AuditLogPage() {
     <div className="grid gap-6">
       <section className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-6">
         <h1 className="text-xl font-bold text-white">Audit-Log</h1>
-        <p className="mt-1 text-sm text-slate-300">Letzte administrative Aktionen und Ä?nderungen.</p>
+        <p className="mt-1 text-sm text-slate-300">Letzte administrative Aktionen und Änderungen.</p>
       </section>
 
       <section className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-6">
@@ -60,4 +60,5 @@ export default async function AuditLogPage() {
     </div>
   );
 }
+
 

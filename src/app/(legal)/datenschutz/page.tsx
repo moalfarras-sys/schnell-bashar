@@ -83,7 +83,7 @@ export default function DatenschutzPage() {
         können die Speicherung von Cookies in den Browsereinstellungen jederzeit deaktivieren.
       </p>
 
-      <h2>9. Ä?nderungen dieser Datenschutzerklärung</h2>
+      <h2>9. Änderungen dieser Datenschutzerklärung</h2>
       <p>
         Wir behalten uns das Recht vor, diese Datenschutzerklärung jederzeit anzupassen. Der
         aktuelle Stand ist Februar 2026.

@@ -23,7 +23,7 @@ export async function PATCH(
   if (typeof body.isActive === "boolean") data.isActive = body.isActive;
 
   if (Object.keys(data).length === 0) {
-    return NextResponse.json({ error: "Keine Ä?nderungen" }, { status: 400 });
+    return NextResponse.json({ error: "Keine Änderungen" }, { status: 400 });
   }
 
   try {

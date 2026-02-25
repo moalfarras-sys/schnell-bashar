@@ -40,7 +40,7 @@ const movingFAQs = [
     {
         question: "Kann ich meinen Termin nachträglich ändern?",
         answer:
-            "Terminä?nderungen sind nach Absprache möglich. Kontaktieren Sie uns so früh wie möglich, damit wir eine alternative Lösung finden können. Kurzfristige Ä?nderungen können ggf. Gebühren verursachen.",
+            "Terminänderungen sind nach Absprache möglich. Kontaktieren Sie uns so früh wie möglich, damit wir eine alternative Lösung finden können. Kurzfristige Änderungen können ggf. Gebühren verursachen.",
     },
 ];
 
@@ -57,4 +57,5 @@ export function MovingFAQSection() {
         </>
     );
 }
+
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Loader2, MapPin, X } from "lucide-react";
@@ -73,7 +73,7 @@ export function AddressAutocomplete(props: {
   const helper = useMemo(() => {
     if (!open) return "";
     if (!canSearch) return "Mindestens 3 Zeichen eingeben.";
-    if (loading) return "Suche⬦";
+    if (loading) return "Sucheâ¬¦";
     if (results.length === 0) return "Keine Treffer.";
     return "";
   }, [open, canSearch, loading, results.length]);
@@ -107,7 +107,7 @@ export function AddressAutocomplete(props: {
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder={props.placeholder ?? "Stra?e, Hausnummer, PLZ, Ort"}
+          placeholder={props.placeholder ?? "Straße, Hausnummer, PLZ, Ort"}
           className="pl-9"
         />
         {loading ? <Loader2 className="h-5 w-5 animate-spin text-slate-400" /> : null}
@@ -155,5 +155,6 @@ export function AddressAutocomplete(props: {
     </div>
   );
 }
+
 
 

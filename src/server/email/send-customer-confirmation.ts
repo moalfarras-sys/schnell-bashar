@@ -1,4 +1,4 @@
-import { formatInTimeZone } from "date-fns-tz";
+﻿import { formatInTimeZone } from "date-fns-tz";
 
 import { getMailer } from "@/server/email/mailer";
 import { generateQuotePdf } from "@/server/pdf/generate-quote";
@@ -146,7 +146,7 @@ export async function sendCustomerConfirmationEmail(args: {
 
       <div style="background: #f8fafc; padding: 16px 24px; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none; text-align: center;">
         <p style="margin: 0; font-size: 11px; color: #94a3b8;">
-          © ${new Date().getFullYear()} Schnell Sicher Umzug  Anzengruber Stra?e 9, 12043 Berlin
+          Â© ${new Date().getFullYear()} Schnell Sicher Umzug  Anzengruber Straße 9, 12043 Berlin
         </p>
       </div>
     </div>
@@ -197,4 +197,5 @@ export async function sendCustomerConfirmationEmail(args: {
 
   return { ok: true as const };
 }
+
 

@@ -1229,7 +1229,7 @@ function StepService(props: {
         />
         <ServiceCard
           active={props.serviceType === "DISPOSAL"}
-          title="Entsorgung / Sperrmuell"
+          title="Entsorgung / Sperrmüll"
           desc="Abholung und Entsorgung - klar strukturiert."
           icon={Recycle}
           onClick={() => props.setServiceType("DISPOSAL")}
@@ -2394,3 +2394,4 @@ function SummaryServiceOptions(props: {
     </div>
   );
 }
+

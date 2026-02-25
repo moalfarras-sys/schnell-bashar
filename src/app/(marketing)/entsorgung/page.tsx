@@ -60,7 +60,7 @@ export default async function EntsorgungPage() {
   const hero = await getImageSlot({
     key: "img.entsorgung.hero.bg",
     fallbackSrc: "/media/gallery/disposal-dumpster.jpeg",
-    fallbackAlt: "Sperrmuell-Container und Abholung",
+    fallbackAlt: "Sperrmüll-Container und Abholung",
   });
   return (
     <>
@@ -230,4 +230,5 @@ export default async function EntsorgungPage() {
     </>
   );
 }
+
 
