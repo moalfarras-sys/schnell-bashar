@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { Container } from "@/components/container";
@@ -21,7 +21,7 @@ export function SiteFooter() {
             </span>
           </Link>
           <p className="mt-3 max-w-prose text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            Umzug, Montage und fachgerechte Entsorgung  strukturiert, transparent und
+            Umzug, Montage und fachgerechte Entsorgung – strukturiert, transparent und
             deutschlandweit planbar.
           </p>
           <div className="mt-5 flex gap-3">
@@ -53,14 +53,11 @@ export function SiteFooter() {
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/entsorgung">
               Entsorgung
             </Link>
+            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/montage">
+              Montage
+            </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/preise">
               Preise & Pakete
-            </Link>
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/vergleich">
-              Paketvergleich
-            </Link>
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/galerie">
-              Galerie
             </Link>
           </div>
         </div>
@@ -68,23 +65,20 @@ export function SiteFooter() {
         <div className="text-sm">
           <div className="font-bold text-slate-900 dark:text-white">Online-Dienste</div>
           <div className="mt-3 grid gap-2.5 text-slate-600 dark:text-slate-400">
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/preise">
-              Angebot berechnen
-            </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/buchen?context=MOVING">
-              Termin & Kalender
+              Umzug buchen
             </Link>
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/umzugsplaner">
-              Umzugsplaner
+            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/buchen?context=MONTAGE">
+              Montage buchen
+            </Link>
+            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/buchen?context=ENTSORGUNG">
+              Entsorgung buchen
             </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/anfrage">
               Anfrage verfolgen
             </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/faq">
               FAQ
-            </Link>
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/karriere">
-              Karriere
             </Link>
           </div>
 
@@ -108,7 +102,7 @@ export function SiteFooter() {
             <div className="flex items-start gap-2.5">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-600 dark:text-brand-400" />
               <div>
-                Anzengruber Straxe 9
+                Anzengruber Straße 9
                 <br />
                 12043 Berlin
                 <br />
@@ -137,6 +131,3 @@ export function SiteFooter() {
     </footer>
   );
 }
-
-
-

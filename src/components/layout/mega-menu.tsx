@@ -12,7 +12,6 @@ import {
   CalendarDays,
   ClipboardList,
   Search,
-  Users,
   HelpCircle,
   Mail,
   MessageCircle,
@@ -66,7 +65,7 @@ const menuSections: MenuSection[] = [
       {
         title: "Informationen",
         links: [
-          { label: "Über uns", href: "/ueber-uns", desc: "Team & Werte", icon: Users },
+          { label: "Tracking", href: "/anfrage", desc: "Status Ihrer Anfrage", icon: Search },
           { label: "FAQ", href: "/faq", desc: "Häufige Fragen", icon: HelpCircle },
           { label: "Kontakt", href: "/kontakt", desc: "Nachricht senden", icon: Mail },
           { label: "WhatsApp", href: "https://wa.me/491729573681", desc: "Direkt chatten", icon: MessageCircle },
@@ -233,13 +232,6 @@ export function MegaMenuMobile({ onClose }: { onClose: () => void }) {
         </div>
       ))}
 
-      <Link
-        href="/galerie"
-        className="block rounded-lg px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-[color:var(--surface-soft)] dark:text-slate-200 dark:hover:bg-slate-800"
-        onClick={onClose}
-      >
-        Galerie
-      </Link>
     </div>
   );
 }

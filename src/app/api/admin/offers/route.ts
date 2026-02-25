@@ -5,6 +5,14 @@ import { prisma } from "@/server/db/prisma";
 import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
 import { nextDocumentNumber } from "@/server/ids/document-number";
 
+type OfferServiceLine = {
+  title: string;
+  description?: string | null;
+  qty: number;
+  unitPriceCents: number;
+  totalCents: number;
+};
+
 export async function POST(req: NextRequest) {
   const cookieStore = await cookies();
   const token = cookieStore.get(adminCookieName())?.value;
@@ -42,6 +50,33 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const normalizedServices: OfferServiceLine[] = Array.isArray(services)
+    ? services
+        .map((line) => {
+          const qty = Number(line?.qty) || 0;
+          const unitPriceCents = Number(line?.unitPriceCents) || 0;
+          const totalCents =
+            Number(line?.totalCents) || Math.round(qty * unitPriceCents);
+          const title = String(line?.title ?? "").trim();
+          const description = String(line?.description ?? "").trim();
+          return {
+            title,
+            description: description || null,
+            qty,
+            unitPriceCents,
+            totalCents,
+          } satisfies OfferServiceLine;
+        })
+        .filter((line) => line.title.length >= 2 && line.qty > 0 && line.totalCents > 0)
+    : [];
+
+  if (!normalizedServices.length) {
+    return NextResponse.json(
+      { error: "Bitte mindestens eine Leistungsposition mit Preis erfassen." },
+      { status: 400 },
+    );
+  }
+
   const offerToken = nanoid(32);
   const offerNo = await nextDocumentNumber("OFFER");
 
@@ -60,7 +95,7 @@ export async function POST(req: NextRequest) {
       customerPhone,
       customerAddress: customerAddress || null,
       notes: description || null,
-      services: services || [],
+      services: normalizedServices,
       netCents: Number(netCents) || 0,
       vatCents: Number(vatCents) || 0,
       grossCents: Number(grossCents) || 0,

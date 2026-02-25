@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import { BadgeEuro, CheckCircle2, Clock, Sparkles } from "lucide-react";
 
@@ -20,32 +20,32 @@ export const metadata = {
 const packages = [
   {
     title: "Günstig",
-    tag: "Günstigste Option",
-    desc: "Preisbewusst mit flexiblerem Zeitfenster.",
+    tag: "Preisbewusst",
+    desc: "Für flexible Termine mit starkem Preisfokus.",
     bullets: [
-      "Ideal bei planbaren Terminen",
-      "Gute Lösung für Standardvolumen",
-      "Günstiger Multiplikator",
+      "Ideal bei planbaren Zeitfenstern",
+      "Sehr gute Option für Standardvolumen",
+      "Kosteneffizient bei längerer Vorlaufzeit",
     ],
   },
   {
     title: "Standard",
     tag: "Meistgewählt",
-    desc: "Balance aus Preis und Schnelligkeit.",
+    desc: "Balance aus Preis, Planungssicherheit und Geschwindigkeit.",
     bullets: [
-      "Unsere meistgewählte Option",
+      "Unsere beliebteste Option",
       "Schnelle Rückmeldung",
-      "Transparenter Preisrahmen",
+      "Transparenter Richtpreis mit klaren Leistungen",
     ],
   },
   {
     title: "Express",
-    tag: "Schnellste Option",
-    desc: "Schnellstmöglich (höherer Preis).",
+    tag: "Priorisiert",
+    desc: "Für dringende Aufträge mit kurzer Vorlaufzeit.",
     bullets: [
-      "Kurzer Vorlauf",
       "Priorisierte Planung",
-      "Für dringende Umzüge und Abholungen",
+      "Kurzfristige Terminoptionen",
+      "Besonders geeignet für eilige Umzüge und Abholungen",
     ],
   },
 ];
@@ -89,20 +89,20 @@ export default async function PreisePage() {
           Preise & Pakete
         </h1>
         <p className="mt-4 text-base leading-relaxed text-slate-700 dark:text-slate-400">
-          Transparente Preise ohne versteckte Kosten. Nutzen Sie den Preisrechner für eine
-          schnelle Orientierung oder starten Sie direkt eine Anfrage.
+          Transparente Richtpreise ohne versteckte Kosten. Der endgültige Preis wird immer über
+          ein verbindliches Angebot bestätigt.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <a href="#price-calculator">
             <Button size="lg">
               <BadgeEuro className="h-5 w-5" />
-              Angebot berechnen
+              Richtpreis berechnen
             </Button>
           </a>
           <Link href="/buchen?context=MOVING">
             <Button size="lg" variant="outline">
               <Clock className="h-5 w-5" />
-              Termin auswählen
+              Anfrage starten
             </Button>
           </Link>
         </div>
@@ -114,10 +114,11 @@ export default async function PreisePage() {
             <Link
               key={p.title + i}
               href="#price-calculator"
-              className={`relative flex flex-col rounded-3xl border-2 p-6 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 ${i === 1
+              className={`relative flex flex-col rounded-3xl border-2 p-6 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 ${
+                i === 1
                   ? "border-brand-500 bg-brand-50/70 shadow-lg dark:bg-brand-900/20"
                   : "border-slate-300 bg-[color:var(--surface-elevated)] shadow-md hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-slate-600"
-                }`}
+              }`}
             >
               {i === 1 && (
                 <div className="absolute -top-3 left-6 inline-flex items-center gap-1 rounded-full bg-brand-600 px-3 py-1 text-xs font-bold text-white shadow-md">
@@ -146,8 +147,8 @@ export default async function PreisePage() {
       <Preisbeispiele />
 
       <div className="mt-10 rounded-3xl border-2 border-slate-300 bg-slate-50 p-6 text-sm font-semibold text-slate-800 shadow-sm dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
-        Hinweis: Der finale Preis wird nach Prüfung bestätigt. Der Rechner ist eine Orientierung
-        auf Basis Ihrer Angaben (m³, Priorität, Zugang).
+        Richtpreis-Hinweis: Alle Werte sind unverbindliche Orientierung auf Basis Ihrer Angaben.
+        Der endgültige Preis wird nach Prüfung in einem verbindlichen Angebot festgelegt.
       </div>
 
       <div className="premium-surface-emphasis relative mt-12 aspect-16/6 overflow-hidden rounded-3xl">
@@ -162,6 +163,3 @@ export default async function PreisePage() {
     </Container>
   );
 }
-
-
-
