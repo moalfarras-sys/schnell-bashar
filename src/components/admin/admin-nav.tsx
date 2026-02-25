@@ -21,6 +21,7 @@ import {
   Users,
   ScrollText,
   Wrench,
+  Settings,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -45,6 +46,7 @@ const navItems: NavItem[] = [
   { href: "/admin/media", label: "Mediathek", icon: ImageIcon },
   { href: "/admin/media/slots", label: "Image Slots", icon: LayoutTemplate },
   { href: "/admin/content", label: "Inhalte", icon: Type },
+  { href: "/admin/settings", label: "Einstellungen", icon: Settings },
   { href: "/admin/jobs", label: "Stellenangebote", icon: Briefcase },
   { href: "/admin/users", label: "Benutzer", icon: Users },
   { href: "/admin/roles", label: "Rollen & Rechte", icon: Shield },

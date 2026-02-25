@@ -38,6 +38,9 @@ export async function sendCustomerConfirmationEmail(args: {
   itemRows: EmailItemRow[];
   offerNo?: string;
   offerLink?: string;
+  supportPhone: string;
+  supportEmail: string;
+  whatsappPhoneE164: string;
 }) {
   const transporter = getMailer();
   if (!transporter) return { ok: false as const, skipped: true as const };
@@ -63,6 +66,9 @@ export async function sendCustomerConfirmationEmail(args: {
 
   const subject = `Ihre Anfrage ${args.publicId} – Bestätigung von Schnell Sicher Umzug`;
 
+  const waUrl = `https://wa.me/${args.whatsappPhoneE164}`;
+  const telHref = `tel:${args.supportPhone.replace(/\s+/g, "")}`;
+
   const text = [
     `Hallo ${args.customerName},`,
     "",
@@ -86,9 +92,9 @@ export async function sendCustomerConfirmationEmail(args: {
     `${baseUrl}/anfrage/${args.publicId}`,
     "",
     `Bei Fragen erreichen Sie uns:`,
-    `Telefon: +49 172 9573681`,
-    `WhatsApp: https://wa.me/491729573681`,
-    `E-Mail: kontakt@schnellsicherumzug.de`,
+    `Telefon: ${args.supportPhone}`,
+    `WhatsApp: ${waUrl}`,
+    `E-Mail: ${args.supportEmail}`,
     "",
     `Im Anhang finden Sie Ihr vorläufiges Angebot als PDF.`,
     "",
@@ -158,9 +164,9 @@ export async function sendCustomerConfirmationEmail(args: {
 
         <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 1.6;">
           <strong>Kontakt:</strong><br/>
-          Telefon: <a href="tel:+491729573681" style="color: #2563eb;">+49 172 9573681</a><br/>
-          WhatsApp: <a href="https://wa.me/491729573681" style="color: #2563eb;">Chat öffnen</a><br/>
-          E-Mail: <a href="mailto:kontakt@schnellsicherumzug.de" style="color: #2563eb;">kontakt@schnellsicherumzug.de</a>
+          Telefon: <a href="${telHref}" style="color: #2563eb;">${args.supportPhone}</a><br/>
+          WhatsApp: <a href="${waUrl}" style="color: #2563eb;">Chat öffnen</a><br/>
+          E-Mail: <a href="mailto:${args.supportEmail}" style="color: #2563eb;">${args.supportEmail}</a>
         </p>
       </div>
 

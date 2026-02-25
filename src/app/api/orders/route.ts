@@ -25,6 +25,7 @@ import { generateOfferPDF } from "@/server/pdf/generate-offer";
 import { generateAGBPDF } from "@/server/pdf/generate-agb";
 import { STORAGE_BUCKETS, getSupabaseAdmin } from "@/lib/supabase";
 import { deriveOfferNoFromOrderNo, nextDocumentNumber } from "@/server/ids/document-number";
+import { loadOperationalSettings } from "@/server/settings/operational-settings";
 
 export const runtime = "nodejs";
 const OFFER_VALIDITY_DAYS = parseInt(process.env.OFFER_VALIDITY_DAYS || "7", 10);
@@ -143,7 +144,7 @@ export async function POST(req: Request) {
     }
   }
 
-  const [pricing, catalog, serviceOptionsData, promoRulesData] = await Promise.all([
+  const [pricing, catalog, serviceOptionsData, promoRulesData, operationalSettings] = await Promise.all([
     prisma.pricingConfig.findFirst({
       where: { active: true },
       orderBy: { updatedAt: "desc" },
@@ -178,6 +179,7 @@ export async function POST(req: Request) {
       },
       orderBy: { updatedAt: "desc" },
     }),
+    loadOperationalSettings(),
   ]);
 
   if (!pricing) {
@@ -711,48 +713,60 @@ export async function POST(req: Request) {
     console.error("[orders] Offer PDF/email pipeline failed:", offerErr);
   }
 
-  try {
-    await sendOrderEmail({
-      publicId: order.publicId,
-      payload,
-      estimate,
-      requestedDateFrom,
-      requestedDateTo,
-      preferredTimeWindow: payload.timing.preferredTimeWindow,
-      uploadNames: savedUploads.map((u) => u.fileName),
-      itemRows: itemRowsForEmail,
-      offerNo: offer.offerNo || offerNo,
-      offerLink: fullOfferUrl,
-    });
-  } catch (e) {
-    console.error("Company email send failed", e);
+  if (operationalSettings.internalOrderEmailEnabled) {
+    try {
+      await sendOrderEmail({
+        publicId: order.publicId,
+        payload,
+        estimate,
+        requestedDateFrom,
+        requestedDateTo,
+        preferredTimeWindow: payload.timing.preferredTimeWindow,
+        uploadNames: savedUploads.map((u) => u.fileName),
+        itemRows: itemRowsForEmail,
+        offerNo: offer.offerNo || offerNo,
+        offerLink: fullOfferUrl,
+      });
+    } catch (e) {
+      console.error("Company email send failed", e);
+    }
   }
 
-  try {
-    await sendCustomerConfirmationEmail({
-      publicId: order.publicId,
-      customerEmail: payload.customer.email,
-      customerName: payload.customer.name,
-      serviceType: payload.serviceType,
-      speed: payload.timing.speed,
-      requestedDateFrom,
-      requestedDateTo,
-      preferredTimeWindow: payload.timing.preferredTimeWindow,
-      priceMinCents: estimate.priceMinCents,
-      priceMaxCents: estimate.priceMaxCents,
-      totalVolumeM3: estimate.totalVolumeM3,
-      itemRows: itemRowsForEmail,
-      offerNo: offer.offerNo || offerNo,
-      offerLink: fullOfferUrl,
-    });
-  } catch (e) {
-    console.error("Customer confirmation email send failed", e);
+  if (operationalSettings.customerConfirmationEmailEnabled) {
+    try {
+      await sendCustomerConfirmationEmail({
+        publicId: order.publicId,
+        customerEmail: payload.customer.email,
+        customerName: payload.customer.name,
+        serviceType: payload.serviceType,
+        speed: payload.timing.speed,
+        requestedDateFrom,
+        requestedDateTo,
+        preferredTimeWindow: payload.timing.preferredTimeWindow,
+        priceMinCents: estimate.priceMinCents,
+        priceMaxCents: estimate.priceMaxCents,
+        totalVolumeM3: estimate.totalVolumeM3,
+        itemRows: itemRowsForEmail,
+        offerNo: offer.offerNo || offerNo,
+        offerLink: fullOfferUrl,
+        supportPhone: operationalSettings.supportPhone,
+        supportEmail: operationalSettings.supportEmail,
+        whatsappPhoneE164: operationalSettings.whatsappPhoneE164,
+      });
+    } catch (e) {
+      console.error("Customer confirmation email send failed", e);
+    }
   }
 
-  const waText = encodeURIComponent(
-    `Hallo! Ich habe eine Anfrage über die Website gesendet (${bookingContextLabel(payload.bookingContext)}). Auftrags-ID: ${order.publicId}.`,
-  );
-  const waUrl = `https://wa.me/491729573681?text=${waText}`;
+  const waUrl = operationalSettings.whatsappEnabled
+    ? (() => {
+        const message = operationalSettings.whatsappTemplate
+          .replace("{context}", bookingContextLabel(payload.bookingContext))
+          .replace("{publicId}", order.publicId);
+        const waText = encodeURIComponent(message);
+        return `https://wa.me/${operationalSettings.whatsappPhoneE164}?text=${waText}`;
+      })()
+    : null;
   const pdfToken = await signPdfAccessToken(order.publicId);
 
   return NextResponse.json({
