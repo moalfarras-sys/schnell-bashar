@@ -140,6 +140,76 @@ export async function GET(
         grossCents: offer.grossCents,
       });
     } else {
+      const wizardData = (order.wizardData as
+        | {
+            selectedServiceOptions?: Array<{ code?: string; qty?: number }>;
+            pricingBreakdownV2?: { serviceOptionsCents?: number };
+          }
+        | null) ?? { selectedServiceOptions: [] };
+
+      const selectedServiceOptions = Array.isArray(wizardData.selectedServiceOptions)
+        ? wizardData.selectedServiceOptions
+            .map((entry) => ({
+              code: String(entry?.code ?? "").trim(),
+              qty: Math.max(1, Number(entry?.qty ?? 1)),
+            }))
+            .filter((entry) => entry.code.length > 0)
+        : [];
+
+      const optionCodes = [...new Set(selectedServiceOptions.map((entry) => entry.code))];
+      const optionRows =
+        optionCodes.length > 0
+          ? await prisma.serviceOption.findMany({
+              where: { code: { in: optionCodes } },
+              select: { code: true, nameDe: true },
+            })
+          : [];
+      const optionNameByCode = new Map(optionRows.map((row) => [row.code, row.nameDe]));
+
+      const optionTotalPool = Math.max(
+        0,
+        Number(wizardData.pricingBreakdownV2?.serviceOptionsCents ?? 0),
+      );
+      const optionQtyTotal = selectedServiceOptions.reduce((sum, entry) => sum + entry.qty, 0);
+      let optionPoolRemaining = optionTotalPool;
+      const serviceOptionLines = selectedServiceOptions.map((entry, index) => {
+        const lineTotal =
+          index === selectedServiceOptions.length - 1
+            ? optionPoolRemaining
+            : optionQtyTotal > 0
+              ? Math.round((optionTotalPool * entry.qty) / optionQtyTotal)
+              : 0;
+        optionPoolRemaining = Math.max(0, optionPoolRemaining - lineTotal);
+        const unitCents = entry.qty > 0 ? Math.round(lineTotal / entry.qty) : lineTotal;
+        return {
+          label: optionNameByCode.get(entry.code) ?? entry.code,
+          qty: entry.qty,
+          unit: Math.round(unitCents / 100),
+          total: lineTotal,
+        };
+      });
+
+      const catalogPool = Math.max(0, order.priceMaxCents - optionTotalPool);
+      const catalogWeightTotal = order.lines.reduce((sum, line) => sum + Math.max(line.qty, 1), 0);
+      let catalogPoolRemaining = catalogPool;
+      const catalogLines = order.lines.map((line, index) => {
+        const weight = Math.max(line.qty, 1);
+        const lineTotal =
+          index === order.lines.length - 1
+            ? catalogPoolRemaining
+            : catalogWeightTotal > 0
+              ? Math.round((catalogPool * weight) / catalogWeightTotal)
+              : 0;
+        catalogPoolRemaining = Math.max(0, catalogPoolRemaining - lineTotal);
+
+        return {
+          label: line.catalogItem.nameDe,
+          qty: line.qty,
+          unit: Math.round((line.lineVolumeM3 / Math.max(line.qty, 1)) * 100),
+          total: lineTotal,
+        };
+      });
+
       buffer = await generateQuotePdf({
         publicId: order.publicId,
         customerName: order.customerName,
@@ -147,12 +217,7 @@ export async function GET(
         serviceType: order.serviceType,
         speed: order.speed,
         slotLabel: `${formatInTimeZone(order.slotStart, "Europe/Berlin", "dd.MM.yyyy HH:mm")} - ${formatInTimeZone(order.slotEnd, "Europe/Berlin", "HH:mm")}`,
-        lines: order.lines.map((line) => ({
-          label: line.catalogItem.nameDe,
-          qty: line.qty,
-          unit: Math.round((line.lineVolumeM3 / Math.max(line.qty, 1)) * 100),
-          total: Math.round((order.priceMaxCents / Math.max(order.lines.length, 1)) * 1),
-        })),
+        lines: [...catalogLines, ...serviceOptionLines],
         netCents: net,
         vatCents: vat,
         grossCents: gross,
