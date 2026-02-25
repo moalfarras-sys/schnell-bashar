@@ -16,18 +16,28 @@ function eur(cents: number) {
   );
 }
 
+function preferredTimeWindowLabel(value: "MORNING" | "AFTERNOON" | "EVENING" | "FLEXIBLE") {
+  if (value === "MORNING") return "Vormittag";
+  if (value === "AFTERNOON") return "Nachmittag";
+  if (value === "EVENING") return "Abend";
+  return "Flexibel";
+}
+
 export async function sendCustomerConfirmationEmail(args: {
   publicId: string;
   customerEmail: string;
   customerName: string;
   serviceType: string;
   speed: string;
-  slotStart: Date;
-  slotEnd: Date;
+  requestedDateFrom: Date;
+  requestedDateTo: Date;
+  preferredTimeWindow: "MORNING" | "AFTERNOON" | "EVENING" | "FLEXIBLE";
   priceMinCents: number;
   priceMaxCents: number;
   totalVolumeM3: number;
   itemRows: EmailItemRow[];
+  offerNo?: string;
+  offerLink?: string;
 }) {
   const transporter = getMailer();
   if (!transporter) return { ok: false as const, skipped: true as const };
@@ -37,7 +47,9 @@ export async function sendCustomerConfirmationEmail(args: {
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellumzug-berlin.de";
 
-  const slotLabel = `${formatInTimeZone(args.slotStart, "Europe/Berlin", "EEEE, dd.MM.yyyy")} von ${formatInTimeZone(args.slotStart, "Europe/Berlin", "HH:mm")} bis ${formatInTimeZone(args.slotEnd, "Europe/Berlin", "HH:mm")} Uhr`;
+  const timingLabel =
+    `${formatInTimeZone(args.requestedDateFrom, "Europe/Berlin", "dd.MM.yyyy")} bis ` +
+    `${formatInTimeZone(args.requestedDateTo, "Europe/Berlin", "dd.MM.yyyy")} (${preferredTimeWindowLabel(args.preferredTimeWindow)})`;
 
   const serviceLabel =
     args.serviceType === "MOVING"
@@ -61,7 +73,10 @@ export async function sendCustomerConfirmationEmail(args: {
     `Auftrags-ID: ${args.publicId}`,
     `Leistung: ${serviceLabel}`,
     `Priorität: ${speedLabel}`,
-    `Termin: ${slotLabel}`,
+    `Wunschtermin: ${timingLabel}`,
+    `Status: Termin angefragt`,
+    args.offerNo ? `Angebotsnummer: ${args.offerNo}` : "",
+    args.offerLink ? `Angebot öffnen: ${args.offerLink}` : "",
     `Volumen: ca. ${args.totalVolumeM3} m³`,
     `Preisrahmen: ${eur(args.priceMinCents)} – ${eur(args.priceMaxCents)}`,
     "",
@@ -110,8 +125,12 @@ export async function sendCustomerConfirmationEmail(args: {
               <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #1e293b;">${speedLabel}</td>
             </tr>
             <tr>
-              <td style="padding: 6px 0; color: #64748b;">Termin</td>
-              <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #1e293b;">${slotLabel}</td>
+              <td style="padding: 6px 0; color: #64748b;">Wunschtermin</td>
+              <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #1e293b;">${timingLabel}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #64748b;">Status</td>
+              <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #1e293b;">Termin angefragt</td>
             </tr>
             <tr>
               <td style="padding: 6px 0; color: #64748b;">Volumen</td>
@@ -129,6 +148,7 @@ export async function sendCustomerConfirmationEmail(args: {
             Anfrage verfolgen
           </a>
         </div>
+        ${args.offerLink ? `<p style="margin:0 0 16px; font-size:13px;"><strong>Angebot:</strong> <a href="${args.offerLink}" style="color:#2563eb;">Jetzt öffnen und bestätigen</a></p>` : ""}
 
         <p style="margin: 0 0 8px; font-size: 13px; color: #64748b;">
           Im Anhang finden Sie Ihr vorläufiges Angebot als PDF-Dokument.
@@ -162,7 +182,7 @@ export async function sendCustomerConfirmationEmail(args: {
     customerEmail: args.customerEmail,
     serviceType: args.serviceType,
     speed: args.speed,
-    slotLabel: `${formatInTimeZone(args.slotStart, "Europe/Berlin", "dd.MM.yyyy HH:mm")} - ${formatInTimeZone(args.slotEnd, "Europe/Berlin", "HH:mm")}`,
+    slotLabel: `Anfragezeitraum: ${timingLabel}`,
     lines: args.itemRows.map((r) => ({
       label: r.name,
       qty: r.qty,

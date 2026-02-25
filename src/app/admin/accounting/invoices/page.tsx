@@ -285,7 +285,7 @@ export default async function InvoicesListPage({
                 href={`/admin/accounting/invoices${paramsFor(Math.max(1, page - 1)) ? `?${paramsFor(Math.max(1, page - 1))}` : ""}`}
               >
                 <Button variant="outline" size="sm" disabled={page <= 1}>
-                  Zurueck
+                  Zurück
                 </Button>
               </Link>
               <Link

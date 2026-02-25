@@ -102,6 +102,13 @@ export async function loadInquirySchedulingContext(
       },
       select: { slotStart: true, slotEnd: true },
     });
+    const existingBookings = bookings
+      .map((b) =>
+        b.slotStart && b.slotEnd
+          ? { start: b.slotStart, end: b.slotEnd }
+          : null,
+      )
+      .filter((b): b is { start: Date; end: Date } => Boolean(b));
 
     const durationMinutes = durationMinutesFromVolumeM3(params.volumeM3);
 
@@ -123,7 +130,7 @@ export async function loadInquirySchedulingContext(
           closed: e.closed,
           overrideCapacity: e.overrideCapacity,
         })),
-        existingBookings: bookings.map((b) => ({ start: b.slotStart, end: b.slotEnd })),
+        existingBookings,
       },
       pricing: { id: pricing.id },
     };

@@ -29,7 +29,7 @@ export default async function KalenderPage() {
             Priorität (Günstig / Standard / Express).
           </p>
           <div className="mt-8">
-            <Link href="/buchung/termin">
+            <Link href="/buchen?context=MOVING">
               <Button size="lg">
                 <CalendarDays className="h-5 w-5" />
                 Termin auswählen
@@ -82,4 +82,5 @@ function Info(props: { title: string; text: string }) {
     </div>
   );
 }
+
 

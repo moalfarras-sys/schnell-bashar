@@ -29,7 +29,7 @@ function formatEuro(cents: number): string {
 }
 
 const methodLabels: Record<string, { label: string; icon: any }> = {
-  BANK_TRANSFER: { label: "Ueberweisung", icon: Building },
+  BANK_TRANSFER: { label: "Überweisung", icon: Building },
   CASH: { label: "Bargeld", icon: Banknote },
   CARD: { label: "Karte", icon: CreditCard },
   PAYPAL: { label: "PayPal", icon: Wallet },
@@ -79,7 +79,7 @@ export default async function InvoiceDetailPage({
             className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900"
           >
             <ArrowLeft className="h-4 w-4" />
-            Zurueck zu Rechnungen
+            Zurück zu Rechnungen
           </Link>
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
             {dbWarning}
@@ -105,7 +105,7 @@ export default async function InvoiceDetailPage({
             className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900"
           >
             <ArrowLeft className="h-4 w-4" />
-            Zurueck zu Rechnungen
+            Zurück zu Rechnungen
           </Link>
         </div>
 
@@ -118,7 +118,7 @@ export default async function InvoiceDetailPage({
               {isOverdue ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-800">
                   <AlertTriangle className="h-3 w-3" />
-                  Ueberfaellig
+                  Überfällig
                 </span>
               ) : invoice.status === "PAID" ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">

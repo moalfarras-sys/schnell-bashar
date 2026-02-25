@@ -2,7 +2,8 @@
 
 const steps = [
   { key: "NEW", label: "Neu eingegangen", icon: Circle },
-  { key: "CONFIRMED", label: "Bestätigt", icon: CheckCircle2 },
+  { key: "REQUESTED", label: "Termin angefragt", icon: CheckCircle2 },
+  { key: "CONFIRMED", label: "Termin bestätigt", icon: CheckCircle2 },
   { key: "IN_PROGRESS", label: "In Bearbeitung", icon: Truck },
   { key: "DONE", label: "Abgeschlossen", icon: Clock3 },
 ];
@@ -41,7 +42,7 @@ export function OrderTimeline(props: {
         })}
       </div>
       <div className="mt-4 text-xs font-semibold text-slate-700 dark:text-slate-400">
-        Erstellt: {props.createdAt} · Termin: {props.slotLabel}
+        Erstellt: {props.createdAt} · {props.slotLabel}
       </div>
     </div>
   );

@@ -58,6 +58,10 @@ export type OrderMinAggregateOutputType = {
   note: string | null
   slotStart: Date | null
   slotEnd: Date | null
+  requestedDateFrom: Date | null
+  requestedDateTo: Date | null
+  preferredTimeWindow: $Enums.PreferredTimeWindow | null
+  scheduledAt: Date | null
   volumeM3: number | null
   laborHours: number | null
   distanceKm: number | null
@@ -84,6 +88,10 @@ export type OrderMaxAggregateOutputType = {
   note: string | null
   slotStart: Date | null
   slotEnd: Date | null
+  requestedDateFrom: Date | null
+  requestedDateTo: Date | null
+  preferredTimeWindow: $Enums.PreferredTimeWindow | null
+  scheduledAt: Date | null
   volumeM3: number | null
   laborHours: number | null
   distanceKm: number | null
@@ -110,6 +118,10 @@ export type OrderCountAggregateOutputType = {
   note: number
   slotStart: number
   slotEnd: number
+  requestedDateFrom: number
+  requestedDateTo: number
+  preferredTimeWindow: number
+  scheduledAt: number
   volumeM3: number
   laborHours: number
   distanceKm: number
@@ -157,6 +169,10 @@ export type OrderMinAggregateInputType = {
   note?: true
   slotStart?: true
   slotEnd?: true
+  requestedDateFrom?: true
+  requestedDateTo?: true
+  preferredTimeWindow?: true
+  scheduledAt?: true
   volumeM3?: true
   laborHours?: true
   distanceKm?: true
@@ -183,6 +199,10 @@ export type OrderMaxAggregateInputType = {
   note?: true
   slotStart?: true
   slotEnd?: true
+  requestedDateFrom?: true
+  requestedDateTo?: true
+  preferredTimeWindow?: true
+  scheduledAt?: true
   volumeM3?: true
   laborHours?: true
   distanceKm?: true
@@ -209,6 +229,10 @@ export type OrderCountAggregateInputType = {
   note?: true
   slotStart?: true
   slotEnd?: true
+  requestedDateFrom?: true
+  requestedDateTo?: true
+  preferredTimeWindow?: true
+  scheduledAt?: true
   volumeM3?: true
   laborHours?: true
   distanceKm?: true
@@ -321,8 +345,12 @@ export type OrderGroupByOutputType = {
   customerEmail: string
   contactPreference: $Enums.ContactPreference
   note: string | null
-  slotStart: Date
-  slotEnd: Date
+  slotStart: Date | null
+  slotEnd: Date | null
+  requestedDateFrom: Date | null
+  requestedDateTo: Date | null
+  preferredTimeWindow: $Enums.PreferredTimeWindow | null
+  scheduledAt: Date | null
   volumeM3: number
   laborHours: number
   distanceKm: number | null
@@ -371,8 +399,12 @@ export type OrderWhereInput = {
   customerEmail?: Prisma.StringFilter<"Order"> | string
   contactPreference?: Prisma.EnumContactPreferenceFilter<"Order"> | $Enums.ContactPreference
   note?: Prisma.StringNullableFilter<"Order"> | string | null
-  slotStart?: Prisma.DateTimeFilter<"Order"> | Date | string
-  slotEnd?: Prisma.DateTimeFilter<"Order"> | Date | string
+  slotStart?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  slotEnd?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  requestedDateFrom?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  requestedDateTo?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  preferredTimeWindow?: Prisma.EnumPreferredTimeWindowNullableFilter<"Order"> | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   volumeM3?: Prisma.FloatFilter<"Order"> | number
   laborHours?: Prisma.FloatFilter<"Order"> | number
   distanceKm?: Prisma.FloatNullableFilter<"Order"> | number | null
@@ -402,8 +434,12 @@ export type OrderOrderByWithRelationInput = {
   customerEmail?: Prisma.SortOrder
   contactPreference?: Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
-  slotStart?: Prisma.SortOrder
-  slotEnd?: Prisma.SortOrder
+  slotStart?: Prisma.SortOrderInput | Prisma.SortOrder
+  slotEnd?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestedDateFrom?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestedDateTo?: Prisma.SortOrderInput | Prisma.SortOrder
+  preferredTimeWindow?: Prisma.SortOrderInput | Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   volumeM3?: Prisma.SortOrder
   laborHours?: Prisma.SortOrder
   distanceKm?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -436,8 +472,12 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   customerEmail?: Prisma.StringFilter<"Order"> | string
   contactPreference?: Prisma.EnumContactPreferenceFilter<"Order"> | $Enums.ContactPreference
   note?: Prisma.StringNullableFilter<"Order"> | string | null
-  slotStart?: Prisma.DateTimeFilter<"Order"> | Date | string
-  slotEnd?: Prisma.DateTimeFilter<"Order"> | Date | string
+  slotStart?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  slotEnd?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  requestedDateFrom?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  requestedDateTo?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  preferredTimeWindow?: Prisma.EnumPreferredTimeWindowNullableFilter<"Order"> | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   volumeM3?: Prisma.FloatFilter<"Order"> | number
   laborHours?: Prisma.FloatFilter<"Order"> | number
   distanceKm?: Prisma.FloatNullableFilter<"Order"> | number | null
@@ -467,8 +507,12 @@ export type OrderOrderByWithAggregationInput = {
   customerEmail?: Prisma.SortOrder
   contactPreference?: Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
-  slotStart?: Prisma.SortOrder
-  slotEnd?: Prisma.SortOrder
+  slotStart?: Prisma.SortOrderInput | Prisma.SortOrder
+  slotEnd?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestedDateFrom?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestedDateTo?: Prisma.SortOrderInput | Prisma.SortOrder
+  preferredTimeWindow?: Prisma.SortOrderInput | Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   volumeM3?: Prisma.SortOrder
   laborHours?: Prisma.SortOrder
   distanceKm?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -502,8 +546,12 @@ export type OrderScalarWhereWithAggregatesInput = {
   customerEmail?: Prisma.StringWithAggregatesFilter<"Order"> | string
   contactPreference?: Prisma.EnumContactPreferenceWithAggregatesFilter<"Order"> | $Enums.ContactPreference
   note?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
-  slotStart?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
-  slotEnd?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
+  slotStart?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+  slotEnd?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+  requestedDateFrom?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+  requestedDateTo?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+  preferredTimeWindow?: Prisma.EnumPreferredTimeWindowNullableWithAggregatesFilter<"Order"> | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
   volumeM3?: Prisma.FloatWithAggregatesFilter<"Order"> | number
   laborHours?: Prisma.FloatWithAggregatesFilter<"Order"> | number
   distanceKm?: Prisma.FloatNullableWithAggregatesFilter<"Order"> | number | null
@@ -529,8 +577,12 @@ export type OrderCreateInput = {
   customerEmail: string
   contactPreference: $Enums.ContactPreference
   note?: string | null
-  slotStart: Date | string
-  slotEnd: Date | string
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
   volumeM3: number
   laborHours: number
   distanceKm?: number | null
@@ -560,8 +612,12 @@ export type OrderUncheckedCreateInput = {
   customerEmail: string
   contactPreference: $Enums.ContactPreference
   note?: string | null
-  slotStart: Date | string
-  slotEnd: Date | string
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
   volumeM3: number
   laborHours: number
   distanceKm?: number | null
@@ -591,8 +647,12 @@ export type OrderUpdateInput = {
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
   contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slotStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slotEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
   laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
   distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -622,8 +682,12 @@ export type OrderUncheckedUpdateInput = {
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
   contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slotStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slotEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
   laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
   distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -653,8 +717,12 @@ export type OrderCreateManyInput = {
   customerEmail: string
   contactPreference: $Enums.ContactPreference
   note?: string | null
-  slotStart: Date | string
-  slotEnd: Date | string
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
   volumeM3: number
   laborHours: number
   distanceKm?: number | null
@@ -680,8 +748,12 @@ export type OrderUpdateManyMutationInput = {
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
   contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slotStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slotEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
   laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
   distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -707,8 +779,12 @@ export type OrderUncheckedUpdateManyInput = {
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
   contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slotStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slotEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
   laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
   distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -736,6 +812,10 @@ export type OrderCountOrderByAggregateInput = {
   note?: Prisma.SortOrder
   slotStart?: Prisma.SortOrder
   slotEnd?: Prisma.SortOrder
+  requestedDateFrom?: Prisma.SortOrder
+  requestedDateTo?: Prisma.SortOrder
+  preferredTimeWindow?: Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrder
   volumeM3?: Prisma.SortOrder
   laborHours?: Prisma.SortOrder
   distanceKm?: Prisma.SortOrder
@@ -772,6 +852,10 @@ export type OrderMaxOrderByAggregateInput = {
   note?: Prisma.SortOrder
   slotStart?: Prisma.SortOrder
   slotEnd?: Prisma.SortOrder
+  requestedDateFrom?: Prisma.SortOrder
+  requestedDateTo?: Prisma.SortOrder
+  preferredTimeWindow?: Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrder
   volumeM3?: Prisma.SortOrder
   laborHours?: Prisma.SortOrder
   distanceKm?: Prisma.SortOrder
@@ -798,6 +882,10 @@ export type OrderMinOrderByAggregateInput = {
   note?: Prisma.SortOrder
   slotStart?: Prisma.SortOrder
   slotEnd?: Prisma.SortOrder
+  requestedDateFrom?: Prisma.SortOrder
+  requestedDateTo?: Prisma.SortOrder
+  preferredTimeWindow?: Prisma.SortOrder
+  scheduledAt?: Prisma.SortOrder
   volumeM3?: Prisma.SortOrder
   laborHours?: Prisma.SortOrder
   distanceKm?: Prisma.SortOrder
@@ -843,6 +931,10 @@ export type EnumOrderStatusFieldUpdateOperationsInput = {
 
 export type EnumContactPreferenceFieldUpdateOperationsInput = {
   set?: $Enums.ContactPreference
+}
+
+export type NullableEnumPreferredTimeWindowFieldUpdateOperationsInput = {
+  set?: $Enums.PreferredTimeWindow | null
 }
 
 export type NullableFloatFieldUpdateOperationsInput = {
@@ -925,8 +1017,12 @@ export type OrderCreateWithoutLinesInput = {
   customerEmail: string
   contactPreference: $Enums.ContactPreference
   note?: string | null
-  slotStart: Date | string
-  slotEnd: Date | string
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
   volumeM3: number
   laborHours: number
   distanceKm?: number | null
@@ -955,8 +1051,12 @@ export type OrderUncheckedCreateWithoutLinesInput = {
   customerEmail: string
   contactPreference: $Enums.ContactPreference
   note?: string | null
-  slotStart: Date | string
-  slotEnd: Date | string
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
   volumeM3: number
   laborHours: number
   distanceKm?: number | null
@@ -1001,8 +1101,12 @@ export type OrderUpdateWithoutLinesInput = {
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
   contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slotStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slotEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
   laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
   distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1031,8 +1135,12 @@ export type OrderUncheckedUpdateWithoutLinesInput = {
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
   contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slotStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slotEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
   laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
   distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1061,8 +1169,12 @@ export type OrderCreateWithoutUploadsInput = {
   customerEmail: string
   contactPreference: $Enums.ContactPreference
   note?: string | null
-  slotStart: Date | string
-  slotEnd: Date | string
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
   volumeM3: number
   laborHours: number
   distanceKm?: number | null
@@ -1091,8 +1203,12 @@ export type OrderUncheckedCreateWithoutUploadsInput = {
   customerEmail: string
   contactPreference: $Enums.ContactPreference
   note?: string | null
-  slotStart: Date | string
-  slotEnd: Date | string
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
   volumeM3: number
   laborHours: number
   distanceKm?: number | null
@@ -1137,8 +1253,12 @@ export type OrderUpdateWithoutUploadsInput = {
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
   contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slotStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slotEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
   laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
   distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1167,8 +1287,12 @@ export type OrderUncheckedUpdateWithoutUploadsInput = {
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
   contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slotStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slotEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
   laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
   distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1197,8 +1321,12 @@ export type OrderCreateWithoutOfferInput = {
   customerEmail: string
   contactPreference: $Enums.ContactPreference
   note?: string | null
-  slotStart: Date | string
-  slotEnd: Date | string
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
   volumeM3: number
   laborHours: number
   distanceKm?: number | null
@@ -1227,8 +1355,12 @@ export type OrderUncheckedCreateWithoutOfferInput = {
   customerEmail: string
   contactPreference: $Enums.ContactPreference
   note?: string | null
-  slotStart: Date | string
-  slotEnd: Date | string
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
   volumeM3: number
   laborHours: number
   distanceKm?: number | null
@@ -1273,8 +1405,12 @@ export type OrderUpdateWithoutOfferInput = {
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
   contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slotStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slotEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
   laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
   distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1303,8 +1439,12 @@ export type OrderUncheckedUpdateWithoutOfferInput = {
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
   contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slotStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slotEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
   laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
   distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1333,8 +1473,12 @@ export type OrderCreateWithoutInvoicesInput = {
   customerEmail: string
   contactPreference: $Enums.ContactPreference
   note?: string | null
-  slotStart: Date | string
-  slotEnd: Date | string
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
   volumeM3: number
   laborHours: number
   distanceKm?: number | null
@@ -1363,8 +1507,12 @@ export type OrderUncheckedCreateWithoutInvoicesInput = {
   customerEmail: string
   contactPreference: $Enums.ContactPreference
   note?: string | null
-  slotStart: Date | string
-  slotEnd: Date | string
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
   volumeM3: number
   laborHours: number
   distanceKm?: number | null
@@ -1409,8 +1557,12 @@ export type OrderUpdateWithoutInvoicesInput = {
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
   contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slotStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slotEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
   laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
   distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1439,8 +1591,12 @@ export type OrderUncheckedUpdateWithoutInvoicesInput = {
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
   contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slotStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slotEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
   laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
   distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1520,6 +1676,10 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   note?: boolean
   slotStart?: boolean
   slotEnd?: boolean
+  requestedDateFrom?: boolean
+  requestedDateTo?: boolean
+  preferredTimeWindow?: boolean
+  scheduledAt?: boolean
   volumeM3?: boolean
   laborHours?: boolean
   distanceKm?: boolean
@@ -1552,6 +1712,10 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   note?: boolean
   slotStart?: boolean
   slotEnd?: boolean
+  requestedDateFrom?: boolean
+  requestedDateTo?: boolean
+  preferredTimeWindow?: boolean
+  scheduledAt?: boolean
   volumeM3?: boolean
   laborHours?: boolean
   distanceKm?: boolean
@@ -1579,6 +1743,10 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   note?: boolean
   slotStart?: boolean
   slotEnd?: boolean
+  requestedDateFrom?: boolean
+  requestedDateTo?: boolean
+  preferredTimeWindow?: boolean
+  scheduledAt?: boolean
   volumeM3?: boolean
   laborHours?: boolean
   distanceKm?: boolean
@@ -1606,6 +1774,10 @@ export type OrderSelectScalar = {
   note?: boolean
   slotStart?: boolean
   slotEnd?: boolean
+  requestedDateFrom?: boolean
+  requestedDateTo?: boolean
+  preferredTimeWindow?: boolean
+  scheduledAt?: boolean
   volumeM3?: boolean
   laborHours?: boolean
   distanceKm?: boolean
@@ -1619,7 +1791,7 @@ export type OrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "publicId" | "orderNo" | "serviceType" | "speed" | "status" | "customerName" | "customerPhone" | "customerEmail" | "contactPreference" | "note" | "slotStart" | "slotEnd" | "volumeM3" | "laborHours" | "distanceKm" | "priceMinCents" | "priceMaxCents" | "wizardData" | "deletedAt" | "deletedBy" | "version" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "publicId" | "orderNo" | "serviceType" | "speed" | "status" | "customerName" | "customerPhone" | "customerEmail" | "contactPreference" | "note" | "slotStart" | "slotEnd" | "requestedDateFrom" | "requestedDateTo" | "preferredTimeWindow" | "scheduledAt" | "volumeM3" | "laborHours" | "distanceKm" | "priceMinCents" | "priceMaxCents" | "wizardData" | "deletedAt" | "deletedBy" | "version" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lines?: boolean | Prisma.Order$linesArgs<ExtArgs>
   uploads?: boolean | Prisma.Order$uploadsArgs<ExtArgs>
@@ -1650,8 +1822,12 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     customerEmail: string
     contactPreference: $Enums.ContactPreference
     note: string | null
-    slotStart: Date
-    slotEnd: Date
+    slotStart: Date | null
+    slotEnd: Date | null
+    requestedDateFrom: Date | null
+    requestedDateTo: Date | null
+    preferredTimeWindow: $Enums.PreferredTimeWindow | null
+    scheduledAt: Date | null
     volumeM3: number
     laborHours: number
     distanceKm: number | null
@@ -2103,6 +2279,10 @@ export interface OrderFieldRefs {
   readonly note: Prisma.FieldRef<"Order", 'String'>
   readonly slotStart: Prisma.FieldRef<"Order", 'DateTime'>
   readonly slotEnd: Prisma.FieldRef<"Order", 'DateTime'>
+  readonly requestedDateFrom: Prisma.FieldRef<"Order", 'DateTime'>
+  readonly requestedDateTo: Prisma.FieldRef<"Order", 'DateTime'>
+  readonly preferredTimeWindow: Prisma.FieldRef<"Order", 'PreferredTimeWindow'>
+  readonly scheduledAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly volumeM3: Prisma.FieldRef<"Order", 'Float'>
   readonly laborHours: Prisma.FieldRef<"Order", 'Float'>
   readonly distanceKm: Prisma.FieldRef<"Order", 'Float'>

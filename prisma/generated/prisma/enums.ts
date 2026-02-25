@@ -29,6 +29,7 @@ export type SpeedType = (typeof SpeedType)[keyof typeof SpeedType]
 
 export const OrderStatus = {
   NEW: 'NEW',
+  REQUESTED: 'REQUESTED',
   CONFIRMED: 'CONFIRMED',
   IN_PROGRESS: 'IN_PROGRESS',
   DONE: 'DONE',
@@ -36,6 +37,16 @@ export const OrderStatus = {
 } as const
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
+
+
+export const PreferredTimeWindow = {
+  MORNING: 'MORNING',
+  AFTERNOON: 'AFTERNOON',
+  EVENING: 'EVENING',
+  FLEXIBLE: 'FLEXIBLE'
+} as const
+
+export type PreferredTimeWindow = (typeof PreferredTimeWindow)[keyof typeof PreferredTimeWindow]
 
 
 export const ContactPreference = {

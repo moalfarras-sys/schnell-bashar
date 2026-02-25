@@ -6,6 +6,7 @@ import { prisma } from "@/server/db/prisma";
 import { generateOfferPDF } from "@/server/pdf/generate-offer";
 import { generateQuotePdf } from "@/server/pdf/generate-quote";
 import { offerDisplayNo, orderDisplayNo } from "@/server/ids/document-number";
+import { formatRequestedWindow } from "@/lib/schedule-format";
 import {
   adminCookieName,
   verifyAdminToken,
@@ -216,7 +217,14 @@ export async function GET(
         customerEmail: order.customerEmail,
         serviceType: order.serviceType,
         speed: order.speed,
-        slotLabel: `${formatInTimeZone(order.slotStart, "Europe/Berlin", "dd.MM.yyyy HH:mm")} - ${formatInTimeZone(order.slotEnd, "Europe/Berlin", "HH:mm")}`,
+        slotLabel:
+          (order.slotStart && order.slotEnd
+            ? `${formatInTimeZone(order.slotStart, "Europe/Berlin", "dd.MM.yyyy HH:mm")} - ${formatInTimeZone(order.slotEnd, "Europe/Berlin", "HH:mm")}`
+            : formatRequestedWindow(
+                order.requestedDateFrom,
+                order.requestedDateTo,
+                order.preferredTimeWindow,
+              )) || "Termin angefragt",
         lines: [...catalogLines, ...serviceOptionLines],
         netCents: net,
         vatCents: vat,

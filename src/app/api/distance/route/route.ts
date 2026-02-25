@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error:
-            "Die Distanzberechnung ist derzeit nicht verfuegbar (ORS-Zugriff abgelehnt). Bitte API-Schluessel pruefen.",
+            "Die Distanzberechnung ist derzeit nicht verfügbar (ORS-Zugriff abgelehnt). Bitte API-Schlüssel prüfen.",
         },
         { status: 503 },
       );
@@ -96,4 +96,5 @@ export async function POST(req: Request) {
     );
   }
 }
+
 

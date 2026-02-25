@@ -1,12 +1,14 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { formatInTimeZone } from "date-fns-tz";
 
 import { prisma } from "@/server/db/prisma";
+import { formatRequestedWindow, preferredTimeWindowLabel } from "@/lib/schedule-format";
 
 export const runtime = "nodejs";
 
 const STATUS_LABELS: Record<string, string> = {
   NEW: "Eingegangen",
+  REQUESTED: "Termin angefragt",
   CONFIRMED: "Bestätigt",
   IN_PROGRESS: "In Bearbeitung",
   DONE: "Abgeschlossen",
@@ -36,6 +38,9 @@ export async function GET(
       customerName: true,
       slotStart: true,
       slotEnd: true,
+      requestedDateFrom: true,
+      requestedDateTo: true,
+      preferredTimeWindow: true,
       createdAt: true,
       serviceType: true,
       speed: true,
@@ -58,6 +63,21 @@ export async function GET(
   const vatCents = Math.round(priceCents * 0.19);
   const grossCents = priceCents + vatCents;
 
+  const requestedWindow = formatRequestedWindow(
+    order.requestedDateFrom,
+    order.requestedDateTo,
+    order.preferredTimeWindow,
+  );
+  const hasScheduledSlot = Boolean(order.slotStart && order.slotEnd);
+  const date = hasScheduledSlot
+    ? formatInTimeZone(order.slotStart!, "Europe/Berlin", "dd.MM.yyyy")
+    : order.requestedDateFrom
+      ? formatInTimeZone(order.requestedDateFrom, "Europe/Berlin", "dd.MM.yyyy")
+      : "offen";
+  const time = hasScheduledSlot
+    ? `${formatInTimeZone(order.slotStart!, "Europe/Berlin", "HH:mm")} - ${formatInTimeZone(order.slotEnd!, "Europe/Berlin", "HH:mm")}`
+    : `Angefragt (${preferredTimeWindowLabel(order.preferredTimeWindow)})`;
+
   return NextResponse.json({
     trackingCode: order.publicId,
     status: order.status,
@@ -65,8 +85,9 @@ export async function GET(
     customerName: order.customerName,
     serviceType: order.serviceType,
     speed: order.speed,
-    date: formatInTimeZone(order.slotStart, "Europe/Berlin", "dd.MM.yyyy"),
-    time: `${formatInTimeZone(order.slotStart, "Europe/Berlin", "HH:mm")} - ${formatInTimeZone(order.slotEnd, "Europe/Berlin", "HH:mm")}`,
+    date,
+    time,
+    requestedWindow,
     fromAddress,
     toAddress,
     volumeM3: order.volumeM3,

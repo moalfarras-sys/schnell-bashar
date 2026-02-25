@@ -52,13 +52,49 @@ export const serviceSelectionSchema = z.object({
   meta: z.record(z.string(), z.any()).optional(),
 });
 
-export const timingSchema = z.object({
-  speed: speedTypeSchema,
-  preferredFrom: z.string().datetime(),
-  preferredTo: z.string().datetime(),
-  selectedSlotStart: z.string().datetime(),
-  jobDurationMinutes: z.number().int().min(60).max(24 * 60),
-});
+export const timingSchema = z
+  .object({
+    speed: speedTypeSchema,
+    requestedFrom: z.string().datetime().optional(),
+    requestedTo: z.string().datetime().optional(),
+    preferredFrom: z.string().datetime().optional(),
+    preferredTo: z.string().datetime().optional(),
+    preferredTimeWindow: z
+      .enum(["MORNING", "AFTERNOON", "EVENING", "FLEXIBLE"])
+      .default("FLEXIBLE"),
+    // Legacy compatibility during migration window.
+    selectedSlotStart: z.string().datetime().optional(),
+    jobDurationMinutes: z.number().int().min(60).max(24 * 60),
+  })
+  .superRefine((value, ctx) => {
+    const requestedFrom = value.requestedFrom ?? value.preferredFrom ?? value.selectedSlotStart;
+    const requestedTo = value.requestedTo ?? value.preferredTo ?? requestedFrom;
+    if (!requestedFrom) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "requestedFrom fehlt",
+        path: ["requestedFrom"],
+      });
+    }
+    if (!requestedTo) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "requestedTo fehlt",
+        path: ["requestedTo"],
+      });
+    }
+  })
+  .transform((value) => {
+    const requestedFrom = value.requestedFrom ?? value.preferredFrom ?? value.selectedSlotStart!;
+    const requestedTo = value.requestedTo ?? value.preferredTo ?? requestedFrom;
+    return {
+      speed: value.speed,
+      requestedFrom,
+      requestedTo,
+      preferredTimeWindow: value.preferredTimeWindow ?? "FLEXIBLE",
+      jobDurationMinutes: value.jobDurationMinutes,
+    };
+  });
 
 export const customerSchema = z.object({
   name: z.string().min(2).max(100),

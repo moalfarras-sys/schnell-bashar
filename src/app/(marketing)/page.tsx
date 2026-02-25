@@ -55,7 +55,7 @@ const tools = [
   { icon: Calculator, label: "Preisrechner", href: "/preise", desc: "Schnelle Orientierung" },
   { icon: ClipboardList, label: "Angebot berechnen", href: "/preise", desc: "Preis + Termin" },
   { icon: Search, label: "Anfrage verfolgen", href: "/anfrage", desc: "Status prüfen" },
-  { icon: CalendarDays, label: "Termine", href: "/buchung/termin", desc: "Zeitfenster wählen" },
+  { icon: CalendarDays, label: "Termine", href: "/buchen?context=MOVING", desc: "Zeitfenster wählen" },
 ];
 
 const defaultTestimonials = [
@@ -541,5 +541,6 @@ export default async function HomePage() {
     </>
   );
 }
+
 
 

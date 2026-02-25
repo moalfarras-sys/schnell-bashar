@@ -19,6 +19,7 @@ type TrackingData = {
   speed: string;
   date: string;
   time: string;
+  requestedWindow?: string | null;
   fromAddress: string;
   toAddress: string;
   volumeM3: number;
@@ -98,7 +99,7 @@ export default function AnfrageCodePage() {
   }
 
   if (data) {
-    const slotLabel = `${data.date} ${data.time}`;
+    const slotLabel = data.requestedWindow || `${data.date} ${data.time}`;
 
     return (
       <Container className="py-14">
@@ -125,8 +126,12 @@ export default function AnfrageCodePage() {
                 <span className="text-slate-800 dark:text-slate-200">{data.customerName}</span>
               </div>
               <div>
-                <span className="font-semibold text-slate-600 dark:text-slate-400">Termin:</span>{" "}
-                <span className="text-slate-800 dark:text-slate-200">{data.date} · {data.time}</span>
+                <span className="font-semibold text-slate-600 dark:text-slate-400">
+                  {data.status === "REQUESTED" ? "Wunschtermin:" : "Termin:"}
+                </span>{" "}
+                <span className="text-slate-800 dark:text-slate-200">
+                  {data.requestedWindow || `${data.date}  ${data.time}`}
+                </span>
               </div>
               {data.fromAddress && (
                 <div className="flex items-start gap-2">
@@ -248,3 +253,4 @@ export default function AnfrageCodePage() {
     </Container>
   );
 }
+

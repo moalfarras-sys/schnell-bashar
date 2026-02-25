@@ -34,38 +34,38 @@ const benefits = [
   {
     icon: ShieldCheck,
     title: "Erfahrene Montage-Teams",
-    desc: "Sauber arbeiten, präzise und ohne Beschädigungen – vom Aufbau bis zur Übergabe.",
+    desc: "Sauber arbeiten, präzise und ohne Beschädigungen  vom Aufbau bis zur Sbergabe.",
   },
   {
     icon: Clock,
     title: "Flexible Termine",
-    desc: "Kurzfristig oder geplant – wir finden den passenden Termin für Ihre Montage.",
+    desc: "Kurzfristig oder geplant  wir finden den passenden Termin für Ihre Montage.",
   },
   {
     icon: MapPin,
     title: "Berlin & deutschlandweit",
-    desc: "Montage bei Ihnen vor Ort – deutschlandweit im Einsatz.",
+    desc: "Montage bei Ihnen vor Ort  deutschlandweit im Einsatz.",
   },
 ];
 
 const steps = [
-  { num: 1, title: "Montage beschreiben", desc: "Anzahl und Art der Möbel – wir kalkulieren fair." },
+  { num: 1, title: "Montage beschreiben", desc: "Anzahl und Art der Möbel  wir kalkulieren fair." },
   { num: 2, title: "Angebot erhalten", desc: "Schnelle Rückmeldung mit transparentem Preis." },
   { num: 3, title: "Montage durchführen", desc: "Unser Team kommt pünktlich und arbeitet zuverlässig." },
 ];
 
 const services = [
-  { icon: CookingPot, name: "Küchenmontage komplett", price: "ab 299 €", tag: "Beliebt" },
-  { icon: Package, name: "Küchenmontage einfach (IKEA)", price: "ab 149 €" },
-  { icon: WashingMachine, name: "Waschmaschine anschließen", price: "ab 69 €" },
-  { icon: Refrigerator, name: "Kühlschrank aufstellen", price: "ab 49 €" },
-  { icon: Wrench, name: "Geschirrspüler anschließen", price: "ab 79 €" },
-  { icon: CookingPot, name: "Herd / Backofen anschließen", price: "ab 89 €" },
-  { icon: Package, name: "Kleiderschrank aufbauen", price: "ab 89 €" },
-  { icon: Package, name: "Bett aufbauen", price: "ab 69 €" },
-  { icon: Package, name: "Regal aufbauen", price: "ab 39 €" },
-  { icon: Monitor, name: "TV-Wandhalterung montieren", price: "ab 59 €" },
-  { icon: Wrench, name: "Sonstige Montagearbeiten", price: "ab 65 € / Std." },
+  { icon: CookingPot, name: "Küchenmontage komplett", price: "ab 299 ", tag: "Beliebt" },
+  { icon: Package, name: "Küchenmontage einfach (IKEA)", price: "ab 149 " },
+  { icon: WashingMachine, name: "Waschmaschine anschliexen", price: "ab 69 " },
+  { icon: Refrigerator, name: "Kühlschrank aufstellen", price: "ab 49 " },
+  { icon: Wrench, name: "Geschirrspüler anschliexen", price: "ab 79 " },
+  { icon: CookingPot, name: "Herd / Backofen anschliexen", price: "ab 89 " },
+  { icon: Package, name: "Kleiderschrank aufbauen", price: "ab 89 " },
+  { icon: Package, name: "Bett aufbauen", price: "ab 69 " },
+  { icon: Package, name: "Regal aufbauen", price: "ab 39 " },
+  { icon: Monitor, name: "TV-Wandhalterung montieren", price: "ab 59 " },
+  { icon: Wrench, name: "Sonstige Montagearbeiten", price: "ab 65  / Std." },
 ];
 
 const trustItems = [
@@ -85,7 +85,7 @@ export default async function MontagePage() {
     <>
       <ServiceSchema
         name="Möbelmontage und Aufbauservice"
-        description="Professioneller Aufbau- und Abbau-Service für Möbel – sauber, schnell und zuverlässig."
+        description="Professioneller Aufbau- und Abbau-Service für Möbel  sauber, schnell und zuverlässig."
       />
 
       {/* Hero */}
@@ -114,10 +114,10 @@ export default async function MontagePage() {
             </h1>
             <p className="mt-4 max-w-2xl text-base text-slate-200">
               Möbel ab- und aufbauen, sauber und mit Präzision. Ob Umzugsmontage oder
-              Einzelaufbau – wir erledigen es professionell.
+              Einzelaufbau  wir erledigen es professionell.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/montage/buchen">
+              <Link href="/buchen?context=MONTAGE">
                 <Button size="lg" className="gap-2">
                   <Wrench className="h-5 w-5" />
                   Montage anfragen
@@ -229,7 +229,7 @@ export default async function MontagePage() {
           </Reveal>
 
           <Reveal className="mt-10 text-center">
-            <Link href="/montage/buchen">
+            <Link href="/buchen?context=MONTAGE">
               <Button size="lg" className="gap-2">
                 <Wrench className="h-5 w-5" />
                 Jetzt Montage anfragen
@@ -274,7 +274,7 @@ export default async function MontagePage() {
           </Reveal>
 
           <Reveal className="mt-12 text-center">
-            <Link href="/montage/buchen">
+            <Link href="/buchen?context=MONTAGE">
               <Button size="lg" className="gap-2">
                 Jetzt Montage anfragen
                 <CheckCircle2 className="h-5 w-5" />
@@ -288,4 +288,6 @@ export default async function MontagePage() {
     </>
   );
 }
+
+
 

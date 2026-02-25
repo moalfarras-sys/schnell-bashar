@@ -9,16 +9,23 @@ export const revalidate = 0;
 export default async function BookingPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ service?: string }>;
+  searchParams?: Promise<{ service?: string; context?: string }>;
 }) {
   const sp = (await searchParams) ?? {};
   const requestedService = String(sp.service ?? "").toUpperCase();
+  const requestedContext = String(sp.context ?? "").toUpperCase();
   const initialServiceType =
     requestedService === "DISPOSAL" || requestedService === "ENTSORGUNG"
       ? ("DISPOSAL" as const)
       : requestedService === "BOTH" || requestedService === "KOMBI"
         ? ("BOTH" as const)
         : ("MOVING" as const);
+  const variant =
+    requestedContext === "MONTAGE"
+      ? ("montage" as const)
+      : requestedContext === "ENTSORGUNG"
+        ? ("entsorgung" as const)
+        : ("default" as const);
 
   let config: Awaited<ReturnType<typeof loadBookingConfig>> = null;
   try {
@@ -35,8 +42,8 @@ export default async function BookingPage({
 
   return (
     <BookingWizard
-      variant="default"
-      initialServiceType={initialServiceType}
+      variant={variant}
+      initialServiceType={variant === "entsorgung" ? "DISPOSAL" : initialServiceType}
       catalog={config.catalog}
       pricing={config.pricing}
       modules={config.modules}

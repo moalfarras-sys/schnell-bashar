@@ -325,6 +325,13 @@ export type EnumContactPreferenceFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumContactPreferenceFilter<$PrismaModel> | $Enums.ContactPreference
 }
 
+export type EnumPreferredTimeWindowNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PreferredTimeWindow | Prisma.EnumPreferredTimeWindowFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PreferredTimeWindow[] | Prisma.ListEnumPreferredTimeWindowFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PreferredTimeWindow[] | Prisma.ListEnumPreferredTimeWindowFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPreferredTimeWindowNullableFilter<$PrismaModel> | $Enums.PreferredTimeWindow | null
+}
+
 export type FloatNullableFilter<$PrismaModel = never> = {
   equals?: number | Prisma.FloatFieldRefInput<$PrismaModel> | null
   in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
@@ -398,6 +405,16 @@ export type EnumContactPreferenceWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumContactPreferenceFilter<$PrismaModel>
   _max?: Prisma.NestedEnumContactPreferenceFilter<$PrismaModel>
+}
+
+export type EnumPreferredTimeWindowNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PreferredTimeWindow | Prisma.EnumPreferredTimeWindowFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PreferredTimeWindow[] | Prisma.ListEnumPreferredTimeWindowFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PreferredTimeWindow[] | Prisma.ListEnumPreferredTimeWindowFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPreferredTimeWindowNullableWithAggregatesFilter<$PrismaModel> | $Enums.PreferredTimeWindow | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPreferredTimeWindowNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPreferredTimeWindowNullableFilter<$PrismaModel>
 }
 
 export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -926,6 +943,13 @@ export type NestedEnumContactPreferenceFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumContactPreferenceFilter<$PrismaModel> | $Enums.ContactPreference
 }
 
+export type NestedEnumPreferredTimeWindowNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PreferredTimeWindow | Prisma.EnumPreferredTimeWindowFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PreferredTimeWindow[] | Prisma.ListEnumPreferredTimeWindowFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PreferredTimeWindow[] | Prisma.ListEnumPreferredTimeWindowFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPreferredTimeWindowNullableFilter<$PrismaModel> | $Enums.PreferredTimeWindow | null
+}
+
 export type NestedEnumServiceTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ServiceType | Prisma.EnumServiceTypeFieldRefInput<$PrismaModel>
   in?: $Enums.ServiceType[] | Prisma.ListEnumServiceTypeFieldRefInput<$PrismaModel>
@@ -964,6 +988,16 @@ export type NestedEnumContactPreferenceWithAggregatesFilter<$PrismaModel = never
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumContactPreferenceFilter<$PrismaModel>
   _max?: Prisma.NestedEnumContactPreferenceFilter<$PrismaModel>
+}
+
+export type NestedEnumPreferredTimeWindowNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PreferredTimeWindow | Prisma.EnumPreferredTimeWindowFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PreferredTimeWindow[] | Prisma.ListEnumPreferredTimeWindowFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PreferredTimeWindow[] | Prisma.ListEnumPreferredTimeWindowFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPreferredTimeWindowNullableWithAggregatesFilter<$PrismaModel> | $Enums.PreferredTimeWindow | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPreferredTimeWindowNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPreferredTimeWindowNullableFilter<$PrismaModel>
 }
 
 export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {

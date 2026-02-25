@@ -2788,6 +2788,10 @@ export const OrderScalarFieldEnum = {
   note: 'note',
   slotStart: 'slotStart',
   slotEnd: 'slotEnd',
+  requestedDateFrom: 'requestedDateFrom',
+  requestedDateTo: 'requestedDateTo',
+  preferredTimeWindow: 'preferredTimeWindow',
+  scheduledAt: 'scheduledAt',
   volumeM3: 'volumeM3',
   laborHours: 'laborHours',
   distanceKm: 'distanceKm',
@@ -3374,6 +3378,20 @@ export type EnumContactPreferenceFieldRefInput<$PrismaModel> = FieldRefInputType
  * Reference to a field of type 'ContactPreference[]'
  */
 export type ListEnumContactPreferenceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContactPreference[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PreferredTimeWindow'
+ */
+export type EnumPreferredTimeWindowFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PreferredTimeWindow'>
+    
+
+
+/**
+ * Reference to a field of type 'PreferredTimeWindow[]'
+ */
+export type ListEnumPreferredTimeWindowFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PreferredTimeWindow[]'>
     
 
 

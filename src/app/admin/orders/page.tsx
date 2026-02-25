@@ -59,6 +59,9 @@ export default async function AdminOrdersPage({
           priceMaxCents: true,
           slotStart: true,
           slotEnd: true,
+          requestedDateFrom: true,
+          requestedDateTo: true,
+          preferredTimeWindow: true,
           wizardData: true,
         },
       });
@@ -91,6 +94,7 @@ export default async function AdminOrdersPage({
               >
                 <option value="">Alle</option>
                 <option value="NEW">NEW</option>
+                <option value="REQUESTED">REQUESTED</option>
                 <option value="CONFIRMED">CONFIRMED</option>
                 <option value="IN_PROGRESS">IN_PROGRESS</option>
                 <option value="DONE">DONE</option>
@@ -168,8 +172,11 @@ export default async function AdminOrdersPage({
                     {formatInTimeZone(o.createdAt, "Europe/Berlin", "dd.MM.yyyy HH:mm")}
                   </td>
                   <td className="px-4 py-3 text-slate-200">
-                    {formatInTimeZone(o.slotStart, "Europe/Berlin", "dd.MM HH:mm")}–
-                    {formatInTimeZone(o.slotEnd, "Europe/Berlin", "HH:mm")}
+                    {o.slotStart && o.slotEnd
+                      ? `${formatInTimeZone(o.slotStart, "Europe/Berlin", "dd.MM HH:mm")}–${formatInTimeZone(o.slotEnd, "Europe/Berlin", "HH:mm")}`
+                      : o.requestedDateFrom && o.requestedDateTo
+                        ? `${formatInTimeZone(o.requestedDateFrom, "Europe/Berlin", "dd.MM")}–${formatInTimeZone(o.requestedDateTo, "Europe/Berlin", "dd.MM")} (angefragt)`
+                        : "offen"}
                   </td>
                   <td className="px-4 py-3 text-slate-200">
                     {o.serviceType} · {o.speed}

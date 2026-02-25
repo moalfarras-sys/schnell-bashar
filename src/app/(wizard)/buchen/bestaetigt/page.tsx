@@ -15,15 +15,23 @@ import { Button } from "@/components/ui/button";
 export default async function ConfirmPage({
   searchParams,
 }: {
-  searchParams: Promise<{ order?: string; token?: string }>;
+  searchParams: Promise<{ order?: string; token?: string; offerToken?: string; offerNo?: string }>;
 }) {
-  const { order: orderParam, token: tokenParam } = await searchParams;
+  const {
+    order: orderParam,
+    token: tokenParam,
+    offerToken: offerTokenParam,
+    offerNo: offerNoParam,
+  } = await searchParams;
   const order = orderParam ?? "";
   const pdfToken = tokenParam ?? "";
+  const offerToken = offerTokenParam ?? "";
+  const offerNo = offerNoParam ?? "";
   const waText = encodeURIComponent(
     `Hallo! Ich habe eine Anfrage über die Website gesendet. Auftrags-ID: ${order}.`,
   );
   const waUrl = `https://wa.me/491729573681?text=${waText}`;
+  const offerUrl = offerToken ? `/offer/${encodeURIComponent(offerToken)}` : null;
   const pdfUrl = order
     ? `/api/orders/${encodeURIComponent(order)}/pdf${pdfToken ? `?token=${encodeURIComponent(pdfToken)}` : ""}`
     : null;
@@ -42,7 +50,7 @@ export default async function ConfirmPage({
                 Anfrage erfolgreich gesendet
               </div>
               <p className="mt-0.5 text-sm text-slate-700 dark:text-slate-300">
-                Wir haben Ihre Daten erhalten und melden uns schnellstmöglich.
+                Wir haben Ihre Daten erhalten. Ihr Termin ist angefragt und wird zeitnah bestätigt.
               </p>
             </div>
           </div>
@@ -71,6 +79,24 @@ export default async function ConfirmPage({
               </div>
               <div className="mt-2 text-xs text-slate-700 dark:text-slate-400">
                 Bitte notieren Sie diese ID, um Ihre Anfrage jederzeit verfolgen zu können.
+              </div>
+            </div>
+          ) : null}
+
+          {offerUrl ? (
+            <div className="mt-5 rounded-2xl border-2 border-blue-300 bg-blue-50 p-5 dark:border-blue-500/30 dark:bg-blue-950/30">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Ihr Angebot</div>
+                  <div className="mt-1 text-sm font-extrabold text-slate-950 dark:text-white">
+                    {offerNo || "Angebot erstellt"}
+                  </div>
+                </div>
+                <Link href={offerUrl}>
+                  <Button className="gap-2">
+                    Angebot öffnen und verbindlich bestätigen
+                  </Button>
+                </Link>
               </div>
             </div>
           ) : null}
@@ -123,8 +149,8 @@ export default async function ConfirmPage({
                 1
               </div>
               <div className="text-sm text-slate-800 dark:text-slate-200">
-                <span className="font-semibold text-slate-900 dark:text-white">Prüfung:</span> Wir prüfen Ihre
-                Angaben und berechnen das finale Angebot.
+                <span className="font-semibold text-slate-900 dark:text-white">Anfrage erhalten:</span> Termin angefragt.
+                Wir prüfen Ihre Angaben und bestätigen den finalen Termin zeitnah.
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -132,8 +158,8 @@ export default async function ConfirmPage({
                 2
               </div>
               <div className="text-sm text-slate-800 dark:text-slate-200">
-                <span className="font-semibold text-slate-900 dark:text-white">Kontakt:</span> Wir melden uns
-                per Telefon, WhatsApp oder E-Mail zur Bestätigung.
+                <span className="font-semibold text-slate-900 dark:text-white">Angebot bestätigen:</span> Öffnen Sie Ihr
+                Angebot und bestätigen Sie verbindlich mit Unterschrift.
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -141,8 +167,8 @@ export default async function ConfirmPage({
                 3
               </div>
               <div className="text-sm text-slate-800 dark:text-slate-200">
-                <span className="font-semibold text-slate-900 dark:text-white">Durchführung:</span> Am
-                vereinbarten Termin kümmern wir uns um alles.
+                <span className="font-semibold text-slate-900 dark:text-white">Durchführung:</span> Nach bestätigtem Termin
+                kümmern wir uns um alles.
               </div>
             </div>
           </div>

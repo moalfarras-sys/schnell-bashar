@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx scripts/dev-db-check.ts && next dev --webpack",
-    "build": "npm run prisma:generate && npm run images:check && npm run images:forbidden && npm run text:scan-mojibake && next build --webpack",
+    "build": "npm run prisma:generate && npm run images:check && npm run images:forbidden && npm run text:scan-mojibake && npm run text:scan-transliteration && next build --webpack",
     "start": "node .next/standalone/server.js",
     "lint": "eslint .",
     "db:up": "docker compose up -d db",
@@ -37,6 +37,7 @@
     "images:forbidden": "tsx scripts/check-forbidden-image-paths.ts",
     "text:fix-mojibake": "tsx scripts/fix-mojibake.ts",
     "text:scan-mojibake": "tsx scripts/check-mojibake.ts",
+    "text:scan-transliteration": "tsx scripts/check-transliteration.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

@@ -3,9 +3,11 @@ import { z } from "zod";
 import { formatInTimeZone } from "date-fns-tz";
 
 import { prisma } from "@/server/db/prisma";
+import { formatRequestedWindow, preferredTimeWindowLabel } from "@/lib/schedule-format";
 
 const STATUS_LABELS: Record<string, string> = {
   NEW: "Eingegangen",
+  REQUESTED: "Termin angefragt",
   CONFIRMED: "Bestätigt",
   IN_PROGRESS: "In Bearbeitung",
   DONE: "Abgeschlossen",
@@ -37,6 +39,9 @@ export async function GET(req: Request) {
       customerName: true,
       slotStart: true,
       slotEnd: true,
+      requestedDateFrom: true,
+      requestedDateTo: true,
+      preferredTimeWindow: true,
       createdAt: true,
       serviceType: true,
       speed: true,
@@ -58,6 +63,20 @@ export async function GET(req: Request) {
   const priceCents = order.priceMaxCents ?? order.priceMinCents ?? 0;
   const vatCents = Math.round(priceCents * 0.19);
   const grossCents = priceCents + vatCents;
+  const requestedLabel = formatRequestedWindow(
+    order.requestedDateFrom,
+    order.requestedDateTo,
+    order.preferredTimeWindow,
+  );
+  const hasScheduledSlot = Boolean(order.slotStart && order.slotEnd);
+  const dateLabel = hasScheduledSlot
+    ? formatInTimeZone(order.slotStart!, "Europe/Berlin", "dd.MM.yyyy")
+    : order.requestedDateFrom
+      ? formatInTimeZone(order.requestedDateFrom, "Europe/Berlin", "dd.MM.yyyy")
+      : "offen";
+  const timeLabel = hasScheduledSlot
+    ? `${formatInTimeZone(order.slotStart!, "Europe/Berlin", "HH:mm")} - ${formatInTimeZone(order.slotEnd!, "Europe/Berlin", "HH:mm")}`
+    : `Angefragt (${preferredTimeWindowLabel(order.preferredTimeWindow)})`;
 
   return NextResponse.json({
     trackingCode: order.publicId,
@@ -67,8 +86,9 @@ export async function GET(req: Request) {
     customerName: order.customerName,
     serviceType: order.serviceType,
     speed: order.speed,
-    date: formatInTimeZone(order.slotStart, "Europe/Berlin", "dd.MM.yyyy"),
-    time: `${formatInTimeZone(order.slotStart, "Europe/Berlin", "HH:mm")} - ${formatInTimeZone(order.slotEnd, "Europe/Berlin", "HH:mm")}`,
+    date: dateLabel,
+    time: timeLabel,
+    requestedWindow: requestedLabel,
     fromAddress,
     toAddress,
     volumeM3: order.volumeM3,
@@ -76,7 +96,9 @@ export async function GET(req: Request) {
     priceGross: grossCents,
     createdAt: formatInTimeZone(order.createdAt, "Europe/Berlin", "dd.MM.yyyy HH:mm"),
     createdAtLabel: formatInTimeZone(order.createdAt, "Europe/Berlin", "dd.MM.yyyy HH:mm"),
-    slotLabel: `${formatInTimeZone(order.slotStart, "Europe/Berlin", "dd.MM.yyyy HH:mm")} - ${formatInTimeZone(order.slotEnd, "Europe/Berlin", "HH:mm")}`,
+    slotLabel: hasScheduledSlot
+      ? `${formatInTimeZone(order.slotStart!, "Europe/Berlin", "dd.MM.yyyy HH:mm")} - ${formatInTimeZone(order.slotEnd!, "Europe/Berlin", "HH:mm")}`
+      : requestedLabel || "Termin angefragt",
   });
 }
 

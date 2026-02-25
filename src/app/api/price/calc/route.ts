@@ -108,7 +108,7 @@ export async function POST(req: Request) {
       console.error("[price/calc] distance lookup failed:", error);
       const errorMessage =
         error instanceof ORSDistanceError && error.code === "ORS_FORBIDDEN"
-          ? "Die Distanzberechnung ist derzeit nicht verfuegbar (ORS-Zugriff abgelehnt). Bitte kontaktieren Sie uns kurz."
+          ? "Die Distanzberechnung ist derzeit nicht verfügbar (ORS-Zugriff abgelehnt). Bitte kontaktieren Sie uns kurz."
           : "Die Distanz konnte nicht berechnet werden. Bitte prüfen Sie die Adressen (inkl. PLZ).";
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
@@ -136,5 +136,6 @@ export async function POST(req: Request) {
     breakdown: estimate.breakdown,
   });
 }
+
 
 

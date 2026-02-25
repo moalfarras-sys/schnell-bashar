@@ -281,11 +281,9 @@ export function BookingWizard(props: {
 
   const [preferredFrom, setPreferredFrom] = useState(earliestISO);
   const [preferredTo, setPreferredTo] = useState(() => format(addDays(new Date(), 14), "yyyy-MM-dd"));
+  const [preferredTimeWindow, setPreferredTimeWindow] =
+    useState<WizardPayload["timing"]["preferredTimeWindow"]>("FLEXIBLE");
 
-  const [slotsLoading, setSlotsLoading] = useState(false);
-  const [slotsError, setSlotsError] = useState<string | null>(null);
-  const [slots, setSlots] = useState<{ start: string; end: string }[]>([]);
-  const [selectedSlotStart, setSelectedSlotStart] = useState<string>("");
   const [routePricing, setRoutePricing] = useState<RoutePricingState | null>(null);
   const [routeLoading, setRouteLoading] = useState(false);
   const [routeError, setRouteError] = useState<string | null>(null);
@@ -384,10 +382,8 @@ export function BookingWizard(props: {
   }, [serviceType, samePickupAsStart, startAddress]);
 
   useEffect(() => {
-    // reset when switching service type
-    setSelectedSlotStart("");
-    setSlots([]);
-    setSlotsError(null);
+    // reset timing preference when switching service type
+    setPreferredTimeWindow("FLEXIBLE");
   }, [serviceType]);
 
   useEffect(() => {
@@ -518,14 +514,14 @@ export function BookingWizard(props: {
           : undefined,
       timing: {
         speed,
-        preferredFrom: new Date(`${preferredFrom}T00:00:00.000Z`).toISOString(),
-        preferredTo: new Date(`${preferredTo}T00:00:00.000Z`).toISOString(),
-        selectedSlotStart: selectedSlotStart || new Date().toISOString(),
+        requestedFrom: new Date(`${preferredFrom}T00:00:00.000Z`).toISOString(),
+        requestedTo: new Date(`${preferredTo}T00:00:00.000Z`).toISOString(),
+        preferredTimeWindow,
         jobDurationMinutes: 120,
       },
       customer: {
-        name: customerName || "—",
-        phone: customerPhone || "—",
+        name: customerName || "",
+        phone: customerPhone || "",
         email: customerEmail || "",
         contactPreference,
         note,
@@ -567,7 +563,7 @@ export function BookingWizard(props: {
     speed,
     preferredFrom,
     preferredTo,
-    selectedSlotStart,
+    preferredTimeWindow,
     customerName,
     customerPhone,
     customerEmail,
@@ -584,7 +580,7 @@ export function BookingWizard(props: {
     return ceilToGrid(Math.max(120, base), 60);
   }, [estimate.laborHours]);
 
-  // Fetch slots when timing inputs change
+  // Keep requested date range valid.
   useEffect(() => {
     if (!preferredFrom || !preferredTo) return;
     if (preferredFrom < earliestISO) setPreferredFrom(earliestISO);
@@ -595,61 +591,14 @@ export function BookingWizard(props: {
     if (preferredTo < preferredFrom) setPreferredTo(preferredFrom);
   }, [preferredFrom, preferredTo]);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function run() {
-      setSlotsLoading(true);
-      setSlotsError(null);
-      try {
-        const url = `/api/slots?speed=${speed}&from=${preferredFrom}&to=${preferredTo}&durationMinutes=${jobDurationMinutes}`;
-        const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) throw new Error("slots failed");
-        const json = (await res.json()) as { slots: { start: string; end: string }[] };
-        if (cancelled) return;
-        setSlots(json.slots ?? []);
-        // keep selection if still available
-        if (selectedSlotStart && !(json.slots ?? []).some((s) => s.start === selectedSlotStart)) {
-          setSelectedSlotStart("");
-        }
-      } catch {
-        if (cancelled) return;
-        setSlots([]);
-        setSlotsError("Zeitfenster konnten nicht geladen werden. Bitte versuchen Sie es später erneut.");
-      } finally {
-        if (!cancelled) setSlotsLoading(false);
-      }
-    }
-
-    // only fetch once user reaches timing step or summary
-    const visibleSteps = getSteps(serviceType, {
-      hideServiceStep,
-      itemsTitle: variant === "default" ? "Gegenstände" : "Leistungen",
-    });
-    const timingIndex = visibleSteps.findIndex((s) => s.key === "timing");
-    if (step < timingIndex) return;
-    run();
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    serviceType,
-    speed,
-    preferredFrom,
-    preferredTo,
-    jobDurationMinutes,
-    step,
-    selectedSlotStart,
-    hideServiceStep,
-    variant,
-  ]);
 
   const steps = useMemo(
     () =>
       getSteps(serviceType, {
         hideServiceStep,
-        itemsTitle: variant === "default" ? "Gegenstände" : "Leistungen",
+        itemsTitle: "Umfang",
       }),
-    [serviceType, hideServiceStep, variant],
+    [serviceType, hideServiceStep],
   );
   const current = steps[step] ?? steps[0];
 
@@ -670,7 +619,7 @@ export function BookingWizard(props: {
       case "package":
         return true;
       case "timing":
-        return !!selectedSlotStart;
+        return Boolean(preferredFrom && preferredTo && preferredFrom <= preferredTo);
       case "customer":
         return customerName.trim().length >= 2 && customerPhone.trim().length >= 6 && customerEmail.includes("@");
       case "summary":
@@ -690,7 +639,8 @@ export function BookingWizard(props: {
     selectedServiceOptions,
     disposalExtraM3,
     forbiddenConfirmed,
-    selectedSlotStart,
+    preferredFrom,
+    preferredTo,
     customerName,
     customerPhone,
     customerEmail,
@@ -700,8 +650,6 @@ export function BookingWizard(props: {
     setSubmitting(true);
     setSubmitError(null);
     try {
-      if (!selectedSlotStart) throw new Error("slot required");
-
       const payload: WizardPayload = {
         bookingContext,
         packageTier,
@@ -734,9 +682,9 @@ export function BookingWizard(props: {
             : undefined,
         timing: {
           speed,
-          preferredFrom: new Date(`${preferredFrom}T00:00:00.000Z`).toISOString(),
-          preferredTo: new Date(`${preferredTo}T00:00:00.000Z`).toISOString(),
-          selectedSlotStart,
+          requestedFrom: new Date(`${preferredFrom}T00:00:00.000Z`).toISOString(),
+          requestedTo: new Date(`${preferredTo}T00:00:00.000Z`).toISOString(),
+          preferredTimeWindow,
           jobDurationMinutes,
         },
         customer: {
@@ -760,6 +708,8 @@ export function BookingWizard(props: {
       localStorage.removeItem(storageKey);
       const params = new URLSearchParams({ order: json.publicId });
       if (json.pdfToken) params.set("token", json.pdfToken);
+      if (json.offer?.token) params.set("offerToken", json.offer.token);
+      if (json.offer?.offerNo) params.set("offerNo", json.offer.offerNo);
       router.push(`/buchen/bestaetigt?${params.toString()}`);
     } catch (e: any) {
       setSubmitError(e?.message || "Senden fehlgeschlagen.");
@@ -791,7 +741,7 @@ export function BookingWizard(props: {
       speed,
       preferredFrom,
       preferredTo,
-      selectedSlotStart,
+      preferredTimeWindow,
       customerName,
       customerPhone,
       customerEmail,
@@ -821,7 +771,7 @@ export function BookingWizard(props: {
     speed,
     preferredFrom,
     preferredTo,
-    selectedSlotStart,
+    preferredTimeWindow,
     customerName,
     customerPhone,
     customerEmail,
@@ -856,9 +806,9 @@ export function BookingWizard(props: {
       setDisposalExtraM3(Number(d.disposalExtraM3 ?? 0));
       setForbiddenConfirmed(!!d.forbiddenConfirmed);
       setSpeed(d.speed ?? "STANDARD");
-      setPreferredFrom(d.preferredFrom ?? earliestISO);
-      setPreferredTo(d.preferredTo ?? preferredTo);
-      setSelectedSlotStart(d.selectedSlotStart ?? "");
+      setPreferredFrom(d.preferredFrom ?? d.requestedFrom ?? earliestISO);
+      setPreferredTo(d.preferredTo ?? d.requestedTo ?? preferredTo);
+      setPreferredTimeWindow(d.preferredTimeWindow ?? "FLEXIBLE");
       setCustomerName(d.customerName ?? "");
       setCustomerPhone(d.customerPhone ?? "");
       setCustomerEmail(d.customerEmail ?? "");
@@ -985,12 +935,9 @@ export function BookingWizard(props: {
                 setPreferredFrom={setPreferredFrom}
                 preferredTo={preferredTo}
                 setPreferredTo={setPreferredTo}
+                preferredTimeWindow={preferredTimeWindow}
+                setPreferredTimeWindow={setPreferredTimeWindow}
                 jobDurationMinutes={jobDurationMinutes}
-                slotsLoading={slotsLoading}
-                slotsError={slotsError}
-                slots={slots}
-                selectedSlotStart={selectedSlotStart}
-                setSelectedSlotStart={setSelectedSlotStart}
               />
             ) : null}
 
@@ -1040,8 +987,9 @@ export function BookingWizard(props: {
                 disposalExtraM3={disposalExtraM3}
                 forbiddenConfirmed={forbiddenConfirmed}
                 speed={speed}
-                selectedSlotStart={selectedSlotStart}
-                jobDurationMinutes={jobDurationMinutes}
+                requestedFrom={preferredFrom}
+                requestedTo={preferredTo}
+                preferredTimeWindow={preferredTimeWindow}
                 customerName={customerName}
                 customerPhone={customerPhone}
                 customerEmail={customerEmail}
@@ -1107,7 +1055,7 @@ export function BookingWizard(props: {
             <div className="rounded-2xl border border-brand-400/70 bg-gradient-to-br from-brand-50 to-[color:var(--surface-elevated)] p-4 shadow-sm dark:border-brand-500/70 dark:from-brand-900/25 dark:to-slate-900/95">
               <div className="text-xs font-bold text-brand-700 dark:text-brand-300">Preisrahmen</div>
               <div className="mt-1 text-lg font-extrabold text-brand-800 dark:text-brand-300">
-                {eur(estimate.priceMinCents)} – {eur(estimate.priceMaxCents)}
+                {eur(estimate.priceMinCents)}  {eur(estimate.priceMaxCents)}
               </div>
               {estimate.distanceKm != null ? (
                 <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
@@ -1122,7 +1070,7 @@ export function BookingWizard(props: {
               ) : null}
               {routeLoading ? (
                 <div className="mt-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                  Distanz wird berechnet…
+                  Distanz wird berechnet⬦
                 </div>
               ) : null}
               {routeError ? (
@@ -1158,18 +1106,18 @@ function getSteps(
   serviceType: WizardPayload["serviceType"],
   options?: { hideServiceStep?: boolean; itemsTitle?: string },
 ) {
-  const itemsTitle = options?.itemsTitle?.trim() || "Gegenstände";
+  const itemsTitle = options?.itemsTitle?.trim() || "Umfang";
   const base = [
     { key: "service" as const, title: "Leistung" },
-    { key: "location" as const, title: "Adresse & Zugang" },
+    { key: "location" as const, title: "Adressen" },
     { key: "items" as const, title: itemsTitle },
   ];
   const disposal = { key: "disposal" as const, title: "Entsorgung" };
   const packageStep = { key: "package" as const, title: "Paket & Angebot" };
   const rest = [
-    { key: "timing" as const, title: "Termin" },
+    { key: "timing" as const, title: "Wunschtermin" },
     { key: "customer" as const, title: "Kontakt" },
-    { key: "summary" as const, title: "Zusammenfassung" },
+    { key: "summary" as const, title: "Prfen & Senden" },
   ];
 
   const withService =
@@ -1221,7 +1169,7 @@ function WizardHeader(props: { steps: { key: string; title: string }[]; step: nu
             )}
           >
             {idx < props.step ? (
-              <span className="mr-1">✓</span>
+              <span className="mr-1">S</span>
             ) : null}
             {s.title}
           </div>
@@ -1293,7 +1241,7 @@ function StepService(props: {
                   <div className="mt-1 text-xs font-semibold text-slate-600">
                     {forced
                       ? "In diesem Buchungsweg automatisch enthalten."
-                      : "Als strukturierte Option - Details klaeren wir im Angebot."}
+                      : "Als strukturierte Option - Details klären wir im Angebot."}
                   </div>
                 </div>
               </label>
@@ -1706,7 +1654,7 @@ function QtyStepper(props: { value: number; onChange: (v: number) => void }) {
         onClick={() => props.onChange(props.value - 1)}
         aria-label="Minus"
       >
-        −
+        
       </button>
       <div className="w-10 text-center text-sm font-extrabold text-slate-900 dark:text-white" lang="de" dir="ltr">{formatNumberDE(props.value)}</div>
       <button
@@ -1854,20 +1802,17 @@ function StepTiming(props: {
   setPreferredFrom: (v: string) => void;
   preferredTo: string;
   setPreferredTo: (v: string) => void;
+  preferredTimeWindow: WizardPayload["timing"]["preferredTimeWindow"];
+  setPreferredTimeWindow: (v: WizardPayload["timing"]["preferredTimeWindow"]) => void;
   jobDurationMinutes: number;
-  slotsLoading: boolean;
-  slotsError: string | null;
-  slots: { start: string; end: string }[];
-  selectedSlotStart: string;
-  setSelectedSlotStart: (v: string) => void;
 }) {
   return (
     <div>
       <div className="grid gap-4 md:grid-cols-3">
         <SpeedCard
           active={props.speed === "ECONOMY"}
-          title="Günstig"
-          desc="Günstiger, längere Vorlaufzeit."
+          title="Gnstig"
+          desc="Gnstiger, lngere Vorlaufzeit."
           onClick={() => props.setSpeed("ECONOMY")}
         />
         <SpeedCard
@@ -1879,7 +1824,7 @@ function StepTiming(props: {
         <SpeedCard
           active={props.speed === "EXPRESS"}
           title="Express"
-          desc="Schnellstmöglich, höherer Preis."
+          desc="Schnellstmglich, hherer Preis."
           onClick={() => props.setSpeed("EXPRESS")}
         />
       </div>
@@ -1887,7 +1832,7 @@ function StepTiming(props: {
       <div className="premium-surface-emphasis mt-8 rounded-3xl p-6">
         <div className="flex items-center gap-2 text-sm font-extrabold text-slate-900">
           <CalendarDays className="h-5 w-5 text-brand-700" />
-          Zeitraum & Zeitfenster
+          Wunschtermin
         </div>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
@@ -1899,7 +1844,7 @@ function StepTiming(props: {
               onChange={(e) => props.setPreferredFrom(e.target.value)}
             />
             <div className="mt-1 text-xs font-semibold text-slate-600">
-              Frühestens: {props.earliestISO}
+              Frhestens: {props.earliestISO}
             </div>
           </div>
           <div>
@@ -1914,54 +1859,39 @@ function StepTiming(props: {
         </div>
 
         <div className="mt-6 text-xs font-semibold text-slate-600">
-          Geschätzte Dauer: {props.jobDurationMinutes} Minuten
+          Geschtzte Dauer: {props.jobDurationMinutes} Minuten
         </div>
 
         <div className="mt-6">
-          <div className="text-sm font-extrabold text-slate-900">Verfügbare Zeitfenster</div>
-          {props.slotsLoading ? (
-            <div className="mt-4 inline-flex items-center gap-2 rounded-xl border-2 border-slate-300 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700">
-              <Loader2 className="h-4 w-4 animate-spin" /> Lädt…
-            </div>
-          ) : null}
-          {props.slotsError ? (
-            <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-900">
-              {props.slotsError}
-            </div>
-          ) : null}
-
-          {!props.slotsLoading && !props.slotsError ? (
-            <div className="mt-4 grid gap-2">
-              {props.slots.length === 0 ? (
-                <div className="rounded-2xl border-2 border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-800 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-300">
-                  Keine Zeitfenster im gewählten Zeitraum verfügbar. Bitte passen Sie den Zeitraum an.
-                </div>
-              ) : (
-                props.slots.slice(0, 30).map((s) => {
-                  const active = props.selectedSlotStart === s.start;
-                  const label = `${formatInTimeZone(new Date(s.start), "Europe/Berlin", "EEE, dd.MM · HH:mm")} – ${formatInTimeZone(new Date(s.end), "Europe/Berlin", "HH:mm")}`;
-                  return (
-                    <button
-                      key={s.start}
-                      type="button"
-                      className={cn(
-                        "premium-elevate flex items-center justify-between rounded-2xl border-2 p-4 text-left shadow-sm",
-                        active ? "border-brand-500 bg-brand-50 dark:bg-brand-950/30 dark:border-brand-400" : "border-slate-300 bg-[color:var(--surface-elevated)] hover:border-slate-400 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800/60 dark:hover:border-slate-500 dark:hover:bg-slate-800",
-                      )}
-                      onClick={() => props.setSelectedSlotStart(s.start)}
-                    >
-                      <div className="text-sm font-extrabold text-slate-900 dark:text-white">{label}</div>
-                      {active ? (
-                        <div className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white">
-                          <Check className="h-5 w-5" />
-                        </div>
-                      ) : null}
-                    </button>
-                  );
-                })
-              )}
-            </div>
-          ) : null}
+          <div className="text-sm font-extrabold text-slate-900">Bevorzugtes Zeitfenster</div>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {[
+              { key: "FLEXIBLE", label: "Flexibel" },
+              { key: "MORNING", label: "Vormittag" },
+              { key: "AFTERNOON", label: "Nachmittag" },
+              { key: "EVENING", label: "Abend" },
+            ].map((option) => {
+              const active = props.preferredTimeWindow === option.key;
+              return (
+                <button
+                  key={option.key}
+                  type="button"
+                  className={cn(
+                    "premium-elevate rounded-2xl border-2 px-4 py-3 text-left text-sm font-bold",
+                    active
+                      ? "border-brand-500 bg-brand-50 text-brand-900 dark:border-brand-400 dark:bg-brand-950/30 dark:text-brand-200"
+                      : "border-slate-300 bg-[color:var(--surface-elevated)] text-slate-800 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-200",
+                  )}
+                  onClick={() => props.setPreferredTimeWindow(option.key as WizardPayload["timing"]["preferredTimeWindow"])}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-3 rounded-2xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-900">
+            Termin angefragt: Wir besttigen den finalen Termin nach Prfung per E-Mail.
+          </div>
         </div>
       </div>
     </div>
@@ -2078,10 +2008,10 @@ function StepCustomer(props: {
         </div>
         <div>
           <div className="text-xs font-bold text-slate-700">Telefon *</div>
-          <Input value={props.customerPhone} onChange={(e) => props.setCustomerPhone(e.target.value)} placeholder="+49 …" />
+          <Input value={props.customerPhone} onChange={(e) => props.setCustomerPhone(e.target.value)} placeholder="+49 ⬦" />
         </div>
         <div>
-          <div className="text-xs font-bold text-slate-700">E‑Mail *</div>
+          <div className="text-xs font-bold text-slate-700">EMail *</div>
           <Input type="email" value={props.customerEmail} onChange={(e) => props.setCustomerEmail(e.target.value)} placeholder="name@email.de" />
         </div>
         <div className="sm:col-span-2">
@@ -2099,7 +2029,7 @@ function StepCustomer(props: {
                 )}
                 onClick={() => props.setContactPreference(k)}
               >
-                {k === "PHONE" ? "Telefon" : k === "WHATSAPP" ? "WhatsApp" : "E‑Mail"}
+                {k === "PHONE" ? "Telefon" : k === "WHATSAPP" ? "WhatsApp" : "EMail"}
               </button>
             ))}
           </div>
@@ -2138,8 +2068,9 @@ function StepSummary(props: {
   disposalExtraM3: number;
   forbiddenConfirmed: boolean;
   speed: WizardPayload["timing"]["speed"];
-  selectedSlotStart: string;
-  jobDurationMinutes: number;
+  requestedFrom: string;
+  requestedTo: string;
+  preferredTimeWindow: WizardPayload["timing"]["preferredTimeWindow"];
   customerName: string;
   customerPhone: string;
   customerEmail: string;
@@ -2149,10 +2080,6 @@ function StepSummary(props: {
   routeLoading: boolean;
   routeError: string | null;
 }) {
-  const slotEnd = props.selectedSlotStart
-    ? new Date(new Date(props.selectedSlotStart).getTime() + props.jobDurationMinutes * 60_000)
-    : null;
-
   return (
     <div className="grid gap-6">
       <div className="premium-surface-emphasis rounded-3xl p-6">
@@ -2208,13 +2135,21 @@ function StepSummary(props: {
             </div>
           ) : null}
 
-          {props.selectedSlotStart ? (
+          {props.requestedFrom && props.requestedTo ? (
             <div>
-              <span className="font-extrabold">Termin:</span>{" "}
-              {formatInTimeZone(new Date(props.selectedSlotStart), "Europe/Berlin", "EEE, dd.MM.yyyy HH:mm")}{" "}
-              {slotEnd
-                ? `– ${formatInTimeZone(slotEnd, "Europe/Berlin", "HH:mm")}`
-                : ""}
+              <span className="font-extrabold">Wunschtermin:</span>{" "}
+              {formatInTimeZone(new Date(`${props.requestedFrom}T00:00:00.000Z`), "Europe/Berlin", "dd.MM.yyyy")}{" "}
+              bis{" "}
+              {formatInTimeZone(new Date(`${props.requestedTo}T00:00:00.000Z`), "Europe/Berlin", "dd.MM.yyyy")}{" "}
+              (
+              {props.preferredTimeWindow === "MORNING"
+                ? "Vormittag"
+                : props.preferredTimeWindow === "AFTERNOON"
+                  ? "Nachmittag"
+                  : props.preferredTimeWindow === "EVENING"
+                    ? "Abend"
+                    : "Flexibel"}
+              )
             </div>
           ) : null}
         </div>
@@ -2266,7 +2201,7 @@ function StepSummary(props: {
           ) : null}
           {props.routeLoading ? (
             <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
-              Distanz wird berechnet…
+              Distanz wird berechnet⬦
             </div>
           ) : null}
           {props.routeError ? (
@@ -2276,7 +2211,7 @@ function StepSummary(props: {
           ) : null}
           <div>
             <span className="font-extrabold">Preisrahmen:</span>{" "}
-            {eur(props.estimate.priceMinCents)} – {eur(props.estimate.priceMaxCents)}
+            {eur(props.estimate.priceMinCents)}  {eur(props.estimate.priceMaxCents)}
           </div>
           {props.estimate.breakdown.packageAdjustmentCents !== 0 ? (
             <div>
@@ -2308,13 +2243,13 @@ function StepSummary(props: {
         <div className="text-sm font-extrabold text-slate-900 dark:text-white">Kontakt</div>
         <div className="mt-3 grid gap-2 text-sm text-slate-700 dark:text-slate-300">
           <div>
-            <span className="font-extrabold">Name:</span> {props.customerName || "—"}
+            <span className="font-extrabold">Name:</span> {props.customerName || ""}
           </div>
           <div>
-            <span className="font-extrabold">Telefon:</span> {props.customerPhone || "—"}
+            <span className="font-extrabold">Telefon:</span> {props.customerPhone || ""}
           </div>
           <div>
-            <span className="font-extrabold">E‑Mail:</span> {props.customerEmail || "—"}
+            <span className="font-extrabold">EMail:</span> {props.customerEmail || ""}
           </div>
           <div>
             <span className="font-extrabold">Kontaktweg:</span>{" "}
@@ -2378,7 +2313,7 @@ function SummaryItems(props: { title: string; catalog: CatalogItem[]; qty: Recor
           return (
             <li key={id} className="flex items-center justify-between gap-3">
               <span className="truncate">{it?.nameDe ?? id}</span>
-              <span className="font-extrabold">× {qty}</span>
+              <span className="font-extrabold"> {qty}</span>
             </li>
           );
         })}
@@ -2408,11 +2343,12 @@ function SummaryServiceOptions(props: {
         {entries.map((entry) => (
           <li key={entry.code} className="flex items-center justify-between gap-3">
             <span className="truncate">{entry.option?.nameDe ?? entry.code}</span>
-            <span className="font-extrabold">× {entry.qty}</span>
+            <span className="font-extrabold"> {entry.qty}</span>
           </li>
         ))}
       </ul>
     </div>
   );
 }
+
 

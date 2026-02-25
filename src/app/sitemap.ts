@@ -1,4 +1,4 @@
-import type { MetadataRoute } from "next";
+﻿import type { MetadataRoute } from "next";
 import { cities } from "@/data/cities";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellumzug-berlin.de";
@@ -10,15 +10,15 @@ const routes = [
   "/montage",
   "/preise",
   "/kalender",
-  "/buchung/termin",
+  "/buchen?context=MOVING",
   "/anfrage",
   "/galerie",
   "/faq",
   "/ueber-uns",
   "/kontakt",
   "/buchen",
-  "/montage/buchen",
-  "/entsorgung/buchen",
+  "/buchen?context=MONTAGE",
+  "/buchen?context=ENTSORGUNG",
   "/agb",
   "/datenschutz",
   "/impressum",
@@ -42,3 +42,4 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...baseEntries, ...cityEntries];
 }
+

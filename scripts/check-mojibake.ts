@@ -1,4 +1,4 @@
-import fs from "node:fs";
+﻿import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
@@ -7,10 +7,12 @@ const EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".md", ".css"]);
 const SKIP_DIRS = new Set(["node_modules", ".next", ".git", "prisma", "generated"]);
 
 const BAD_PATTERNS: Array<{ name: string; re: RegExp }> = [
+  // Common mojibake artifacts from UTF-8 interpreted as Latin-1/Windows-1252.
   { name: "latin1-utf8-artifact", re: /Ã[\u0080-\u00BF]/g },
   { name: "latin1-prefix", re: /Â[^\s]/g },
-  { name: "broken-ellipsis-or-dash", re: /â[\u0080-\u00BF]/g },
-  { name: "replacement-char", re: /�/g },
+  { name: "cp1252-quote-dash", re: /â[€™œž€“—]/g },
+  { name: "replacement-char", re: /�|ï¿½/g },
+  { name: "bom-artifact", re: /ï»¿/g },
   { name: "control-char", re: /[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g },
 ];
 

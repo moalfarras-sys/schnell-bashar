@@ -41,14 +41,24 @@ function itemRowsHtml(title: string, rows: EmailItemRow[]) {
   return `<p><b>${title}</b><br/>${rows.map((r) => `• ${r.name} × ${r.qty} (ca. ${r.lineVolumeM3.toFixed(2)} m³)`).join("<br/>")}</p>`;
 }
 
+function preferredTimeWindowLabel(value: "MORNING" | "AFTERNOON" | "EVENING" | "FLEXIBLE") {
+  if (value === "MORNING") return "Vormittag";
+  if (value === "AFTERNOON") return "Nachmittag";
+  if (value === "EVENING") return "Abend";
+  return "Flexibel";
+}
+
 export async function sendOrderEmail(args: {
   publicId: string;
   payload: WizardPayload;
   estimate: EstimateResult;
-  slotStart: Date;
-  slotEnd: Date;
+  requestedDateFrom: Date;
+  requestedDateTo: Date;
+  preferredTimeWindow: "MORNING" | "AFTERNOON" | "EVENING" | "FLEXIBLE";
   uploadNames: string[];
   itemRows: EmailItemRow[];
+  offerNo?: string;
+  offerLink?: string;
 }) {
   const transporter = getMailer();
   if (!transporter) return { ok: false as const, skipped: true as const };
@@ -57,7 +67,9 @@ export async function sendOrderEmail(args: {
   const from = process.env.SMTP_FROM || process.env.SMTP_USER;
   if (!to || !from) return { ok: false as const, skipped: true as const };
 
-  const slotLabel = `${formatInTimeZone(args.slotStart, "Europe/Berlin", "EEE, dd.MM.yyyy HH:mm")} – ${formatInTimeZone(args.slotEnd, "Europe/Berlin", "HH:mm")} (Europe/Berlin)`;
+  const timingLabel =
+    `${formatInTimeZone(args.requestedDateFrom, "Europe/Berlin", "dd.MM.yyyy")} bis ` +
+    `${formatInTimeZone(args.requestedDateTo, "Europe/Berlin", "dd.MM.yyyy")} (${preferredTimeWindowLabel(args.preferredTimeWindow)})`;
 
   const subject = `Neue Anfrage ${args.publicId} — ${args.payload.serviceType} (${args.payload.timing.speed})`;
   const moveRows = args.itemRows.filter((r) => !r.isDisposal);
@@ -67,7 +79,10 @@ export async function sendOrderEmail(args: {
   lines.push(`Auftrags-ID: ${args.publicId}`);
   lines.push(`Leistung: ${args.payload.serviceType}`);
   lines.push(`Priorität: ${args.payload.timing.speed}`);
-  lines.push(`Termin: ${slotLabel}`);
+  lines.push(`Wunschtermin: ${timingLabel}`);
+  lines.push("Status: Termin angefragt (REQUESTED)");
+  if (args.offerNo) lines.push(`Angebotsnummer: ${args.offerNo}`);
+  if (args.offerLink) lines.push(`Angebotslink: ${args.offerLink}`);
   lines.push("");
   lines.push(`Kunde: ${args.payload.customer.name}`);
   lines.push(`Telefon: ${args.payload.customer.phone}`);
@@ -118,7 +133,9 @@ export async function sendOrderEmail(args: {
     <div style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;">
       <h2>Neue Anfrage: ${args.publicId}</h2>
       <p><b>Leistung:</b> ${args.payload.serviceType} &nbsp; <b>Priorität:</b> ${args.payload.timing.speed}</p>
-      <p><b>Termin:</b> ${slotLabel}</p>
+      <p><b>Wunschtermin:</b> ${timingLabel}<br/><b>Status:</b> Termin angefragt (REQUESTED)</p>
+      ${args.offerNo ? `<p><b>Angebotsnummer:</b> ${args.offerNo}</p>` : ""}
+      ${args.offerLink ? `<p><b>Angebotslink:</b> <a href="${args.offerLink}">${args.offerLink}</a></p>` : ""}
       <hr/>
       <p><b>Kunde:</b> ${args.payload.customer.name}<br/>
          <b>Telefon:</b> ${args.payload.customer.phone}<br/>
@@ -174,7 +191,7 @@ export async function sendOrderEmail(args: {
     customerEmail: args.payload.customer.email,
     serviceType: args.payload.serviceType,
     speed: args.payload.timing.speed,
-    slotLabel,
+    slotLabel: `Anfragezeitraum: ${timingLabel}`,
     lines: args.itemRows.map((r) => ({
       label: r.name,
       qty: r.qty,

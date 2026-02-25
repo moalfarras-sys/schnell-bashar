@@ -11,7 +11,7 @@ const PAGE_LABELS: Record<string, string> = {
   "/vergleich": "Paketvergleich",
   "/buchen": "Angebot berechnen",
   "/kalender": "Termin & Kalender",
-  "/buchung/termin": "Termin & Kalender",
+  "/buchen?context=MOVING": "Termin & Kalender",
   "/buchung/bestaetigt": "Buchung bestätigt",
   "/umzugsplaner": "Umzugsplaner",
   "/meine-anfrage": "Anfrage verfolgen",
@@ -57,4 +57,5 @@ export function PageBreadcrumb() {
     </nav>
   );
 }
+
 

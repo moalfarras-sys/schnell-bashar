@@ -36,37 +36,37 @@ const benefits = [
   {
     icon: ShieldCheck,
     title: "Strukturierte Abholung",
-    desc: "Klare Angaben, optional mit Fotos – für eine präzise Vorab-Einschätzung.",
+    desc: "Klare Angaben, optional mit Fotos  für eine präzise Vorab-Einschätzung.",
   },
   {
     icon: Clock,
     title: "Schnelle Abwicklung",
-    desc: "Kurzfristige Termine möglich – wir räumen und entsorgen zügig.",
+    desc: "Kurzfristige Termine möglich  wir räumen und entsorgen zügig.",
   },
   {
     icon: MapPin,
     title: "Berlin & deutschlandweit",
-    desc: "Ob Einzelabholung oder Entrümpelung – wir sind in Ihrer Nähe.",
+    desc: "Ob Einzelabholung oder Entrümpelung  wir sind in Ihrer Nähe.",
   },
 ];
 
 const steps = [
-  { num: 1, title: "Menge beschreiben", desc: "Volumen oder Fotos – wir schätzen schnell und fair." },
+  { num: 1, title: "Menge beschreiben", desc: "Volumen oder Fotos  wir schätzen schnell und fair." },
   { num: 2, title: "Termin vereinbaren", desc: "Wir melden uns und planen die Abholung." },
   { num: 3, title: "Abholung vor Ort", desc: "Professionell, sauber und umweltbewusst entsorgt." },
 ];
 
 const services = [
-  { icon: Refrigerator, name: "Elektrogerät entsorgen", price: "ab 59 € / Stück", desc: "Kühlschrank, Waschmaschine, Trockner", tag: "Beliebt" },
-  { icon: Package, name: "Sperrmüll-Paket Klein", price: "ab 99 €", desc: "Bis 1 m³ – einzelne Möbelstücke" },
-  { icon: Package, name: "Sperrmüll-Paket Mittel", price: "ab 199 €", desc: "1–3 m³ – nach einem Zimmerumbau" },
-  { icon: Sofa, name: "Einzelmöbel Abholung", price: "ab 39 € / Stück", desc: "Sofa, Schrank, Tisch, Matratze" },
-  { icon: Warehouse, name: "Kellerentrümpelung", price: "ab 299 €", desc: "Komplette Räumung des Kellers" },
-  { icon: Home, name: "Dachbodenentrümpelung", price: "ab 249 €", desc: "Räumung des gesamten Dachbodens" },
-  { icon: Home, name: "Wohnungsauflösung", price: "ab 15 € / m³", desc: "Teilweise oder komplette Auflösung" },
-  { icon: TreePine, name: "Gartenentsorgung", price: "ab 149 €", desc: "Grünschnitt, Gartenmöbel, Abfälle" },
-  { icon: Building2, name: "Büroauflösung", price: "ab 25 € / m³", desc: "Büromöbel, Technik, Akten" },
-  { icon: Home, name: "Komplette Haushaltsauflösung", price: "ab 19 € / m³", desc: "Vollständige Auflösung inkl. Besenreinigung" },
+  { icon: Refrigerator, name: "Elektrogerät entsorgen", price: "ab 59  / Stück", desc: "Kühlschrank, Waschmaschine, Trockner", tag: "Beliebt" },
+  { icon: Package, name: "Sperrmüll-Paket Klein", price: "ab 99 ", desc: "Bis 1 m³  einzelne Möbelstücke" },
+  { icon: Package, name: "Sperrmüll-Paket Mittel", price: "ab 199 ", desc: "13 m³  nach einem Zimmerumbau" },
+  { icon: Sofa, name: "Einzelmöbel Abholung", price: "ab 39  / Stück", desc: "Sofa, Schrank, Tisch, Matratze" },
+  { icon: Warehouse, name: "Kellerentrümpelung", price: "ab 299 ", desc: "Komplette Räumung des Kellers" },
+  { icon: Home, name: "Dachbodenentrümpelung", price: "ab 249 ", desc: "Räumung des gesamten Dachbodens" },
+  { icon: Home, name: "Wohnungsauflösung", price: "ab 15  / m³", desc: "Teilweise oder komplette Auflösung" },
+  { icon: TreePine, name: "Gartenentsorgung", price: "ab 149 ", desc: "Grünschnitt, Gartenmöbel, Abfälle" },
+  { icon: Building2, name: "Büroauflösung", price: "ab 25  / m³", desc: "Büromöbel, Technik, Akten" },
+  { icon: Home, name: "Komplette Haushaltsauflösung", price: "ab 19  / m³", desc: "Vollständige Auflösung inkl. Besenreinigung" },
 ];
 
 const trustItems = [
@@ -114,11 +114,11 @@ export default async function EntsorgungPage() {
               Entsorgung / Sperrmüll
             </h1>
             <p className="mt-4 max-w-2xl text-base text-slate-200">
-              Sperrmüll, Altgeräte und Entrümpelung – wir holen ab, trennen fachgerecht und
+              Sperrmüll, Altgeräte und Entrümpelung  wir holen ab, trennen fachgerecht und
               entsorgen umweltbewusst. Schnelle Rückmeldung und faire Preise.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/entsorgung/buchen">
+              <Link href="/buchen?context=ENTSORGUNG">
                 <Button size="lg" className="gap-2">
                   <Recycle className="h-5 w-5" />
                   Abholung anfragen
@@ -189,12 +189,12 @@ export default async function EntsorgungPage() {
           <Reveal className="mt-12">
             <div className="rounded-2xl border-2 border-amber-400 bg-amber-50/80 p-6 dark:border-amber-500/50 dark:bg-amber-950/30">
               <h3 className="text-sm font-extrabold text-amber-800 dark:text-amber-300">
-                Wichtig – bitte beachten
+                Wichtig  bitte beachten
               </h3>
               <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-300">
-                <li>• Keine gefährlichen Stoffe, Chemikalien, Batterien, Reifen oder Sondermüll.</li>
-                <li>• Wenn möglich: Trennen Sie Materialarten (Holz, Metall, Elektro).</li>
-                <li>• Fotos unterstützen eine präzisere Schätzung (optional).</li>
+                <li>⬢ Keine gefährlichen Stoffe, Chemikalien, Batterien, Reifen oder Sondermüll.</li>
+                <li>⬢ Wenn möglich: Trennen Sie Materialarten (Holz, Metall, Elektro).</li>
+                <li>⬢ Fotos unterstützen eine präzisere Schätzung (optional).</li>
               </ul>
             </div>
           </Reveal>
@@ -245,7 +245,7 @@ export default async function EntsorgungPage() {
           </Reveal>
 
           <Reveal className="mt-10 text-center">
-            <Link href="/entsorgung/buchen">
+            <Link href="/buchen?context=ENTSORGUNG">
               <Button size="lg" className="gap-2">
                 <Recycle className="h-5 w-5" />
                 Jetzt Abholung anfragen
@@ -290,7 +290,7 @@ export default async function EntsorgungPage() {
           </Reveal>
 
           <Reveal className="mt-12 text-center">
-            <Link href="/entsorgung/buchen">
+            <Link href="/buchen?context=ENTSORGUNG">
               <Button size="lg" className="gap-2">
                 Jetzt Abholung anfragen
                 <CheckCircle2 className="h-5 w-5" />
@@ -304,5 +304,7 @@ export default async function EntsorgungPage() {
     </>
   );
 }
+
+
 
 

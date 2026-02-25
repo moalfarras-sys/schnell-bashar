@@ -51,7 +51,11 @@ async function main() {
   }
 
   const orders = await prisma.order.findMany({
-    where: { status: { not: "CANCELLED" } },
+    where: {
+      status: { not: "CANCELLED" },
+      slotStart: { not: null },
+      slotEnd: { not: null },
+    },
     select: { publicId: true, slotStart: true, slotEnd: true, status: true },
     orderBy: { slotStart: "asc" },
     take: 50,
@@ -61,6 +65,7 @@ async function main() {
     console.log("  (none)");
   } else {
     for (const o of orders) {
+      if (!o.slotStart || !o.slotEnd) continue;
       console.log(
         `  ${o.publicId} ${o.slotStart.toISOString()} - ${o.slotEnd.toISOString()} [${o.status}]`
       );

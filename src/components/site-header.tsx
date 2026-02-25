@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -67,7 +67,7 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
           <ThemeToggle />
           <button
             className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl border border-[rgba(183,217,255,0.62)] bg-[rgba(232,243,255,0.74)] shadow-[0_0_0_0.5px_rgba(15,42,69,0.08),0_2px_8px_rgba(15,42,69,0.10),inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-md transition-all duration-200 hover:bg-[rgba(243,249,255,0.92)] hover:shadow-[0_0_0_0.5px_rgba(15,42,69,0.12),0_4px_12px_rgba(15,42,69,0.14),inset_0_1px_0_rgba(255,255,255,0.85)] active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-600 dark:backdrop-blur-none"
-            aria-label={open ? "Menue schliessen" : "Menue oeffnen"}
+            aria-label={open ? "Menü schließen" : "Menü öffnen"}
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -97,3 +97,4 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
     </header>
   );
 }
+

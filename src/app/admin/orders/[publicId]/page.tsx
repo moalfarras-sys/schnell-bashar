@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { HardDeleteButton } from "@/components/admin/hard-delete-button";
 import { CreateOfferButton } from "@/components/admin/create-offer-button";
+import { OrderScheduleForm } from "@/components/admin/order-schedule-form";
 import {
   closeOrderAction,
   restoreOrderAction,
@@ -131,7 +132,13 @@ export default async function AdminOrderDetailPage({
           <InfoCard title="Leistung" value={`${order.serviceType} · ${order.speed}`} />
           <InfoCard
             title="Termin"
-            value={`${formatInTimeZone(order.slotStart, "Europe/Berlin", "dd.MM HH:mm")} – ${formatInTimeZone(order.slotEnd, "Europe/Berlin", "HH:mm")}`}
+            value={
+              order.slotStart && order.slotEnd
+                ? `${formatInTimeZone(order.slotStart, "Europe/Berlin", "dd.MM HH:mm")}  ${formatInTimeZone(order.slotEnd, "Europe/Berlin", "HH:mm")}`
+                : order.requestedDateFrom && order.requestedDateTo
+                  ? `${formatInTimeZone(order.requestedDateFrom, "Europe/Berlin", "dd.MM.yyyy")} bis ${formatInTimeZone(order.requestedDateTo, "Europe/Berlin", "dd.MM.yyyy")} (angefragt)`
+                  : "offen"
+            }
           />
           <InfoCard title="Status" value={order.status} />
         </div>
@@ -199,6 +206,7 @@ export default async function AdminOrderDetailPage({
               className="max-w-[220px] border-2 border-slate-600 bg-slate-700 text-white"
             >
               <option value="NEW">NEW</option>
+              <option value="REQUESTED">REQUESTED</option>
               <option value="CONFIRMED">CONFIRMED</option>
               <option value="IN_PROGRESS">IN_PROGRESS</option>
               <option value="DONE">DONE</option>
@@ -206,12 +214,13 @@ export default async function AdminOrderDetailPage({
             </Select>
             <Button type="submit">Speichern</Button>
           </form>
+          <OrderScheduleForm publicId={order.publicId} />
           <div className="mt-4 flex flex-wrap gap-2">
             <form action={closeOrderAction}>
               <input type="hidden" name="publicId" value={order.publicId} />
               <input type="hidden" name="closeAs" value="DONE" />
               <Button type="submit" size="sm" variant="outline-light">
-                Auftrag schließen (DONE)
+                Auftrag schliexen (DONE)
               </Button>
             </form>
             <form action={closeOrderAction}>
@@ -259,7 +268,7 @@ export default async function AdminOrderDetailPage({
               </div>
             ) : null}
             <div>
-              <span className="font-extrabold">Preisrahmen:</span> {eur(order.priceMinCents)} – {eur(order.priceMaxCents)}
+              <span className="font-extrabold">Preisrahmen:</span> {eur(order.priceMinCents)}  {eur(order.priceMaxCents)}
             </div>
           </div>
         </div>
@@ -326,7 +335,7 @@ export default async function AdminOrderDetailPage({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Öffnen
+                    ffnen
                   </a>
                 ) : (
                   <span className="text-xs text-slate-300">{u.filePath}</span>
@@ -360,13 +369,13 @@ function LineGroup(props: { title: string; lines: OrderLineLike[] }) {
     <div>
       <div className="text-xs font-bold text-slate-200">{props.title}</div>
       {props.lines.length === 0 ? (
-        <div className="mt-2 rounded-2xl bg-slate-700/50 p-4 text-sm text-slate-300">—</div>
+        <div className="mt-2 rounded-2xl bg-slate-700/50 p-4 text-sm text-slate-300"></div>
       ) : (
         <ul className="mt-2 grid gap-1 text-sm text-slate-200">
           {props.lines.map((l) => (
             <li key={l.id} className="flex items-center justify-between gap-3">
               <span className="truncate">{l.catalogItem?.nameDe ?? "-"}</span>
-              <span className="font-extrabold">× {l.qty}</span>
+              <span className="font-extrabold"> {l.qty}</span>
             </li>
           ))}
         </ul>
@@ -374,4 +383,7 @@ function LineGroup(props: { title: string; lines: OrderLineLike[] }) {
     </div>
   );
 }
+
+
+
 

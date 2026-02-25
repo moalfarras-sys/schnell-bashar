@@ -3,8 +3,9 @@ import { z } from "zod";
 import crypto from "node:crypto";
 import path from "node:path";
 import fs from "node:fs/promises";
+import { nanoid } from "nanoid";
 import { addDays, format, parseISO } from "date-fns";
-import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
+import { formatInTimeZone } from "date-fns-tz";
 
 import { prisma } from "@/server/db/prisma";
 import { wizardPayloadSchema, type WizardPayload } from "@/lib/wizard-schema";
@@ -15,14 +16,18 @@ import {
   normalizePromoCode,
   resolvePromoRule,
 } from "@/server/offers/promo-rules";
-import { getAvailableSlots } from "@/server/availability/slots";
 import { sendOrderEmail } from "@/server/email/send-order-email";
 import { sendCustomerConfirmationEmail } from "@/server/email/send-customer-confirmation";
+import { sendOfferEmail } from "@/server/email/send-offer-email";
 import { signPdfAccessToken } from "@/server/auth/admin-session";
 import { isHoneypotTriggered, isRateLimited, requestIp } from "@/lib/spam-protection";
-import { nextDocumentNumber } from "@/server/ids/document-number";
+import { generateOfferPDF } from "@/server/pdf/generate-offer";
+import { generateAGBPDF } from "@/server/pdf/generate-agb";
+import { STORAGE_BUCKETS, getSupabaseAdmin } from "@/lib/supabase";
+import { deriveOfferNoFromOrderNo, nextDocumentNumber } from "@/server/ids/document-number";
 
 export const runtime = "nodejs";
+const OFFER_VALIDITY_DAYS = parseInt(process.env.OFFER_VALIDITY_DAYS || "7", 10);
 
 const formSchema = z.object({
   payload: z.string().min(2),
@@ -40,9 +45,18 @@ function bookingContextLabel(context: WizardPayload["bookingContext"]) {
   return "Standard";
 }
 
-function ceilToGrid(minutes: number, grid: number) {
-  return Math.ceil(minutes / grid) * grid;
+function toOfferServiceType(serviceType: WizardPayload["serviceType"]) {
+  if (serviceType === "DISPOSAL") return "ENTSORGUNG";
+  if (serviceType === "BOTH") return "KOMBI";
+  return "UMZUG";
 }
+
+const addonLabels: Record<WizardPayload["addons"][number], string> = {
+  PACKING: "Packservice",
+  DISMANTLE_ASSEMBLE: "Möbel Demontage/Montage",
+  OLD_KITCHEN_DISPOSAL: "Küchenentsorgung",
+  BASEMENT_ATTIC_CLEARING: "Keller-/Dachbodenräumung",
+};
 
 function leadDaysForSpeed(speed: "ECONOMY" | "STANDARD" | "EXPRESS", pricing: any) {
   switch (speed) {
@@ -365,83 +379,30 @@ export async function POST(req: Request) {
     },
   );
 
-  const slotStart = new Date(payload.timing.selectedSlotStart);
-  if (Number.isNaN(slotStart.getTime())) {
-    return NextResponse.json({ error: "Ungültiger Terminbeginn" }, { status: 400 });
+  const requestedDateFrom = new Date(payload.timing.requestedFrom);
+  const requestedDateTo = new Date(payload.timing.requestedTo);
+  if (
+    Number.isNaN(requestedDateFrom.getTime()) ||
+    Number.isNaN(requestedDateTo.getTime())
+  ) {
+    return NextResponse.json({ error: "Ungültiger Wunschtermin." }, { status: 400 });
   }
-
-  // Lead time check (Europe/Berlin)
-  const leadDays = leadDaysForSpeed(payload.timing.speed, pricing);
-  const todayISO = formatInTimeZone(new Date(), "Europe/Berlin", "yyyy-MM-dd");
-  const earliestISO = format(addDays(parseISO(todayISO), Math.max(0, leadDays)), "yyyy-MM-dd");
-  const slotDayISO = formatInTimeZone(slotStart, "Europe/Berlin", "yyyy-MM-dd");
-  if (slotDayISO < earliestISO) {
+  if (requestedDateTo.getTime() < requestedDateFrom.getTime()) {
     return NextResponse.json(
-      { error: "Der gewählte Termin ist zu früh für die gewählte Priorität." },
+      { error: "Das Enddatum muss am oder nach dem Startdatum liegen." },
       { status: 400 },
     );
   }
 
-  const baseDuration = Math.ceil(estimate.laborHours * 60 + 30);
-  const durationMinutes = ceilToGrid(
-    Math.max(payload.timing.jobDurationMinutes, baseDuration),
-    60,
-  );
-
-  const slotEnd = new Date(slotStart.getTime() + durationMinutes * 60_000);
-
-  // Validate slot availability at submit time
-  const dayISO = slotDayISO;
-
-  const day = parseISO(dayISO);
-  const dayStart = fromZonedTime(
-    new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, 0, 0, 0),
-    "Europe/Berlin",
-  );
-  const dayEnd = fromZonedTime(
-    new Date(day.getFullYear(), day.getMonth(), day.getDate(), 23, 59, 59, 999),
-    "Europe/Berlin",
-  );
-
-  const rules = await prisma.availabilityRule.findMany({ where: { active: true } });
-  const exceptions = await prisma.availabilityException.findMany({
-    where: { date: new Date(dayISO) },
-  });
-  const existing = await prisma.order.findMany({
-    where: {
-      slotStart: { lt: dayEnd },
-      slotEnd: { gt: dayStart },
-      status: { not: "CANCELLED" },
-    },
-    select: { slotStart: true, slotEnd: true },
-  });
-
-  const allowed = getAvailableSlots({
-    fromISO: dayISO,
-    toISO: dayISO,
-    durationMinutes,
-    rules: rules.map((r) => ({
-      dayOfWeek: r.dayOfWeek,
-      startTime: r.startTime,
-      endTime: r.endTime,
-      slotMinutes: r.slotMinutes,
-      capacity: r.capacity,
-      active: r.active,
-    })),
-    exceptions: exceptions.map((e) => ({
-      date: dayISO,
-      closed: e.closed,
-      overrideCapacity: e.overrideCapacity,
-    })),
-    existingBookings: existing.map((b) => ({ start: b.slotStart, end: b.slotEnd })),
-    maxResults: 500,
-  });
-
-  const isAllowed = allowed.some((s) => s.start.toISOString() === slotStart.toISOString());
-  if (!isAllowed) {
+  // Lead-time check (Europe/Berlin) for the requested start date.
+  const leadDays = leadDaysForSpeed(payload.timing.speed, pricing);
+  const todayISO = formatInTimeZone(new Date(), "Europe/Berlin", "yyyy-MM-dd");
+  const earliestISO = format(addDays(parseISO(todayISO), Math.max(0, leadDays)), "yyyy-MM-dd");
+  const requestedFromISO = formatInTimeZone(requestedDateFrom, "Europe/Berlin", "yyyy-MM-dd");
+  if (requestedFromISO < earliestISO) {
     return NextResponse.json(
-      { error: "Der gewählte Termin ist nicht mehr verfügbar. Bitte wählen Sie neu." },
-      { status: 409 },
+      { error: "Der gewünschte Zeitraum beginnt zu früh für die gewählte Priorität." },
+      { status: 400 },
     );
   }
 
@@ -544,13 +505,18 @@ export async function POST(req: Request) {
     publicId,
     serviceType: payload.serviceType,
     speed: payload.timing.speed,
+    status: "REQUESTED" as const,
     customerName: payload.customer.name,
     customerPhone: payload.customer.phone,
     customerEmail: payload.customer.email,
     contactPreference: payload.customer.contactPreference,
     note: payload.customer.note || null,
-    slotStart,
-    slotEnd,
+    slotStart: null,
+    slotEnd: null,
+    requestedDateFrom,
+    requestedDateTo,
+    preferredTimeWindow: payload.timing.preferredTimeWindow,
+    scheduledAt: null,
     volumeM3: estimate.totalVolumeM3,
     laborHours: estimate.laborHours,
     distanceKm: estimate.distanceKm ?? null,
@@ -575,30 +541,193 @@ export async function POST(req: Request) {
       : undefined,
   };
 
-  const order = await prisma.order.create({
-    data: {
-      ...orderDataBase,
-      orderNo,
-    },
-    select: { publicId: true },
+  const serviceLabel =
+    payload.serviceType === "MOVING"
+      ? "Umzug"
+      : payload.serviceType === "DISPOSAL"
+        ? "Entsorgung"
+        : "Umzug + Entsorgung";
+  const selectedServiceLines = normalizedSelectedServiceOptions.map((item) => {
+    const option = serviceOptionsData.find((row) => row.code === item.code);
+    return {
+      name: option?.nameDe || item.code,
+      quantity: item.qty,
+      unit: option?.requiresQuantity ? "Stück" : "pauschal",
+    };
+  });
+  const services =
+    selectedServiceLines.length > 0
+      ? selectedServiceLines
+      : [
+          {
+            name: serviceLabel,
+            quantity: 1,
+            unit: "Pauschale",
+          },
+        ];
+  const now = new Date();
+  const token = nanoid(32);
+  const validUntil = addDays(now, OFFER_VALIDITY_DAYS);
+  const expiresAt = addDays(now, OFFER_VALIDITY_DAYS);
+  const offerNo = deriveOfferNoFromOrderNo(orderNo);
+  const netCents = estimate.priceMaxCents;
+  const vatCents = Math.round(netCents * 0.19);
+  const grossCents = netCents + vatCents;
+
+  const customerAddress =
+    payload.startAddress?.displayName ||
+    payload.pickupAddress?.displayName ||
+    payload.destinationAddress?.displayName ||
+    null;
+
+  const { order, offer } = await prisma.$transaction(async (tx) => {
+    const createdOrder = await tx.order.create({
+      data: {
+        ...orderDataBase,
+        orderNo,
+      },
+      select: { id: true, publicId: true, orderNo: true },
+    });
+
+    const createdOffer = await tx.offer.create({
+      data: {
+        token,
+        offerNo,
+        orderId: createdOrder.id,
+        status: "PENDING",
+        customerName: payload.customer.name,
+        customerEmail: payload.customer.email,
+        customerPhone: payload.customer.phone,
+        customerAddress,
+        moveFrom: payload.startAddress?.displayName || payload.pickupAddress?.displayName || null,
+        moveTo: payload.destinationAddress?.displayName || null,
+        moveDate: requestedDateFrom,
+        floorFrom: payload.accessStart?.floor ?? payload.accessPickup?.floor ?? null,
+        floorTo: payload.accessDestination?.floor ?? null,
+        elevatorFrom:
+          payload.accessStart?.elevator === "small" || payload.accessStart?.elevator === "large",
+        elevatorTo:
+          payload.accessDestination?.elevator === "small" ||
+          payload.accessDestination?.elevator === "large",
+        notes: payload.customer.note || null,
+        services,
+        netCents,
+        vatCents,
+        grossCents,
+        discountPercent: promoRule?.discountType === "PERCENT" ? promoRule.discountValue : null,
+        discountCents:
+          promoRule?.discountType === "FLAT_CENTS" ? promoRule.discountValue : null,
+        discountNote: promoRule ? `Code: ${promoRule.code}` : null,
+        validUntil,
+        expiresAt,
+      },
+      select: { id: true, token: true, offerNo: true },
+    });
+
+    return {
+      order: createdOrder,
+      offer: createdOffer,
+    };
   });
 
-  // Email to company (best effort)
+  const offerUrl = `/offer/${offer.token}`;
+  const fullOfferUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}${offerUrl}`;
+
+  try {
+    const pdfBuffer = await generateOfferPDF({
+      offerId: offer.id,
+      offerNo: offer.offerNo || offerNo,
+      orderNo,
+      offerDate: now,
+      validUntil,
+      customerName: payload.customer.name,
+      customerAddress: customerAddress || undefined,
+      customerPhone: payload.customer.phone,
+      customerEmail: payload.customer.email,
+      moveFrom: payload.startAddress?.displayName || payload.pickupAddress?.displayName || undefined,
+      moveTo: payload.destinationAddress?.displayName || undefined,
+      moveDate: requestedDateFrom,
+      floorFrom: payload.accessStart?.floor ?? payload.accessPickup?.floor ?? undefined,
+      floorTo: payload.accessDestination?.floor ?? undefined,
+      elevatorFrom:
+        payload.accessStart?.elevator === "small" || payload.accessStart?.elevator === "large",
+      elevatorTo:
+        payload.accessDestination?.elevator === "small" ||
+        payload.accessDestination?.elevator === "large",
+      notes: payload.customer.note || undefined,
+      volumeM3: estimate.totalVolumeM3,
+      speed: payload.timing.speed,
+      serviceType: toOfferServiceType(payload.serviceType),
+      needNoParkingZone:
+        payload.accessStart?.needNoParkingZone ||
+        payload.accessPickup?.needNoParkingZone ||
+        payload.accessDestination?.needNoParkingZone ||
+        false,
+      addons: payload.addons.map((addon) => addonLabels[addon] ?? addon),
+      services,
+      netCents,
+      vatCents,
+      grossCents,
+    });
+
+    let agbBuffer: Buffer | null = null;
+    try {
+      agbBuffer = await generateAGBPDF();
+    } catch (e) {
+      console.warn("[orders] AGB PDF generation failed:", e);
+    }
+
+    try {
+      const admin = getSupabaseAdmin();
+      const fileName = `${offer.offerNo || offerNo}-${Date.now()}.pdf`;
+      const { error: uploadError } = await admin.storage
+        .from(STORAGE_BUCKETS.OFFERS)
+        .upload(fileName, pdfBuffer, { contentType: "application/pdf", upsert: false });
+      if (!uploadError) {
+        const { data } = admin.storage.from(STORAGE_BUCKETS.OFFERS).getPublicUrl(fileName);
+        await prisma.offer.update({
+          where: { id: offer.id },
+          data: { pdfUrl: data.publicUrl },
+        });
+      } else {
+        console.warn("[orders] Offer PDF upload failed:", uploadError.message);
+      }
+    } catch (uploadErr) {
+      console.warn("[orders] Supabase storage unavailable:", uploadErr);
+    }
+
+    await sendOfferEmail({
+      customerName: payload.customer.name,
+      customerEmail: payload.customer.email,
+      offerId: offer.id,
+      offerNo: offer.offerNo || offerNo,
+      offerLink: fullOfferUrl,
+      agbLink: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/agb/pdf`,
+      validUntil,
+      pdfBuffer,
+      agbBuffer: agbBuffer || undefined,
+    });
+  } catch (offerErr) {
+    console.error("[orders] Offer PDF/email pipeline failed:", offerErr);
+  }
+
   try {
     await sendOrderEmail({
       publicId: order.publicId,
       payload,
       estimate,
-      slotStart,
-      slotEnd,
+      requestedDateFrom,
+      requestedDateTo,
+      preferredTimeWindow: payload.timing.preferredTimeWindow,
       uploadNames: savedUploads.map((u) => u.fileName),
       itemRows: itemRowsForEmail,
+      offerNo: offer.offerNo || offerNo,
+      offerLink: fullOfferUrl,
     });
   } catch (e) {
     console.error("Company email send failed", e);
   }
 
-  // Confirmation email to customer (best effort)
   try {
     await sendCustomerConfirmationEmail({
       publicId: order.publicId,
@@ -606,30 +735,41 @@ export async function POST(req: Request) {
       customerName: payload.customer.name,
       serviceType: payload.serviceType,
       speed: payload.timing.speed,
-      slotStart,
-      slotEnd,
+      requestedDateFrom,
+      requestedDateTo,
+      preferredTimeWindow: payload.timing.preferredTimeWindow,
       priceMinCents: estimate.priceMinCents,
       priceMaxCents: estimate.priceMaxCents,
       totalVolumeM3: estimate.totalVolumeM3,
       itemRows: itemRowsForEmail,
+      offerNo: offer.offerNo || offerNo,
+      offerLink: fullOfferUrl,
     });
   } catch (e) {
     console.error("Customer confirmation email send failed", e);
   }
 
   const waText = encodeURIComponent(
-    `Hallo! Ich habe eine Anfrage ueber die Website gesendet (${bookingContextLabel(payload.bookingContext)}). Auftrags-ID: ${order.publicId}.`,
+    `Hallo! Ich habe eine Anfrage über die Website gesendet (${bookingContextLabel(payload.bookingContext)}). Auftrags-ID: ${order.publicId}.`,
   );
   const waUrl = `https://wa.me/491729573681?text=${waText}`;
-
   const pdfToken = await signPdfAccessToken(order.publicId);
 
   return NextResponse.json({
     ok: true,
     publicId: order.publicId,
+    orderStatus: "REQUESTED",
+    offer: {
+      id: offer.id,
+      offerNo: offer.offerNo || offerNo,
+      token: offer.token,
+      url: offerUrl,
+    },
+    trackingUrl: `/anfrage/${order.publicId}`,
     pdfToken,
     price: `${eur(estimate.priceMinCents)} – ${eur(estimate.priceMaxCents)}`,
     whatsappUrl: waUrl,
   });
 }
+
 

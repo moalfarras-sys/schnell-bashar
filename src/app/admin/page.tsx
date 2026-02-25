@@ -48,7 +48,7 @@ export default async function AdminDashboard() {
     publicId: string;
     orderNo: string | null;
     customerName: string;
-    status: "NEW" | "CONFIRMED" | "IN_PROGRESS" | "DONE" | "CANCELLED";
+    status: "NEW" | "REQUESTED" | "CONFIRMED" | "IN_PROGRESS" | "DONE" | "CANCELLED";
     serviceType: "MOVING" | "DISPOSAL" | "BOTH";
   }> = [];
   let monthlyRaw: Array<{ createdAt: Date }> = [];
@@ -67,7 +67,7 @@ export default async function AdminDashboard() {
       monthlyRawRes,
     ] = await Promise.all([
       prisma.order.count(),
-      prisma.order.count({ where: { status: "NEW" } }),
+      prisma.order.count({ where: { status: { in: ["NEW", "REQUESTED"] } } }),
       prisma.order.count({ where: { createdAt: { gte: startOfToday } } }),
       prisma.offer.count(),
       prisma.offer.count({ where: { status: "ACCEPTED" } }),
@@ -147,6 +147,7 @@ export default async function AdminDashboard() {
 
   const statusColors: Record<string, string> = {
     NEW: "bg-blue-500/20 text-blue-400",
+    REQUESTED: "bg-sky-500/20 text-sky-400",
     CONFIRMED: "bg-amber-500/20 text-amber-400",
     IN_PROGRESS: "bg-purple-500/20 text-purple-400",
     DONE: "bg-emerald-500/20 text-emerald-400",
@@ -176,7 +177,7 @@ export default async function AdminDashboard() {
           trend={revTrend >= 0 ? "up" : "down"}
           icon={<Receipt className="h-5 w-5" />}
         />
-        <StatCard title="Neue Anfragen" value={openOrders} hint="Status: NEW" icon={<Users className="h-5 w-5" />} />
+        <StatCard title="Neue Anfragen" value={openOrders} hint="Status: REQUESTED/NEW" icon={<Users className="h-5 w-5" />} />
         <StatCard title="Heute" value={todayOrders} hint="seit 00:00 Uhr" icon={<FileText className="h-5 w-5" />} />
         <StatCard title="Gesamt" value={totalOrders} hint="alle Aufträge" icon={<FileCheck2 className="h-5 w-5" />} />
       </div>

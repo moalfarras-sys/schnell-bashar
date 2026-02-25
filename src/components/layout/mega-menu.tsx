@@ -54,7 +54,7 @@ const menuSections: MenuSection[] = [
         title: "Online buchen",
         links: [
           { label: "Angebot berechnen", href: "/preise", desc: "Anfrage starten", icon: ClipboardList },
-          { label: "Termin & Kalender", href: "/buchung/termin", desc: "Zeitfenster wählen", icon: CalendarDays },
+          { label: "Termin & Kalender", href: "/buchen?context=MOVING", desc: "Zeitfenster wählen", icon: CalendarDays },
           { label: "Anfrage verfolgen", href: "/anfrage", desc: "Status prüfen", icon: Search },
         ],
       },
@@ -243,4 +243,5 @@ export function MegaMenuMobile({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
+
 

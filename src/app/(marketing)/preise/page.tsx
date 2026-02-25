@@ -99,7 +99,7 @@ export default async function PreisePage() {
               Angebot berechnen
             </Button>
           </a>
-          <Link href="/buchung/termin">
+          <Link href="/buchen?context=MOVING">
             <Button size="lg" variant="outline">
               <Clock className="h-5 w-5" />
               Termin auswählen
@@ -162,4 +162,6 @@ export default async function PreisePage() {
     </Container>
   );
 }
+
+
 

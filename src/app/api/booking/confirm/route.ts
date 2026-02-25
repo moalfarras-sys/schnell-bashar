@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { addDays } from "date-fns";
@@ -91,9 +91,9 @@ function serviceTypeLabel(service: "UMZUG" | "ENTSORGUNG" | "KOMBI"): string {
 
 const addonLabels: Record<LegacyAddon, string> = {
   PACKING: "Packservice",
-  DISMANTLE_ASSEMBLE: "Moebelmontage",
+  DISMANTLE_ASSEMBLE: "Möbelmontage",
   HALTEVERBOT: "Halteverbotszone",
-  ENTRUEMPELUNG: "Entruempelung",
+  ENTRUEMPELUNG: "Entrümpelung",
 };
 
 function fallbackPricing(): LegacyPricing {
@@ -126,23 +126,23 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Ungueltige Anfrage." }, { status: 400 });
+    return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
   }
 
   const parsed = confirmSchema.safeParse(body);
   if (!parsed.success) {
     const firstIssue = parsed.error.issues[0];
     const path = firstIssue?.path?.join(".") ?? "";
-    let message = "Ungueltige Daten";
+    let message = "Ungültige Daten";
 
     if (path === "customer.phone") {
-      message = "Telefonnummer ist ungueltig (mindestens 6 Zeichen).";
+      message = "Telefonnummer ist ungültig (mindestens 6 Zeichen).";
     } else if (path === "customer.email") {
-      message = "E-Mail-Adresse ist ungueltig.";
+      message = "E-Mail-Adresse ist ungültig.";
     } else if (path === "customer.name") {
-      message = "Bitte einen gueltigen Namen eingeben (mindestens 2 Zeichen).";
+      message = "Bitte einen gültigen Namen eingeben (mindestens 2 Zeichen).";
     } else if (path === "slotStart") {
-      message = "Bitte einen gueltigen Termin auswaehlen.";
+      message = "Bitte einen gültigen Termin auswählen.";
     }
 
     return NextResponse.json(
@@ -155,7 +155,7 @@ export async function POST(req: Request) {
   const slotStart = new Date(slotStartStr);
 
   if (Number.isNaN(slotStart.getTime())) {
-    return NextResponse.json({ error: "Ungueltiger Termin." }, { status: 400 });
+    return NextResponse.json({ error: "Ungültiger Termin." }, { status: 400 });
   }
 
   const dateStr = formatInTimeZone(slotStart, "Europe/Berlin", "yyyy-MM-dd");
@@ -171,7 +171,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error:
-          "Die Terminpruefung ist aktuell nicht verfuegbar. Bitte versuchen Sie es in wenigen Minuten erneut oder kontaktieren Sie uns direkt.",
+          "Die Terminprüfung ist aktuell nicht verfügbar. Bitte versuchen Sie es in wenigen Minuten erneut oder kontaktieren Sie uns direkt.",
         details: loaded.error,
       },
       { status: 503 },
@@ -185,7 +185,7 @@ export async function POST(req: Request) {
 
   if (!match) {
     return NextResponse.json(
-      { error: "Der gewaehlte Termin ist nicht mehr verfuegbar. Bitte waehlen Sie einen anderen Zeitpunkt." },
+      { error: "Der gewählte Termin ist nicht mehr verfügbar. Bitte wählen Sie einen anderen Zeitpunkt." },
       { status: 409 },
     );
   }
@@ -228,7 +228,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error:
-            "Fuer Umzug oder Kombi sind Start- und Zieladresse (mit PLZ) erforderlich.",
+            "Für Umzug oder Kombi sind Start- und Zieladresse (mit PLZ) erforderlich.",
         },
         { status: 400 },
       );
@@ -246,7 +246,7 @@ export async function POST(req: Request) {
       console.error("[booking/confirm] distance lookup failed:", error);
       const errorMessage =
         error instanceof ORSDistanceError && error.code === "ORS_FORBIDDEN"
-          ? "Die Distanzberechnung ist derzeit nicht verfuegbar (ORS-Zugriff abgelehnt). Bitte kontaktieren Sie uns kurz."
+          ? "Die Distanzberechnung ist derzeit nicht verfügbar (ORS-Zugriff abgelehnt). Bitte kontaktieren Sie uns kurz."
           : "Die Distanz zwischen Start und Ziel konnte nicht berechnet werden. Bitte prüfen Sie die Adressen.";
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
@@ -515,3 +515,4 @@ export async function POST(req: Request) {
     );
   }
 }
+

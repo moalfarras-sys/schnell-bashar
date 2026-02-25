@@ -21,10 +21,18 @@ enum SpeedType {
 
 enum OrderStatus {
   NEW
+  REQUESTED
   CONFIRMED
   IN_PROGRESS
   DONE
   CANCELLED
+}
+
+enum PreferredTimeWindow {
+  MORNING
+  AFTERNOON
+  EVENING
+  FLEXIBLE
 }
 
 enum ContactPreference {
@@ -218,8 +226,12 @@ model Order {
   contactPreference ContactPreference
   note              String?
 
-  slotStart DateTime
-  slotEnd   DateTime
+  slotStart DateTime?
+  slotEnd   DateTime?
+  requestedDateFrom DateTime? @db.Date
+  requestedDateTo DateTime? @db.Date
+  preferredTimeWindow PreferredTimeWindow?
+  scheduledAt DateTime?
 
   volumeM3      Float
   laborHours    Float
@@ -241,6 +253,8 @@ model Order {
   invoices Invoice[]
 
   @@index([slotStart])
+  @@index([requestedDateFrom])
+  @@index([scheduledAt])
   @@index([status])
 }
 

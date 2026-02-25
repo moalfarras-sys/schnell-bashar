@@ -106,6 +106,13 @@ export async function GET(req: Request) {
       },
       select: { slotStart: true, slotEnd: true },
     });
+    const existingBookings = bookings
+      .map((b) =>
+        b.slotStart && b.slotEnd
+          ? { start: b.slotStart, end: b.slotEnd }
+          : null,
+      )
+      .filter((b): b is { start: Date; end: Date } => Boolean(b));
 
     const slots = getAvailableSlots({
       fromISO: effectiveFrom,
@@ -124,7 +131,7 @@ export async function GET(req: Request) {
         closed: e.closed,
         overrideCapacity: e.overrideCapacity,
       })),
-      existingBookings: bookings.map((b) => ({ start: b.slotStart, end: b.slotEnd })),
+      existingBookings,
     });
 
     return NextResponse.json({
