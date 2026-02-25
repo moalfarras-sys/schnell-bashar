@@ -80,7 +80,7 @@ export function ContactForm() {
           <Input required value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div>
-          <div className="text-xs font-semibold text-slate-800">EMail *</div>
+          <div className="text-xs font-semibold text-slate-800">E-Mail *</div>
           <Input
             required
             type="email"

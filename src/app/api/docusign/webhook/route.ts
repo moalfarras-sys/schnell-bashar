@@ -47,8 +47,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = JSON.parse(rawBody.toString("utf8"));
 
-    console.log("DocuSign webhook received:", JSON.stringify(body, null, 2));
-
     const envelopeId =
       body.data?.envelopeId ||
       body.envelopeId ||

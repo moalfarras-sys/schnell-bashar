@@ -247,7 +247,7 @@ export async function POST(req: Request) {
       const errorMessage =
         error instanceof ORSDistanceError && error.code === "ORS_FORBIDDEN"
           ? "Die Distanzberechnung ist derzeit nicht verfuegbar (ORS-Zugriff abgelehnt). Bitte kontaktieren Sie uns kurz."
-          : "Die Distanz zwischen Start und Ziel konnte nicht berechnet werden. Bitte pruefen Sie die Adressen.";
+          : "Die Distanz zwischen Start und Ziel konnte nicht berechnet werden. Bitte prüfen Sie die Adressen.";
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
   }
@@ -456,7 +456,7 @@ export async function POST(req: Request) {
       agbBuffer: agbBuffer || undefined,
     });
 
-    console.log(`[booking/confirm] Offer ${offer.id} created and email sent to ${customer.email}`);
+    console.info(`[booking/confirm] Offer ${offer.id} created`);
   } catch (offerErr) {
     console.error("[booking/confirm] Offer creation failed (order still saved):", offerErr);
   }

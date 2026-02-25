@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -23,6 +23,7 @@ const createSchema = z.object({
 
 const patchSchema = z.object({
   id: z.string().min(2),
+  expectedVersion: z.number().int().min(0).optional(),
   moduleId: z.string().min(2).optional(),
   code: z.string().trim().min(2).max(80).optional(),
   nameDe: z.string().trim().min(2).max(120).optional(),
@@ -155,10 +156,26 @@ export async function PATCH(req: NextRequest) {
   }
   data.version = { increment: 1 };
 
+  if (parsed.data.expectedVersion !== undefined) {
+    const result = await prisma.serviceOption.updateMany({
+      where: { id: parsed.data.id, version: parsed.data.expectedVersion },
+      data: { ...data, version: { increment: 1 } },
+    });
+    if (result.count === 0) {
+      return NextResponse.json(
+        { error: "Konflikt: Datensatz wurde zwischenzeitlich geändert. Bitte aktualisieren." },
+        { status: 409 },
+      );
+    }
+    const item = await prisma.serviceOption.findUnique({ where: { id: parsed.data.id } });
+    return NextResponse.json(item);
+  }
+
   const item = await prisma.serviceOption.update({
     where: { id: parsed.data.id },
-    data,
+    data: { ...data, version: { increment: 1 } },
   });
 
   return NextResponse.json(item);
 }
+

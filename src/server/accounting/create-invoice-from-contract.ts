@@ -22,7 +22,7 @@ export async function createInvoiceFromContract(contractId: string) {
       where: { contractId },
     });
     if (existing) {
-      console.log(`[auto-invoice] Invoice already exists for contract ${contractId}`);
+      console.info(`[auto-invoice] Invoice already exists for contract ${contractId}`);
       return existing;
     }
 
@@ -51,7 +51,7 @@ export async function createInvoiceFromContract(contractId: string) {
       },
     });
 
-    console.log(`[auto-invoice] Created invoice ${invoiceNo} for contract ${contractId}`);
+    console.info(`[auto-invoice] Created invoice ${invoiceNo} for contract ${contractId}`);
     return invoice;
   } catch (error) {
     console.error("[auto-invoice] Failed to create invoice:", error);

@@ -1,10 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import { Loader2, Plus, RefreshCw } from "lucide-react";
 
 type ServiceOptionRow = {
   id: string;
+  version: number;
   moduleId: string;
   code: string;
   nameDe: string;
@@ -22,6 +23,7 @@ type ServiceOptionRow = {
 
 type ServiceModuleRow = {
   id: string;
+  version?: number;
   slug: "MONTAGE" | "ENTSORGUNG";
   nameDe: string;
   descriptionDe: string | null;
@@ -32,6 +34,7 @@ type ServiceModuleRow = {
 
 type PromoRuleRow = {
   id: string;
+  version: number;
   code: string;
   moduleId: string | null;
   serviceTypeScope: "MOVING" | "DISPOSAL" | "BOTH" | null;
@@ -152,14 +155,14 @@ export function ServicesAdminClient(props: {
     }
   }
 
-  async function patchOption(id: string, payload: Record<string, unknown>) {
+  async function patchOption(id: string, expectedVersion: number, payload: Record<string, unknown>) {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch("/api/admin/service-options", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, ...payload }),
+        body: JSON.stringify({ id, expectedVersion, ...payload }),
       });
       if (!res.ok) throw new Error("Service konnte nicht aktualisiert werden.");
       await reload();
@@ -200,14 +203,14 @@ export function ServicesAdminClient(props: {
     }
   }
 
-  async function patchPromo(id: string, payload: Record<string, unknown>) {
+  async function patchPromo(id: string, expectedVersion: number, payload: Record<string, unknown>) {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch("/api/admin/promo-rules", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, ...payload }),
+        body: JSON.stringify({ id, expectedVersion, ...payload }),
       });
       if (!res.ok) throw new Error("Promo-Regel konnte nicht aktualisiert werden.");
       await reload();
@@ -308,7 +311,7 @@ export function ServicesAdminClient(props: {
               <ServiceOptionEditor
                 key={option.id}
                 option={option}
-                onSave={patchOption}
+                onSave={(id, payload) => patchOption(id, option.version, payload)}
               />
             ))}
           </div>
@@ -354,7 +357,7 @@ export function ServicesAdminClient(props: {
                 <div className="text-sm font-bold text-white">{rule.code}</div>
                 <button
                   type="button"
-                  onClick={() => patchPromo(rule.id, { active: !rule.active })}
+                  onClick={() => patchPromo(rule.id, rule.version, { active: !rule.active })}
                   className={`rounded-lg px-3 py-1.5 text-xs font-bold ${
                     rule.active ? "bg-emerald-700/30 text-emerald-300" : "bg-slate-700 text-slate-300"
                   }`}
@@ -376,27 +379,27 @@ export function ServicesAdminClient(props: {
                 <input
                   type="datetime-local"
                   defaultValue={dtLocal(rule.validFrom)}
-                  onBlur={(e) => patchPromo(rule.id, { validFrom: e.target.value ? new Date(e.target.value).toISOString() : null })}
+                  onBlur={(e) => patchPromo(rule.id, rule.version, { validFrom: e.target.value ? new Date(e.target.value).toISOString() : null })}
                   className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white"
                 />
                 <input
                   type="datetime-local"
                   defaultValue={dtLocal(rule.validTo)}
-                  onBlur={(e) => patchPromo(rule.id, { validTo: e.target.value ? new Date(e.target.value).toISOString() : null })}
+                  onBlur={(e) => patchPromo(rule.id, rule.version, { validTo: e.target.value ? new Date(e.target.value).toISOString() : null })}
                   className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white"
                 />
                 <input
                   type="number"
                   min={0}
                   defaultValue={rule.minOrderCents}
-                  onBlur={(e) => patchPromo(rule.id, { minOrderCents: Number(e.target.value || 0) })}
+                  onBlur={(e) => patchPromo(rule.id, rule.version, { minOrderCents: Number(e.target.value || 0) })}
                   className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white"
                 />
                 <input
                   type="number"
                   min={1}
                   defaultValue={rule.discountValue}
-                  onBlur={(e) => patchPromo(rule.id, { discountValue: Number(e.target.value || 1) })}
+                  onBlur={(e) => patchPromo(rule.id, rule.version, { discountValue: Number(e.target.value || 1) })}
                   className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white"
                 />
               </div>
@@ -496,3 +499,4 @@ function ServiceOptionEditor(props: {
     </div>
   );
 }
+

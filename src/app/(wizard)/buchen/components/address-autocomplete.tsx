@@ -73,7 +73,7 @@ export function AddressAutocomplete(props: {
   const helper = useMemo(() => {
     if (!open) return "";
     if (!canSearch) return "Mindestens 3 Zeichen eingeben.";
-    if (loading) return "Sucheâ¬¦";
+    if (loading) return "Suche…";
     if (results.length === 0) return "Keine Treffer.";
     return "";
   }, [open, canSearch, loading, results.length]);
@@ -91,7 +91,7 @@ export function AddressAutocomplete(props: {
             className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100"
           >
             <X className="h-4 w-4" />
-            Lschen
+            Löschen
           </button>
         ) : null}
       </div>
@@ -148,13 +148,14 @@ export function AddressAutocomplete(props: {
           ) : null}
 
           <div className="border-t-2 border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700">
-            Adress-Suche via OpenStreetMap (Nominatim). In seltenen Fllen bitte PLZ/Ort pr?fen.
+            Adress-Suche via OpenStreetMap (Nominatim). In seltenen Fällen bitte PLZ/Ort prüfen.
           </div>
         </div>
       ) : null}
     </div>
   );
 }
+
 
 
 

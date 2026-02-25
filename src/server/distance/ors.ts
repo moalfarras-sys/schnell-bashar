@@ -254,8 +254,6 @@ async function callORS(from: ResolvedPoint, to: ResolvedPoint, profile: string):
       `Invalid ORS_BASE_URL: ${ORS_BASE_URL}. Use https://api.openrouteservice.org`,
     );
   }
-  console.log(`[ORS] key loaded: length=${apiKey.length}`);
-
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
 

@@ -52,7 +52,7 @@ export function BookingFallbackForm() {
       setState({
         status: "success",
         message:
-          "Ihre Anfrage wurde gesendet. Wir melden uns schnellstm?glich per Telefon oder EMail.",
+          "Ihre Anfrage wurde gesendet. Wir melden uns schnellstmöglich per Telefon oder E-Mail.",
       });
       setName("");
       setPhone("");
@@ -79,7 +79,7 @@ export function BookingFallbackForm() {
           <Input required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+49 ..." />
         </div>
         <div>
-          <div className="text-xs font-bold text-slate-600">EMail *</div>
+          <div className="text-xs font-bold text-slate-600">E-Mail *</div>
           <Input
             required
             type="email"

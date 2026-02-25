@@ -538,7 +538,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
       ) : null}
       {calcLoading ? (
         <div className="mt-3 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
-          Preis wird live berechnetâ¬¦
+          Preis wird live berechnet…
         </div>
       ) : null}
       {calcError ? (
@@ -614,7 +614,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
             onChange={(e) => setNeedNoParkingZone(e.target.checked)}
             className="h-4 w-4 cursor-pointer rounded border-slate-300 accent-brand-600"
           />
-          Halteverbotszone bentigt
+          Halteverbotszone benötigt
         </label>
       </div>
 
@@ -707,12 +707,12 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
           <div className="flex justify-between text-slate-700 dark:text-slate-400">
             <span>Prioritt ({speedLabels[speed]})</span>
             <span className="font-semibold text-slate-900 dark:text-slate-100">
-              {speed === "ECONOMY" ? "10 %" : speed === "EXPRESS" ? "+30 %" : "Â±0 %"}
+              {speed === "ECONOMY" ? "-10 %" : speed === "EXPRESS" ? "+30 %" : "±0 %"}
             </span>
           </div>
           <div className="my-1 border-t-2 border-slate-300 dark:border-slate-600" />
           <div className="flex justify-between text-slate-800 dark:text-slate-200">
-            <span className="font-semibold">Netto (geschtzt)</span>
+            <span className="font-semibold">Netto (geschätzt)</span>
             <span className="font-bold">{eur(estimate.netCents)}</span>
           </div>
           <div className="flex justify-between text-slate-600 dark:text-slate-400">
@@ -726,13 +726,13 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
       <div className="mt-4 rounded-2xl border-2 border-brand-400 bg-linear-to-r from-brand-50 to-blue-50 p-5 shadow-md dark:from-brand-900/30 dark:to-blue-900/20 dark:border-brand-600/50">
         <div className="flex items-center gap-2">
           <CirclePercent className="h-5 w-5 text-brand-700 dark:text-brand-400" />
-          <span className="text-sm font-bold text-brand-900 dark:text-brand-300">Geschtzter Preisrahmen</span>
+          <span className="text-sm font-bold text-brand-900 dark:text-brand-300">geschätzter Preisrahmen</span>
         </div>
         <div className="mt-2 flex items-baseline gap-2">
           <span className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white">
             {eur(estimate.minCents)}
           </span>
-          <span className="text-lg font-bold text-slate-600 dark:text-slate-400"></span>
+          <span className="text-lg font-bold text-slate-600 dark:text-slate-400">–</span>
           <span className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white">
             {eur(estimate.maxCents)}
           </span>
@@ -749,7 +749,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
           className="w-full flex-1 gap-2"
           onClick={() => {
             if ((service === "UMZUG" || service === "KOMBI") && !hasRouteAddresses) {
-              setCalcError("Bitte geben Sie fr Umzug/Kombi sowohl Von- als auch Nach-Adresse an.");
+              setCalcError("Bitte geben Sie für Umzug/Kombi sowohl Von- als auch Nach-Adresse an.");
               return;
             }
             const inquiry = {
@@ -800,5 +800,6 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
     </div>
   );
 }
+
 
 

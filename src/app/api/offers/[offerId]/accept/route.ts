@@ -118,9 +118,7 @@ export async function POST(
             contractPdfUrl: patchedContract.contractPdfUrl,
           });
 
-          console.log(
-            `[signing] provider=INTERNAL link_created=true email_sent=${emailResult.success}`,
-          );
+          console.info(`[signing] provider=INTERNAL link_created=true email_sent=${emailResult.success}`);
 
           return NextResponse.json({
             success: true,
@@ -234,9 +232,7 @@ export async function POST(
         contractPdfUrl,
       });
 
-      console.log(
-        `[signing] provider=INTERNAL link_created=true email_sent=${emailResult.success}`,
-      );
+      console.info(`[signing] provider=INTERNAL link_created=true email_sent=${emailResult.success}`);
 
       return NextResponse.json({
         success: true,
@@ -338,7 +334,7 @@ export async function POST(
       contractPdfUrl,
     });
 
-    console.log(
+    console.info(
       `[signing] provider=DOCUSIGN remote=true envelope_sent=true email_sent=${signingEmailResult.success}`,
     );
 

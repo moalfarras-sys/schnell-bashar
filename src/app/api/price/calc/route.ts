@@ -109,7 +109,7 @@ export async function POST(req: Request) {
       const errorMessage =
         error instanceof ORSDistanceError && error.code === "ORS_FORBIDDEN"
           ? "Die Distanzberechnung ist derzeit nicht verfuegbar (ORS-Zugriff abgelehnt). Bitte kontaktieren Sie uns kurz."
-          : "Die Distanz konnte nicht berechnet werden. Bitte pruefen Sie die Adressen (inkl. PLZ).";
+          : "Die Distanz konnte nicht berechnet werden. Bitte prüfen Sie die Adressen (inkl. PLZ).";
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
   }

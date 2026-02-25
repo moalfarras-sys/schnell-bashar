@@ -211,7 +211,7 @@ export async function POST(req: NextRequest) {
           const localFile = `signed-contract-${displayContractNo}-${Date.now()}.pdf`;
           writeFileSync(path.join(dir, localFile), signedPdfBuffer);
           signedPdfUrl = `/uploads/signed-contracts/${localFile}`;
-          console.log("[fallback-sign] Signed PDF saved locally:", signedPdfUrl);
+          console.info("[fallback-sign] Signed PDF saved locally:", signedPdfUrl);
         } catch (localErr) {
           console.error(
             "[fallback-sign] Local PDF save failed:",
