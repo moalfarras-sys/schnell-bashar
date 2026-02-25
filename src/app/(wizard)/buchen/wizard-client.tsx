@@ -942,7 +942,7 @@ function getSteps(
   const base = [
     { key: "service" as const, title: "Leistung" },
     { key: "location" as const, title: "Adresse & Zugang" },
-    { key: "items" as const, title: "Gegenstaende" },
+    { key: "items" as const, title: "Gegenstände" },
   ];
   const disposal = { key: "disposal" as const, title: "Entsorgung" };
   const rest = [
