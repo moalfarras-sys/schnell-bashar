@@ -47,6 +47,43 @@ type PricingForWizard = PricingConfigLite & {
   expressLeadDays: number;
 };
 
+type ServiceOptionConfig = {
+  id: string;
+  code: string;
+  nameDe: string;
+  descriptionDe: string | null;
+  pricingType: "FLAT" | "PER_UNIT" | "PER_M3" | "PER_HOUR";
+  defaultPriceCents: number;
+  defaultLaborMinutes: number;
+  defaultVolumeM3: number;
+  requiresQuantity: boolean;
+  requiresPhoto: boolean;
+  isHeavy: boolean;
+  sortOrder: number;
+};
+
+type ServiceModuleConfig = {
+  id: string;
+  slug: "MONTAGE" | "ENTSORGUNG";
+  nameDe: string;
+  descriptionDe: string | null;
+  sortOrder: number;
+  options: ServiceOptionConfig[];
+};
+
+type PromoRuleConfig = {
+  id: string;
+  code: string;
+  moduleSlug: "MONTAGE" | "ENTSORGUNG" | null;
+  serviceTypeScope: WizardPayload["serviceType"] | null;
+  discountType: "PERCENT" | "FLAT_CENTS";
+  discountValue: number;
+  minOrderCents: number;
+  maxDiscountCents: number | null;
+  validFrom: string | null;
+  validTo: string | null;
+};
+
 type BookingVariant = "default" | "montage" | "entsorgung";
 
 type RoutePricingState = {
@@ -184,6 +221,8 @@ function ceilToGrid(minutes: number, grid: number) {
 export function BookingWizard(props: {
   catalog: CatalogItem[];
   pricing: PricingForWizard;
+  modules: ServiceModuleConfig[];
+  promoRules: PromoRuleConfig[];
   initialServiceType?: WizardPayload["serviceType"];
   variant?: BookingVariant;
 }) {
@@ -221,6 +260,9 @@ export function BookingWizard(props: {
 
   const [itemsMove, setItemsMove] = useState<Record<string, number>>({});
   const [itemsDisposal, setItemsDisposal] = useState<Record<string, number>>({});
+  const [selectedServiceOptions, setSelectedServiceOptions] = useState<Record<string, number>>(
+    {},
+  );
 
   const [disposalCategories, setDisposalCategories] = useState<
     WizardPayload["disposal"] extends infer T ? (T extends { categories: infer C } ? C : never) : never
@@ -259,20 +301,80 @@ export function BookingWizard(props: {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  const activeModuleSlug =
+    variant === "montage"
+      ? ("MONTAGE" as const)
+      : variant === "entsorgung"
+        ? ("ENTSORGUNG" as const)
+        : null;
+
+  const activeModuleOptions = useMemo(() => {
+    if (!activeModuleSlug) return [] as ServiceOptionConfig[];
+    return props.modules.find((module) => module.slug === activeModuleSlug)?.options ?? [];
+  }, [activeModuleSlug, props.modules]);
+
+  const estimateServiceOptions = useMemo(() => {
+    const list = activeModuleSlug
+      ? activeModuleOptions.map((option) => ({
+          code: option.code,
+          moduleSlug: activeModuleSlug,
+          pricingType: option.pricingType,
+          defaultPriceCents: option.defaultPriceCents,
+          defaultLaborMinutes: option.defaultLaborMinutes,
+          isHeavy: option.isHeavy,
+          requiresQuantity: option.requiresQuantity,
+        }))
+      : props.modules.flatMap((module) =>
+          module.options.map((option) => ({
+            code: option.code,
+            moduleSlug: module.slug,
+            pricingType: option.pricingType,
+            defaultPriceCents: option.defaultPriceCents,
+            defaultLaborMinutes: option.defaultLaborMinutes,
+            isHeavy: option.isHeavy,
+            requiresQuantity: option.requiresQuantity,
+          })),
+        );
+
+    return list;
+  }, [activeModuleOptions, activeModuleSlug, props.modules]);
+
+  const promoRuleMatch = useMemo(() => {
+    const code = offerCode.trim().toUpperCase();
+    if (!code) return null;
+
+    const now = Date.now();
+    const moduleSlug = bookingContext === "MONTAGE" ? "MONTAGE" : bookingContext === "ENTSORGUNG" ? "ENTSORGUNG" : null;
+
+    return (
+      props.promoRules.find((rule) => {
+        if (rule.code.toUpperCase() !== code) return false;
+        if (rule.moduleSlug && rule.moduleSlug !== moduleSlug) return false;
+        if (rule.serviceTypeScope && rule.serviceTypeScope !== serviceType) return false;
+        if (rule.validFrom && new Date(rule.validFrom).getTime() > now) return false;
+        if (rule.validTo && new Date(rule.validTo).getTime() < now) return false;
+        return true;
+      }) ?? null
+    );
+  }, [bookingContext, offerCode, props.promoRules, serviceType]);
+
   const offerContext = useMemo(() => {
     const code = offerCode.trim().toUpperCase();
-    let appliedDiscountPercent: number | undefined;
-    if (code === "MONTAGE10" && bookingContext === "MONTAGE") appliedDiscountPercent = 10;
-    if (code === "ENTSORGUNG10" && bookingContext === "ENTSORGUNG") appliedDiscountPercent = 10;
-    if (code === "KOMBI5" && serviceType === "BOTH") appliedDiscountPercent = 5;
+    if (!code) return undefined;
+    if (!promoRuleMatch) {
+      return { offerCode: code };
+    }
+
     return {
-      appliedDiscountPercent,
-      offerCode: code || undefined,
-      validUntil: appliedDiscountPercent
-        ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
-        : undefined,
+      offerCode: code,
+      ruleId: promoRuleMatch.id,
+      appliedDiscountPercent:
+        promoRuleMatch.discountType === "PERCENT" ? promoRuleMatch.discountValue : undefined,
+      appliedDiscountCents:
+        promoRuleMatch.discountType === "FLAT_CENTS" ? promoRuleMatch.discountValue : undefined,
+      validUntil: promoRuleMatch.validTo ?? undefined,
     };
-  }, [bookingContext, offerCode, serviceType]);
+  }, [offerCode, promoRuleMatch]);
 
   // Keep pickup address in sync for BOTH (optional)
   useEffect(() => {
@@ -393,6 +495,9 @@ export function BookingWizard(props: {
       bookingContext,
       packageTier,
       offerContext,
+      selectedServiceOptions: Object.entries(selectedServiceOptions)
+        .filter(([, qty]) => qty > 0)
+        .map(([code, qty]) => ({ code, qty })),
       serviceType,
       addons,
       pickupAddress: effectivePickup,
@@ -430,6 +535,7 @@ export function BookingWizard(props: {
     return estimateOrder(payloadForEstimate, {
       catalog: props.catalog,
       pricing: props.pricing,
+      serviceOptions: estimateServiceOptions,
     }, routePricing
       ? {
           distanceKm: routePricing.distanceKm,
@@ -444,6 +550,7 @@ export function BookingWizard(props: {
     bookingContext,
     packageTier,
     offerContext,
+    selectedServiceOptions,
     serviceType,
     addons,
     effectivePickup,
@@ -468,6 +575,7 @@ export function BookingWizard(props: {
     note,
     props.catalog,
     props.pricing,
+    estimateServiceOptions,
     routePricing,
   ]);
 
@@ -534,6 +642,7 @@ export function BookingWizard(props: {
         if (serviceType === "DISPOSAL") return !!pickupAddress;
         return !!startAddress && !!destinationAddress; // BOTH
       case "items":
+        if (variant !== "default") return Object.values(selectedServiceOptions).some((qty) => qty > 0);
         if (serviceType === "DISPOSAL") return sumQty(itemsDisposal) > 0 || disposalExtraM3 > 0;
         return sumQty(itemsMove) > 0;
       case "disposal":
@@ -551,12 +660,14 @@ export function BookingWizard(props: {
     }
   }, [
     current.key,
+    variant,
     serviceType,
     startAddress,
     destinationAddress,
     pickupAddress,
     itemsMove,
     itemsDisposal,
+    selectedServiceOptions,
     disposalExtraM3,
     forbiddenConfirmed,
     selectedSlotStart,
@@ -575,6 +686,9 @@ export function BookingWizard(props: {
         bookingContext,
         packageTier,
         offerContext,
+        selectedServiceOptions: Object.entries(selectedServiceOptions)
+          .filter(([, qty]) => qty > 0)
+          .map(([code, qty]) => ({ code, qty })),
         serviceType,
         addons,
         pickupAddress: serviceType === "DISPOSAL" ? pickupAddress : effectivePickup,
@@ -650,6 +764,7 @@ export function BookingWizard(props: {
       samePickupAsStart,
       itemsMove,
       itemsDisposal,
+      selectedServiceOptions,
       disposalCategories,
       disposalExtraM3,
       forbiddenConfirmed,
@@ -679,6 +794,7 @@ export function BookingWizard(props: {
     samePickupAsStart,
     itemsMove,
     itemsDisposal,
+    selectedServiceOptions,
     disposalCategories,
     disposalExtraM3,
     forbiddenConfirmed,
@@ -715,6 +831,7 @@ export function BookingWizard(props: {
       setSamePickupAsStart(!!d.samePickupAsStart);
       setItemsMove(d.itemsMove ?? {});
       setItemsDisposal(d.itemsDisposal ?? {});
+      setSelectedServiceOptions(d.selectedServiceOptions ?? {});
       setDisposalCategories(d.disposalCategories ?? []);
       setDisposalExtraM3(Number(d.disposalExtraM3 ?? 0));
       setForbiddenConfirmed(!!d.forbiddenConfirmed);
@@ -791,14 +908,23 @@ export function BookingWizard(props: {
             ) : null}
 
             {current.key === "items" ? (
-              <StepItems
-                serviceType={serviceType}
-                catalog={props.catalog}
-                itemsMove={itemsMove}
-                setItemsMove={setItemsMove}
-                itemsDisposal={itemsDisposal}
-                setItemsDisposal={setItemsDisposal}
-              />
+              variant === "default" ? (
+                <StepItems
+                  serviceType={serviceType}
+                  catalog={props.catalog}
+                  itemsMove={itemsMove}
+                  setItemsMove={setItemsMove}
+                  itemsDisposal={itemsDisposal}
+                  setItemsDisposal={setItemsDisposal}
+                />
+              ) : (
+                <StepServiceOptions
+                  title={variant === "montage" ? "Leistungen & Geräte" : "Entsorgungsleistungen"}
+                  options={activeModuleOptions}
+                  selected={selectedServiceOptions}
+                  setSelected={setSelectedServiceOptions}
+                />
+              )
             ) : null}
 
             {current.key === "disposal" ? (
@@ -826,6 +952,7 @@ export function BookingWizard(props: {
                 offerCode={offerCode}
                 setOfferCode={setOfferCode}
                 offerContext={offerContext}
+                promoMatched={!!promoRuleMatch}
               />
             ) : null}
 
@@ -867,6 +994,8 @@ export function BookingWizard(props: {
                 serviceType={serviceType}
                 packageTier={packageTier}
                 offerContext={offerContext}
+                selectedServiceOptions={selectedServiceOptions}
+                serviceOptions={activeModuleOptions}
                 addons={addons}
                 startAddress={startAddress}
                 destinationAddress={destinationAddress}
@@ -1415,6 +1544,97 @@ function StepItems(props: {
   );
 }
 
+function serviceOptionPricingLabel(option: ServiceOptionConfig) {
+  switch (option.pricingType) {
+    case "FLAT":
+      return `Pauschal ${eur(option.defaultPriceCents)}`;
+    case "PER_UNIT":
+      return `${eur(option.defaultPriceCents)} pro Einheit`;
+    case "PER_M3":
+      return `${eur(option.defaultPriceCents)} pro m³`;
+    case "PER_HOUR":
+      return `${eur(option.defaultPriceCents)} pro Stunde`;
+    default:
+      return eur(option.defaultPriceCents);
+  }
+}
+
+function StepServiceOptions(props: {
+  title: string;
+  options: ServiceOptionConfig[];
+  selected: Record<string, number>;
+  setSelected: (v: Record<string, number>) => void;
+}) {
+  if (props.options.length === 0) {
+    return (
+      <div className="premium-surface-emphasis rounded-3xl p-6 text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Derzeit sind keine Leistungen aktiv. Bitte kontaktieren Sie unser Team.
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-6">
+      <div className="premium-surface-emphasis rounded-3xl p-6">
+        <div className="text-sm font-extrabold text-slate-900 dark:text-white">{props.title}</div>
+        <div className="mt-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
+          Wählen Sie die gewünschten Leistungen. Die Schätzung wird live aktualisiert.
+        </div>
+      </div>
+
+      <div className="grid gap-3">
+        {props.options.map((option) => {
+          const qty = props.selected[option.code] ?? 0;
+          const active = qty > 0;
+          return (
+            <div
+              key={option.id}
+              className={cn(
+                "premium-elevate rounded-2xl border-2 bg-[color:var(--surface-elevated)] p-4 shadow-sm",
+                active
+                  ? "border-brand-500 bg-brand-50 dark:border-brand-400 dark:bg-brand-950/30"
+                  : "border-slate-300 dark:border-slate-600 dark:bg-slate-800/60",
+              )}
+            >
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <div className="text-sm font-extrabold text-slate-900 dark:text-white">{option.nameDe}</div>
+                  {option.descriptionDe ? (
+                    <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                      {option.descriptionDe}
+                    </div>
+                  ) : null}
+                  <div className="mt-2 text-xs font-bold text-brand-700 dark:text-brand-300">
+                    {serviceOptionPricingLabel(option)}
+                  </div>
+                </div>
+
+                {option.requiresQuantity ? (
+                  <QtyStepper
+                    value={qty}
+                    onChange={(next) => props.setSelected(setQty(props.selected, option.code, next))}
+                  />
+                ) : (
+                  <Button
+                    type="button"
+                    variant={active ? "primary" : "outline"}
+                    className={cn("min-w-[9rem]", !active ? "border-slate-300 dark:border-slate-600" : "")}
+                    onClick={() =>
+                      props.setSelected(setQty(props.selected, option.code, active ? 0 : 1))
+                    }
+                  >
+                    {active ? "Ausgewählt" : "Auswählen"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function catTitle(cat: string) {
   if (cat === "furniture") return "Möbel";
   if (cat === "appliance") return "Geräte";
@@ -1734,6 +1954,7 @@ function StepPackage(props: {
   offerCode: string;
   setOfferCode: (v: string) => void;
   offerContext?: WizardPayload["offerContext"];
+  promoMatched: boolean;
 }) {
   const tiers: WizardPayload["packageTier"][] = ["STANDARD", "PLUS", "PREMIUM"];
   return (
@@ -1770,7 +1991,7 @@ function StepPackage(props: {
       <div className="premium-surface-emphasis rounded-3xl p-6">
         <div className="text-sm font-extrabold text-slate-900 dark:text-white">Angebotscode</div>
         <div className="mt-3 text-xs font-semibold text-slate-600 dark:text-slate-400">
-          Optional: z. B. MONTAGE10, ENTSORGUNG10 oder KOMBI5.
+          Optionaler Angebotscode aus Ihrer Aktion oder Kampagne.
         </div>
         <Input
           className="mt-3"
@@ -1779,13 +2000,17 @@ function StepPackage(props: {
           placeholder="Code eingeben"
           maxLength={50}
         />
-        {props.offerContext?.appliedDiscountPercent ? (
+        {props.promoMatched && props.offerContext?.appliedDiscountPercent ? (
           <div className="mt-3 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">
             Rabatt aktiv: {formatNumberDE(props.offerContext.appliedDiscountPercent)}%
           </div>
+        ) : props.promoMatched && props.offerContext?.appliedDiscountCents ? (
+          <div className="mt-3 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">
+            Rabatt aktiv: {eur(props.offerContext.appliedDiscountCents)}
+          </div>
         ) : props.offerCode.trim() ? (
           <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800">
-            Code erkannt, aber aktuell nicht auf diese Buchung anwendbar.
+            Code ist aktuell ungültig oder nicht auf diese Buchung anwendbar.
           </div>
         ) : null}
       </div>
@@ -1876,6 +2101,8 @@ function StepSummary(props: {
   serviceType: WizardPayload["serviceType"];
   packageTier: WizardPayload["packageTier"];
   offerContext?: WizardPayload["offerContext"];
+  selectedServiceOptions: Record<string, number>;
+  serviceOptions: ServiceOptionConfig[];
   addons: WizardPayload["addons"];
   startAddress?: AddressOption;
   destinationAddress?: AddressOption;
@@ -1976,6 +2203,7 @@ function StepSummary(props: {
         <div className="text-sm font-extrabold text-slate-900 dark:text-white">Gegenstände</div>
         <SummaryItems title="Umzug" catalog={props.catalog} qty={props.itemsMove} />
         <SummaryItems title="Entsorgung" catalog={props.catalog} qty={props.itemsDisposal} />
+        <SummaryServiceOptions options={props.serviceOptions} selected={props.selectedServiceOptions} />
         {props.disposalCategories.length ? (
           <div className="mt-4 text-sm">
             <span className="font-extrabold">Kategorien:</span> {props.disposalCategories.join(", ")}
@@ -2035,9 +2263,21 @@ function StepSummary(props: {
               {eur(props.estimate.breakdown.packageAdjustmentCents)}
             </div>
           ) : null}
+          {props.estimate.breakdown.serviceOptionsCents > 0 ? (
+            <div>
+              <span className="font-extrabold">Service-Leistungen:</span>{" "}
+              {eur(props.estimate.breakdown.serviceOptionsCents)}
+            </div>
+          ) : null}
           {props.estimate.breakdown.discountCents > 0 ? (
             <div>
               <span className="font-extrabold">Rabatt:</span> -{eur(props.estimate.breakdown.discountCents)}
+            </div>
+          ) : null}
+          {props.estimate.breakdown.minimumOrderAppliedCents > 0 ? (
+            <div>
+              <span className="font-extrabold">Mindestauftragswert:</span>{" "}
+              +{eur(props.estimate.breakdown.minimumOrderAppliedCents)}
             </div>
           ) : null}
         </div>
@@ -2121,6 +2361,35 @@ function SummaryItems(props: { title: string; catalog: CatalogItem[]; qty: Recor
             </li>
           );
         })}
+      </ul>
+    </div>
+  );
+}
+
+function SummaryServiceOptions(props: {
+  options: ServiceOptionConfig[];
+  selected: Record<string, number>;
+}) {
+  const entries = Object.entries(props.selected)
+    .map(([code, qty]) => ({
+      code,
+      qty,
+      option: props.options.find((opt) => opt.code === code),
+    }))
+    .filter((entry) => entry.qty > 0);
+
+  if (entries.length === 0) return null;
+
+  return (
+    <div className="mt-4">
+      <div className="text-xs font-bold text-slate-600 dark:text-slate-400">Service-Leistungen</div>
+      <ul className="mt-2 grid gap-1 text-sm text-slate-700 dark:text-slate-300">
+        {entries.map((entry) => (
+          <li key={entry.code} className="flex items-center justify-between gap-3">
+            <span className="truncate">{entry.option?.nameDe ?? entry.code}</span>
+            <span className="font-extrabold">× {entry.qty}</span>
+          </li>
+        ))}
       </ul>
     </div>
   );

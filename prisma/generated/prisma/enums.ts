@@ -47,6 +47,32 @@ export const ContactPreference = {
 export type ContactPreference = (typeof ContactPreference)[keyof typeof ContactPreference]
 
 
+export const ServiceModuleSlug = {
+  MONTAGE: 'MONTAGE',
+  ENTSORGUNG: 'ENTSORGUNG'
+} as const
+
+export type ServiceModuleSlug = (typeof ServiceModuleSlug)[keyof typeof ServiceModuleSlug]
+
+
+export const ServiceOptionPricingType = {
+  FLAT: 'FLAT',
+  PER_UNIT: 'PER_UNIT',
+  PER_M3: 'PER_M3',
+  PER_HOUR: 'PER_HOUR'
+} as const
+
+export type ServiceOptionPricingType = (typeof ServiceOptionPricingType)[keyof typeof ServiceOptionPricingType]
+
+
+export const PromoDiscountType = {
+  PERCENT: 'PERCENT',
+  FLAT_CENTS: 'FLAT_CENTS'
+} as const
+
+export type PromoDiscountType = (typeof PromoDiscountType)[keyof typeof PromoDiscountType]
+
+
 export const OfferStatus = {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',

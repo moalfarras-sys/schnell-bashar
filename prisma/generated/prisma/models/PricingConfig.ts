@@ -47,6 +47,16 @@ export type PricingConfigAvgAggregateOutputType = {
   economyLeadDays: number | null
   standardLeadDays: number | null
   expressLeadDays: number | null
+  montageBaseFeeCents: number | null
+  entsorgungBaseFeeCents: number | null
+  montageStandardMultiplier: number | null
+  montagePlusMultiplier: number | null
+  montagePremiumMultiplier: number | null
+  entsorgungStandardMultiplier: number | null
+  entsorgungPlusMultiplier: number | null
+  entsorgungPremiumMultiplier: number | null
+  montageMinimumOrderCents: number | null
+  entsorgungMinimumOrderCents: number | null
 }
 
 export type PricingConfigSumAggregateOutputType = {
@@ -70,6 +80,16 @@ export type PricingConfigSumAggregateOutputType = {
   economyLeadDays: number | null
   standardLeadDays: number | null
   expressLeadDays: number | null
+  montageBaseFeeCents: number | null
+  entsorgungBaseFeeCents: number | null
+  montageStandardMultiplier: number | null
+  montagePlusMultiplier: number | null
+  montagePremiumMultiplier: number | null
+  entsorgungStandardMultiplier: number | null
+  entsorgungPlusMultiplier: number | null
+  entsorgungPremiumMultiplier: number | null
+  montageMinimumOrderCents: number | null
+  entsorgungMinimumOrderCents: number | null
 }
 
 export type PricingConfigMinAggregateOutputType = {
@@ -98,6 +118,16 @@ export type PricingConfigMinAggregateOutputType = {
   economyLeadDays: number | null
   standardLeadDays: number | null
   expressLeadDays: number | null
+  montageBaseFeeCents: number | null
+  entsorgungBaseFeeCents: number | null
+  montageStandardMultiplier: number | null
+  montagePlusMultiplier: number | null
+  montagePremiumMultiplier: number | null
+  entsorgungStandardMultiplier: number | null
+  entsorgungPlusMultiplier: number | null
+  entsorgungPremiumMultiplier: number | null
+  montageMinimumOrderCents: number | null
+  entsorgungMinimumOrderCents: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -128,6 +158,16 @@ export type PricingConfigMaxAggregateOutputType = {
   economyLeadDays: number | null
   standardLeadDays: number | null
   expressLeadDays: number | null
+  montageBaseFeeCents: number | null
+  entsorgungBaseFeeCents: number | null
+  montageStandardMultiplier: number | null
+  montagePlusMultiplier: number | null
+  montagePremiumMultiplier: number | null
+  entsorgungStandardMultiplier: number | null
+  entsorgungPlusMultiplier: number | null
+  entsorgungPremiumMultiplier: number | null
+  montageMinimumOrderCents: number | null
+  entsorgungMinimumOrderCents: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -158,6 +198,16 @@ export type PricingConfigCountAggregateOutputType = {
   economyLeadDays: number
   standardLeadDays: number
   expressLeadDays: number
+  montageBaseFeeCents: number
+  entsorgungBaseFeeCents: number
+  montageStandardMultiplier: number
+  montagePlusMultiplier: number
+  montagePremiumMultiplier: number
+  entsorgungStandardMultiplier: number
+  entsorgungPlusMultiplier: number
+  entsorgungPremiumMultiplier: number
+  montageMinimumOrderCents: number
+  entsorgungMinimumOrderCents: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -185,6 +235,16 @@ export type PricingConfigAvgAggregateInputType = {
   economyLeadDays?: true
   standardLeadDays?: true
   expressLeadDays?: true
+  montageBaseFeeCents?: true
+  entsorgungBaseFeeCents?: true
+  montageStandardMultiplier?: true
+  montagePlusMultiplier?: true
+  montagePremiumMultiplier?: true
+  entsorgungStandardMultiplier?: true
+  entsorgungPlusMultiplier?: true
+  entsorgungPremiumMultiplier?: true
+  montageMinimumOrderCents?: true
+  entsorgungMinimumOrderCents?: true
 }
 
 export type PricingConfigSumAggregateInputType = {
@@ -208,6 +268,16 @@ export type PricingConfigSumAggregateInputType = {
   economyLeadDays?: true
   standardLeadDays?: true
   expressLeadDays?: true
+  montageBaseFeeCents?: true
+  entsorgungBaseFeeCents?: true
+  montageStandardMultiplier?: true
+  montagePlusMultiplier?: true
+  montagePremiumMultiplier?: true
+  entsorgungStandardMultiplier?: true
+  entsorgungPlusMultiplier?: true
+  entsorgungPremiumMultiplier?: true
+  montageMinimumOrderCents?: true
+  entsorgungMinimumOrderCents?: true
 }
 
 export type PricingConfigMinAggregateInputType = {
@@ -236,6 +306,16 @@ export type PricingConfigMinAggregateInputType = {
   economyLeadDays?: true
   standardLeadDays?: true
   expressLeadDays?: true
+  montageBaseFeeCents?: true
+  entsorgungBaseFeeCents?: true
+  montageStandardMultiplier?: true
+  montagePlusMultiplier?: true
+  montagePremiumMultiplier?: true
+  entsorgungStandardMultiplier?: true
+  entsorgungPlusMultiplier?: true
+  entsorgungPremiumMultiplier?: true
+  montageMinimumOrderCents?: true
+  entsorgungMinimumOrderCents?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -266,6 +346,16 @@ export type PricingConfigMaxAggregateInputType = {
   economyLeadDays?: true
   standardLeadDays?: true
   expressLeadDays?: true
+  montageBaseFeeCents?: true
+  entsorgungBaseFeeCents?: true
+  montageStandardMultiplier?: true
+  montagePlusMultiplier?: true
+  montagePremiumMultiplier?: true
+  entsorgungStandardMultiplier?: true
+  entsorgungPlusMultiplier?: true
+  entsorgungPremiumMultiplier?: true
+  montageMinimumOrderCents?: true
+  entsorgungMinimumOrderCents?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -296,6 +386,16 @@ export type PricingConfigCountAggregateInputType = {
   economyLeadDays?: true
   standardLeadDays?: true
   expressLeadDays?: true
+  montageBaseFeeCents?: true
+  entsorgungBaseFeeCents?: true
+  montageStandardMultiplier?: true
+  montagePlusMultiplier?: true
+  montagePremiumMultiplier?: true
+  entsorgungStandardMultiplier?: true
+  entsorgungPlusMultiplier?: true
+  entsorgungPremiumMultiplier?: true
+  montageMinimumOrderCents?: true
+  entsorgungMinimumOrderCents?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -413,6 +513,16 @@ export type PricingConfigGroupByOutputType = {
   economyLeadDays: number
   standardLeadDays: number
   expressLeadDays: number
+  montageBaseFeeCents: number
+  entsorgungBaseFeeCents: number
+  montageStandardMultiplier: number
+  montagePlusMultiplier: number
+  montagePremiumMultiplier: number
+  entsorgungStandardMultiplier: number
+  entsorgungPlusMultiplier: number
+  entsorgungPremiumMultiplier: number
+  montageMinimumOrderCents: number
+  entsorgungMinimumOrderCents: number
   createdAt: Date
   updatedAt: Date
   _count: PricingConfigCountAggregateOutputType | null
@@ -466,6 +576,16 @@ export type PricingConfigWhereInput = {
   economyLeadDays?: Prisma.IntFilter<"PricingConfig"> | number
   standardLeadDays?: Prisma.IntFilter<"PricingConfig"> | number
   expressLeadDays?: Prisma.IntFilter<"PricingConfig"> | number
+  montageBaseFeeCents?: Prisma.IntFilter<"PricingConfig"> | number
+  entsorgungBaseFeeCents?: Prisma.IntFilter<"PricingConfig"> | number
+  montageStandardMultiplier?: Prisma.FloatFilter<"PricingConfig"> | number
+  montagePlusMultiplier?: Prisma.FloatFilter<"PricingConfig"> | number
+  montagePremiumMultiplier?: Prisma.FloatFilter<"PricingConfig"> | number
+  entsorgungStandardMultiplier?: Prisma.FloatFilter<"PricingConfig"> | number
+  entsorgungPlusMultiplier?: Prisma.FloatFilter<"PricingConfig"> | number
+  entsorgungPremiumMultiplier?: Prisma.FloatFilter<"PricingConfig"> | number
+  montageMinimumOrderCents?: Prisma.IntFilter<"PricingConfig"> | number
+  entsorgungMinimumOrderCents?: Prisma.IntFilter<"PricingConfig"> | number
   createdAt?: Prisma.DateTimeFilter<"PricingConfig"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PricingConfig"> | Date | string
 }
@@ -496,6 +616,16 @@ export type PricingConfigOrderByWithRelationInput = {
   economyLeadDays?: Prisma.SortOrder
   standardLeadDays?: Prisma.SortOrder
   expressLeadDays?: Prisma.SortOrder
+  montageBaseFeeCents?: Prisma.SortOrder
+  entsorgungBaseFeeCents?: Prisma.SortOrder
+  montageStandardMultiplier?: Prisma.SortOrder
+  montagePlusMultiplier?: Prisma.SortOrder
+  montagePremiumMultiplier?: Prisma.SortOrder
+  entsorgungStandardMultiplier?: Prisma.SortOrder
+  entsorgungPlusMultiplier?: Prisma.SortOrder
+  entsorgungPremiumMultiplier?: Prisma.SortOrder
+  montageMinimumOrderCents?: Prisma.SortOrder
+  entsorgungMinimumOrderCents?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -529,6 +659,16 @@ export type PricingConfigWhereUniqueInput = Prisma.AtLeast<{
   economyLeadDays?: Prisma.IntFilter<"PricingConfig"> | number
   standardLeadDays?: Prisma.IntFilter<"PricingConfig"> | number
   expressLeadDays?: Prisma.IntFilter<"PricingConfig"> | number
+  montageBaseFeeCents?: Prisma.IntFilter<"PricingConfig"> | number
+  entsorgungBaseFeeCents?: Prisma.IntFilter<"PricingConfig"> | number
+  montageStandardMultiplier?: Prisma.FloatFilter<"PricingConfig"> | number
+  montagePlusMultiplier?: Prisma.FloatFilter<"PricingConfig"> | number
+  montagePremiumMultiplier?: Prisma.FloatFilter<"PricingConfig"> | number
+  entsorgungStandardMultiplier?: Prisma.FloatFilter<"PricingConfig"> | number
+  entsorgungPlusMultiplier?: Prisma.FloatFilter<"PricingConfig"> | number
+  entsorgungPremiumMultiplier?: Prisma.FloatFilter<"PricingConfig"> | number
+  montageMinimumOrderCents?: Prisma.IntFilter<"PricingConfig"> | number
+  entsorgungMinimumOrderCents?: Prisma.IntFilter<"PricingConfig"> | number
   createdAt?: Prisma.DateTimeFilter<"PricingConfig"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PricingConfig"> | Date | string
 }, "id">
@@ -559,6 +699,16 @@ export type PricingConfigOrderByWithAggregationInput = {
   economyLeadDays?: Prisma.SortOrder
   standardLeadDays?: Prisma.SortOrder
   expressLeadDays?: Prisma.SortOrder
+  montageBaseFeeCents?: Prisma.SortOrder
+  entsorgungBaseFeeCents?: Prisma.SortOrder
+  montageStandardMultiplier?: Prisma.SortOrder
+  montagePlusMultiplier?: Prisma.SortOrder
+  montagePremiumMultiplier?: Prisma.SortOrder
+  entsorgungStandardMultiplier?: Prisma.SortOrder
+  entsorgungPlusMultiplier?: Prisma.SortOrder
+  entsorgungPremiumMultiplier?: Prisma.SortOrder
+  montageMinimumOrderCents?: Prisma.SortOrder
+  entsorgungMinimumOrderCents?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PricingConfigCountOrderByAggregateInput
@@ -597,6 +747,16 @@ export type PricingConfigScalarWhereWithAggregatesInput = {
   economyLeadDays?: Prisma.IntWithAggregatesFilter<"PricingConfig"> | number
   standardLeadDays?: Prisma.IntWithAggregatesFilter<"PricingConfig"> | number
   expressLeadDays?: Prisma.IntWithAggregatesFilter<"PricingConfig"> | number
+  montageBaseFeeCents?: Prisma.IntWithAggregatesFilter<"PricingConfig"> | number
+  entsorgungBaseFeeCents?: Prisma.IntWithAggregatesFilter<"PricingConfig"> | number
+  montageStandardMultiplier?: Prisma.FloatWithAggregatesFilter<"PricingConfig"> | number
+  montagePlusMultiplier?: Prisma.FloatWithAggregatesFilter<"PricingConfig"> | number
+  montagePremiumMultiplier?: Prisma.FloatWithAggregatesFilter<"PricingConfig"> | number
+  entsorgungStandardMultiplier?: Prisma.FloatWithAggregatesFilter<"PricingConfig"> | number
+  entsorgungPlusMultiplier?: Prisma.FloatWithAggregatesFilter<"PricingConfig"> | number
+  entsorgungPremiumMultiplier?: Prisma.FloatWithAggregatesFilter<"PricingConfig"> | number
+  montageMinimumOrderCents?: Prisma.IntWithAggregatesFilter<"PricingConfig"> | number
+  entsorgungMinimumOrderCents?: Prisma.IntWithAggregatesFilter<"PricingConfig"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PricingConfig"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PricingConfig"> | Date | string
 }
@@ -627,6 +787,16 @@ export type PricingConfigCreateInput = {
   economyLeadDays: number
   standardLeadDays: number
   expressLeadDays: number
+  montageBaseFeeCents?: number
+  entsorgungBaseFeeCents?: number
+  montageStandardMultiplier?: number
+  montagePlusMultiplier?: number
+  montagePremiumMultiplier?: number
+  entsorgungStandardMultiplier?: number
+  entsorgungPlusMultiplier?: number
+  entsorgungPremiumMultiplier?: number
+  montageMinimumOrderCents?: number
+  entsorgungMinimumOrderCents?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -657,6 +827,16 @@ export type PricingConfigUncheckedCreateInput = {
   economyLeadDays: number
   standardLeadDays: number
   expressLeadDays: number
+  montageBaseFeeCents?: number
+  entsorgungBaseFeeCents?: number
+  montageStandardMultiplier?: number
+  montagePlusMultiplier?: number
+  montagePremiumMultiplier?: number
+  entsorgungStandardMultiplier?: number
+  entsorgungPlusMultiplier?: number
+  entsorgungPremiumMultiplier?: number
+  montageMinimumOrderCents?: number
+  entsorgungMinimumOrderCents?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -687,6 +867,16 @@ export type PricingConfigUpdateInput = {
   economyLeadDays?: Prisma.IntFieldUpdateOperationsInput | number
   standardLeadDays?: Prisma.IntFieldUpdateOperationsInput | number
   expressLeadDays?: Prisma.IntFieldUpdateOperationsInput | number
+  montageBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
+  entsorgungBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
+  montageStandardMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  montagePlusMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  montagePremiumMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  entsorgungStandardMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  entsorgungPlusMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  entsorgungPremiumMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  montageMinimumOrderCents?: Prisma.IntFieldUpdateOperationsInput | number
+  entsorgungMinimumOrderCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -717,6 +907,16 @@ export type PricingConfigUncheckedUpdateInput = {
   economyLeadDays?: Prisma.IntFieldUpdateOperationsInput | number
   standardLeadDays?: Prisma.IntFieldUpdateOperationsInput | number
   expressLeadDays?: Prisma.IntFieldUpdateOperationsInput | number
+  montageBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
+  entsorgungBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
+  montageStandardMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  montagePlusMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  montagePremiumMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  entsorgungStandardMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  entsorgungPlusMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  entsorgungPremiumMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  montageMinimumOrderCents?: Prisma.IntFieldUpdateOperationsInput | number
+  entsorgungMinimumOrderCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -747,6 +947,16 @@ export type PricingConfigCreateManyInput = {
   economyLeadDays: number
   standardLeadDays: number
   expressLeadDays: number
+  montageBaseFeeCents?: number
+  entsorgungBaseFeeCents?: number
+  montageStandardMultiplier?: number
+  montagePlusMultiplier?: number
+  montagePremiumMultiplier?: number
+  entsorgungStandardMultiplier?: number
+  entsorgungPlusMultiplier?: number
+  entsorgungPremiumMultiplier?: number
+  montageMinimumOrderCents?: number
+  entsorgungMinimumOrderCents?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -777,6 +987,16 @@ export type PricingConfigUpdateManyMutationInput = {
   economyLeadDays?: Prisma.IntFieldUpdateOperationsInput | number
   standardLeadDays?: Prisma.IntFieldUpdateOperationsInput | number
   expressLeadDays?: Prisma.IntFieldUpdateOperationsInput | number
+  montageBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
+  entsorgungBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
+  montageStandardMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  montagePlusMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  montagePremiumMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  entsorgungStandardMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  entsorgungPlusMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  entsorgungPremiumMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  montageMinimumOrderCents?: Prisma.IntFieldUpdateOperationsInput | number
+  entsorgungMinimumOrderCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -807,6 +1027,16 @@ export type PricingConfigUncheckedUpdateManyInput = {
   economyLeadDays?: Prisma.IntFieldUpdateOperationsInput | number
   standardLeadDays?: Prisma.IntFieldUpdateOperationsInput | number
   expressLeadDays?: Prisma.IntFieldUpdateOperationsInput | number
+  montageBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
+  entsorgungBaseFeeCents?: Prisma.IntFieldUpdateOperationsInput | number
+  montageStandardMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  montagePlusMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  montagePremiumMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  entsorgungStandardMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  entsorgungPlusMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  entsorgungPremiumMultiplier?: Prisma.FloatFieldUpdateOperationsInput | number
+  montageMinimumOrderCents?: Prisma.IntFieldUpdateOperationsInput | number
+  entsorgungMinimumOrderCents?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -837,6 +1067,16 @@ export type PricingConfigCountOrderByAggregateInput = {
   economyLeadDays?: Prisma.SortOrder
   standardLeadDays?: Prisma.SortOrder
   expressLeadDays?: Prisma.SortOrder
+  montageBaseFeeCents?: Prisma.SortOrder
+  entsorgungBaseFeeCents?: Prisma.SortOrder
+  montageStandardMultiplier?: Prisma.SortOrder
+  montagePlusMultiplier?: Prisma.SortOrder
+  montagePremiumMultiplier?: Prisma.SortOrder
+  entsorgungStandardMultiplier?: Prisma.SortOrder
+  entsorgungPlusMultiplier?: Prisma.SortOrder
+  entsorgungPremiumMultiplier?: Prisma.SortOrder
+  montageMinimumOrderCents?: Prisma.SortOrder
+  entsorgungMinimumOrderCents?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -862,6 +1102,16 @@ export type PricingConfigAvgOrderByAggregateInput = {
   economyLeadDays?: Prisma.SortOrder
   standardLeadDays?: Prisma.SortOrder
   expressLeadDays?: Prisma.SortOrder
+  montageBaseFeeCents?: Prisma.SortOrder
+  entsorgungBaseFeeCents?: Prisma.SortOrder
+  montageStandardMultiplier?: Prisma.SortOrder
+  montagePlusMultiplier?: Prisma.SortOrder
+  montagePremiumMultiplier?: Prisma.SortOrder
+  entsorgungStandardMultiplier?: Prisma.SortOrder
+  entsorgungPlusMultiplier?: Prisma.SortOrder
+  entsorgungPremiumMultiplier?: Prisma.SortOrder
+  montageMinimumOrderCents?: Prisma.SortOrder
+  entsorgungMinimumOrderCents?: Prisma.SortOrder
 }
 
 export type PricingConfigMaxOrderByAggregateInput = {
@@ -890,6 +1140,16 @@ export type PricingConfigMaxOrderByAggregateInput = {
   economyLeadDays?: Prisma.SortOrder
   standardLeadDays?: Prisma.SortOrder
   expressLeadDays?: Prisma.SortOrder
+  montageBaseFeeCents?: Prisma.SortOrder
+  entsorgungBaseFeeCents?: Prisma.SortOrder
+  montageStandardMultiplier?: Prisma.SortOrder
+  montagePlusMultiplier?: Prisma.SortOrder
+  montagePremiumMultiplier?: Prisma.SortOrder
+  entsorgungStandardMultiplier?: Prisma.SortOrder
+  entsorgungPlusMultiplier?: Prisma.SortOrder
+  entsorgungPremiumMultiplier?: Prisma.SortOrder
+  montageMinimumOrderCents?: Prisma.SortOrder
+  entsorgungMinimumOrderCents?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -920,6 +1180,16 @@ export type PricingConfigMinOrderByAggregateInput = {
   economyLeadDays?: Prisma.SortOrder
   standardLeadDays?: Prisma.SortOrder
   expressLeadDays?: Prisma.SortOrder
+  montageBaseFeeCents?: Prisma.SortOrder
+  entsorgungBaseFeeCents?: Prisma.SortOrder
+  montageStandardMultiplier?: Prisma.SortOrder
+  montagePlusMultiplier?: Prisma.SortOrder
+  montagePremiumMultiplier?: Prisma.SortOrder
+  entsorgungStandardMultiplier?: Prisma.SortOrder
+  entsorgungPlusMultiplier?: Prisma.SortOrder
+  entsorgungPremiumMultiplier?: Prisma.SortOrder
+  montageMinimumOrderCents?: Prisma.SortOrder
+  entsorgungMinimumOrderCents?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -945,6 +1215,16 @@ export type PricingConfigSumOrderByAggregateInput = {
   economyLeadDays?: Prisma.SortOrder
   standardLeadDays?: Prisma.SortOrder
   expressLeadDays?: Prisma.SortOrder
+  montageBaseFeeCents?: Prisma.SortOrder
+  entsorgungBaseFeeCents?: Prisma.SortOrder
+  montageStandardMultiplier?: Prisma.SortOrder
+  montagePlusMultiplier?: Prisma.SortOrder
+  montagePremiumMultiplier?: Prisma.SortOrder
+  entsorgungStandardMultiplier?: Prisma.SortOrder
+  entsorgungPlusMultiplier?: Prisma.SortOrder
+  entsorgungPremiumMultiplier?: Prisma.SortOrder
+  montageMinimumOrderCents?: Prisma.SortOrder
+  entsorgungMinimumOrderCents?: Prisma.SortOrder
 }
 
 
@@ -975,6 +1255,16 @@ export type PricingConfigSelect<ExtArgs extends runtime.Types.Extensions.Interna
   economyLeadDays?: boolean
   standardLeadDays?: boolean
   expressLeadDays?: boolean
+  montageBaseFeeCents?: boolean
+  entsorgungBaseFeeCents?: boolean
+  montageStandardMultiplier?: boolean
+  montagePlusMultiplier?: boolean
+  montagePremiumMultiplier?: boolean
+  entsorgungStandardMultiplier?: boolean
+  entsorgungPlusMultiplier?: boolean
+  entsorgungPremiumMultiplier?: boolean
+  montageMinimumOrderCents?: boolean
+  entsorgungMinimumOrderCents?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["pricingConfig"]>
@@ -1005,6 +1295,16 @@ export type PricingConfigSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   economyLeadDays?: boolean
   standardLeadDays?: boolean
   expressLeadDays?: boolean
+  montageBaseFeeCents?: boolean
+  entsorgungBaseFeeCents?: boolean
+  montageStandardMultiplier?: boolean
+  montagePlusMultiplier?: boolean
+  montagePremiumMultiplier?: boolean
+  entsorgungStandardMultiplier?: boolean
+  entsorgungPlusMultiplier?: boolean
+  entsorgungPremiumMultiplier?: boolean
+  montageMinimumOrderCents?: boolean
+  entsorgungMinimumOrderCents?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["pricingConfig"]>
@@ -1035,6 +1335,16 @@ export type PricingConfigSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   economyLeadDays?: boolean
   standardLeadDays?: boolean
   expressLeadDays?: boolean
+  montageBaseFeeCents?: boolean
+  entsorgungBaseFeeCents?: boolean
+  montageStandardMultiplier?: boolean
+  montagePlusMultiplier?: boolean
+  montagePremiumMultiplier?: boolean
+  entsorgungStandardMultiplier?: boolean
+  entsorgungPlusMultiplier?: boolean
+  entsorgungPremiumMultiplier?: boolean
+  montageMinimumOrderCents?: boolean
+  entsorgungMinimumOrderCents?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["pricingConfig"]>
@@ -1065,11 +1375,21 @@ export type PricingConfigSelectScalar = {
   economyLeadDays?: boolean
   standardLeadDays?: boolean
   expressLeadDays?: boolean
+  montageBaseFeeCents?: boolean
+  entsorgungBaseFeeCents?: boolean
+  montageStandardMultiplier?: boolean
+  montagePlusMultiplier?: boolean
+  montagePremiumMultiplier?: boolean
+  entsorgungStandardMultiplier?: boolean
+  entsorgungPlusMultiplier?: boolean
+  entsorgungPremiumMultiplier?: boolean
+  montageMinimumOrderCents?: boolean
+  entsorgungMinimumOrderCents?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PricingConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "active" | "deletedAt" | "deletedBy" | "currency" | "movingBaseFeeCents" | "disposalBaseFeeCents" | "hourlyRateCents" | "perM3MovingCents" | "perM3DisposalCents" | "perKmCents" | "heavyItemSurchargeCents" | "stairsSurchargePerFloorCents" | "carryDistanceSurchargePer25mCents" | "parkingSurchargeMediumCents" | "parkingSurchargeHardCents" | "elevatorDiscountSmallCents" | "elevatorDiscountLargeCents" | "uncertaintyPercent" | "economyMultiplier" | "standardMultiplier" | "expressMultiplier" | "economyLeadDays" | "standardLeadDays" | "expressLeadDays" | "createdAt" | "updatedAt", ExtArgs["result"]["pricingConfig"]>
+export type PricingConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "active" | "deletedAt" | "deletedBy" | "currency" | "movingBaseFeeCents" | "disposalBaseFeeCents" | "hourlyRateCents" | "perM3MovingCents" | "perM3DisposalCents" | "perKmCents" | "heavyItemSurchargeCents" | "stairsSurchargePerFloorCents" | "carryDistanceSurchargePer25mCents" | "parkingSurchargeMediumCents" | "parkingSurchargeHardCents" | "elevatorDiscountSmallCents" | "elevatorDiscountLargeCents" | "uncertaintyPercent" | "economyMultiplier" | "standardMultiplier" | "expressMultiplier" | "economyLeadDays" | "standardLeadDays" | "expressLeadDays" | "montageBaseFeeCents" | "entsorgungBaseFeeCents" | "montageStandardMultiplier" | "montagePlusMultiplier" | "montagePremiumMultiplier" | "entsorgungStandardMultiplier" | "entsorgungPlusMultiplier" | "entsorgungPremiumMultiplier" | "montageMinimumOrderCents" | "entsorgungMinimumOrderCents" | "createdAt" | "updatedAt", ExtArgs["result"]["pricingConfig"]>
 
 export type $PricingConfigPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PricingConfig"
@@ -1100,6 +1420,16 @@ export type $PricingConfigPayload<ExtArgs extends runtime.Types.Extensions.Inter
     economyLeadDays: number
     standardLeadDays: number
     expressLeadDays: number
+    montageBaseFeeCents: number
+    entsorgungBaseFeeCents: number
+    montageStandardMultiplier: number
+    montagePlusMultiplier: number
+    montagePremiumMultiplier: number
+    entsorgungStandardMultiplier: number
+    entsorgungPlusMultiplier: number
+    entsorgungPremiumMultiplier: number
+    montageMinimumOrderCents: number
+    entsorgungMinimumOrderCents: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["pricingConfig"]>
@@ -1550,6 +1880,16 @@ export interface PricingConfigFieldRefs {
   readonly economyLeadDays: Prisma.FieldRef<"PricingConfig", 'Int'>
   readonly standardLeadDays: Prisma.FieldRef<"PricingConfig", 'Int'>
   readonly expressLeadDays: Prisma.FieldRef<"PricingConfig", 'Int'>
+  readonly montageBaseFeeCents: Prisma.FieldRef<"PricingConfig", 'Int'>
+  readonly entsorgungBaseFeeCents: Prisma.FieldRef<"PricingConfig", 'Int'>
+  readonly montageStandardMultiplier: Prisma.FieldRef<"PricingConfig", 'Float'>
+  readonly montagePlusMultiplier: Prisma.FieldRef<"PricingConfig", 'Float'>
+  readonly montagePremiumMultiplier: Prisma.FieldRef<"PricingConfig", 'Float'>
+  readonly entsorgungStandardMultiplier: Prisma.FieldRef<"PricingConfig", 'Float'>
+  readonly entsorgungPlusMultiplier: Prisma.FieldRef<"PricingConfig", 'Float'>
+  readonly entsorgungPremiumMultiplier: Prisma.FieldRef<"PricingConfig", 'Float'>
+  readonly montageMinimumOrderCents: Prisma.FieldRef<"PricingConfig", 'Int'>
+  readonly entsorgungMinimumOrderCents: Prisma.FieldRef<"PricingConfig", 'Int'>
   readonly createdAt: Prisma.FieldRef<"PricingConfig", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PricingConfig", 'DateTime'>
 }

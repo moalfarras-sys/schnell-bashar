@@ -29,6 +29,16 @@ export async function updatePricingAction(formData: FormData) {
       economyLeadDays: Number(formData.get("economyLeadDays") ?? 10),
       standardLeadDays: Number(formData.get("standardLeadDays") ?? 5),
       expressLeadDays: Number(formData.get("expressLeadDays") ?? 2),
+      montageBaseFeeCents: Number(formData.get("montageBaseFeeCents") ?? 0),
+      entsorgungBaseFeeCents: Number(formData.get("entsorgungBaseFeeCents") ?? 0),
+      montageStandardMultiplier: Number(formData.get("montageStandardMultiplier") ?? 0.98),
+      montagePlusMultiplier: Number(formData.get("montagePlusMultiplier") ?? 1),
+      montagePremiumMultiplier: Number(formData.get("montagePremiumMultiplier") ?? 1.12),
+      entsorgungStandardMultiplier: Number(formData.get("entsorgungStandardMultiplier") ?? 0.96),
+      entsorgungPlusMultiplier: Number(formData.get("entsorgungPlusMultiplier") ?? 1),
+      entsorgungPremiumMultiplier: Number(formData.get("entsorgungPremiumMultiplier") ?? 1.1),
+      montageMinimumOrderCents: Number(formData.get("montageMinimumOrderCents") ?? 0),
+      entsorgungMinimumOrderCents: Number(formData.get("entsorgungMinimumOrderCents") ?? 0),
     },
   });
 }

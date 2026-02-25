@@ -10,6 +10,9 @@
  */
 export type * from './models/CatalogItem'
 export type * from './models/PricingConfig'
+export type * from './models/ServiceModule'
+export type * from './models/ServiceOption'
+export type * from './models/PromoRule'
 export type * from './models/AvailabilityRule'
 export type * from './models/AvailabilityException'
 export type * from './models/Order'

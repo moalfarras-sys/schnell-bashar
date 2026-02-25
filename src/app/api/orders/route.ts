@@ -11,6 +11,10 @@ import { wizardPayloadSchema, type WizardPayload } from "@/lib/wizard-schema";
 import { estimateOrder } from "@/server/calc/estimate";
 import { ORSDistanceError, resolveRouteDistance } from "@/server/distance/ors";
 import { resolveDistancePricingConfig } from "@/server/calc/distance-pricing";
+import {
+  normalizePromoCode,
+  resolvePromoRule,
+} from "@/server/offers/promo-rules";
 import { getAvailableSlots } from "@/server/availability/slots";
 import { sendOrderEmail } from "@/server/email/send-order-email";
 import { sendCustomerConfirmationEmail } from "@/server/email/send-customer-confirmation";
@@ -125,24 +129,46 @@ export async function POST(req: Request) {
     }
   }
 
-  const pricing = await prisma.pricingConfig.findFirst({
-    where: { active: true },
-    orderBy: { updatedAt: "desc" },
-  });
-  if (!pricing) return NextResponse.json({ error: "Keine Preiskonfiguration gefunden" }, { status: 500 });
+  const [pricing, catalog, serviceOptionsData, promoRulesData] = await Promise.all([
+    prisma.pricingConfig.findFirst({
+      where: { active: true },
+      orderBy: { updatedAt: "desc" },
+    }),
+    prisma.catalogItem.findMany({
+      where: { active: true },
+      orderBy: [{ sortOrder: "asc" }, { nameDe: "asc" }],
+      select: {
+        id: true,
+        nameDe: true,
+        categoryKey: true,
+        defaultVolumeM3: true,
+        laborMinutesPerUnit: true,
+        isHeavy: true,
+      },
+    }),
+    prisma.serviceOption.findMany({
+      where: { active: true, deletedAt: null },
+      include: {
+        module: {
+          select: { slug: true },
+        },
+      },
+      orderBy: [{ sortOrder: "asc" }, { nameDe: "asc" }],
+    }),
+    prisma.promoRule.findMany({
+      where: { active: true, deletedAt: null },
+      include: {
+        module: {
+          select: { slug: true },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+  ]);
 
-  const catalog = await prisma.catalogItem.findMany({
-    where: { active: true },
-    orderBy: [{ sortOrder: "asc" }, { nameDe: "asc" }],
-    select: {
-      id: true,
-      nameDe: true,
-      categoryKey: true,
-      defaultVolumeM3: true,
-      laborMinutesPerUnit: true,
-      isHeavy: true,
-    },
-  });
+  if (!pricing) {
+    return NextResponse.json({ error: "Keine Preiskonfiguration gefunden" }, { status: 500 });
+  }
 
   let routeDistance:
     | {
@@ -182,7 +208,48 @@ export async function POST(req: Request) {
 
   const distancePricing = resolveDistancePricingConfig(pricing.perKmCents);
 
-  const estimate = estimateOrder(payload, {
+  const bookingModuleSlug =
+    payload.bookingContext === "MONTAGE"
+      ? "MONTAGE"
+      : payload.bookingContext === "ENTSORGUNG"
+        ? "ENTSORGUNG"
+        : null;
+
+  const allowedServiceCodes = new Set(
+    serviceOptionsData
+      .filter((option) => !bookingModuleSlug || option.module.slug === bookingModuleSlug)
+      .map((option) => option.code),
+  );
+  const normalizedSelectedServiceOptions = (payload.selectedServiceOptions ?? [])
+    .filter((item) => allowedServiceCodes.has(item.code))
+    .map((item) => ({
+      code: item.code,
+      qty: Math.max(1, Math.min(50, item.qty || 1)),
+      meta: item.meta ?? undefined,
+    }));
+
+  const normalizedOfferCode = normalizePromoCode(payload.offerContext?.offerCode);
+  const normalizedPayload: WizardPayload = {
+    ...payload,
+    selectedServiceOptions: normalizedSelectedServiceOptions,
+    offerContext: normalizedOfferCode
+      ? {
+          offerCode: normalizedOfferCode,
+        }
+      : undefined,
+  };
+
+  const serviceOptions = serviceOptionsData.map((option) => ({
+    code: option.code,
+    moduleSlug: option.module.slug,
+    pricingType: option.pricingType,
+    defaultPriceCents: option.defaultPriceCents,
+    defaultLaborMinutes: option.defaultLaborMinutes,
+    isHeavy: option.isHeavy,
+    requiresQuantity: option.requiresQuantity,
+  }));
+
+  const baseEstimate = estimateOrder(normalizedPayload, {
     catalog,
     pricing: {
       currency: pricing.currency,
@@ -203,12 +270,100 @@ export async function POST(req: Request) {
       economyMultiplier: pricing.economyMultiplier,
       standardMultiplier: pricing.standardMultiplier,
       expressMultiplier: pricing.expressMultiplier,
+      montageBaseFeeCents: pricing.montageBaseFeeCents,
+      entsorgungBaseFeeCents: pricing.entsorgungBaseFeeCents,
+      montageStandardMultiplier: pricing.montageStandardMultiplier,
+      montagePlusMultiplier: pricing.montagePlusMultiplier,
+      montagePremiumMultiplier: pricing.montagePremiumMultiplier,
+      entsorgungStandardMultiplier: pricing.entsorgungStandardMultiplier,
+      entsorgungPlusMultiplier: pricing.entsorgungPlusMultiplier,
+      entsorgungPremiumMultiplier: pricing.entsorgungPremiumMultiplier,
+      montageMinimumOrderCents: pricing.montageMinimumOrderCents,
+      entsorgungMinimumOrderCents: pricing.entsorgungMinimumOrderCents,
     },
+    serviceOptions,
   }, {
     distanceKm: routeDistance?.distanceKm,
     distanceSource: routeDistance?.source,
     distancePricing,
   });
+
+  const promoRule = resolvePromoRule(
+    promoRulesData.map((rule) => ({
+      id: rule.id,
+      code: rule.code,
+      moduleSlug: rule.module?.slug ?? null,
+      serviceTypeScope: rule.serviceTypeScope,
+      discountType: rule.discountType,
+      discountValue: rule.discountValue,
+      minOrderCents: rule.minOrderCents,
+      maxDiscountCents: rule.maxDiscountCents,
+      validFrom: rule.validFrom,
+      validTo: rule.validTo,
+      active: rule.active,
+    })),
+    {
+      code: normalizedOfferCode,
+      bookingContext: normalizedPayload.bookingContext,
+      serviceType: normalizedPayload.serviceType,
+      totalCents: baseEstimate.breakdown.totalCents,
+    },
+  );
+
+  const estimate = estimateOrder(
+    normalizedPayload,
+    {
+      catalog,
+      pricing: {
+        currency: pricing.currency,
+        movingBaseFeeCents: pricing.movingBaseFeeCents,
+        disposalBaseFeeCents: pricing.disposalBaseFeeCents,
+        hourlyRateCents: pricing.hourlyRateCents,
+        perM3MovingCents: pricing.perM3MovingCents,
+        perM3DisposalCents: pricing.perM3DisposalCents,
+        perKmCents: pricing.perKmCents,
+        heavyItemSurchargeCents: pricing.heavyItemSurchargeCents,
+        stairsSurchargePerFloorCents: pricing.stairsSurchargePerFloorCents,
+        carryDistanceSurchargePer25mCents: pricing.carryDistanceSurchargePer25mCents,
+        parkingSurchargeMediumCents: pricing.parkingSurchargeMediumCents,
+        parkingSurchargeHardCents: pricing.parkingSurchargeHardCents,
+        elevatorDiscountSmallCents: pricing.elevatorDiscountSmallCents,
+        elevatorDiscountLargeCents: pricing.elevatorDiscountLargeCents,
+        uncertaintyPercent: pricing.uncertaintyPercent,
+        economyMultiplier: pricing.economyMultiplier,
+        standardMultiplier: pricing.standardMultiplier,
+        expressMultiplier: pricing.expressMultiplier,
+        montageBaseFeeCents: pricing.montageBaseFeeCents,
+        entsorgungBaseFeeCents: pricing.entsorgungBaseFeeCents,
+        montageStandardMultiplier: pricing.montageStandardMultiplier,
+        montagePlusMultiplier: pricing.montagePlusMultiplier,
+        montagePremiumMultiplier: pricing.montagePremiumMultiplier,
+        entsorgungStandardMultiplier: pricing.entsorgungStandardMultiplier,
+        entsorgungPlusMultiplier: pricing.entsorgungPlusMultiplier,
+        entsorgungPremiumMultiplier: pricing.entsorgungPremiumMultiplier,
+        montageMinimumOrderCents: pricing.montageMinimumOrderCents,
+        entsorgungMinimumOrderCents: pricing.entsorgungMinimumOrderCents,
+      },
+      serviceOptions,
+    },
+    {
+      distanceKm: routeDistance?.distanceKm,
+      distanceSource: routeDistance?.source,
+      distancePricing,
+      promoRule: promoRule
+        ? {
+            id: promoRule.id,
+            code: promoRule.code,
+            moduleSlug: promoRule.moduleSlug,
+            serviceTypeScope: promoRule.serviceTypeScope,
+            discountType: promoRule.discountType,
+            discountValue: promoRule.discountValue,
+            minOrderCents: promoRule.minOrderCents,
+            maxDiscountCents: promoRule.maxDiscountCents,
+          }
+        : null,
+    },
+  );
 
   const slotStart = new Date(payload.timing.selectedSlotStart);
   if (Number.isNaN(slotStart.getTime())) {
@@ -369,6 +524,22 @@ export async function POST(req: Request) {
     lineVolumeM3: row.lineVolumeM3,
   }));
 
+  const persistedPayload: WizardPayload = {
+    ...normalizedPayload,
+    offerContext: normalizedOfferCode
+      ? {
+          offerCode: normalizedOfferCode,
+          ruleId: promoRule?.id,
+          appliedDiscountPercent:
+            promoRule?.discountType === "PERCENT" ? promoRule.discountValue : undefined,
+          appliedDiscountCents:
+            promoRule?.discountType === "FLAT_CENTS" ? promoRule.discountValue : undefined,
+          validUntil:
+            promoRule?.validTo != null ? new Date(promoRule.validTo).toISOString() : undefined,
+        }
+      : undefined,
+  };
+
   const orderDataBase = {
     publicId,
     serviceType: payload.serviceType,
@@ -385,7 +556,10 @@ export async function POST(req: Request) {
     distanceKm: estimate.distanceKm ?? null,
     priceMinCents: estimate.priceMinCents,
     priceMaxCents: estimate.priceMaxCents,
-    wizardData: payload as any,
+    wizardData: {
+      ...persistedPayload,
+      pricingBreakdownV2: estimate.breakdown,
+    } as any,
     lines: {
       create: [...moveLineCreates, ...disposalLineCreates],
     },

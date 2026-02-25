@@ -33,6 +33,23 @@ enum ContactPreference {
   EMAIL
 }
 
+enum ServiceModuleSlug {
+  MONTAGE
+  ENTSORGUNG
+}
+
+enum ServiceOptionPricingType {
+  FLAT
+  PER_UNIT
+  PER_M3
+  PER_HOUR
+}
+
+enum PromoDiscountType {
+  PERCENT
+  FLAT_CENTS
+}
+
 model CatalogItem {
   id                  String   @id @default(cuid())
   slug                String   @unique
@@ -81,8 +98,83 @@ model PricingConfig {
   standardLeadDays   Int
   expressLeadDays    Int
 
+  montageBaseFeeCents                Int   @default(0)
+  entsorgungBaseFeeCents             Int   @default(0)
+  montageStandardMultiplier          Float @default(1)
+  montagePlusMultiplier              Float @default(1)
+  montagePremiumMultiplier           Float @default(1)
+  entsorgungStandardMultiplier       Float @default(1)
+  entsorgungPlusMultiplier           Float @default(1)
+  entsorgungPremiumMultiplier        Float @default(1)
+  montageMinimumOrderCents           Int   @default(0)
+  entsorgungMinimumOrderCents        Int   @default(0)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ServiceModule {
+  id          String            @id @default(cuid())
+  slug        ServiceModuleSlug @unique
+  nameDe      String
+  descriptionDe String?
+  active      Boolean           @default(true)
+  sortOrder   Int               @default(0)
+  deletedAt   DateTime?
+  deletedBy   String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  options   ServiceOption[]
+  promoRules PromoRule[]
+}
+
+model ServiceOption {
+  id                  String                   @id @default(cuid())
+  moduleId            String
+  module              ServiceModule            @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  code                String                   @unique
+  nameDe              String
+  descriptionDe       String?
+  pricingType         ServiceOptionPricingType @default(PER_UNIT)
+  defaultPriceCents   Int
+  defaultLaborMinutes Int                      @default(0)
+  defaultVolumeM3     Float                    @default(0)
+  requiresQuantity    Boolean                  @default(true)
+  requiresPhoto       Boolean                  @default(false)
+  isHeavy             Boolean                  @default(false)
+  active              Boolean                  @default(true)
+  sortOrder           Int                      @default(0)
+  deletedAt           DateTime?
+  deletedBy           String?
+  version             Int                      @default(1)
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+
+  @@index([moduleId, active, sortOrder])
+}
+
+model PromoRule {
+  id               String            @id @default(cuid())
+  code             String            @unique
+  moduleId         String?
+  module           ServiceModule?    @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  serviceTypeScope ServiceType?
+  discountType     PromoDiscountType
+  discountValue    Int
+  minOrderCents    Int               @default(0)
+  maxDiscountCents Int?
+  validFrom        DateTime?
+  validTo          DateTime?
+  active           Boolean           @default(true)
+  deletedAt        DateTime?
+  deletedBy        String?
+  version          Int               @default(1)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@index([active, code])
+  @@index([moduleId, active])
 }
 
 model AvailabilityRule {

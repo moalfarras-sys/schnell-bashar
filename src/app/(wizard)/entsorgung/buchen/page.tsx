@@ -23,6 +23,8 @@ export default async function DisposalBookingEntryPage() {
       initialServiceType="DISPOSAL"
       catalog={config.catalog}
       pricing={config.pricing}
+      modules={config.modules}
+      promoRules={config.promoRules}
     />
   );
 }

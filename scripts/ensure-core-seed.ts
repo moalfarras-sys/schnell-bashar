@@ -13,22 +13,28 @@ const adapter = new PrismaPg({ connectionString, ...(ssl ? { ssl } : {}) });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const [pricingActive, catalogActive] = await Promise.all([
+  const [pricingActive, catalogActive, modulesActive, optionsActive] = await Promise.all([
     prisma.pricingConfig.count({ where: { active: true, deletedAt: null } }),
     prisma.catalogItem.count({ where: { active: true, deletedAt: null } }),
+    prisma.serviceModule.count({ where: { active: true, deletedAt: null } }),
+    prisma.serviceOption.count({ where: { active: true, deletedAt: null } }),
   ]);
 
-  const needsSeed = pricingActive === 0 || catalogActive === 0;
+  const needsSeed =
+    pricingActive === 0 ||
+    catalogActive === 0 ||
+    modulesActive === 0 ||
+    optionsActive === 0;
 
   if (!needsSeed) {
     console.log(
-      `[seed:core] OK pricing(active)=${pricingActive} catalog(active)=${catalogActive}. Skip seed.`,
+      `[seed:core] OK pricing(active)=${pricingActive} catalog(active)=${catalogActive} modules(active)=${modulesActive} options(active)=${optionsActive}. Skip seed.`,
     );
     return;
   }
 
   console.log(
-    `[seed:core] Missing baseline data. Running seed (pricing=${pricingActive}, catalog=${catalogActive}).`,
+    `[seed:core] Missing baseline data. Running seed (pricing=${pricingActive}, catalog=${catalogActive}, modules=${modulesActive}, options=${optionsActive}).`,
   );
   execSync("npm run db:seed", { stdio: "inherit" });
 }

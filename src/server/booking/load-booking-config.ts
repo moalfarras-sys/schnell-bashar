@@ -22,6 +22,16 @@ export type BookingPricing = {
   economyLeadDays: number;
   standardLeadDays: number;
   expressLeadDays: number;
+  montageBaseFeeCents: number;
+  entsorgungBaseFeeCents: number;
+  montageStandardMultiplier: number;
+  montagePlusMultiplier: number;
+  montagePremiumMultiplier: number;
+  entsorgungStandardMultiplier: number;
+  entsorgungPlusMultiplier: number;
+  entsorgungPremiumMultiplier: number;
+  montageMinimumOrderCents: number;
+  entsorgungMinimumOrderCents: number;
 };
 
 export type BookingCatalogItem = {
@@ -34,8 +44,46 @@ export type BookingCatalogItem = {
   isHeavy: boolean;
 };
 
+export type BookingServiceOption = {
+  id: string;
+  code: string;
+  nameDe: string;
+  descriptionDe: string | null;
+  pricingType: "FLAT" | "PER_UNIT" | "PER_M3" | "PER_HOUR";
+  defaultPriceCents: number;
+  defaultLaborMinutes: number;
+  defaultVolumeM3: number;
+  requiresQuantity: boolean;
+  requiresPhoto: boolean;
+  isHeavy: boolean;
+  sortOrder: number;
+};
+
+export type BookingServiceModule = {
+  id: string;
+  slug: "MONTAGE" | "ENTSORGUNG";
+  nameDe: string;
+  descriptionDe: string | null;
+  sortOrder: number;
+  options: BookingServiceOption[];
+};
+
+export type BookingPromoRule = {
+  id: string;
+  code: string;
+  moduleSlug: "MONTAGE" | "ENTSORGUNG" | null;
+  serviceTypeScope: "MOVING" | "DISPOSAL" | "BOTH" | null;
+  discountType: "PERCENT" | "FLAT_CENTS";
+  discountValue: number;
+  minOrderCents: number;
+  maxDiscountCents: number | null;
+  validFrom: string | null;
+  validTo: string | null;
+};
+
 export async function loadBookingConfig() {
-  const [pricingData, catalogData] = await Promise.all([
+  const now = new Date();
+  const [pricingData, catalogData, moduleData, promoRulesData] = await Promise.all([
     prisma.pricingConfig.findFirst({ where: { active: true }, orderBy: { updatedAt: "desc" } }),
     prisma.catalogItem.findMany({
       where: { active: true },
@@ -48,6 +96,44 @@ export async function loadBookingConfig() {
         defaultVolumeM3: true,
         laborMinutesPerUnit: true,
         isHeavy: true,
+      },
+    }),
+    prisma.serviceModule.findMany({
+      where: { active: true, deletedAt: null },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      include: {
+        options: {
+          where: { active: true, deletedAt: null },
+          orderBy: [{ sortOrder: "asc" }, { nameDe: "asc" }],
+          select: {
+            id: true,
+            code: true,
+            nameDe: true,
+            descriptionDe: true,
+            pricingType: true,
+            defaultPriceCents: true,
+            defaultLaborMinutes: true,
+            defaultVolumeM3: true,
+            requiresQuantity: true,
+            requiresPhoto: true,
+            isHeavy: true,
+            sortOrder: true,
+          },
+        },
+      },
+    }),
+    prisma.promoRule.findMany({
+      where: {
+        active: true,
+        deletedAt: null,
+        OR: [{ validFrom: null }, { validFrom: { lte: now } }],
+        AND: [{ OR: [{ validTo: null }, { validTo: { gte: now } }] }],
+      },
+      orderBy: [{ updatedAt: "desc" }],
+      include: {
+        module: {
+          select: { slug: true },
+        },
       },
     }),
   ]);
@@ -78,8 +164,53 @@ export async function loadBookingConfig() {
     economyLeadDays: pricingData.economyLeadDays,
     standardLeadDays: pricingData.standardLeadDays,
     expressLeadDays: pricingData.expressLeadDays,
+    montageBaseFeeCents: pricingData.montageBaseFeeCents,
+    entsorgungBaseFeeCents: pricingData.entsorgungBaseFeeCents,
+    montageStandardMultiplier: pricingData.montageStandardMultiplier,
+    montagePlusMultiplier: pricingData.montagePlusMultiplier,
+    montagePremiumMultiplier: pricingData.montagePremiumMultiplier,
+    entsorgungStandardMultiplier: pricingData.entsorgungStandardMultiplier,
+    entsorgungPlusMultiplier: pricingData.entsorgungPlusMultiplier,
+    entsorgungPremiumMultiplier: pricingData.entsorgungPremiumMultiplier,
+    montageMinimumOrderCents: pricingData.montageMinimumOrderCents,
+    entsorgungMinimumOrderCents: pricingData.entsorgungMinimumOrderCents,
   };
 
   const catalog: BookingCatalogItem[] = catalogData;
-  return { pricing, catalog };
+  const modules: BookingServiceModule[] = moduleData.map((module) => ({
+    id: module.id,
+    slug: module.slug,
+    nameDe: module.nameDe,
+    descriptionDe: module.descriptionDe,
+    sortOrder: module.sortOrder,
+    options: module.options.map((option) => ({
+      id: option.id,
+      code: option.code,
+      nameDe: option.nameDe,
+      descriptionDe: option.descriptionDe,
+      pricingType: option.pricingType,
+      defaultPriceCents: option.defaultPriceCents,
+      defaultLaborMinutes: option.defaultLaborMinutes,
+      defaultVolumeM3: option.defaultVolumeM3,
+      requiresQuantity: option.requiresQuantity,
+      requiresPhoto: option.requiresPhoto,
+      isHeavy: option.isHeavy,
+      sortOrder: option.sortOrder,
+    })),
+  }));
+
+  const promoRules: BookingPromoRule[] = promoRulesData.map((rule) => ({
+    id: rule.id,
+    code: rule.code,
+    moduleSlug: rule.module?.slug ?? null,
+    serviceTypeScope: rule.serviceTypeScope,
+    discountType: rule.discountType,
+    discountValue: rule.discountValue,
+    minOrderCents: rule.minOrderCents,
+    maxDiscountCents: rule.maxDiscountCents,
+    validFrom: rule.validFrom ? rule.validFrom.toISOString() : null,
+    validTo: rule.validTo ? rule.validTo.toISOString() : null,
+  }));
+
+  return { pricing, catalog, modules, promoRules };
 }

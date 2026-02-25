@@ -46,6 +46,12 @@ export const disposalSchema = z.object({
   forbiddenConfirmed: z.boolean(),
 });
 
+export const serviceSelectionSchema = z.object({
+  code: z.string().trim().min(2).max(80),
+  qty: z.number().int().min(1).max(50).default(1),
+  meta: z.record(z.string(), z.any()).optional(),
+});
+
 export const timingSchema = z.object({
   speed: speedTypeSchema,
   preferredFrom: z.string().datetime(),
@@ -65,11 +71,13 @@ export const customerSchema = z.object({
 export const wizardPayloadSchema = z.object({
   bookingContext: bookingContextSchema.default("STANDARD"),
   packageTier: packageTierSchema.default("PLUS"),
+  selectedServiceOptions: z.array(serviceSelectionSchema).default([]),
   offerContext: z
     .object({
+      offerCode: z.string().trim().min(2).max(50).optional(),
+      ruleId: z.string().trim().min(2).max(64).optional(),
       appliedDiscountPercent: z.number().min(0).max(100).optional(),
       appliedDiscountCents: z.number().int().min(0).optional(),
-      offerCode: z.string().trim().min(2).max(50).optional(),
       validUntil: z.string().datetime().optional(),
     })
     .optional(),

@@ -71,6 +71,15 @@ export default async function AdminPricingPage() {
             </Grid>
           </Section>
 
+          <Section title="Module Montage/Entsorgung">
+            <Grid>
+              <Field name="montageBaseFeeCents" label="Montage Basis (Cent)" defaultValue={pricing.montageBaseFeeCents} hint={eur(pricing.montageBaseFeeCents)} />
+              <Field name="entsorgungBaseFeeCents" label="Entsorgung Modul Basis (Cent)" defaultValue={pricing.entsorgungBaseFeeCents} hint={eur(pricing.entsorgungBaseFeeCents)} />
+              <Field name="montageMinimumOrderCents" label="Mindestauftrag Montage (Cent)" defaultValue={pricing.montageMinimumOrderCents} hint={eur(pricing.montageMinimumOrderCents)} />
+              <Field name="entsorgungMinimumOrderCents" label="Mindestauftrag Entsorgung (Cent)" defaultValue={pricing.entsorgungMinimumOrderCents} hint={eur(pricing.entsorgungMinimumOrderCents)} />
+            </Grid>
+          </Section>
+
           <Section title="Variable Anteile">
             <Grid>
               <Field name="perM3MovingCents" label="Umzug pro m³ (Cent)" defaultValue={pricing.perM3MovingCents} hint={eur(pricing.perM3MovingCents) + " / m³"} />
@@ -99,6 +108,14 @@ export default async function AdminPricingPage() {
               <Field name="economyLeadDays" label="Economy Vorlauf (Tage)" defaultValue={pricing.economyLeadDays} step="1" />
               <Field name="standardLeadDays" label="Standard Vorlauf (Tage)" defaultValue={pricing.standardLeadDays} step="1" />
               <Field name="expressLeadDays" label="Express Vorlauf (Tage)" defaultValue={pricing.expressLeadDays} step="1" />
+            </Grid>
+            <Grid>
+              <Field name="montageStandardMultiplier" label="Montage Standard Multiplikator" defaultValue={pricing.montageStandardMultiplier} step="0.01" />
+              <Field name="montagePlusMultiplier" label="Montage Plus Multiplikator" defaultValue={pricing.montagePlusMultiplier} step="0.01" />
+              <Field name="montagePremiumMultiplier" label="Montage Premium Multiplikator" defaultValue={pricing.montagePremiumMultiplier} step="0.01" />
+              <Field name="entsorgungStandardMultiplier" label="Entsorgung Standard Multiplikator" defaultValue={pricing.entsorgungStandardMultiplier} step="0.01" />
+              <Field name="entsorgungPlusMultiplier" label="Entsorgung Plus Multiplikator" defaultValue={pricing.entsorgungPlusMultiplier} step="0.01" />
+              <Field name="entsorgungPremiumMultiplier" label="Entsorgung Premium Multiplikator" defaultValue={pricing.entsorgungPremiumMultiplier} step="0.01" />
             </Grid>
           </Section>
 

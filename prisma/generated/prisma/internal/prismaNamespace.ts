@@ -386,6 +386,9 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   CatalogItem: 'CatalogItem',
   PricingConfig: 'PricingConfig',
+  ServiceModule: 'ServiceModule',
+  ServiceOption: 'ServiceOption',
+  PromoRule: 'PromoRule',
   AvailabilityRule: 'AvailabilityRule',
   AvailabilityException: 'AvailabilityException',
   Order: 'Order',
@@ -425,7 +428,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "catalogItem" | "pricingConfig" | "availabilityRule" | "availabilityException" | "order" | "orderLine" | "orderUpload" | "whatsAppConversation" | "offer" | "contract" | "routeDistanceCache" | "documentSequence" | "mediaAsset" | "mediaAssetVariant" | "contentSlot" | "slotRegistry" | "jobPosting" | "invoice" | "payment" | "adminUser" | "role" | "permission" | "userRole" | "rolePermission" | "auditLog" | "contentRevision"
+    modelProps: "catalogItem" | "pricingConfig" | "serviceModule" | "serviceOption" | "promoRule" | "availabilityRule" | "availabilityException" | "order" | "orderLine" | "orderUpload" | "whatsAppConversation" | "offer" | "contract" | "routeDistanceCache" | "documentSequence" | "mediaAsset" | "mediaAssetVariant" | "contentSlot" | "slotRegistry" | "jobPosting" | "invoice" | "payment" | "adminUser" | "role" | "permission" | "userRole" | "rolePermission" | "auditLog" | "contentRevision"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -574,6 +577,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PricingConfigCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PricingConfigCountAggregateOutputType> | number
+        }
+      }
+    }
+    ServiceModule: {
+      payload: Prisma.$ServiceModulePayload<ExtArgs>
+      fields: Prisma.ServiceModuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServiceModuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceModulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServiceModuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceModulePayload>
+        }
+        findFirst: {
+          args: Prisma.ServiceModuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceModulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServiceModuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceModulePayload>
+        }
+        findMany: {
+          args: Prisma.ServiceModuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceModulePayload>[]
+        }
+        create: {
+          args: Prisma.ServiceModuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceModulePayload>
+        }
+        createMany: {
+          args: Prisma.ServiceModuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServiceModuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceModulePayload>[]
+        }
+        delete: {
+          args: Prisma.ServiceModuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceModulePayload>
+        }
+        update: {
+          args: Prisma.ServiceModuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceModulePayload>
+        }
+        deleteMany: {
+          args: Prisma.ServiceModuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServiceModuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServiceModuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceModulePayload>[]
+        }
+        upsert: {
+          args: Prisma.ServiceModuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceModulePayload>
+        }
+        aggregate: {
+          args: Prisma.ServiceModuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServiceModule>
+        }
+        groupBy: {
+          args: Prisma.ServiceModuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceModuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServiceModuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceModuleCountAggregateOutputType> | number
+        }
+      }
+    }
+    ServiceOption: {
+      payload: Prisma.$ServiceOptionPayload<ExtArgs>
+      fields: Prisma.ServiceOptionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServiceOptionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOptionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServiceOptionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOptionPayload>
+        }
+        findFirst: {
+          args: Prisma.ServiceOptionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOptionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServiceOptionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOptionPayload>
+        }
+        findMany: {
+          args: Prisma.ServiceOptionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOptionPayload>[]
+        }
+        create: {
+          args: Prisma.ServiceOptionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOptionPayload>
+        }
+        createMany: {
+          args: Prisma.ServiceOptionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServiceOptionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOptionPayload>[]
+        }
+        delete: {
+          args: Prisma.ServiceOptionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOptionPayload>
+        }
+        update: {
+          args: Prisma.ServiceOptionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOptionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ServiceOptionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServiceOptionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServiceOptionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOptionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ServiceOptionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOptionPayload>
+        }
+        aggregate: {
+          args: Prisma.ServiceOptionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServiceOption>
+        }
+        groupBy: {
+          args: Prisma.ServiceOptionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceOptionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServiceOptionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceOptionCountAggregateOutputType> | number
+        }
+      }
+    }
+    PromoRule: {
+      payload: Prisma.$PromoRulePayload<ExtArgs>
+      fields: Prisma.PromoRuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PromoRuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoRulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PromoRuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoRulePayload>
+        }
+        findFirst: {
+          args: Prisma.PromoRuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoRulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PromoRuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoRulePayload>
+        }
+        findMany: {
+          args: Prisma.PromoRuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoRulePayload>[]
+        }
+        create: {
+          args: Prisma.PromoRuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoRulePayload>
+        }
+        createMany: {
+          args: Prisma.PromoRuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PromoRuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoRulePayload>[]
+        }
+        delete: {
+          args: Prisma.PromoRuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoRulePayload>
+        }
+        update: {
+          args: Prisma.PromoRuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoRulePayload>
+        }
+        deleteMany: {
+          args: Prisma.PromoRuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PromoRuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PromoRuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoRulePayload>[]
+        }
+        upsert: {
+          args: Prisma.PromoRuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PromoRulePayload>
+        }
+        aggregate: {
+          args: Prisma.PromoRuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePromoRule>
+        }
+        groupBy: {
+          args: Prisma.PromoRuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PromoRuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PromoRuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PromoRuleCountAggregateOutputType> | number
         }
       }
     }
@@ -2437,11 +2662,84 @@ export const PricingConfigScalarFieldEnum = {
   economyLeadDays: 'economyLeadDays',
   standardLeadDays: 'standardLeadDays',
   expressLeadDays: 'expressLeadDays',
+  montageBaseFeeCents: 'montageBaseFeeCents',
+  entsorgungBaseFeeCents: 'entsorgungBaseFeeCents',
+  montageStandardMultiplier: 'montageStandardMultiplier',
+  montagePlusMultiplier: 'montagePlusMultiplier',
+  montagePremiumMultiplier: 'montagePremiumMultiplier',
+  entsorgungStandardMultiplier: 'entsorgungStandardMultiplier',
+  entsorgungPlusMultiplier: 'entsorgungPlusMultiplier',
+  entsorgungPremiumMultiplier: 'entsorgungPremiumMultiplier',
+  montageMinimumOrderCents: 'montageMinimumOrderCents',
+  entsorgungMinimumOrderCents: 'entsorgungMinimumOrderCents',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type PricingConfigScalarFieldEnum = (typeof PricingConfigScalarFieldEnum)[keyof typeof PricingConfigScalarFieldEnum]
+
+
+export const ServiceModuleScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  nameDe: 'nameDe',
+  descriptionDe: 'descriptionDe',
+  active: 'active',
+  sortOrder: 'sortOrder',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceModuleScalarFieldEnum = (typeof ServiceModuleScalarFieldEnum)[keyof typeof ServiceModuleScalarFieldEnum]
+
+
+export const ServiceOptionScalarFieldEnum = {
+  id: 'id',
+  moduleId: 'moduleId',
+  code: 'code',
+  nameDe: 'nameDe',
+  descriptionDe: 'descriptionDe',
+  pricingType: 'pricingType',
+  defaultPriceCents: 'defaultPriceCents',
+  defaultLaborMinutes: 'defaultLaborMinutes',
+  defaultVolumeM3: 'defaultVolumeM3',
+  requiresQuantity: 'requiresQuantity',
+  requiresPhoto: 'requiresPhoto',
+  isHeavy: 'isHeavy',
+  active: 'active',
+  sortOrder: 'sortOrder',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceOptionScalarFieldEnum = (typeof ServiceOptionScalarFieldEnum)[keyof typeof ServiceOptionScalarFieldEnum]
+
+
+export const PromoRuleScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  moduleId: 'moduleId',
+  serviceTypeScope: 'serviceTypeScope',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  minOrderCents: 'minOrderCents',
+  maxDiscountCents: 'maxDiscountCents',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  active: 'active',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PromoRuleScalarFieldEnum = (typeof PromoRuleScalarFieldEnum)[keyof typeof PromoRuleScalarFieldEnum]
 
 
 export const AvailabilityRuleScalarFieldEnum = {
@@ -2982,6 +3280,34 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'ServiceModuleSlug'
+ */
+export type EnumServiceModuleSlugFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceModuleSlug'>
+    
+
+
+/**
+ * Reference to a field of type 'ServiceModuleSlug[]'
+ */
+export type ListEnumServiceModuleSlugFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceModuleSlug[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ServiceOptionPricingType'
+ */
+export type EnumServiceOptionPricingTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceOptionPricingType'>
+    
+
+
+/**
+ * Reference to a field of type 'ServiceOptionPricingType[]'
+ */
+export type ListEnumServiceOptionPricingTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceOptionPricingType[]'>
+    
+
+
+/**
  * Reference to a field of type 'ServiceType'
  */
 export type EnumServiceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceType'>
@@ -2992,6 +3318,20 @@ export type EnumServiceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
  * Reference to a field of type 'ServiceType[]'
  */
 export type ListEnumServiceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PromoDiscountType'
+ */
+export type EnumPromoDiscountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PromoDiscountType'>
+    
+
+
+/**
+ * Reference to a field of type 'PromoDiscountType[]'
+ */
+export type ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PromoDiscountType[]'>
     
 
 
@@ -3245,6 +3585,9 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   catalogItem?: Prisma.CatalogItemOmit
   pricingConfig?: Prisma.PricingConfigOmit
+  serviceModule?: Prisma.ServiceModuleOmit
+  serviceOption?: Prisma.ServiceOptionOmit
+  promoRule?: Prisma.PromoRuleOmit
   availabilityRule?: Prisma.AvailabilityRuleOmit
   availabilityException?: Prisma.AvailabilityExceptionOmit
   order?: Prisma.OrderOmit

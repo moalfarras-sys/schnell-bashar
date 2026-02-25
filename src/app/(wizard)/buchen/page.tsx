@@ -39,6 +39,8 @@ export default async function BookingPage({
       initialServiceType={initialServiceType}
       catalog={config.catalog}
       pricing={config.pricing}
+      modules={config.modules}
+      promoRules={config.promoRules}
     />
   );
 }

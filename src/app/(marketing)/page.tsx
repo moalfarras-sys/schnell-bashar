@@ -133,7 +133,7 @@ export default async function HomePage() {
   ]);
   return (
     <>
-      {/* â”€â”€ Cinematic Hero â”€â”€ */}
+      {/* Cinematic hero */}
       <section className="relative overflow-hidden section-divider-glow aspect-[16/9] min-h-[24rem] md:min-h-[30rem]">
         <div className="absolute inset-0 z-0">
           <Image
@@ -214,10 +214,10 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* â”€â”€ Sofort-Preis-Schätzung â”€â”€ */}
+      {/* Sofort-Preis-Schätzung */}
       <QuickEstimateWidget />
 
-      {/* â”€â”€ Services with Images â”€â”€ */}
+      {/* Services with images */}
       <section className="relative overflow-hidden section-divider-glow">
         <div className="absolute inset-0 bg-linear-to-b from-[rgba(255,255,255,0.25)] to-[rgba(240,248,255,0.40)] dark:from-slate-900/50 dark:to-slate-950" />
         <Container className="relative py-20 sm:py-24">
@@ -275,7 +275,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* â”€â”€ Gallery Showcase â”€â”€ */}
+      {/* Gallery showcase */}
       <section className="relative overflow-hidden section-divider-glow">
         <div className="absolute inset-0 bg-linear-to-b from-[rgba(240,248,255,0.35)] to-[rgba(255,255,255,0.20)] dark:from-slate-950 dark:to-slate-900/50" />
         <Container className="relative py-20 sm:py-24">
@@ -323,7 +323,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* â”€â”€ Quick Tools â”€â”€ */}
+      {/* Quick tools */}
       <section className="relative overflow-hidden section-divider-glow">
         <div className="absolute inset-0 bg-linear-to-b from-[rgba(255,255,255,0.20)] to-[rgba(240,248,255,0.35)] dark:from-slate-900/50 dark:to-slate-950" />
         <Container className="relative py-20 sm:py-24">
@@ -362,7 +362,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* â”€â”€ Why Us â”€â”€ */}
+      {/* Why us */}
       <section className="relative overflow-hidden section-divider-glow">
         <div className="absolute inset-0 bg-linear-to-b from-[rgba(240,248,255,0.35)] to-[rgba(255,255,255,0.20)] dark:from-slate-950 dark:to-slate-900/50" />
         <Container className="relative py-20 sm:py-24">
@@ -441,7 +441,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* â”€â”€ Testimonials â”€â”€ */}
+      {/* Testimonials */}
       <section className="relative overflow-hidden section-divider-glow">
         <div className="absolute inset-0 bg-linear-to-b from-[rgba(255,255,255,0.20)] to-[rgba(240,248,255,0.35)] dark:from-slate-900/50 dark:to-slate-950" />
         <Container className="relative py-20 sm:py-24">
@@ -495,7 +495,7 @@ export default async function HomePage() {
 
       <MovingFAQSection />
 
-      {/* â”€â”€ Final CTA â”€â”€ */}
+      {/* Final CTA */}
       <section className="relative overflow-hidden">
         {/* CTA Background Image */}
         <div className="absolute inset-0">

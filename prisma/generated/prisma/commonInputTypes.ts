@@ -202,6 +202,54 @@ export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>
 }
 
+export type EnumServiceModuleSlugFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceModuleSlug | Prisma.EnumServiceModuleSlugFieldRefInput<$PrismaModel>
+  in?: $Enums.ServiceModuleSlug[] | Prisma.ListEnumServiceModuleSlugFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ServiceModuleSlug[] | Prisma.ListEnumServiceModuleSlugFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumServiceModuleSlugFilter<$PrismaModel> | $Enums.ServiceModuleSlug
+}
+
+export type EnumServiceModuleSlugWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceModuleSlug | Prisma.EnumServiceModuleSlugFieldRefInput<$PrismaModel>
+  in?: $Enums.ServiceModuleSlug[] | Prisma.ListEnumServiceModuleSlugFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ServiceModuleSlug[] | Prisma.ListEnumServiceModuleSlugFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumServiceModuleSlugWithAggregatesFilter<$PrismaModel> | $Enums.ServiceModuleSlug
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumServiceModuleSlugFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumServiceModuleSlugFilter<$PrismaModel>
+}
+
+export type EnumServiceOptionPricingTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceOptionPricingType | Prisma.EnumServiceOptionPricingTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ServiceOptionPricingType[] | Prisma.ListEnumServiceOptionPricingTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ServiceOptionPricingType[] | Prisma.ListEnumServiceOptionPricingTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumServiceOptionPricingTypeFilter<$PrismaModel> | $Enums.ServiceOptionPricingType
+}
+
+export type EnumServiceOptionPricingTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceOptionPricingType | Prisma.EnumServiceOptionPricingTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ServiceOptionPricingType[] | Prisma.ListEnumServiceOptionPricingTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ServiceOptionPricingType[] | Prisma.ListEnumServiceOptionPricingTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumServiceOptionPricingTypeWithAggregatesFilter<$PrismaModel> | $Enums.ServiceOptionPricingType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumServiceOptionPricingTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumServiceOptionPricingTypeFilter<$PrismaModel>
+}
+
+export type EnumServiceTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceType | Prisma.EnumServiceTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ServiceType[] | Prisma.ListEnumServiceTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ServiceType[] | Prisma.ListEnumServiceTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumServiceTypeNullableFilter<$PrismaModel> | $Enums.ServiceType | null
+}
+
+export type EnumPromoDiscountTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PromoDiscountType | Prisma.EnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PromoDiscountType[] | Prisma.ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PromoDiscountType[] | Prisma.ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPromoDiscountTypeFilter<$PrismaModel> | $Enums.PromoDiscountType
+}
+
 export type IntNullableFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
@@ -211,6 +259,26 @@ export type IntNullableFilter<$PrismaModel = never> = {
   gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
   gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
   not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null
+}
+
+export type EnumServiceTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceType | Prisma.EnumServiceTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ServiceType[] | Prisma.ListEnumServiceTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ServiceType[] | Prisma.ListEnumServiceTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumServiceTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.ServiceType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumServiceTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumServiceTypeNullableFilter<$PrismaModel>
+}
+
+export type EnumPromoDiscountTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PromoDiscountType | Prisma.EnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PromoDiscountType[] | Prisma.ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PromoDiscountType[] | Prisma.ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPromoDiscountTypeWithAggregatesFilter<$PrismaModel> | $Enums.PromoDiscountType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPromoDiscountTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPromoDiscountTypeFilter<$PrismaModel>
 }
 
 export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -733,6 +801,74 @@ export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>
+}
+
+export type NestedEnumServiceModuleSlugFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceModuleSlug | Prisma.EnumServiceModuleSlugFieldRefInput<$PrismaModel>
+  in?: $Enums.ServiceModuleSlug[] | Prisma.ListEnumServiceModuleSlugFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ServiceModuleSlug[] | Prisma.ListEnumServiceModuleSlugFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumServiceModuleSlugFilter<$PrismaModel> | $Enums.ServiceModuleSlug
+}
+
+export type NestedEnumServiceModuleSlugWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceModuleSlug | Prisma.EnumServiceModuleSlugFieldRefInput<$PrismaModel>
+  in?: $Enums.ServiceModuleSlug[] | Prisma.ListEnumServiceModuleSlugFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ServiceModuleSlug[] | Prisma.ListEnumServiceModuleSlugFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumServiceModuleSlugWithAggregatesFilter<$PrismaModel> | $Enums.ServiceModuleSlug
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumServiceModuleSlugFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumServiceModuleSlugFilter<$PrismaModel>
+}
+
+export type NestedEnumServiceOptionPricingTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceOptionPricingType | Prisma.EnumServiceOptionPricingTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ServiceOptionPricingType[] | Prisma.ListEnumServiceOptionPricingTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ServiceOptionPricingType[] | Prisma.ListEnumServiceOptionPricingTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumServiceOptionPricingTypeFilter<$PrismaModel> | $Enums.ServiceOptionPricingType
+}
+
+export type NestedEnumServiceOptionPricingTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceOptionPricingType | Prisma.EnumServiceOptionPricingTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ServiceOptionPricingType[] | Prisma.ListEnumServiceOptionPricingTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ServiceOptionPricingType[] | Prisma.ListEnumServiceOptionPricingTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumServiceOptionPricingTypeWithAggregatesFilter<$PrismaModel> | $Enums.ServiceOptionPricingType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumServiceOptionPricingTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumServiceOptionPricingTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumServiceTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceType | Prisma.EnumServiceTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ServiceType[] | Prisma.ListEnumServiceTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ServiceType[] | Prisma.ListEnumServiceTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumServiceTypeNullableFilter<$PrismaModel> | $Enums.ServiceType | null
+}
+
+export type NestedEnumPromoDiscountTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PromoDiscountType | Prisma.EnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PromoDiscountType[] | Prisma.ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PromoDiscountType[] | Prisma.ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPromoDiscountTypeFilter<$PrismaModel> | $Enums.PromoDiscountType
+}
+
+export type NestedEnumServiceTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceType | Prisma.EnumServiceTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ServiceType[] | Prisma.ListEnumServiceTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ServiceType[] | Prisma.ListEnumServiceTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumServiceTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.ServiceType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumServiceTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumServiceTypeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumPromoDiscountTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PromoDiscountType | Prisma.EnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PromoDiscountType[] | Prisma.ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PromoDiscountType[] | Prisma.ListEnumPromoDiscountTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPromoDiscountTypeWithAggregatesFilter<$PrismaModel> | $Enums.PromoDiscountType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPromoDiscountTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPromoDiscountTypeFilter<$PrismaModel>
 }
 
 export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {

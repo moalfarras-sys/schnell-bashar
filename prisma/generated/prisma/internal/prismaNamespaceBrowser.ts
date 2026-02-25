@@ -53,6 +53,9 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   CatalogItem: 'CatalogItem',
   PricingConfig: 'PricingConfig',
+  ServiceModule: 'ServiceModule',
+  ServiceOption: 'ServiceOption',
+  PromoRule: 'PromoRule',
   AvailabilityRule: 'AvailabilityRule',
   AvailabilityException: 'AvailabilityException',
   Order: 'Order',
@@ -140,11 +143,84 @@ export const PricingConfigScalarFieldEnum = {
   economyLeadDays: 'economyLeadDays',
   standardLeadDays: 'standardLeadDays',
   expressLeadDays: 'expressLeadDays',
+  montageBaseFeeCents: 'montageBaseFeeCents',
+  entsorgungBaseFeeCents: 'entsorgungBaseFeeCents',
+  montageStandardMultiplier: 'montageStandardMultiplier',
+  montagePlusMultiplier: 'montagePlusMultiplier',
+  montagePremiumMultiplier: 'montagePremiumMultiplier',
+  entsorgungStandardMultiplier: 'entsorgungStandardMultiplier',
+  entsorgungPlusMultiplier: 'entsorgungPlusMultiplier',
+  entsorgungPremiumMultiplier: 'entsorgungPremiumMultiplier',
+  montageMinimumOrderCents: 'montageMinimumOrderCents',
+  entsorgungMinimumOrderCents: 'entsorgungMinimumOrderCents',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type PricingConfigScalarFieldEnum = (typeof PricingConfigScalarFieldEnum)[keyof typeof PricingConfigScalarFieldEnum]
+
+
+export const ServiceModuleScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  nameDe: 'nameDe',
+  descriptionDe: 'descriptionDe',
+  active: 'active',
+  sortOrder: 'sortOrder',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceModuleScalarFieldEnum = (typeof ServiceModuleScalarFieldEnum)[keyof typeof ServiceModuleScalarFieldEnum]
+
+
+export const ServiceOptionScalarFieldEnum = {
+  id: 'id',
+  moduleId: 'moduleId',
+  code: 'code',
+  nameDe: 'nameDe',
+  descriptionDe: 'descriptionDe',
+  pricingType: 'pricingType',
+  defaultPriceCents: 'defaultPriceCents',
+  defaultLaborMinutes: 'defaultLaborMinutes',
+  defaultVolumeM3: 'defaultVolumeM3',
+  requiresQuantity: 'requiresQuantity',
+  requiresPhoto: 'requiresPhoto',
+  isHeavy: 'isHeavy',
+  active: 'active',
+  sortOrder: 'sortOrder',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceOptionScalarFieldEnum = (typeof ServiceOptionScalarFieldEnum)[keyof typeof ServiceOptionScalarFieldEnum]
+
+
+export const PromoRuleScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  moduleId: 'moduleId',
+  serviceTypeScope: 'serviceTypeScope',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  minOrderCents: 'minOrderCents',
+  maxDiscountCents: 'maxDiscountCents',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  active: 'active',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PromoRuleScalarFieldEnum = (typeof PromoRuleScalarFieldEnum)[keyof typeof PromoRuleScalarFieldEnum]
 
 
 export const AvailabilityRuleScalarFieldEnum = {

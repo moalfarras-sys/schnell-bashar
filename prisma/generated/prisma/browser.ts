@@ -28,6 +28,21 @@ export type CatalogItem = Prisma.CatalogItemModel
  */
 export type PricingConfig = Prisma.PricingConfigModel
 /**
+ * Model ServiceModule
+ * 
+ */
+export type ServiceModule = Prisma.ServiceModuleModel
+/**
+ * Model ServiceOption
+ * 
+ */
+export type ServiceOption = Prisma.ServiceOptionModel
+/**
+ * Model PromoRule
+ * 
+ */
+export type PromoRule = Prisma.PromoRuleModel
+/**
  * Model AvailabilityRule
  * 
  */

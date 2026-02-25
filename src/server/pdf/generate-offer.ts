@@ -141,7 +141,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       y += 12;
     }
 
-    // â”â”â” HEADER â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // HEADER
     const LOGO_W = 150;
     const INFO_FONT = 8.5;
     const INFO_BOLD_FONT = 9.5;
@@ -185,7 +185,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     doc.strokeColor(BLUE).lineWidth(1.5).moveTo(LEFT, y).lineTo(RIGHT, y).stroke();
     y += 20;
 
-    // â”â”â” TITLE â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // TITLE
     doc.font("Helvetica-Bold").fontSize(20).fillColor(DARK);
     doc.text("ANGEBOT", LEFT, y, { width: CW, align: "center" });
     y += 26;
@@ -197,7 +197,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     );
     y += 16;
 
-    // â”â”â” KUNDENANGABEN â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // KUNDENANGABEN
     sectionHeading("Kundenangaben");
 
     const colW = Math.floor(CW / 2) - 8;
@@ -216,7 +216,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
 
     y = Math.max(leftColEnd, rightColEnd) + 4;
 
-    // â”â”â” UMZUGSDETAILS â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // UMZUGSDETAILS
     sectionHeading("Umzugsdetails");
 
     const savedY2 = y;
@@ -285,7 +285,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     }
     y += 4;
 
-    // â”â”â” LEISTUNGEN â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // LEISTUNGEN
     ensureSpace(30 + data.services.length * 14);
     sectionHeading("Leistungsumfang");
 
@@ -304,7 +304,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     });
     y += 6;
 
-    // â”â”â” PREIS\u00DCBERSICHT â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // PREISÜBERSICHT
     const priceCardH = 84;
     ensureSpace(priceCardH + 28);
     sectionHeading("Preis\u00FCbersicht");
@@ -335,15 +335,15 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
 
     y += priceCardH + 10;
 
-    // â”â”â” TERMS â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // TERMS
     ensureSpace(20);
     doc.font("Helvetica").fontSize(7).fillColor(MUTED);
     doc.text(
-      "Dieses Angebot ist unverbindlich und 7 Tage g\u00FCltig. Die Durchf\u00FChrung erfolgt gem\u00E4\u00DF unseren AGB (siehe Anlage). \u00C4?nderungen vor Ort k\u00F6nnen zu Preisanpassungen f\u00FChren.",
+      "Dieses Angebot ist unverbindlich und 7 Tage gültig. Die Durchführung erfolgt gemäß unseren AGB (siehe Anlage). Änderungen vor Ort können zu Preisanpassungen führen.",
       LEFT, y, { width: CW },
     );
 
-    // â”â”â” FOOTER (every page) â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // FOOTER (every page)
     function drawFooter() {
       const fy = H - M - FOOTER_H;
       doc.strokeColor(BORDER).lineWidth(0.5).moveTo(LEFT, fy).lineTo(RIGHT, fy).stroke();

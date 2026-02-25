@@ -20,6 +20,7 @@ import {
   Shield,
   Users,
   ScrollText,
+  Wrench,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -38,6 +39,7 @@ const navItems: NavItem[] = [
   { href: "/admin/offers/new", label: "Neues Angebot", icon: PlusCircle },
   { href: "/admin/contracts/manual", label: "Neuer Vertrag (manuell)", icon: PlusCircle },
   { href: "/admin/catalog", label: "Katalog", icon: Package },
+  { href: "/admin/services", label: "Services & Promos", icon: Wrench },
   { href: "/admin/pricing", label: "Preise", icon: Tag },
   { href: "/admin/availability", label: "Zeitfenster", icon: Calendar },
   { href: "/admin/media", label: "Mediathek", icon: ImageIcon },

@@ -93,7 +93,7 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
       y += 14;
     }
 
-    // â”â”â” HEADER â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // HEADER
     const logoPath = slotLogoPath ?? path.join(process.cwd(), "public", "media", "brand", "hero-logo.jpeg");
     const logoSize = 52;
     if (existsSync(logoPath)) {
@@ -127,7 +127,7 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
     doc.strokeColor(BLUE).lineWidth(1.5).moveTo(LEFT, y).lineTo(RIGHT, y).stroke();
     y += 24;
 
-    // â”â”â” TITLE â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // TITLE
     doc.font("Helvetica-Bold").fontSize(22).fillColor(DARK);
     doc.text("ANGEBOT", LEFT, y, { width: CW, align: "center" });
     y += 30;
@@ -139,7 +139,7 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
     });
     y += 28;
 
-    // â”â”â” KUNDENANGABEN â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // KUNDENANGABEN
     sectionHeading("Kundenangaben");
 
     const colW = Math.floor(CW / 2) - 8;
@@ -154,7 +154,7 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
 
     y = Math.max(leftEnd, rightEnd) + 8;
 
-    // â”â”â” AUFTRAGSDETAILS â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // AUFTRAGSDETAILS
     const serviceLabel =
       input.serviceType === "UMZUG" || input.serviceType === "MOVING"
         ? "Umzug"
@@ -179,7 +179,7 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
 
     y = Math.max(leftEnd2, rightEnd2) + 8;
 
-    // â”â”â” LEISTUNGEN â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // LEISTUNGEN
     if (input.lines.length > 0) {
       ensureSpace(40 + input.lines.length * 18);
       sectionHeading("Leistungsumfang");
@@ -192,7 +192,7 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
       y += 10;
     }
 
-    // â”â”â” PREISÜBERSICHT â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // PREISÜBERSICHT
     const priceCardH = 100;
     ensureSpace(priceCardH + 40);
     sectionHeading("Preisübersicht");
@@ -227,7 +227,7 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
 
     y += priceCardH + 18;
 
-    // â”â”â” TERMS â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // TERMS
     ensureSpace(30);
     doc.font("Helvetica").fontSize(7.5).fillColor(MUTED);
     doc.text(
@@ -237,7 +237,7 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
       { width: CW },
     );
 
-    // â”â”â” FOOTER (every page) â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+    // FOOTER (every page)
     function drawFooter() {
       const fy = H - M - FOOTER_H;
       doc.strokeColor(BORDER).lineWidth(0.5).moveTo(LEFT, fy).lineTo(RIGHT, fy).stroke();
