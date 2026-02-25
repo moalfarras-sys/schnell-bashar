@@ -1,4 +1,4 @@
-import { prisma } from "@/server/db/prisma";
+﻿import { prisma } from "@/server/db/prisma";
 
 export type OperationalSettings = {
   internalOrderEmailEnabled: boolean;
@@ -11,6 +11,11 @@ export type OperationalSettings = {
   movingFromPriceEur: number;
   disposalFromPriceEur: number;
   montageFromPriceEur: number;
+  whatsappMetaEnabled: boolean;
+  whatsappMetaPhoneNumberId: string;
+  whatsappMetaAccessToken: string;
+  whatsappMetaVerifyToken: string;
+  whatsappMetaDefaultTemplate: string;
 };
 
 const SETTINGS_KEYS = {
@@ -25,6 +30,11 @@ const SETTINGS_KEYS = {
   movingFromPriceEur: "config.pricing.public.moving_from_eur",
   disposalFromPriceEur: "config.pricing.public.disposal_from_eur",
   montageFromPriceEur: "config.pricing.public.montage_from_eur",
+  whatsappMetaEnabled: "config.whatsapp.meta.enabled",
+  whatsappMetaPhoneNumberId: "config.whatsapp.meta.phone_number_id",
+  whatsappMetaAccessToken: "config.whatsapp.meta.access_token",
+  whatsappMetaVerifyToken: "config.whatsapp.meta.verify_token",
+  whatsappMetaDefaultTemplate: "config.whatsapp.meta.default_template",
 } as const;
 
 const DEFAULT_SETTINGS: OperationalSettings = {
@@ -39,6 +49,11 @@ const DEFAULT_SETTINGS: OperationalSettings = {
   movingFromPriceEur: 89,
   disposalFromPriceEur: 79,
   montageFromPriceEur: 69,
+  whatsappMetaEnabled: false,
+  whatsappMetaPhoneNumberId: "",
+  whatsappMetaAccessToken: "",
+  whatsappMetaVerifyToken: "",
+  whatsappMetaDefaultTemplate: "schnell_sicher_status_update",
 };
 
 function toBool(value: string | null | undefined, fallback: boolean) {
@@ -108,6 +123,22 @@ export async function loadOperationalSettings(): Promise<OperationalSettings> {
       map.get(SETTINGS_KEYS.montageFromPriceEur),
       DEFAULT_SETTINGS.montageFromPriceEur,
     ),
+    whatsappMetaEnabled: toBool(
+      map.get(SETTINGS_KEYS.whatsappMetaEnabled),
+      DEFAULT_SETTINGS.whatsappMetaEnabled,
+    ),
+    whatsappMetaPhoneNumberId:
+      map.get(SETTINGS_KEYS.whatsappMetaPhoneNumberId)?.trim() ||
+      DEFAULT_SETTINGS.whatsappMetaPhoneNumberId,
+    whatsappMetaAccessToken:
+      map.get(SETTINGS_KEYS.whatsappMetaAccessToken)?.trim() ||
+      DEFAULT_SETTINGS.whatsappMetaAccessToken,
+    whatsappMetaVerifyToken:
+      map.get(SETTINGS_KEYS.whatsappMetaVerifyToken)?.trim() ||
+      DEFAULT_SETTINGS.whatsappMetaVerifyToken,
+    whatsappMetaDefaultTemplate:
+      map.get(SETTINGS_KEYS.whatsappMetaDefaultTemplate)?.trim() ||
+      DEFAULT_SETTINGS.whatsappMetaDefaultTemplate,
   };
 }
 
@@ -139,6 +170,20 @@ export async function saveOperationalSettings(
       0,
       Math.round(incoming.montageFromPriceEur ?? DEFAULT_SETTINGS.montageFromPriceEur),
     ),
+    whatsappMetaEnabled:
+      incoming.whatsappMetaEnabled ?? DEFAULT_SETTINGS.whatsappMetaEnabled,
+    whatsappMetaPhoneNumberId:
+      incoming.whatsappMetaPhoneNumberId?.trim() ||
+      DEFAULT_SETTINGS.whatsappMetaPhoneNumberId,
+    whatsappMetaAccessToken:
+      incoming.whatsappMetaAccessToken?.trim() ||
+      DEFAULT_SETTINGS.whatsappMetaAccessToken,
+    whatsappMetaVerifyToken:
+      incoming.whatsappMetaVerifyToken?.trim() ||
+      DEFAULT_SETTINGS.whatsappMetaVerifyToken,
+    whatsappMetaDefaultTemplate:
+      incoming.whatsappMetaDefaultTemplate?.trim() ||
+      DEFAULT_SETTINGS.whatsappMetaDefaultTemplate,
   };
 
   await Promise.all([
@@ -236,6 +281,51 @@ export async function saveOperationalSettings(
         type: "config",
         key: SETTINGS_KEYS.montageFromPriceEur,
         value: String(merged.montageFromPriceEur),
+      },
+    }),
+    prisma.contentSlot.upsert({
+      where: { key: SETTINGS_KEYS.whatsappMetaEnabled },
+      update: { type: "config", value: merged.whatsappMetaEnabled ? "true" : "false" },
+      create: {
+        type: "config",
+        key: SETTINGS_KEYS.whatsappMetaEnabled,
+        value: merged.whatsappMetaEnabled ? "true" : "false",
+      },
+    }),
+    prisma.contentSlot.upsert({
+      where: { key: SETTINGS_KEYS.whatsappMetaPhoneNumberId },
+      update: { type: "config", value: merged.whatsappMetaPhoneNumberId },
+      create: {
+        type: "config",
+        key: SETTINGS_KEYS.whatsappMetaPhoneNumberId,
+        value: merged.whatsappMetaPhoneNumberId,
+      },
+    }),
+    prisma.contentSlot.upsert({
+      where: { key: SETTINGS_KEYS.whatsappMetaAccessToken },
+      update: { type: "config", value: merged.whatsappMetaAccessToken },
+      create: {
+        type: "config",
+        key: SETTINGS_KEYS.whatsappMetaAccessToken,
+        value: merged.whatsappMetaAccessToken,
+      },
+    }),
+    prisma.contentSlot.upsert({
+      where: { key: SETTINGS_KEYS.whatsappMetaVerifyToken },
+      update: { type: "config", value: merged.whatsappMetaVerifyToken },
+      create: {
+        type: "config",
+        key: SETTINGS_KEYS.whatsappMetaVerifyToken,
+        value: merged.whatsappMetaVerifyToken,
+      },
+    }),
+    prisma.contentSlot.upsert({
+      where: { key: SETTINGS_KEYS.whatsappMetaDefaultTemplate },
+      update: { type: "config", value: merged.whatsappMetaDefaultTemplate },
+      create: {
+        type: "config",
+        key: SETTINGS_KEYS.whatsappMetaDefaultTemplate,
+        value: merged.whatsappMetaDefaultTemplate,
       },
     }),
   ]);

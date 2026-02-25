@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdminSession } from "@/server/auth/require-admin";
@@ -18,6 +18,11 @@ const settingsSchema = z.object({
   movingFromPriceEur: z.number().int().min(0).max(100000),
   disposalFromPriceEur: z.number().int().min(0).max(100000),
   montageFromPriceEur: z.number().int().min(0).max(100000),
+  whatsappMetaEnabled: z.boolean(),
+  whatsappMetaPhoneNumberId: z.string().trim().max(120),
+  whatsappMetaAccessToken: z.string().trim().max(500),
+  whatsappMetaVerifyToken: z.string().trim().max(180),
+  whatsappMetaDefaultTemplate: z.string().trim().min(2).max(80),
 });
 
 export async function GET() {

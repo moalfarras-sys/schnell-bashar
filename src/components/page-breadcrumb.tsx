@@ -7,6 +7,7 @@ import { ChevronRight, Home } from "lucide-react";
 const PAGE_LABELS: Record<string, string> = {
   "/umzug": "Umzug",
   "/entsorgung": "Entsorgung",
+  "/montage": "Montage",
   "/preise": "Preise & Pakete",
   "/vergleich": "Paketvergleich",
   "/buchen": "Angebot berechnen",
@@ -20,6 +21,7 @@ const PAGE_LABELS: Record<string, string> = {
   "/ueber-uns": "Über uns",
   "/galerie": "Galerie",
   "/faq": "FAQ",
+  "/tipps": "Tipps & Blog",
   "/kontakt": "Kontakt",
   "/datenschutz": "Datenschutz",
   "/impressum": "Impressum",

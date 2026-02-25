@@ -248,6 +248,9 @@ export default async function AdminDashboard() {
           <Link href="/admin/availability">
             <Button variant="outline-light">Zeitfenster</Button>
           </Link>
+          <Link href="/admin/calendar">
+            <Button variant="outline-light">Abholkalender</Button>
+          </Link>
           <Link href="/admin/media/slots">
             <Button variant="outline-light">Image Slots</Button>
           </Link>

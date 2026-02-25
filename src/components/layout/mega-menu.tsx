@@ -15,6 +15,7 @@ import {
   HelpCircle,
   Mail,
   MessageCircle,
+  Newspaper,
 } from "lucide-react";
 import { cn } from "@/components/ui/cn";
 
@@ -42,6 +43,7 @@ const menuSections: MenuSection[] = [
           { label: "Entsorgung", href: "/entsorgung", desc: "Sperrmüll & Entrümpelung", icon: Recycle },
           { label: "Montage", href: "/montage", desc: "Möbelaufbau & Abbau", icon: Wrench },
           { label: "Preise & Pakete", href: "/preise", desc: "Günstig / Standard / Express", icon: BadgeEuro },
+          { label: "Abholkalender", href: "/kalender", desc: "PLZ & Zeitfenster", icon: CalendarDays },
         ],
       },
     ],
@@ -52,7 +54,7 @@ const menuSections: MenuSection[] = [
       {
         title: "Online buchen",
         links: [
-          { label: "Angebot berechnen", href: "/preise", desc: "Anfrage starten", icon: ClipboardList },
+          { label: "Jetzt buchen", href: "/buchen?context=MOVING", desc: "Anfrage starten", icon: ClipboardList },
           { label: "Termin & Kalender", href: "/buchen?context=MOVING", desc: "Zeitfenster wählen", icon: CalendarDays },
           { label: "Anfrage verfolgen", href: "/anfrage", desc: "Status prüfen", icon: Search },
         ],
@@ -66,6 +68,7 @@ const menuSections: MenuSection[] = [
         title: "Informationen",
         links: [
           { label: "Tracking", href: "/anfrage", desc: "Status Ihrer Anfrage", icon: Search },
+          { label: "Tipps & Blog", href: "/tipps", desc: "Umzug & Entsorgung", icon: Newspaper },
           { label: "FAQ", href: "/faq", desc: "Häufige Fragen", icon: HelpCircle },
           { label: "Kontakt", href: "/kontakt", desc: "Nachricht senden", icon: Mail },
           { label: "WhatsApp", href: "https://wa.me/491729573681", desc: "Direkt chatten", icon: MessageCircle },

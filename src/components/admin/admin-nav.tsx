@@ -43,6 +43,7 @@ const navItems: NavItem[] = [
   { href: "/admin/services", label: "Services & Promos", icon: Wrench },
   { href: "/admin/pricing", label: "Preise", icon: Tag },
   { href: "/admin/availability", label: "Zeitfenster", icon: Calendar },
+  { href: "/admin/calendar", label: "Abholkalender", icon: Calendar },
   { href: "/admin/media", label: "Mediathek", icon: ImageIcon },
   { href: "/admin/media/slots", label: "Image Slots", icon: LayoutTemplate },
   { href: "/admin/content", label: "Inhalte", icon: Type },

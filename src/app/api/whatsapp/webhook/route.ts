@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 
 const inMemoryConversationState = new Map<string, { state: string; updatedAt: number }>();
 
@@ -6,7 +6,7 @@ export async function GET() {
   return NextResponse.json({
     ok: true,
     message:
-      "WhatsApp webhook endpoint ist aktiv. Für produktive Nutzung bitte Provider (Meta/Twilio) anbinden.",
+      "WhatsApp Demo-Webhook ist aktiv. Produktion bitte über /api/whatsapp/webhook/meta mit Meta Cloud API betreiben.",
   });
 }
 
@@ -47,5 +47,3 @@ export async function POST(req: Request) {
     reply,
   });
 }
-
-

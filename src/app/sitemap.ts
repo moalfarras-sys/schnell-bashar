@@ -14,6 +14,7 @@ const routes = [
   "/anfrage",
   "/galerie",
   "/faq",
+  "/tipps",
   "/ueber-uns",
   "/kontakt",
   "/buchen",

@@ -5,9 +5,10 @@ import { CalendarDays, CheckCircle2 } from "lucide-react";
 import { Container } from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { getImageSlot } from "@/server/content/slots";
+import { KalenderClient } from "./kalender-client";
 
 export const metadata = {
-  title: "Kalender & Termine",
+  title: "Abholkalender & Preise",
 };
 
 export default async function KalenderPage() {
@@ -21,7 +22,7 @@ export default async function KalenderPage() {
       <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
         <div className="max-w-3xl">
           <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
-            Kalender & verfügbare Termine
+            Abholkalender & verfügbare Termine
           </h1>
           <p className="mt-4 text-base text-slate-800 dark:text-slate-200">
             Termine werden über unser Buchungsformular als Zeitfenster gebucht — inklusive
@@ -47,6 +48,10 @@ export default async function KalenderPage() {
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
         </div>
+      </div>
+
+      <div className="mt-12">
+        <KalenderClient />
       </div>
 
       <div className="mt-12 grid gap-6 md:grid-cols-3">

@@ -59,6 +59,9 @@ export function SiteFooter() {
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/preise">
               Preise & Pakete
             </Link>
+            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/kalender">
+              Abholkalender
+            </Link>
           </div>
         </div>
 
@@ -79,6 +82,9 @@ export function SiteFooter() {
             </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/faq">
               FAQ
+            </Link>
+            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/tipps">
+              Tipps & Blog
             </Link>
           </div>
 

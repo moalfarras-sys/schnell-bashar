@@ -41,6 +41,7 @@ const PREFIX_RULES: Array<{ prefix: string; permission: AdminPermissionKey }> = 
   { prefix: "/admin/offers", permission: "offers.read" },
   { prefix: "/admin/pricing", permission: "pricing.read" },
   { prefix: "/admin/availability", permission: "availability.read" },
+  { prefix: "/admin/calendar", permission: "availability.read" },
   { prefix: "/admin/catalog", permission: "catalog.read" },
   { prefix: "/admin/services", permission: "services.read" },
   { prefix: "/admin/media", permission: "media.read" },
