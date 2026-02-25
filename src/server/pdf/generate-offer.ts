@@ -339,7 +339,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     ensureSpace(20);
     doc.font("Helvetica").fontSize(7).fillColor(MUTED);
     doc.text(
-      "Dieses Angebot ist unverbindlich und 7 Tage g\u00FCltig. Die Durchf\u00FChrung erfolgt gem\u00E4\u00DF unseren AGB (siehe Anlage). \u00C4nderungen vor Ort k\u00F6nnen zu Preisanpassungen f\u00FChren.",
+      "Dieses Angebot ist unverbindlich und 7 Tage g\u00FCltig. Die Durchf\u00FChrung erfolgt gem\u00E4\u00DF unseren AGB (siehe Anlage). \u00C4?nderungen vor Ort k\u00F6nnen zu Preisanpassungen f\u00FChren.",
       LEFT, y, { width: CW },
     );
 

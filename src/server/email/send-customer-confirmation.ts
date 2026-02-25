@@ -65,9 +65,9 @@ export async function sendCustomerConfirmationEmail(args: {
     `Volumen: ca. ${args.totalVolumeM3} m`,
     `Preisrahmen: ${eur(args.priceMinCents)}  ${eur(args.priceMaxCents)}`,
     "",
-    `Wir prfen Ihre Anfrage und melden uns schnellstmglich.`,
+    `Wir pr?fen Ihre Anfrage und melden uns schnellstm?glich.`,
     "",
-    `Sie knnen den Status Ihrer Anfrage jederzeit unter folgendem Link einsehen:`,
+    `Sie k?nnen den Status Ihrer Anfrage jederzeit unter folgendem Link einsehen:`,
     `${baseUrl}/anfrage/${args.publicId}`,
     "",
     `Bei Fragen erreichen Sie uns:`,
@@ -91,8 +91,8 @@ export async function sendCustomerConfirmationEmail(args: {
       <div style="background: #ffffff; padding: 32px 24px; border: 1px solid #e2e8f0; border-top: none;">
         <p style="margin: 0 0 16px; font-size: 15px;">Hallo <strong>${args.customerName}</strong>,</p>
         <p style="margin: 0 0 24px; font-size: 14px; color: #475569; line-height: 1.6;">
-          vielen Dank fr Ihre Anfrage! Wir haben Ihre Daten erhalten und prfen diese.
-          Sie erhalten in Krze eine Rckmeldung von uns.
+          vielen Dank fr Ihre Anfrage! Wir haben Ihre Daten erhalten und pr?fen diese.
+          Sie erhalten in K?rze eine R?ckmeldung von uns.
         </p>
 
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
@@ -146,7 +146,7 @@ export async function sendCustomerConfirmationEmail(args: {
 
       <div style="background: #f8fafc; padding: 16px 24px; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none; text-align: center;">
         <p style="margin: 0; font-size: 11px; color: #94a3b8;">
-          © ${new Date().getFullYear()} Schnell Sicher Umzug  Anzengruber Strae 9, 12043 Berlin
+          © ${new Date().getFullYear()} Schnell Sicher Umzug  Anzengruber Stra?e 9, 12043 Berlin
         </p>
       </div>
     </div>

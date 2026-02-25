@@ -1,13 +1,12 @@
 import Link from "next/link";
-import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
+import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { Container } from "@/components/container";
 
 export function SiteFooter() {
   return (
-    <footer className="relative overflow-hidden border-t border-[color:var(--line-soft)] bg-[color:var(--surface-soft)] text-slate-900 pb-24 md:pb-0 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100">
-      {/* Ambient glow */}
-      <div className="absolute top-0 left-1/4 z-0 h-64 w-64 rounded-full bg-brand-500/4 blur-3xl dark:bg-brand-500/8" />
+    <footer className="relative overflow-hidden border-t border-[color:var(--line-soft)] bg-[color:var(--surface-soft)] pb-24 text-slate-900 md:pb-0 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100">
+      <div className="absolute left-1/4 top-0 z-0 h-64 w-64 rounded-full bg-brand-500/4 blur-3xl dark:bg-brand-500/8" />
       <div className="absolute bottom-0 right-1/4 z-0 h-48 w-48 rounded-full bg-blue-500/3 blur-3xl dark:bg-blue-500/6" />
 
       <Container className="relative z-10 grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-5">
@@ -22,7 +21,7 @@ export function SiteFooter() {
             </span>
           </Link>
           <p className="mt-3 max-w-prose text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            Umzug, Montage und fachgerechte Entsorgung  strukturiert, transparent und
+            Umzug, Montage und fachgerechte Entsorgung — strukturiert, transparent und
             deutschlandweit planbar.
           </p>
           <div className="mt-5 flex gap-3">
@@ -109,7 +108,7 @@ export function SiteFooter() {
             <div className="flex items-start gap-2.5">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-600 dark:text-brand-400" />
               <div>
-                Anzengruber Strae 9
+                Anzengruber Straße 9
                 <br />
                 12043 Berlin
                 <br />

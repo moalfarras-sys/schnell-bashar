@@ -1,5 +1,5 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 import { ContactForm } from "@/app/(marketing)/kontakt/contact-form";
@@ -17,13 +17,16 @@ export default async function KontaktPage() {
     fallbackSrc: "/media/gallery/keys-box.jpeg",
     fallbackAlt: "Kontakt & Planung",
   });
+
   return (
     <Container className="py-14">
       <div className="max-w-3xl">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">Kontakt aufnehmen</h1>
+        <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
+          Kontakt aufnehmen
+        </h1>
         <p className="mt-4 text-base text-slate-800 dark:text-slate-200">
-          Teilen Sie uns Ihre Anfrage mit und wir melden uns schnellstmglich. Wir helfen Ihnen schnell
-          und sicher weiter.
+          Teilen Sie uns Ihre Anfrage mit, und wir melden uns schnellstmöglich. Wir helfen Ihnen
+          schnell und sicher weiter.
         </p>
       </div>
 
@@ -31,8 +34,8 @@ export default async function KontaktPage() {
         <div className="premium-surface-emphasis rounded-3xl p-6 sm:p-8">
           <div className="text-lg font-extrabold text-slate-950 dark:text-white">Anfrage schicken</div>
           <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-            Fr eine direkte Online-Buchung nutzen Sie unser Buchungsformular. Fr allgemeine Fragen und
-            Rckrufe knnen Sie dieses Kontaktformular verwenden.
+            Für eine direkte Online-Buchung nutzen Sie unser Buchungsformular. Für allgemeine
+            Fragen und Rückrufe können Sie dieses Kontaktformular verwenden.
           </p>
           <div className="mt-5">
             <ContactForm />
@@ -60,21 +63,21 @@ export default async function KontaktPage() {
           />
           <Info
             icon={Mail}
-            title="EMail"
+            title="E-Mail"
             lines={[{ label: "kontakt@schnellsicherumzug.de", href: "mailto:kontakt@schnellsicherumzug.de" }]}
           />
           <Info
             icon={MapPin}
             title="Standort"
             lines={[
-              { label: "Anzengruber Strae 9, 12043 Berlin" },
-              { label: "Erreichbarkeit: Mo  So, rund um die Uhr" },
+              { label: "Anzengruber Straße 9, 12043 Berlin" },
+              { label: "Erreichbarkeit: Mo – So, rund um die Uhr" },
             ]}
           />
         </div>
       </div>
 
-      <div className="premium-surface-emphasis mt-12 relative aspect-[16/6] overflow-hidden rounded-3xl">
+      <div className="premium-surface-emphasis relative mt-12 aspect-[16/6] overflow-hidden rounded-3xl">
         <Image
           src={banner.src}
           alt={banner.alt || "Kontakt & Planung"}
@@ -102,13 +105,13 @@ function Info(props: {
         <div>
           <div className="text-sm font-extrabold text-slate-950 dark:text-white">{props.title}</div>
           <div className="mt-3 grid gap-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
-            {props.lines.map((l) =>
-              l.href ? (
-                <a key={l.label} href={l.href} className="hover:underline">
-                  {l.label}
+            {props.lines.map((line) =>
+              line.href ? (
+                <a key={line.label} href={line.href} className="hover:underline">
+                  {line.label}
                 </a>
               ) : (
-                <div key={l.label}>{l.label}</div>
+                <div key={line.label}>{line.label}</div>
               ),
             )}
           </div>

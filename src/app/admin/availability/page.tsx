@@ -45,7 +45,7 @@ export default async function AdminAvailabilityPage() {
       <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
         <div className="text-xl font-extrabold text-white">Zeitfenster</div>
         <div className="mt-2 text-sm font-semibold text-slate-200">
-          Definiert verfügbare Zeitfenster (Kapazität pro Zeitfenster). Änderungen wirken sofort.
+          Definiert verfügbare Zeitfenster (Kapazität pro Zeitfenster). Ä?nderungen wirken sofort.
         </div>
       </div>
 

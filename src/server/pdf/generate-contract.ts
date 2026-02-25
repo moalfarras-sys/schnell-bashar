@@ -375,7 +375,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     doc.text(haftung, LEFT, y, { width: CW, align: "justify" });
     y += doc.heightOfString(haftung, { width: CW }) + 10;
 
-    //  § 5 Stornierung / Rcktritt 
+    //  § 5 Stornierung / R?cktritt 
     ensureSpace(18 + 30 + 4 * 16 + 40);
     sectionTitle("\u00A7 5 Stornierung / R\u00FCcktritt");
 
@@ -414,7 +414,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     sectionTitle("\u00A7 6 Schlussbestimmungen");
     const schluss =
       "Es gilt das Recht der Bundesrepublik Deutschland. Gerichtsstand ist Berlin. " +
-      "\u00C4nderungen und Erg\u00E4nzungen dieses Vertrages bed\u00FCrfen der Schriftform.";
+      "\u00C4?nderungen und Erg\u00E4nzungen dieses Vertrages bed\u00FCrfen der Schriftform.";
     doc.text(schluss, LEFT, y, { width: CW, align: "justify" });
     y += doc.heightOfString(schluss, { width: CW }) + 20;
 
@@ -527,7 +527,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     agbSection(2, "Leistungserbringung", [
       "Der Umfang der zu erbringenden Leistungen ergibt sich aus dem jeweiligen Angebot bzw. Vertrag. " +
         "Der Auftragnehmer ist berechtigt, zur Erf\u00FCllung des Auftrags qualifizierte Subunternehmer einzusetzen.",
-      "Termin\u00E4nderungen aufgrund h\u00F6herer Gewalt, Witterungsbedingungen oder beh\u00F6rdlicher Anordnungen berechtigen " +
+      "Termin\u00E4?nderungen aufgrund h\u00F6herer Gewalt, Witterungsbedingungen oder beh\u00F6rdlicher Anordnungen berechtigen " +
         "nicht zur Minderung der vereinbarten Verg\u00FCtung.",
     ]);
 
@@ -582,7 +582,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
         "Bestimmung tritt eine wirksame Regelung, die dem wirtschaftlichen Zweck am n\u00E4chsten kommt.",
       "Es gilt das Recht der Bundesrepublik Deutschland. Gerichtsstand f\u00FCr alle Streitigkeiten aus " +
         "oder im Zusammenhang mit diesem Vertrag ist Berlin.",
-      "\u00C4nderungen und Erg\u00E4nzungen dieses Vertrages sowie dieser AGB bed\u00FCrfen der Schriftform. " +
+      "\u00C4?nderungen und Erg\u00E4nzungen dieses Vertrages sowie dieser AGB bed\u00FCrfen der Schriftform. " +
         "M\u00FCndliche Nebenabreden bestehen nicht.",
     ]);
 

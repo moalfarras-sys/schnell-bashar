@@ -43,7 +43,7 @@ export async function PATCH(
     const title = typeof body.title === "string" ? body.title : undefined;
 
     if (alt === undefined && title === undefined) {
-      return NextResponse.json({ error: "Keine Änderungen" }, { status: 400 });
+      return NextResponse.json({ error: "Keine Ä?nderungen" }, { status: 400 });
     }
 
     const data: Record<string, string> = {};

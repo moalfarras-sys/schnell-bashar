@@ -101,7 +101,7 @@ const speedLabels: Record<SpeedType, string> = {
 
 const speedDescriptions: Record<SpeedType, string> = {
   ECONOMY: "Gnstiger, flexibler Termin",
-  STANDARD: "Schnelle Rckmeldung",
+  STANDARD: "Schnelle R?ckmeldung",
   EXPRESS: "Priorisierte Planung",
 };
 
@@ -507,7 +507,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="from-address" className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Von (PLZ + Strae)
+            Von (PLZ + Stra?e)
           </label>
           <Input
             id="from-address"
@@ -519,7 +519,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
         </div>
         <div>
           <label htmlFor="to-address" className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Nach (PLZ + Strae)
+            Nach (PLZ + Stra?e)
           </label>
           <Input
             id="to-address"
@@ -533,7 +533,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
 
       {needsRoute && !hasRouteAddresses ? (
         <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
-          Fr die genaue Fahrtkosten-Berechnung bitte beide Adressen (Von/Nach) mit PLZ angeben.
+          F?r die genaue Fahrtkosten-Berechnung bitte beide Adressen (Von/Nach) mit PLZ angeben.
         </div>
       ) : null}
       {calcLoading ? (

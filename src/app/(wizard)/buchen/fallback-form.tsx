@@ -52,7 +52,7 @@ export function BookingFallbackForm() {
       setState({
         status: "success",
         message:
-          "Ihre Anfrage wurde gesendet. Wir melden uns schnellstmglich per Telefon oder EMail.",
+          "Ihre Anfrage wurde gesendet. Wir melden uns schnellstm?glich per Telefon oder EMail.",
       });
       setName("");
       setPhone("");

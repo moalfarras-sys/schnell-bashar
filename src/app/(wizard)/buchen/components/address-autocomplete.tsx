@@ -107,7 +107,7 @@ export function AddressAutocomplete(props: {
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder={props.placeholder ?? "Strae, Hausnummer, PLZ, Ort"}
+          placeholder={props.placeholder ?? "Stra?e, Hausnummer, PLZ, Ort"}
           className="pl-9"
         />
         {loading ? <Loader2 className="h-5 w-5 animate-spin text-slate-400" /> : null}
@@ -148,7 +148,7 @@ export function AddressAutocomplete(props: {
           ) : null}
 
           <div className="border-t-2 border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700">
-            Adress-Suche via OpenStreetMap (Nominatim). In seltenen Fllen bitte PLZ/Ort prfen.
+            Adress-Suche via OpenStreetMap (Nominatim). In seltenen Fllen bitte PLZ/Ort pr?fen.
           </div>
         </div>
       ) : null}

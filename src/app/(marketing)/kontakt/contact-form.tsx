@@ -57,7 +57,7 @@ export function ContactForm() {
 
       setStatus({
         type: "success",
-        message: "Vielen Dank. Ihre Anfrage wurde gesendet, wir melden uns schnellstmglich.",
+        message: "Vielen Dank. Ihre Anfrage wurde gesendet, wir melden uns schnellstm?glich.",
       });
       setName("");
       setEmail("");
@@ -121,7 +121,7 @@ export function ContactForm() {
           required
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Teilen Sie uns Ihre Anfrage mit, wir melden uns schnellstmglich."
+          placeholder="Teilen Sie uns Ihre Anfrage mit, wir melden uns schnellstm?glich."
         />
       </div>
 

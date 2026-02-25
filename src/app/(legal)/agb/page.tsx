@@ -48,7 +48,7 @@ export default function AgbPage() {
 
       <h2>6. Stornierung</h2>
       <p>
-        Stornierungen/Änderungen sind so früh wie möglich mitzuteilen. Je nach Zeitpunkt können
+        Stornierungen/Ä?nderungen sind so früh wie möglich mitzuteilen. Je nach Zeitpunkt können
         Kosten entstehen.
       </p>
 

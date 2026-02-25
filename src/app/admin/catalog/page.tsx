@@ -134,7 +134,7 @@ export default async function AdminCatalogPage() {
       </div>
 
       <div className="rounded-2xl border-2 border-amber-500 bg-amber-900/50 p-4 text-sm font-semibold text-amber-100">
-        Hinweis: Änderungen wirken sofort auf neue Schätzungen und Buchungen.
+        Hinweis: Ä?nderungen wirken sofort auf neue Schätzungen und Buchungen.
       </div>
     </div>
   );
