@@ -89,6 +89,13 @@ export async function GET(
         Array.isArray(inquiry["addons"]) && inquiry["addons"].every((addon) => typeof addon === "string")
           ? (inquiry["addons"] as string[])
           : [];
+      const inquiryChecklist =
+        Array.isArray(inquiry["checklist"])
+          ? (inquiry["checklist"] as Array<{ item?: string; actions?: string[] }>).flatMap((entry) => {
+              if (!entry?.item || !Array.isArray(entry.actions) || entry.actions.length === 0) return [];
+              return [`${entry.item} (${entry.actions.join(" / ")})`];
+            })
+          : [];
       const orderNo = orderDisplayNo(order);
       const displayOfferNo = offerDisplayNo({
         offerNo: offer.offerNo,
@@ -120,6 +127,7 @@ export async function GET(
         serviceType: inquiryServiceType,
         needNoParkingZone: inquiryNoParking,
         addons: inquiryAddons,
+        checklist: inquiryChecklist,
         services: services as Array<{
           name: string;
           description?: string;

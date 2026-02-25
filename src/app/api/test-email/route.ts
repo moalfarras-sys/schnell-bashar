@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { sendEmail, isEmailConfigured, getDefaultFrom } from "@/server/email/mailer";
 
 /**
@@ -62,3 +62,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
+

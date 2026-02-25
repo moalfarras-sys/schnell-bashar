@@ -1,4 +1,4 @@
-import { Container } from "@/components/container";
+﻿import { Container } from "@/components/container";
 
 export const metadata = {
   title: "AGB",
@@ -59,4 +59,5 @@ export default function AgbPage() {
     </Container>
   );
 }
+
 

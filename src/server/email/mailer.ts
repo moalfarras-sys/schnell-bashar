@@ -1,6 +1,12 @@
 import nodemailer from "nodemailer";
 
 const DEFAULT_FROM = "Schnell Sicher Umzug <kontakt@schnellsicherumzug.de>";
+const SAFE_MODE_FLAG = "SAFE_MODE_EXTERNAL_IO";
+
+function isSafeModeEnabled() {
+  const raw = String(process.env[SAFE_MODE_FLAG] ?? "").trim().toLowerCase();
+  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+}
 
 export function getMailer(): nodemailer.Transporter | null {
   const host = process.env.SMTP_HOST;
@@ -33,6 +39,15 @@ export function getDefaultFrom(): string {
 export async function sendEmail(
   options: nodemailer.SendMailOptions,
 ): Promise<{ success: boolean; error?: string }> {
+  if (isSafeModeEnabled()) {
+    console.warn(
+      `[mailer] SAFE MODE active (${SAFE_MODE_FLAG}=true): skipping email send to ${
+        Array.isArray(options.to) ? options.to.join(",") : options.to
+      }`,
+    );
+    return { success: true };
+  }
+
   const transporter = getMailer();
   if (!transporter) {
     return { success: false, error: "SMTP not configured" };

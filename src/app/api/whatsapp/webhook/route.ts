@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 
 const inMemoryConversationState = new Map<string, { state: string; updatedAt: number }>();
 
@@ -47,3 +47,4 @@ export async function POST(req: Request) {
     reply,
   });
 }
+

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 import { addDays, eachDayOfInterval, format, parseISO } from "date-fns";
 import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
@@ -145,4 +145,5 @@ export async function GET(req: Request) {
     });
   }
 }
+
 

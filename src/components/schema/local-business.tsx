@@ -1,4 +1,4 @@
-import { getImageSlot } from "@/server/content/slots";
+﻿import { getImageSlot } from "@/server/content/slots";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellumzug-berlin.de";
 
@@ -49,7 +49,7 @@ export async function LocalBusinessSchema() {
       opens: "00:00",
       closes: "23:59",
     },
-    priceRange: "€€",
+    priceRange: "â‚¬â‚¬",
     currenciesAccepted: "EUR",
     paymentAccepted: "Cash, Bank Transfer",
     areaServed: [
@@ -131,3 +131,4 @@ export async function LocalBusinessSchema() {
     />
   );
 }
+

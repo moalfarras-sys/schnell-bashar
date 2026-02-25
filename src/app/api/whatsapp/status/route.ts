@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const schema = z.object({
@@ -26,3 +26,4 @@ export async function POST(req: Request) {
     note: "Senden erfolgt aktuell manuell per WhatsApp-Link. API-Provider kann später integriert werden.",
   });
 }
+

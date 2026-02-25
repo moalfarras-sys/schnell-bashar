@@ -182,6 +182,25 @@ export default async function AdminOrdersPage({
                         {o.wizardData.bookingContext}
                       </span>
                     ) : null}
+                    {typeof o.wizardData === "object" &&
+                    o.wizardData &&
+                    "packageTier" in o.wizardData &&
+                    typeof o.wizardData.packageTier === "string" ? (
+                      <span className="ml-2 rounded-full border border-cyan-300 bg-cyan-500/20 px-2 py-0.5 text-[10px] font-extrabold text-cyan-100">
+                        Paket: {o.wizardData.packageTier}
+                      </span>
+                    ) : null}
+                    {typeof o.wizardData === "object" &&
+                    o.wizardData &&
+                    "offerContext" in o.wizardData &&
+                    o.wizardData.offerContext &&
+                    typeof o.wizardData.offerContext === "object" &&
+                    "appliedDiscountPercent" in o.wizardData.offerContext &&
+                    typeof o.wizardData.offerContext.appliedDiscountPercent === "number" ? (
+                      <span className="ml-2 rounded-full border border-emerald-300 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-extrabold text-emerald-100">
+                        Rabatt: {o.wizardData.offerContext.appliedDiscountPercent}%
+                      </span>
+                    ) : null}
                   </td>
                   <td className="px-4 py-3 text-slate-200">{o.customerName}</td>
                   <td className="px-4 py-3 font-semibold text-white">

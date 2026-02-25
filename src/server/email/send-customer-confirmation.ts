@@ -49,25 +49,25 @@ export async function sendCustomerConfirmationEmail(args: {
   const speedLabel =
     args.speed === "ECONOMY" ? "Economy" : args.speed === "EXPRESS" ? "Express" : "Standard";
 
-  const subject = `Ihre Anfrage ${args.publicId} — Bestätigung von Schnell Sicher Umzug`;
+  const subject = `Ihre Anfrage ${args.publicId}  Besttigung von Schnell Sicher Umzug`;
 
   const text = [
     `Hallo ${args.customerName},`,
     "",
-    `vielen Dank für Ihre Anfrage bei Schnell Sicher Umzug!`,
+    `vielen Dank fr Ihre Anfrage bei Schnell Sicher Umzug!`,
     "",
-    `Hier sind Ihre Angaben im Überblick:`,
+    `Hier sind Ihre Angaben im berblick:`,
     "",
     `Auftrags-ID: ${args.publicId}`,
     `Leistung: ${serviceLabel}`,
-    `Priorität: ${speedLabel}`,
+    `Prioritt: ${speedLabel}`,
     `Termin: ${slotLabel}`,
-    `Volumen: ca. ${args.totalVolumeM3} m³`,
-    `Preisrahmen: ${eur(args.priceMinCents)} – ${eur(args.priceMaxCents)}`,
+    `Volumen: ca. ${args.totalVolumeM3} m`,
+    `Preisrahmen: ${eur(args.priceMinCents)}  ${eur(args.priceMaxCents)}`,
     "",
-    `Wir prüfen Ihre Anfrage und melden uns schnellstmöglich.`,
+    `Wir prfen Ihre Anfrage und melden uns schnellstmglich.`,
     "",
-    `Sie können den Status Ihrer Anfrage jederzeit unter folgendem Link einsehen:`,
+    `Sie knnen den Status Ihrer Anfrage jederzeit unter folgendem Link einsehen:`,
     `${baseUrl}/anfrage/${args.publicId}`,
     "",
     `Bei Fragen erreichen Sie uns:`,
@@ -75,9 +75,9 @@ export async function sendCustomerConfirmationEmail(args: {
     `WhatsApp: https://wa.me/491729573681`,
     `E-Mail: kontakt@schnellsicherumzug.de`,
     "",
-    `Im Anhang finden Sie Ihr vorläufiges Angebot als PDF.`,
+    `Im Anhang finden Sie Ihr vorlufiges Angebot als PDF.`,
     "",
-    `Mit freundlichen Grüßen`,
+    `Mit freundlichen Gren`,
     `Ihr Team von Schnell Sicher Umzug`,
   ].join("\n");
 
@@ -91,8 +91,8 @@ export async function sendCustomerConfirmationEmail(args: {
       <div style="background: #ffffff; padding: 32px 24px; border: 1px solid #e2e8f0; border-top: none;">
         <p style="margin: 0 0 16px; font-size: 15px;">Hallo <strong>${args.customerName}</strong>,</p>
         <p style="margin: 0 0 24px; font-size: 14px; color: #475569; line-height: 1.6;">
-          vielen Dank für Ihre Anfrage! Wir haben Ihre Daten erhalten und prüfen diese.
-          Sie erhalten in Kürze eine Rückmeldung von uns.
+          vielen Dank fr Ihre Anfrage! Wir haben Ihre Daten erhalten und prfen diese.
+          Sie erhalten in Krze eine Rckmeldung von uns.
         </p>
 
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
@@ -106,7 +106,7 @@ export async function sendCustomerConfirmationEmail(args: {
               <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #1e293b;">${serviceLabel}</td>
             </tr>
             <tr>
-              <td style="padding: 6px 0; color: #64748b;">Priorität</td>
+              <td style="padding: 6px 0; color: #64748b;">Prioritt</td>
               <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #1e293b;">${speedLabel}</td>
             </tr>
             <tr>
@@ -115,11 +115,11 @@ export async function sendCustomerConfirmationEmail(args: {
             </tr>
             <tr>
               <td style="padding: 6px 0; color: #64748b;">Volumen</td>
-              <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #1e293b;">ca. ${args.totalVolumeM3} m³</td>
+              <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #1e293b;">ca. ${args.totalVolumeM3} m</td>
             </tr>
             <tr style="border-top: 1px solid #e2e8f0;">
               <td style="padding: 10px 0 6px; color: #64748b; font-weight: 700;">Preisrahmen</td>
-              <td style="padding: 10px 0 6px; text-align: right; font-weight: 800; color: #2563eb; font-size: 16px;">${eur(args.priceMinCents)} – ${eur(args.priceMaxCents)}</td>
+              <td style="padding: 10px 0 6px; text-align: right; font-weight: 800; color: #2563eb; font-size: 16px;">${eur(args.priceMinCents)}  ${eur(args.priceMaxCents)}</td>
             </tr>
           </table>
         </div>
@@ -131,7 +131,7 @@ export async function sendCustomerConfirmationEmail(args: {
         </div>
 
         <p style="margin: 0 0 8px; font-size: 13px; color: #64748b;">
-          Im Anhang finden Sie Ihr vorläufiges Angebot als PDF-Dokument.
+          Im Anhang finden Sie Ihr vorlufiges Angebot als PDF-Dokument.
         </p>
 
         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
@@ -139,14 +139,14 @@ export async function sendCustomerConfirmationEmail(args: {
         <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 1.6;">
           <strong>Kontakt:</strong><br/>
           Telefon: <a href="tel:+491729573681" style="color: #2563eb;">+49 172 9573681</a><br/>
-          WhatsApp: <a href="https://wa.me/491729573681" style="color: #2563eb;">Chat öffnen</a><br/>
+          WhatsApp: <a href="https://wa.me/491729573681" style="color: #2563eb;">Chat ffnen</a><br/>
           E-Mail: <a href="mailto:kontakt@schnellsicherumzug.de" style="color: #2563eb;">kontakt@schnellsicherumzug.de</a>
         </p>
       </div>
 
       <div style="background: #f8fafc; padding: 16px 24px; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none; text-align: center;">
         <p style="margin: 0; font-size: 11px; color: #94a3b8;">
-          © ${new Date().getFullYear()} Schnell Sicher Umzug · Anzengruber Straße 9, 12043 Berlin
+          © ${new Date().getFullYear()} Schnell Sicher Umzug  Anzengruber Strae 9, 12043 Berlin
         </p>
       </div>
     </div>
@@ -197,3 +197,4 @@ export async function sendCustomerConfirmationEmail(args: {
 
   return { ok: true as const };
 }
+

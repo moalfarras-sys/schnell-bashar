@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -17,10 +17,46 @@ export default async function ReportsPage() {
     redirect("/admin/login");
   }
 
-  const allInvoices = await prisma.invoice.findMany({
-    include: { payments: true, order: true },
-    orderBy: { issuedAt: "desc" },
-  });
+  let dbWarning: string | null = null;
+  let allInvoices: Array<any> = [];
+  try {
+    allInvoices = await prisma.invoice.findMany({
+      include: { payments: true, order: true },
+      orderBy: { issuedAt: "desc" },
+    });
+  } catch (error) {
+    console.error("[admin/accounting/reports] failed to load invoices", error);
+    dbWarning =
+      "Berichtsdaten konnten gerade nicht geladen werden. Bitte Datenbankverbindung prüfen.";
+  }
+
+  const toNumber = (value: unknown) => {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string") {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : 0;
+    }
+    return 0;
+  };
+  const toDate = (value: unknown) => {
+    if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
+    if (typeof value === "string" || typeof value === "number") {
+      const d = new Date(value);
+      if (!Number.isNaN(d.getTime())) return d;
+    }
+    return null;
+  };
+
+  const normalizedInvoices = allInvoices.map((inv) => ({
+    ...inv,
+    issuedAt: toDate((inv as any).issuedAt),
+    dueAt: toDate((inv as any).dueAt),
+    grossCents: toNumber((inv as any).grossCents),
+    netCents: toNumber((inv as any).netCents),
+    vatCents: toNumber((inv as any).vatCents),
+    paidCents: toNumber((inv as any).paidCents),
+    status: String((inv as any).status ?? "UNPAID"),
+  }));
 
   const now = new Date();
   const year = now.getFullYear();
@@ -33,8 +69,8 @@ export default async function ReportsPage() {
     const monthStart = new Date(year, m, 1);
     const monthEnd = new Date(year, m + 1, 1);
 
-    const monthInv = allInvoices.filter(
-      (i) => i.issuedAt >= monthStart && i.issuedAt < monthEnd,
+    const monthInv = normalizedInvoices.filter(
+      (i) => i.issuedAt && i.issuedAt >= monthStart && i.issuedAt < monthEnd,
     );
 
     const totalGross = monthInv.reduce((s, i) => s + i.grossCents, 0);
@@ -58,19 +94,19 @@ export default async function ReportsPage() {
   });
 
   const totals = {
-    invoiceCount: allInvoices.length,
-    totalGross: allInvoices.reduce((s, i) => s + i.grossCents, 0),
-    totalNet: allInvoices.reduce((s, i) => s + i.netCents, 0),
-    totalVat: allInvoices.reduce((s, i) => s + i.vatCents, 0),
-    totalPaid: allInvoices.reduce((s, i) => s + i.paidCents, 0),
-    paidCount: allInvoices.filter((i) => i.status === "PAID").length,
-    unpaidCount: allInvoices.filter((i) => i.status === "UNPAID" || i.status === "PARTIAL").length,
-    overdueCount: allInvoices.filter(
-      (i) => (i.status === "UNPAID" || i.status === "PARTIAL") && i.dueAt < now,
+    invoiceCount: normalizedInvoices.length,
+    totalGross: normalizedInvoices.reduce((s, i) => s + i.grossCents, 0),
+    totalNet: normalizedInvoices.reduce((s, i) => s + i.netCents, 0),
+    totalVat: normalizedInvoices.reduce((s, i) => s + i.vatCents, 0),
+    totalPaid: normalizedInvoices.reduce((s, i) => s + i.paidCents, 0),
+    paidCount: normalizedInvoices.filter((i) => i.status === "PAID").length,
+    unpaidCount: normalizedInvoices.filter((i) => i.status === "UNPAID" || i.status === "PARTIAL").length,
+    overdueCount: normalizedInvoices.filter(
+      (i) => (i.status === "UNPAID" || i.status === "PARTIAL") && i.dueAt && i.dueAt < now,
     ).length,
   };
 
-  const orderServiceTypes = allInvoices.reduce(
+  const orderServiceTypes = normalizedInvoices.reduce(
     (acc, inv) => {
       const serviceType = (inv.order as any)?.serviceType;
       if (serviceType === "MOVING") acc.moving += inv.grossCents;
@@ -94,6 +130,12 @@ export default async function ReportsPage() {
         </Link>
 
         <h1 className="mb-8 text-3xl font-bold text-slate-900">Berichte — {year}</h1>
+
+        {dbWarning ? (
+          <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            {dbWarning}
+          </div>
+        ) : null}
 
         <ReportsClient
           year={year}

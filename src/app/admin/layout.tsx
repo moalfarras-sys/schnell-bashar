@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 import { logoutAction } from "@/app/admin/actions";
 import { Container } from "@/components/container";
@@ -22,10 +22,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <Link href="/admin" className="text-sm font-extrabold tracking-tight text-white">
               Admin · Schnell Sicher Umzug
             </Link>
-            <Link
-              href="/"
-              className="text-xs font-medium text-slate-400 transition-colors hover:text-white"
-            >
+            <Link href="/" className="text-xs font-medium text-slate-400 transition-colors hover:text-white">
               Zur Website
             </Link>
           </div>

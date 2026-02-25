@@ -1,4 +1,4 @@
-import { BookingWizard } from "@/app/(wizard)/buchen/wizard-client";
+﻿import { BookingWizard } from "@/app/(wizard)/buchen/wizard-client";
 import { BookingFallbackForm } from "@/app/(wizard)/buchen/fallback-form";
 import { Container } from "@/components/container";
 import { loadBookingConfig } from "@/server/booking/load-booking-config";
@@ -67,3 +67,4 @@ function BookingUnavailable(props: { reason: string }) {
     </Container>
   );
 }
+

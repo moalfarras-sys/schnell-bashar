@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   BarChart,
@@ -64,3 +64,4 @@ export function MonthlyOrdersChart({ data }: { data: DataPoint[] }) {
     </ResponsiveContainer>
   );
 }
+

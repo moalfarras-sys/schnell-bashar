@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
@@ -36,10 +36,18 @@ export default async function AccountingDashboardPage() {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfYear = new Date(now.getFullYear(), 0, 1);
 
-  const allInvoices = await prisma.invoice.findMany({
-    include: { payments: true },
-    orderBy: { createdAt: "desc" },
-  });
+  let dbWarning: string | null = null;
+  let allInvoices: Awaited<ReturnType<typeof prisma.invoice.findMany>> = [];
+  try {
+    allInvoices = await prisma.invoice.findMany({
+      include: { payments: true },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.error("[admin/accounting] failed to load invoices", error);
+    dbWarning =
+      "Rechnungsdaten konnten gerade nicht geladen werden. Bitte Datenbankverbindung prüfen.";
+  }
 
   const revenueThisMonth = allInvoices
     .filter((inv) => inv.status === "PAID" && inv.issuedAt >= startOfMonth)
@@ -68,20 +76,17 @@ export default async function AccountingDashboardPage() {
   );
 
   const topUnpaid = outstandingInvoices
-    .sort((a, b) => (b.grossCents - b.paidCents) - (a.grossCents - a.paidCents))
+    .sort((a, b) => b.grossCents - b.paidCents - (a.grossCents - a.paidCents))
     .slice(0, 5);
 
   const monthlyData: { month: string; revenue: number; count: number }[] = [];
+  const labels = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
   for (let m = 0; m < 12; m++) {
     const monthStart = new Date(now.getFullYear(), m, 1);
     const monthEnd = new Date(now.getFullYear(), m + 1, 1);
     const monthInvoices = allInvoices.filter(
       (inv) => inv.status === "PAID" && inv.issuedAt >= monthStart && inv.issuedAt < monthEnd,
     );
-    const labels = [
-      "Jan", "Feb", "Mär", "Apr", "Mai", "Jun",
-      "Jul", "Aug", "Sep", "Okt", "Nov", "Dez",
-    ];
     monthlyData.push({
       month: labels[m],
       revenue: monthInvoices.reduce((s, i) => s + i.grossCents, 0) / 100,
@@ -101,9 +106,7 @@ export default async function AccountingDashboardPage() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Buchhaltung</h1>
-            <p className="mt-2 text-slate-600">
-              Umsatz, Rechnungen und Zahlungen im Überblick
-            </p>
+            <p className="mt-2 text-slate-600">Umsatz, Rechnungen und Zahlungen im Überblick</p>
           </div>
           <div className="flex gap-3">
             <Link href="/admin/accounting/invoices/new">
@@ -120,6 +123,12 @@ export default async function AccountingDashboardPage() {
             </Link>
           </div>
         </div>
+
+        {dbWarning ? (
+          <div className="mb-8 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            {dbWarning}
+          </div>
+        ) : null}
 
         <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
@@ -161,9 +170,7 @@ export default async function AccountingDashboardPage() {
 
         <div className="mt-8">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-900">
-              Top offene Rechnungen
-            </h2>
+            <h2 className="text-lg font-bold text-slate-900">Top offene Rechnungen</h2>
             <Link href="/admin/accounting/invoices">
               <Button variant="outline" size="sm" className="gap-1">
                 Alle Rechnungen
@@ -175,9 +182,7 @@ export default async function AccountingDashboardPage() {
           {topUnpaid.length === 0 ? (
             <div className="rounded-xl border-2 border-slate-200 bg-white p-8 text-center shadow-sm">
               <Receipt className="mx-auto h-10 w-10 text-slate-300" />
-              <p className="mt-3 text-sm text-slate-500">
-                Keine offenen Rechnungen vorhanden.
-              </p>
+              <p className="mt-3 text-sm text-slate-500">Keine offenen Rechnungen vorhanden.</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -192,9 +197,7 @@ export default async function AccountingDashboardPage() {
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-slate-900">
-                          {inv.invoiceNo || inv.id.slice(0, 8)}
-                        </span>
+                        <span className="text-sm font-bold text-slate-900">{inv.invoiceNo || inv.id.slice(0, 8)}</span>
                         {isOverdue && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-800">
                             <AlertTriangle className="h-3 w-3" />

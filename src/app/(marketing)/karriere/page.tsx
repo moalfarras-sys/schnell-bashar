@@ -1,4 +1,4 @@
-import { Briefcase, MapPin, Clock } from "lucide-react";
+﻿import { Briefcase, MapPin, Clock } from "lucide-react";
 import { Container } from "@/components/container";
 import { prisma } from "@/server/db/prisma";
 
@@ -84,3 +84,4 @@ export default async function KarrierePage() {
  </Container>
  );
 }
+

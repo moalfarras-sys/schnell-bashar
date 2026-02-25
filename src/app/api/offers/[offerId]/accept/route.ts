@@ -16,6 +16,11 @@ import {
   orderDisplayNo,
 } from "@/server/ids/document-number";
 
+function isSafeModeExternalIo() {
+  const raw = String(process.env.SAFE_MODE_EXTERNAL_IO ?? "").trim().toLowerCase();
+  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+}
+
 export async function POST(
   _req: NextRequest,
   context: { params: Promise<{ offerId: string }> },
@@ -37,7 +42,8 @@ export async function POST(
       return NextResponse.json({ error: "Angebot abgelaufen" }, { status: 400 });
     }
 
-    const docusignReady = isDocuSignReady();
+    const safeModeExternalIo = isSafeModeExternalIo();
+    const docusignReady = !safeModeExternalIo && isDocuSignReady();
     const orderNo = offer.order ? orderDisplayNo(offer.order) : offer.id;
     const offerNo = offer.offerNo || deriveOfferNoFromOrderNo(orderNo);
     const contractNo = deriveContractNoFromOrderNo(orderNo);

@@ -14,7 +14,17 @@ export default async function AdminImageSlotsPage() {
     registry: { key: string; defaultPath: string; discoveredFrom: string; usageType: string };
     slot: { key: string; assetId: string | null; value: string | null; alt: string | null; asset?: { id: string; filename: string; path: string; alt: string | null } | null } | null;
   }> = [];
-  let assets: Array<{ id: string; filename: string; path: string; alt: string | null }> = [];
+  let assets: Array<{
+    id: string;
+    filename: string;
+    path: string;
+    alt: string | null;
+    variants?: Array<{
+      id: string;
+      kind: "hero" | "gallery" | "thumbnail" | "custom";
+      path: string;
+    }>;
+  }> = [];
 
   try {
     const [registry, slots, mediaAssets] = await Promise.all([
@@ -28,7 +38,8 @@ export default async function AdminImageSlotsPage() {
         where: { deletedAt: null },
         orderBy: { createdAt: "desc" },
         take: 400,
-      }) as Promise<Array<{ id: string; filename: string; path: string; alt: string | null }>>,
+        include: { variants: { orderBy: { createdAt: "desc" } } },
+      }) as Promise<Array<{ id: string; filename: string; path: string; alt: string | null; variants: Array<{ id: string; kind: "hero" | "gallery" | "thumbnail" | "custom"; path: string }> }>>,
     ]);
 
     const slotByKey = new Map(slots.map((slot) => [slot.key, slot]));

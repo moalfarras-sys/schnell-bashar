@@ -47,6 +47,15 @@ const confirmSchema = z.object({
     hasElevator: z.boolean(),
     needNoParkingZone: z.boolean(),
     addons: z.array(legacyAddonSchema).default([]),
+    checklist: z
+      .array(
+        z.object({
+          item: z.string().min(1).max(120),
+          actions: z.array(z.enum(["MOVE", "ASSEMBLE", "DISPOSE"])).min(1),
+        }),
+      )
+      .optional()
+      .default([]),
     fromAddress: z.string().optional(),
     toAddress: z.string().optional(),
     price: z
@@ -82,9 +91,9 @@ function serviceTypeLabel(service: "UMZUG" | "ENTSORGUNG" | "KOMBI"): string {
 
 const addonLabels: Record<LegacyAddon, string> = {
   PACKING: "Packservice",
-  DISMANTLE_ASSEMBLE: "Möbelmontage",
+  DISMANTLE_ASSEMBLE: "Moebelmontage",
   HALTEVERBOT: "Halteverbotszone",
-  ENTRUEMPELUNG: "Entrümpelung",
+  ENTRUEMPELUNG: "Entruempelung",
 };
 
 function fallbackPricing(): LegacyPricing {
@@ -117,13 +126,27 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Ungültige Anfrage." }, { status: 400 });
+    return NextResponse.json({ error: "Ungueltige Anfrage." }, { status: 400 });
   }
 
   const parsed = confirmSchema.safeParse(body);
   if (!parsed.success) {
+    const firstIssue = parsed.error.issues[0];
+    const path = firstIssue?.path?.join(".") ?? "";
+    let message = "Ungueltige Daten";
+
+    if (path === "customer.phone") {
+      message = "Telefonnummer ist ungueltig (mindestens 6 Zeichen).";
+    } else if (path === "customer.email") {
+      message = "E-Mail-Adresse ist ungueltig.";
+    } else if (path === "customer.name") {
+      message = "Bitte einen gueltigen Namen eingeben (mindestens 2 Zeichen).";
+    } else if (path === "slotStart") {
+      message = "Bitte einen gueltigen Termin auswaehlen.";
+    }
+
     return NextResponse.json(
-      { error: "Ungültige Daten", details: parsed.error.flatten() },
+      { error: message, details: parsed.error.flatten() },
       { status: 400 },
     );
   }
@@ -132,7 +155,7 @@ export async function POST(req: Request) {
   const slotStart = new Date(slotStartStr);
 
   if (Number.isNaN(slotStart.getTime())) {
-    return NextResponse.json({ error: "Ungültiger Termin." }, { status: 400 });
+    return NextResponse.json({ error: "Ungueltiger Termin." }, { status: 400 });
   }
 
   const dateStr = formatInTimeZone(slotStart, "Europe/Berlin", "yyyy-MM-dd");
@@ -145,7 +168,14 @@ export async function POST(req: Request) {
   });
 
   if ("error" in loaded) {
-    return NextResponse.json({ error: loaded.error }, { status: 500 });
+    return NextResponse.json(
+      {
+        error:
+          "Die Terminpruefung ist aktuell nicht verfuegbar. Bitte versuchen Sie es in wenigen Minuten erneut oder kontaktieren Sie uns direkt.",
+        details: loaded.error,
+      },
+      { status: 503 },
+    );
   }
 
   const allowedSlots = computeAvailableSlots(loaded.context, 80);
@@ -155,7 +185,7 @@ export async function POST(req: Request) {
 
   if (!match) {
     return NextResponse.json(
-      { error: "Der gewählte Termin ist nicht mehr verfügbar. Bitte wählen Sie einen anderen Zeitpunkt." },
+      { error: "Der gewaehlte Termin ist nicht mehr verfuegbar. Bitte waehlen Sie einen anderen Zeitpunkt." },
       { status: 409 },
     );
   }
@@ -183,6 +213,7 @@ export async function POST(req: Request) {
   });
   const pricing = pricingDb ?? fallbackPricing();
   const addons = inquiry.addons as LegacyAddon[];
+  const checklist = Array.isArray(inquiry.checklist) ? inquiry.checklist : [];
 
   let distanceKm: number | undefined;
   let distanceSource: "ors" | "cache" | undefined;
@@ -197,7 +228,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error:
-            "Für Umzug oder Kombi sind Start- und Zieladresse (mit PLZ) erforderlich.",
+            "Fuer Umzug oder Kombi sind Start- und Zieladresse (mit PLZ) erforderlich.",
         },
         { status: 400 },
       );
@@ -236,7 +267,7 @@ export async function POST(req: Request) {
     { distanceSource },
   );
 
-  // ── Create order ──────────────────────────────────────────
+  // -- Create order --
   const orderDataBase = {
     publicId,
     serviceType: serviceTypeToDb(inquiry.serviceType),
@@ -258,6 +289,7 @@ export async function POST(req: Request) {
       inquiry: {
         ...inquiry,
         addons,
+        checklist,
       },
       distanceKm,
       distanceSource,
@@ -274,7 +306,7 @@ export async function POST(req: Request) {
     select: { id: true, publicId: true, orderNo: true },
   });
 
-  // ── Create offer + send offer email with CTA ─────────────
+  // -- Create offer + send offer email with CTA --
   const now = new Date();
   const token = nanoid(32);
   const offerNo = deriveOfferNoFromOrderNo(orderNo);
@@ -298,6 +330,20 @@ export async function POST(req: Request) {
         name: addonLabels[addon] ?? addon,
         quantity: 1,
         unit: "pauschal",
+      });
+    }
+  }
+  if (checklist.length > 0) {
+    for (const entry of checklist) {
+      const actions = entry.actions
+        .map((action) =>
+          action === "MOVE" ? "Transport" : action === "ASSEMBLE" ? "Montage" : "Entsorgung",
+        )
+        .join(" / ");
+      services.push({
+        name: `${entry.item} (${actions})`,
+        quantity: 1,
+        unit: "Checkliste",
       });
     }
   }
@@ -358,6 +404,14 @@ export async function POST(req: Request) {
       serviceType: inquiry.serviceType,
       needNoParkingZone: inquiry.needNoParkingZone,
       addons: addons.map((addon) => addonLabels[addon] ?? addon),
+      checklist: checklist.map((entry) => {
+        const actions = entry.actions
+          .map((action) =>
+            action === "MOVE" ? "Transport" : action === "ASSEMBLE" ? "Montage" : "Entsorgung",
+          )
+          .join(" / ");
+        return `${entry.item} (${actions})`;
+      }),
       services,
       netCents,
       vatCents,
@@ -384,7 +438,7 @@ export async function POST(req: Request) {
         await prisma.offer.update({ where: { id: offer.id }, data: { pdfUrl: urlData.publicUrl } });
       }
     } catch {
-      // Supabase not configured — PDF goes via email attachment
+      // Supabase not configured - PDF goes via email attachment
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
@@ -407,7 +461,7 @@ export async function POST(req: Request) {
     console.error("[booking/confirm] Offer creation failed (order still saved):", offerErr);
   }
 
-  // ── Notify admin ──────────────────────────────────────────
+  // -- Notify admin --
   const slotLabel = `${formatInTimeZone(slotStartCanonical, "Europe/Berlin", "dd.MM.yyyy HH:mm")} - ${formatInTimeZone(slotEndCanonical, "Europe/Berlin", "HH:mm")}`;
   const transporter = getMailer();
   const from = getDefaultFrom();
@@ -418,7 +472,7 @@ export async function POST(req: Request) {
         await transporter.sendMail({
           to,
           from,
-          subject: `Neue Buchung ${order.publicId} – ${serviceTypeLabel(inquiry.serviceType)}`,
+          subject: `Neue Buchung ${order.publicId} - ${serviceTypeLabel(inquiry.serviceType)}`,
           html: `
             <h2>Neue Buchung: ${order.publicId}</h2>
             <p><b>Kunde:</b> ${customer.name}<br/>
@@ -460,4 +514,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

@@ -19,7 +19,13 @@ export async function GET(
   }
 
   const wizardData = (offer.order?.wizardData as any) || {};
-  const inquiry = wizardData?.inquiry || {};
+    const inquiry = wizardData?.inquiry || {};
+    const checklist = Array.isArray(inquiry.checklist)
+      ? inquiry.checklist.flatMap((entry: { item?: string; actions?: string[] }) => {
+          if (!entry?.item || !Array.isArray(entry.actions) || entry.actions.length === 0) return [];
+          return [`${entry.item} (${entry.actions.join(" / ")})`];
+        })
+      : [];
   const orderNo = offer.order ? orderDisplayNo(offer.order) : offer.id;
   const displayOfferNo = offerDisplayNo({
     offerNo: offer.offerNo,
@@ -52,6 +58,7 @@ export async function GET(
       serviceType: inquiry.serviceType,
       needNoParkingZone: inquiry.needNoParkingZone,
       addons: inquiry.addons,
+      checklist,
       services: offer.services as any[],
       netCents: offer.netCents,
       vatCents: offer.vatCents,

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-02-21T19:28:57.462Z",
-  "count": 46,
+  "generatedAt": "2026-02-24T01:54:53.265Z",
+  "count": 54,
   "slots": [
     {
       "key": "img.auto.media_brand_company_signature_jpeg",
@@ -57,22 +57,64 @@
       "usageType": "pdf"
     },
     {
+      "key": "img.auto.media_gallery_1_jpeg",
+      "defaultPath": "/media/gallery/1.jpeg",
+      "discoveredFrom": "src/app/(marketing)/page.tsx",
+      "usageType": "next-image"
+    },
+    {
+      "key": "img.auto.media_gallery_2_jpeg",
+      "defaultPath": "/media/gallery/2.jpeg",
+      "discoveredFrom": "src/app/(marketing)/page.tsx",
+      "usageType": "next-image"
+    },
+    {
+      "key": "img.auto.media_gallery_disposal_dumpster_jpeg",
+      "defaultPath": "/media/gallery/disposal-dumpster.jpeg",
+      "discoveredFrom": "src/app/staedte/[city]/page.tsx",
+      "usageType": "next-image"
+    },
+    {
       "key": "img.auto.media_gallery_electronics_jpeg",
       "defaultPath": "/media/gallery/electronics.jpeg",
       "discoveredFrom": "src/app/(marketing)/galerie/page.tsx",
       "usageType": "next-image"
     },
     {
-      "key": "img.auto.media_gallery_hero_truck_v2_1771507469281_png",
-      "defaultPath": "/media/gallery/hero_truck_v2_1771507469281.png",
+      "key": "img.auto.media_gallery_keys_box_jpeg",
+      "defaultPath": "/media/gallery/keys-box.jpeg",
+      "discoveredFrom": "src/data/cities.ts",
+      "usageType": "other"
+    },
+    {
+      "key": "img.auto.media_gallery_montage_jpeg",
+      "defaultPath": "/media/gallery/montage.jpeg",
+      "discoveredFrom": "src/data/cities.ts",
+      "usageType": "other"
+    },
+    {
+      "key": "img.auto.media_gallery_move_action_02_jpeg",
+      "defaultPath": "/media/gallery/move-action-02.jpeg",
+      "discoveredFrom": "src/app/(marketing)/page.tsx",
+      "usageType": "next-image"
+    },
+    {
+      "key": "img.auto.media_gallery_move_action_03_jpeg",
+      "defaultPath": "/media/gallery/move-action-03.jpeg",
       "discoveredFrom": "src/app/(marketing)/galerie/page.tsx",
       "usageType": "next-image"
     },
     {
-      "key": "img.auto.media_gallery_hero_truck_v4_1771507501491_png",
-      "defaultPath": "/media/gallery/hero_truck_v4_1771507501491.png",
-      "discoveredFrom": "src/app/(marketing)/galerie/page.tsx",
-      "usageType": "next-image"
+      "key": "img.auto.media_gallery_move_action_04_jpeg",
+      "defaultPath": "/media/gallery/move-action-04.jpeg",
+      "discoveredFrom": "src/data/cities.ts",
+      "usageType": "other"
+    },
+    {
+      "key": "img.auto.media_gallery_movers_boxes_jpeg",
+      "defaultPath": "/media/gallery/movers-boxes.jpeg",
+      "discoveredFrom": "src/data/cities.ts",
+      "usageType": "other"
     },
     {
       "key": "img.auto.media_gallery_team_portrait_2_jpeg",
@@ -81,10 +123,22 @@
       "usageType": "other"
     },
     {
+      "key": "img.auto.media_gallery_team_portrait_jpeg",
+      "defaultPath": "/media/gallery/team-portrait.jpeg",
+      "discoveredFrom": "src/data/cities.ts",
+      "usageType": "other"
+    },
+    {
       "key": "img.auto.media_gallery_truck_road_jpeg",
       "defaultPath": "/media/gallery/truck-road.jpeg",
       "discoveredFrom": "src/data/cities.ts",
       "usageType": "other"
+    },
+    {
+      "key": "img.auto.media_gallery_truck_street_jpeg",
+      "defaultPath": "/media/gallery/truck-street.jpeg",
+      "discoveredFrom": "src/app/staedte/[city]/page.tsx",
+      "usageType": "next-image"
     },
     {
       "key": "img.auto.media_gallery_van_street_jpeg",
@@ -106,7 +160,7 @@
     },
     {
       "key": "img.city.shared.service_umzug",
-      "defaultPath": "/media/gallery/hero_truck_v1_1771507453273.png",
+      "defaultPath": "/media/gallery/truck-street.jpeg",
       "discoveredFrom": "src/app/staedte/[city]/page.tsx",
       "usageType": "next-image"
     },
@@ -136,33 +190,33 @@
     },
     {
       "key": "img.home.gallery.01",
-      "defaultPath": "/media/gallery/hero_truck_v1_1771507453273.png",
-      "discoveredFrom": "src/app/staedte/[city]/page.tsx",
+      "defaultPath": "/media/gallery/truck-street.jpeg",
+      "discoveredFrom": "src/app/(marketing)/page.tsx",
       "usageType": "next-image"
     },
     {
       "key": "img.home.gallery.02",
-      "defaultPath": "/media/gallery/team-portrait.jpeg",
-      "discoveredFrom": "src/data/cities.ts",
-      "usageType": "other"
+      "defaultPath": "/media/gallery/1.jpeg",
+      "discoveredFrom": "src/app/(marketing)/page.tsx",
+      "usageType": "next-image"
     },
     {
       "key": "img.home.gallery.03",
-      "defaultPath": "/media/gallery/van-berlin.jpeg",
+      "defaultPath": "/media/gallery/move-action-02.jpeg",
       "discoveredFrom": "src/app/(marketing)/page.tsx",
       "usageType": "next-image"
     },
     {
       "key": "img.home.gallery.04",
-      "defaultPath": "/media/gallery/fridge-load.jpeg",
-      "discoveredFrom": "src/data/cities.ts",
-      "usageType": "other"
+      "defaultPath": "/media/gallery/movers-boxes.jpeg",
+      "discoveredFrom": "src/app/(marketing)/page.tsx",
+      "usageType": "next-image"
     },
     {
       "key": "img.home.gallery.05",
       "defaultPath": "/media/gallery/keys-box.jpeg",
-      "discoveredFrom": "src/data/cities.ts",
-      "usageType": "other"
+      "discoveredFrom": "src/app/(marketing)/page.tsx",
+      "usageType": "next-image"
     },
     {
       "key": "img.home.gallery.06",
@@ -172,43 +226,43 @@
     },
     {
       "key": "img.home.hero.bg",
-      "defaultPath": "/media/gallery/hero_truck_v3_1771507485824.png",
+      "defaultPath": "/media/gallery/move-action-04.jpeg",
       "discoveredFrom": "src/app/(marketing)/page.tsx",
       "usageType": "next-image"
     },
     {
       "key": "img.home.services.entsorgung",
       "defaultPath": "/media/gallery/disposal-dumpster.jpeg",
-      "discoveredFrom": "src/app/staedte/[city]/page.tsx",
+      "discoveredFrom": "src/app/(marketing)/page.tsx",
       "usageType": "next-image"
     },
     {
       "key": "img.home.services.montage",
-      "defaultPath": "/media/gallery/workshop.jpeg",
-      "discoveredFrom": "src/data/cities.ts",
-      "usageType": "other"
+      "defaultPath": "/media/gallery/montage.jpeg",
+      "discoveredFrom": "src/app/(marketing)/page.tsx",
+      "usageType": "next-image"
     },
     {
       "key": "img.home.services.umzug",
       "defaultPath": "/media/gallery/movers-boxes.jpeg",
-      "discoveredFrom": "src/data/cities.ts",
-      "usageType": "other"
+      "discoveredFrom": "src/app/(marketing)/page.tsx",
+      "usageType": "next-image"
     },
     {
       "key": "img.home.why_us.main",
-      "defaultPath": "/media/gallery/team-portrait.jpeg",
+      "defaultPath": "/media/gallery/1.jpeg",
       "discoveredFrom": "src/app/(marketing)/page.tsx",
       "usageType": "next-image"
     },
     {
       "key": "img.home.why_us.sub_1",
-      "defaultPath": "/media/gallery/van-berlin.jpeg",
+      "defaultPath": "/media/gallery/move-action-02.jpeg",
       "discoveredFrom": "src/app/(marketing)/page.tsx",
       "usageType": "next-image"
     },
     {
       "key": "img.home.why_us.sub_2",
-      "defaultPath": "/media/gallery/fridge-load.jpeg",
+      "defaultPath": "/media/gallery/movers-boxes.jpeg",
       "discoveredFrom": "src/app/(marketing)/page.tsx",
       "usageType": "next-image"
     },
@@ -226,7 +280,7 @@
     },
     {
       "key": "img.montage.hero.bg",
-      "defaultPath": "/media/gallery/workshop.jpeg",
+      "defaultPath": "/media/gallery/montage.jpeg",
       "discoveredFrom": "src/app/(marketing)/montage/page.tsx",
       "usageType": "next-image"
     },
@@ -234,12 +288,6 @@
       "key": "img.pdf.brand.logo",
       "defaultPath": "/media/brand/hero-logo.jpeg",
       "discoveredFrom": "src/server/pdf/generate-agb.ts",
-      "usageType": "pdf"
-    },
-    {
-      "key": "img.pdf.contract.combined",
-      "defaultPath": "/media/brand/company-signature-stamp.png",
-      "discoveredFrom": "src/server/pdf/generate-contract.ts",
       "usageType": "pdf"
     },
     {
@@ -262,13 +310,13 @@
     },
     {
       "key": "img.ueber_uns.main",
-      "defaultPath": "/media/gallery/movers-boxes.jpeg",
+      "defaultPath": "/media/gallery/1.jpeg",
       "discoveredFrom": "src/app/(marketing)/ueber-uns/page.tsx",
       "usageType": "next-image"
     },
     {
       "key": "img.ueber_uns.team",
-      "defaultPath": "/media/gallery/team-back.jpeg",
+      "defaultPath": "/media/gallery/2.jpeg",
       "discoveredFrom": "src/app/(marketing)/ueber-uns/page.tsx",
       "usageType": "next-image"
     },
@@ -279,12 +327,22 @@
       "usageType": "next-image"
     }
   ],
-  "rejectedCount": 6,
+  "rejectedCount": 7,
   "rejected": [
+    {
+      "candidate": "/media/slots",
+      "discoveredFrom": "src/components/admin/admin-nav.tsx",
+      "reason": "auto: non-image route path"
+    },
+    {
+      "candidate": "/uploads/signed-contracts/",
+      "discoveredFrom": "src/app/api/contracts/sign/fallback/route.ts",
+      "reason": "auto: unsupported extension"
+    },
     {
       "candidate": "/media/image-meta",
       "discoveredFrom": "src/app/api/admin/media/route.ts",
-      "reason": "auto: blocked prefix"
+      "reason": "auto: non-image route path"
     },
     {
       "candidate": "/uploads/media/",
@@ -293,23 +351,18 @@
     },
     {
       "candidate": "/media/slots",
-      "discoveredFrom": "src/app/admin/layout.tsx",
-      "reason": "auto: blocked prefix"
-    },
-    {
-      "candidate": "/media/slots",
       "discoveredFrom": "src/app/admin/page.tsx",
-      "reason": "auto: blocked prefix"
+      "reason": "auto: non-image route path"
     },
     {
       "candidate": "/media/slots",
       "discoveredFrom": "src/app/admin/media/slots/ui.tsx",
-      "reason": "auto: blocked prefix"
+      "reason": "auto: non-image route path"
     },
     {
       "candidate": "/media/slots/sync",
       "discoveredFrom": "src/app/admin/media/slots/ui.tsx",
-      "reason": "auto: blocked prefix"
+      "reason": "auto: non-image route path"
     }
   ]
 }

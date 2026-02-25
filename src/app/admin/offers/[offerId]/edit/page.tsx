@@ -1,8 +1,11 @@
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/server/db/prisma";
 import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
 import { offerDisplayNo, orderDisplayNo } from "@/server/ids/document-number";
+import { Container } from "@/components/container";
 import { OfferEditForm } from "./offer-edit-form";
 
 export default async function OfferEditPage({
@@ -23,10 +26,38 @@ export default async function OfferEditPage({
 
   const { offerId } = await params;
 
-  const offer = await prisma.offer.findUnique({
-    where: { id: offerId },
-    include: { order: true },
-  });
+  let dbWarning: string | null = null;
+  let offer: any = null;
+  try {
+    offer = await prisma.offer.findUnique({
+      where: { id: offerId },
+      include: { order: true },
+    });
+  } catch (error) {
+    dbWarning =
+      error instanceof Error
+        ? `Datenbankfehler: ${error.message}`
+        : "Datenbankfehler: Angebot konnte nicht geladen werden.";
+  }
+
+  if (dbWarning) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <Container className="py-8">
+          <Link
+            href="/admin/offers"
+            className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-slate-900"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Zurück zur Übersicht
+          </Link>
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            {dbWarning}
+          </div>
+        </Container>
+      </div>
+    );
+  }
 
   if (!offer) notFound();
 

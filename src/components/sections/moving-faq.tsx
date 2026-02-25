@@ -1,4 +1,4 @@
-import { FAQSection } from "@/components/ui/faq-accordion";
+﻿import { FAQSection } from "@/components/ui/faq-accordion";
 import { FAQPageSchemaScript } from "@/components/schema/faq-page-schema";
 
 const movingFAQs = [
@@ -57,3 +57,4 @@ export function MovingFAQSection() {
         </>
     );
 }
+

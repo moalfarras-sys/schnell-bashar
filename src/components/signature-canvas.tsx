@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRef, useCallback, useEffect, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
@@ -100,3 +100,4 @@ export function SignaturePad({
     </div>
   );
 }
+

@@ -2,34 +2,33 @@ import "dotenv/config";
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import { IMAGE_FALLBACK_MAP } from "./image-fallback-map";
 
-const MISSING_REFERENCES = [
-  "/media/gallery/calendar.jpeg",
-  "/media/gallery/money.jpeg",
-  "/media/gallery/team-portrait-2.jpeg",
-  "/media/gallery/truck-road.jpeg",
-  "/media/gallery/van-street.jpeg",
-];
-
-const JPG_1X1_BASE64 =
-  "/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxAQEBAQEBAPDw8PDw8PDw8PDw8PDw8PFREWFhURFRUYHSggGBolGxUVITEhJSkrLi4uFx8zODMsNygtLisBCgoKDg0OGhAQGy0lICUtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAAEAAQMBEQACEQEDEQH/xAAXAAEBAQEAAAAAAAAAAAAAAAABAgAD/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAER/9oADAMBAAIQAxAAAAHcA//EABgQAQEBAQEAAAAAAAAAAAAAAAERACEx/9oACAEBAAEFAmM3f//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8BP//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8BP//Z";
-
-async function ensurePlaceholder(filePath: string) {
-  const absolute = path.join(process.cwd(), "public", filePath.replace(/^\//, ""));
+async function ensureCompatibilityImage(targetPath: string, sourcePath: string) {
+  const targetAbsolute = path.join(process.cwd(), "public", targetPath.replace(/^\//, ""));
+  const sourceAbsolute = path.join(process.cwd(), "public", sourcePath.replace(/^\//, ""));
   try {
-    await fs.access(absolute);
-    return { created: false, filePath };
+    await fs.access(targetAbsolute);
+    return { created: false, targetPath, sourcePath, reason: "already-exists" };
   } catch {
-    await fs.mkdir(path.dirname(absolute), { recursive: true });
-    const buffer = Buffer.from(JPG_1X1_BASE64, "base64");
-    await fs.writeFile(absolute, buffer);
-    return { created: true, filePath };
+    // Continue: target is missing
   }
+
+  try {
+    await fs.access(sourceAbsolute);
+  } catch {
+    return { created: false, targetPath, sourcePath, reason: "source-missing" };
+  }
+
+  await fs.mkdir(path.dirname(targetAbsolute), { recursive: true });
+  await fs.copyFile(sourceAbsolute, targetAbsolute);
+  return { created: true, targetPath, sourcePath, reason: "copied" };
 }
 
 async function main() {
-  const results = await Promise.all(MISSING_REFERENCES.map((entry) => ensurePlaceholder(entry)));
-  console.log("[generate-image-placeholders] done");
+  const entries = Object.entries(IMAGE_FALLBACK_MAP);
+  const results = await Promise.all(entries.map(([target, source]) => ensureCompatibilityImage(target, source)));
+  console.log("[generate-image-placeholders] done (compatibility copies)");
   console.log(JSON.stringify(results, null, 2));
 }
 

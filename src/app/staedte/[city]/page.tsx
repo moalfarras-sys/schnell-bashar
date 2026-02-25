@@ -75,7 +75,7 @@ export default async function CityPage({ params }: { params: Promise<Params> }) 
   if (!city) notFound();
   const slots = await getImageSlots([
     { key: `img.city.${city.slug}.hero`, fallbackSrc: city.image, fallbackAlt: `Umzug in ${city.name}` },
-    { key: "img.city.shared.service_umzug", fallbackSrc: "/media/gallery/hero_truck_v1_1771507453273.png" },
+    { key: "img.city.shared.service_umzug", fallbackSrc: "/media/gallery/truck-street.jpeg" },
     { key: "img.city.shared.service_entsorgung", fallbackSrc: "/media/gallery/disposal-dumpster.jpeg" },
     { key: "img.city.shared.cta_logo", fallbackSrc: "/media/brand/hero-logo.jpeg" },
   ]);
@@ -215,7 +215,7 @@ export default async function CityPage({ params }: { params: Promise<Params> }) 
                 <div className="glass-card overflow-hidden rounded-3xl">
                   <div className="relative aspect-video">
                     <Image
-                      src={slots["img.city.shared.service_umzug"]?.src || "/media/gallery/hero_truck_v1_1771507453273.png"}
+                      src={slots["img.city.shared.service_umzug"]?.src || "/media/gallery/truck-street.jpeg"}
                       alt={`Umzug Service in ${city.name}`}
                       fill
                       className="object-cover"

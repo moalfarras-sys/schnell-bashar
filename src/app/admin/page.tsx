@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   TrendingUp,
   TrendingDown,
@@ -33,67 +33,98 @@ export default async function AdminDashboard() {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const startOfToday = new Date(now.toDateString());
-
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
 
-  const [
-    totalOrders,
-    openOrders,
-    todayOrders,
-    totalOffers,
-    acceptedOffers,
-    signedContracts,
-    revenueThisMonth,
-    revenuePrevMonth,
-    recentOrders,
-    monthlyRaw,
-  ] = await Promise.all([
-    prisma.order.count(),
-    prisma.order.count({ where: { status: "NEW" } }),
-    prisma.order.count({ where: { createdAt: { gte: startOfToday } } }),
-    prisma.offer.count(),
-    prisma.offer.count({ where: { status: "ACCEPTED" } }),
-    prisma.contract.count({ where: { status: "SIGNED" } }),
-    prisma.offer.aggregate({
-      _sum: { grossCents: true },
-      where: {
-        contract: { status: "SIGNED", signedAt: { gte: startOfMonth } },
-      },
-    }),
-    prisma.offer.aggregate({
-      _sum: { grossCents: true },
-      where: {
-        contract: {
-          status: "SIGNED",
-          signedAt: { gte: startOfPrevMonth, lt: startOfMonth },
-        },
-      },
-    }),
-    prisma.order.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      select: {
-        publicId: true,
-        orderNo: true,
-        customerName: true,
-        status: true,
-        createdAt: true,
-        serviceType: true,
-      },
-    }),
-    prisma.order.findMany({
-      where: { createdAt: { gte: sixMonthsAgo } },
-      select: { createdAt: true },
-      orderBy: { createdAt: "asc" },
-    }),
-  ]);
+  let dbWarning: string | null = null;
+  let totalOrders = 0;
+  let openOrders = 0;
+  let todayOrders = 0;
+  let totalOffers = 0;
+  let acceptedOffers = 0;
+  let signedContracts = 0;
+  let revenueThisMonth = 0;
+  let revenuePrevMonth = 0;
+  let recentOrders: Array<{
+    publicId: string;
+    orderNo: string | null;
+    customerName: string;
+    status: "NEW" | "CONFIRMED" | "IN_PROGRESS" | "DONE" | "CANCELLED";
+    serviceType: "MOVING" | "DISPOSAL" | "BOTH";
+  }> = [];
+  let monthlyRaw: Array<{ createdAt: Date }> = [];
 
-  const revThisMonth = revenueThisMonth._sum.grossCents ?? 0;
-  const revPrevMonth = revenuePrevMonth._sum.grossCents ?? 0;
+  try {
+    const [
+      totalOrdersRes,
+      openOrdersRes,
+      todayOrdersRes,
+      totalOffersRes,
+      acceptedOffersRes,
+      signedContractsRes,
+      revenueThisMonthRes,
+      revenuePrevMonthRes,
+      recentOrdersRes,
+      monthlyRawRes,
+    ] = await Promise.all([
+      prisma.order.count(),
+      prisma.order.count({ where: { status: "NEW" } }),
+      prisma.order.count({ where: { createdAt: { gte: startOfToday } } }),
+      prisma.offer.count(),
+      prisma.offer.count({ where: { status: "ACCEPTED" } }),
+      prisma.contract.count({ where: { status: "SIGNED" } }),
+      prisma.offer.aggregate({
+        _sum: { grossCents: true },
+        where: {
+          contract: { status: "SIGNED", signedAt: { gte: startOfMonth } },
+        },
+      }),
+      prisma.offer.aggregate({
+        _sum: { grossCents: true },
+        where: {
+          contract: {
+            status: "SIGNED",
+            signedAt: { gte: startOfPrevMonth, lt: startOfMonth },
+          },
+        },
+      }),
+      prisma.order.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: {
+          publicId: true,
+          orderNo: true,
+          customerName: true,
+          status: true,
+          serviceType: true,
+        },
+      }),
+      prisma.order.findMany({
+        where: { createdAt: { gte: sixMonthsAgo } },
+        select: { createdAt: true },
+        orderBy: { createdAt: "asc" },
+      }),
+    ]);
+
+    totalOrders = totalOrdersRes;
+    openOrders = openOrdersRes;
+    todayOrders = todayOrdersRes;
+    totalOffers = totalOffersRes;
+    acceptedOffers = acceptedOffersRes;
+    signedContracts = signedContractsRes;
+    revenueThisMonth = revenueThisMonthRes._sum.grossCents ?? 0;
+    revenuePrevMonth = revenuePrevMonthRes._sum.grossCents ?? 0;
+    recentOrders = recentOrdersRes;
+    monthlyRaw = monthlyRawRes;
+  } catch (error) {
+    console.error("[admin/dashboard] failed to load db data", error);
+    dbWarning =
+      "Dashboard-Daten konnten gerade nicht geladen werden. Bitte Datenbankverbindung prüfen.";
+  }
+
   const revTrend =
-    revPrevMonth > 0
-      ? Math.round(((revThisMonth - revPrevMonth) / revPrevMonth) * 100)
-      : revThisMonth > 0
+    revenuePrevMonth > 0
+      ? Math.round(((revenueThisMonth - revenuePrevMonth) / revenuePrevMonth) * 100)
+      : revenueThisMonth > 0
         ? 100
         : 0;
 
@@ -124,7 +155,6 @@ export default async function AdminDashboard() {
 
   return (
     <div className="grid gap-6">
-      {/* Header */}
       <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
         <div className="text-xl font-extrabold text-white">Dashboard</div>
         <div className="mt-1 text-sm font-semibold text-slate-300">
@@ -132,72 +162,36 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* Primary Stats */}
+      {dbWarning ? (
+        <div className="rounded-xl border border-amber-300 bg-amber-100/95 px-4 py-3 text-sm font-semibold text-amber-900">
+          {dbWarning}
+        </div>
+      ) : null}
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           title="Umsatz (Monat)"
-          value={eur(revThisMonth)}
-          hint={
-            revTrend >= 0
-              ? `+${revTrend}% ggü. Vormonat`
-              : `${revTrend}% ggü. Vormonat`
-          }
+          value={eur(revenueThisMonth)}
+          hint={revTrend >= 0 ? `+${revTrend}% ggü. Vormonat` : `${revTrend}% ggü. Vormonat`}
           trend={revTrend >= 0 ? "up" : "down"}
           icon={<Receipt className="h-5 w-5" />}
         />
-        <StatCard
-          title="Neue Anfragen"
-          value={openOrders}
-          hint="Status: NEW"
-          icon={<Users className="h-5 w-5" />}
-        />
-        <StatCard
-          title="Heute"
-          value={todayOrders}
-          hint="seit 00:00 Uhr"
-          icon={<FileText className="h-5 w-5" />}
-        />
-        <StatCard
-          title="Gesamt"
-          value={totalOrders}
-          hint="alle Aufträge"
-          icon={<FileCheck2 className="h-5 w-5" />}
-        />
+        <StatCard title="Neue Anfragen" value={openOrders} hint="Status: NEW" icon={<Users className="h-5 w-5" />} />
+        <StatCard title="Heute" value={todayOrders} hint="seit 00:00 Uhr" icon={<FileText className="h-5 w-5" />} />
+        <StatCard title="Gesamt" value={totalOrders} hint="alle Aufträge" icon={<FileCheck2 className="h-5 w-5" />} />
       </div>
 
-      {/* Conversion Funnel */}
       <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
         <div className="text-sm font-extrabold text-white">Conversion-Funnel</div>
         <div className="mt-4 grid gap-3 sm:grid-cols-4">
-          <FunnelStep
-            label="Anfragen"
-            value={totalOrders}
-            pctLabel="100%"
-            color="bg-blue-500"
-          />
-          <FunnelStep
-            label="Angebote"
-            value={totalOffers}
-            pctLabel={pct(totalOffers, totalOrders)}
-            color="bg-amber-500"
-          />
-          <FunnelStep
-            label="Angenommen"
-            value={acceptedOffers}
-            pctLabel={pct(acceptedOffers, totalOrders)}
-            color="bg-purple-500"
-          />
-          <FunnelStep
-            label="Unterschrieben"
-            value={signedContracts}
-            pctLabel={pct(signedContracts, totalOrders)}
-            color="bg-emerald-500"
-          />
+          <FunnelStep label="Anfragen" value={totalOrders} pctLabel="100%" color="bg-blue-500" />
+          <FunnelStep label="Angebote" value={totalOffers} pctLabel={pct(totalOffers, totalOrders)} color="bg-amber-500" />
+          <FunnelStep label="Angenommen" value={acceptedOffers} pctLabel={pct(acceptedOffers, totalOrders)} color="bg-purple-500" />
+          <FunnelStep label="Unterschrieben" value={signedContracts} pctLabel={pct(signedContracts, totalOrders)} color="bg-emerald-500" />
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Monthly Chart */}
         <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
           <div className="text-sm font-extrabold text-white">Aufträge pro Monat</div>
           <div className="mt-4">
@@ -205,14 +199,10 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
-        {/* Recent Orders */}
         <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div className="text-sm font-extrabold text-white">Neueste Anfragen</div>
-            <Link
-              href="/admin/orders"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-brand-400 hover:underline"
-            >
+            <Link href="/admin/orders" className="inline-flex items-center gap-1 text-xs font-semibold text-brand-400 hover:underline">
               Alle anzeigen <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
@@ -229,16 +219,10 @@ export default async function AdminDashboard() {
                   className="flex items-center justify-between gap-3 rounded-xl bg-slate-700/30 px-4 py-3 transition-colors hover:bg-slate-700/50"
                 >
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-bold text-white">
-                      {o.customerName}
-                    </div>
-                    <div className="mt-0.5 text-xs text-slate-400">
-                      {o.orderNo ?? o.publicId} · {o.serviceType}
-                    </div>
+                    <div className="truncate text-sm font-bold text-white">{o.customerName}</div>
+                    <div className="mt-0.5 text-xs text-slate-400">{o.orderNo ?? o.publicId} · {o.serviceType}</div>
                   </div>
-                  <span
-                    className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold ${statusColors[o.status] ?? "bg-slate-600 text-slate-300"}`}
-                  >
+                  <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold ${statusColors[o.status] ?? "bg-slate-600 text-slate-300"}`}>
                     {o.status}
                   </span>
                 </Link>
@@ -248,7 +232,6 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* Quick Access */}
       <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
         <div className="text-sm font-extrabold text-white">Schnellzugriff</div>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">

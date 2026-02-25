@@ -1,4 +1,4 @@
-import { prisma } from "@/server/db/prisma";
+﻿import { prisma } from "@/server/db/prisma";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { updatePricingAction } from "@/app/admin/pricing/actions";
@@ -13,17 +13,32 @@ function eur(cents: number) {
 }
 
 export default async function AdminPricingPage() {
-  const pricing = await prisma.pricingConfig.findFirst({
-    where: { active: true },
-    orderBy: { updatedAt: "desc" },
-  });
+  let dbWarning: string | null = null;
+  let pricing: Awaited<ReturnType<typeof prisma.pricingConfig.findFirst>> = null;
+
+  try {
+    pricing = await prisma.pricingConfig.findFirst({
+      where: { active: true },
+      orderBy: { updatedAt: "desc" },
+    });
+  } catch (error) {
+    console.error("[admin/pricing] failed to load pricing", error);
+    dbWarning = "Preisdaten konnten gerade nicht geladen werden. Bitte Datenbankverbindung prüfen.";
+  }
 
   if (!pricing) {
     return (
-      <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
-        <div className="text-xl font-extrabold text-white">Keine Preis-Konfiguration</div>
-        <div className="mt-2 text-sm font-semibold text-slate-200">
-          Bitte führen Sie Seed aus oder legen Sie eine Konfiguration an.
+      <div className="grid gap-4">
+        {dbWarning ? (
+          <div className="rounded-xl border border-amber-300 bg-amber-100/95 px-4 py-3 text-sm font-semibold text-amber-900">
+            {dbWarning}
+          </div>
+        ) : null}
+        <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
+          <div className="text-xl font-extrabold text-white">Keine Preis-Konfiguration</div>
+          <div className="mt-2 text-sm font-semibold text-slate-200">
+            Bitte führen Sie Seed aus oder legen Sie eine Konfiguration an.
+          </div>
         </div>
       </div>
     );
@@ -31,6 +46,12 @@ export default async function AdminPricingPage() {
 
   return (
     <div className="grid gap-6">
+      {dbWarning ? (
+        <div className="rounded-xl border border-amber-300 bg-amber-100/95 px-4 py-3 text-sm font-semibold text-amber-900">
+          {dbWarning}
+        </div>
+      ) : null}
+
       <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
         <div className="text-xl font-extrabold text-white">Preise</div>
         <div className="mt-2 text-sm font-semibold text-slate-200">
@@ -44,24 +65,9 @@ export default async function AdminPricingPage() {
 
           <Section title="Basis">
             <Grid>
-              <Field
-                name="movingBaseFeeCents"
-                label="Umzug Basis (Cent)"
-                defaultValue={pricing.movingBaseFeeCents}
-                hint={eur(pricing.movingBaseFeeCents)}
-              />
-              <Field
-                name="disposalBaseFeeCents"
-                label="Entsorgung Basis (Cent)"
-                defaultValue={pricing.disposalBaseFeeCents}
-                hint={eur(pricing.disposalBaseFeeCents)}
-              />
-              <Field
-                name="hourlyRateCents"
-                label="Stundensatz (Cent)"
-                defaultValue={pricing.hourlyRateCents}
-                hint={eur(pricing.hourlyRateCents) + " / Std."}
-              />
+              <Field name="movingBaseFeeCents" label="Umzug Basis (Cent)" defaultValue={pricing.movingBaseFeeCents} hint={eur(pricing.movingBaseFeeCents)} />
+              <Field name="disposalBaseFeeCents" label="Entsorgung Basis (Cent)" defaultValue={pricing.disposalBaseFeeCents} hint={eur(pricing.disposalBaseFeeCents)} />
+              <Field name="hourlyRateCents" label="Stundensatz (Cent)" defaultValue={pricing.hourlyRateCents} hint={eur(pricing.hourlyRateCents) + " / Std."} />
             </Grid>
           </Section>
 
@@ -103,9 +109,7 @@ export default async function AdminPricingPage() {
           </Section>
 
           <div className="flex justify-end">
-            <Button type="submit">
-              Speichern
-            </Button>
+            <Button type="submit">Speichern</Button>
           </div>
         </form>
       </div>
@@ -147,4 +151,3 @@ function Field(props: {
     </div>
   );
 }
-

@@ -1,4 +1,4 @@
-import { formatInTimeZone } from "date-fns-tz";
+﻿import { formatInTimeZone } from "date-fns-tz";
 
 import { prisma } from "@/server/db/prisma";
 import { Button } from "@/components/ui/button";
@@ -26,10 +26,19 @@ const dow = [
 ];
 
 export default async function AdminAvailabilityPage() {
-  const [rules, exceptions] = await Promise.all([
-    prisma.availabilityRule.findMany({ orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }] }),
-    prisma.availabilityException.findMany({ orderBy: { date: "asc" } }),
-  ]);
+  let dbWarning: string | null = null;
+  let rules: Awaited<ReturnType<typeof prisma.availabilityRule.findMany>> = [];
+  let exceptions: Awaited<ReturnType<typeof prisma.availabilityException.findMany>> = [];
+
+  try {
+    [rules, exceptions] = await Promise.all([
+      prisma.availabilityRule.findMany({ orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }] }),
+      prisma.availabilityException.findMany({ orderBy: { date: "asc" } }),
+    ]);
+  } catch (error) {
+    console.error("[admin/availability] failed to load data", error);
+    dbWarning = "Verfügbarkeitsdaten konnten gerade nicht geladen werden. Bitte Datenbankverbindung prüfen.";
+  }
 
   return (
     <div className="grid gap-6">
@@ -40,6 +49,12 @@ export default async function AdminAvailabilityPage() {
         </div>
       </div>
 
+      {dbWarning ? (
+        <div className="rounded-xl border border-amber-300 bg-amber-100/95 px-4 py-3 text-sm font-semibold text-amber-900">
+          {dbWarning}
+        </div>
+      ) : null}
+
       <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
         <div className="text-sm font-extrabold text-white">Neue Regel</div>
         <form action={createAvailabilityRuleAction} className="mt-4 grid gap-3 md:grid-cols-6">
@@ -47,9 +62,7 @@ export default async function AdminAvailabilityPage() {
             <div className="text-xs font-bold text-slate-200">Tag</div>
             <Select name="dayOfWeek" defaultValue="1" className="border-2 border-slate-600 bg-slate-700 text-white">
               {dow.map((d) => (
-                <option key={d.v} value={String(d.v)}>
-                  {d.l}
-                </option>
+                <option key={d.v} value={String(d.v)}>{d.l}</option>
               ))}
             </Select>
           </div>
@@ -70,9 +83,7 @@ export default async function AdminAvailabilityPage() {
             <Input name="capacity" type="number" defaultValue="2" className="border-2 border-slate-600 bg-slate-700 text-white" />
           </div>
           <div className="flex items-end justify-end">
-            <Button type="submit">
-              Erstellen
-            </Button>
+            <Button type="submit">Erstellen</Button>
           </div>
         </form>
       </div>
@@ -101,28 +112,20 @@ export default async function AdminAvailabilityPage() {
                       <Checkbox name="active" defaultChecked={r.active} className="border-slate-500" />
                       <Select name="dayOfWeek" defaultValue={String(r.dayOfWeek)} className="h-10 w-[90px] border-2 border-slate-600 bg-slate-700 text-white">
                         {dow.map((d) => (
-                          <option key={d.v} value={String(d.v)}>
-                            {d.l}
-                          </option>
+                          <option key={d.v} value={String(d.v)}>{d.l}</option>
                         ))}
                       </Select>
                       <Input name="startTime" defaultValue={r.startTime} className="h-10 w-[110px] border-2 border-slate-600 bg-slate-700 text-white" />
                       <Input name="endTime" defaultValue={r.endTime} className="h-10 w-[110px] border-2 border-slate-600 bg-slate-700 text-white" />
                       <Input name="slotMinutes" type="number" defaultValue={String(r.slotMinutes)} className="h-10 w-[110px] border-2 border-slate-600 bg-slate-700 text-white" />
                       <Input name="capacity" type="number" defaultValue={String(r.capacity)} className="h-10 w-[110px] border-2 border-slate-600 bg-slate-700 text-white" />
-                      <Button type="submit" size="sm">
-                        Speichern
-                      </Button>
+                      <Button type="submit" size="sm">Speichern</Button>
                     </form>
                   </td>
                 </tr>
               ))}
               {rules.length === 0 ? (
-                <tr>
-                  <td className="px-4 py-10 text-center text-sm font-semibold text-slate-300">
-                    Keine Regeln.
-                  </td>
-                </tr>
+                <tr><td className="px-4 py-10 text-center text-sm font-semibold text-slate-300">Keine Regeln.</td></tr>
               ) : null}
             </tbody>
           </table>
@@ -149,11 +152,7 @@ export default async function AdminAvailabilityPage() {
             <div className="text-xs font-bold text-slate-200">Notiz</div>
             <Input name="note" placeholder="Feiertag / Sonderplanung" className="border-2 border-slate-600 bg-slate-700 text-white placeholder:text-slate-400" />
           </div>
-          <div className="flex items-end justify-end">
-            <Button type="submit">
-              Hinzufügen
-            </Button>
-          </div>
+          <div className="flex items-end justify-end"><Button type="submit">Hinzufügen</Button></div>
         </form>
 
         <div className="mt-6 grid gap-2">
@@ -168,9 +167,7 @@ export default async function AdminAvailabilityPage() {
               </div>
               <form action={deleteAvailabilityExceptionAction}>
                 <input type="hidden" name="id" value={e.id} />
-                <Button type="submit" size="sm" variant="outline-light">
-                  Löschen
-                </Button>
+                <Button type="submit" size="sm" variant="outline-light">Löschen</Button>
               </form>
             </div>
           ))}

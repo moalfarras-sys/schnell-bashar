@@ -43,6 +43,7 @@ export async function GET() {
     const assets = (await delegates.mediaAsset.findMany({
       where: { deletedAt: null },
       orderBy: { createdAt: "desc" },
+      include: { variants: { orderBy: { createdAt: "desc" } } },
     })) as unknown[];
     return NextResponse.json({ assets });
   } catch {
@@ -98,6 +99,7 @@ export async function POST(req: Request) {
         width: dims?.width ?? null,
         height: dims?.height ?? null,
       },
+      include: { variants: true },
     });
 
     return NextResponse.json({ asset }, { status: 201 });

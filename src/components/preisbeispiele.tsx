@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { Container } from "@/components/container";
@@ -183,3 +183,4 @@ export function Preisbeispiele({ service = "ALL" }: { service?: ServiceFilter })
     </section>
   );
 }
+

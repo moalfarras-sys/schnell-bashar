@@ -23,9 +23,20 @@ function eur(cents: number) {
 }
 
 type WizardLike = {
+  bookingContext?: "STANDARD" | "MONTAGE" | "ENTSORGUNG";
+  packageTier?: "STANDARD" | "PLUS" | "PREMIUM";
+  offerContext?: {
+    offerCode?: string;
+    appliedDiscountPercent?: number;
+    appliedDiscountCents?: number;
+    validUntil?: string;
+  };
   startAddress?: { displayName?: string };
   destinationAddress?: { displayName?: string };
   pickupAddress?: { displayName?: string };
+  inquiry?: {
+    checklist?: Array<{ item?: string; actions?: string[] }>;
+  };
 };
 
 export default async function AdminOrderDetailPage({
@@ -34,14 +45,37 @@ export default async function AdminOrderDetailPage({
   params: Promise<{ publicId: string }>;
 }) {
   const { publicId } = await params;
-  const order = await prisma.order.findUnique({
-    where: { publicId },
-    include: {
-      lines: { include: { catalogItem: true } },
-      uploads: true,
-      offer: { include: { contract: true } },
-    },
-  });
+  let dbWarning: string | null = null;
+  let order: any = null;
+  try {
+    order = await prisma.order.findUnique({
+      where: { publicId },
+      include: {
+        lines: { include: { catalogItem: true } },
+        uploads: true,
+        offer: { include: { contract: true } },
+      },
+    });
+  } catch (error) {
+    dbWarning =
+      error instanceof Error
+        ? `Datenbankfehler: ${error.message}`
+        : "Datenbankfehler: Auftrag konnte nicht geladen werden.";
+  }
+
+  if (dbWarning) {
+    return (
+      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50 p-6 shadow-lg">
+        <div className="text-xl font-extrabold text-amber-900">Daten konnten nicht geladen werden</div>
+        <div className="mt-2 text-sm text-amber-800">{dbWarning}</div>
+        <div className="mt-6">
+          <Link href="/admin/orders">
+            <Button variant="outline-light">Zurück</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!order) {
     return (
@@ -63,8 +97,8 @@ export default async function AdminOrderDetailPage({
   );
   const waUrl = `https://wa.me/${String(order.customerPhone).replace(/[^\d]/g, "")}?text=${waText}`;
 
-  const moveLines = order.lines.filter((l) => !l.isDisposal);
-  const disposalLines = order.lines.filter((l) => l.isDisposal);
+  const moveLines = order.lines.filter((l: any) => !l.isDisposal);
+  const disposalLines = order.lines.filter((l: any) => l.isDisposal);
 
   return (
     <div className="grid gap-6">
@@ -100,6 +134,20 @@ export default async function AdminOrderDetailPage({
             value={`${formatInTimeZone(order.slotStart, "Europe/Berlin", "dd.MM HH:mm")} – ${formatInTimeZone(order.slotEnd, "Europe/Berlin", "HH:mm")}`}
           />
           <InfoCard title="Status" value={order.status} />
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-3">
+          <InfoCard title="Bereich" value={wizard?.bookingContext ?? "STANDARD"} />
+          <InfoCard title="Paket" value={wizard?.packageTier ?? "PLUS"} />
+          <InfoCard
+            title="Rabatt"
+            value={
+              wizard?.offerContext?.appliedDiscountPercent != null
+                ? `${wizard.offerContext.appliedDiscountPercent}%`
+                : wizard?.offerContext?.appliedDiscountCents != null
+                  ? eur(wizard.offerContext.appliedDiscountCents)
+                  : "Kein Rabatt"
+            }
+          />
         </div>
       </div>
 
@@ -239,6 +287,24 @@ export default async function AdminOrderDetailPage({
       </div>
 
       <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
+        <div className="text-sm font-extrabold text-white">Checkliste (optional)</div>
+        {Array.isArray(wizard?.inquiry?.checklist) && wizard.inquiry.checklist.length > 0 ? (
+          <ul className="mt-4 grid gap-2 text-sm text-slate-200">
+            {wizard.inquiry.checklist.map((entry, idx) => (
+              <li key={`${entry.item ?? "item"}-${idx}`} className="rounded-lg border border-slate-700 bg-slate-900/50 px-3 py-2">
+                <span className="font-bold">{entry.item || "Element"}</span>
+                <span className="ml-2 text-slate-300">
+                  {(entry.actions ?? []).join(" / ")}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-3 text-sm text-slate-400">Keine optionalen Checklisten-Einträge.</p>
+        )}
+      </div>
+
+      <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
         <div className="text-sm font-extrabold text-white">Gegenstände</div>
         <div className="mt-4 grid gap-6 md:grid-cols-2">
           <LineGroup title="Umzug" lines={moveLines} />
@@ -250,7 +316,7 @@ export default async function AdminOrderDetailPage({
         <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
           <div className="text-sm font-extrabold text-white">Hochgeladene Dateien</div>
           <ul className="mt-3 grid gap-2 text-sm text-slate-200">
-            {order.uploads.map((u) => (
+            {order.uploads.map((u: any) => (
               <li key={u.id} className="flex flex-wrap items-center justify-between gap-3">
                 <span className="font-semibold">{u.fileName}</span>
                 {u.filePath.startsWith("/") ? (

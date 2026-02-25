@@ -121,7 +121,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
       doc.font("Helvetica").fontSize(9.5).fillColor(BODY);
     }
 
-    // ━━━ HEADER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  HEADER 
     const LOGO_W = 110;
     const logoPath = slotLogoPath ?? path.join(process.cwd(), "public", "media", "brand", "hero-logo.jpeg");
 
@@ -158,7 +158,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     doc.strokeColor(BLUE).lineWidth(2.5).moveTo(LEFT, y).lineTo(RIGHT, y).stroke();
     y += 22;
 
-    // ━━━ TITLE + INFO BLOCK ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  TITLE + INFO BLOCK 
     doc.font("Helvetica-Bold").fontSize(22).fillColor(DARK);
     doc.text("UMZUGSVERTRAG", LEFT, y);
 
@@ -195,7 +195,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     y = Math.max(y + 30, iy + 8);
     y += 10;
 
-    // ━━━ PARTIES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  PARTIES 
     sectionTitle("Vertragsparteien");
 
     const colW = Math.floor(CW / 2) - 12;
@@ -225,7 +225,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     doc.text(data.customerEmail, LEFT + colW + 24, y, { width: colW });
     y += 20;
 
-    // ━━━ § 1 Vertragsgegenstand ━━━━━━━━━━━━━━━━━━━━━━
+    //  § 1 Vertragsgegenstand 
     sectionTitle("\u00A7 1 Vertragsgegenstand");
 
     if (data.moveFrom && data.moveTo) {
@@ -258,7 +258,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     }
     y += 8;
 
-    // ━━━ § 2 Leistungsumfang + § 3 Vergütung (COMBINED TABLE) ━━━
+    //  § 2 Leistungsumfang + § 3 Vergtung (COMBINED TABLE) 
     sectionTitle("\u00A7 2 Leistungsumfang & Verg\u00FCtung");
 
     doc.text("Der Auftragnehmer erbringt folgende Leistungen:", LEFT, y, { width: CW });
@@ -339,7 +339,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     );
     y += 22;
 
-    // ━━━ Notes (if present) ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  Notes (if present) 
     if (data.notes) {
       ensureSpace(50);
       doc.font("Helvetica-Bold").fontSize(9.5).fillColor(BLUE);
@@ -350,7 +350,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
       y += doc.heightOfString(data.notes, { width: CW - 16 }) + 12;
     }
 
-    // ━━━ § 3 Pflichten ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  § 3 Pflichten 
     sectionTitle("\u00A7 3 Pflichten des Auftraggebers");
 
     const obligations = [
@@ -366,7 +366,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     });
     y += 8;
 
-    // ━━━ § 4 Haftung ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  § 4 Haftung 
     sectionTitle("\u00A7 4 Haftung");
     const haftung =
       "Der Auftragnehmer haftet f\u00FCr Sch\u00E4den, die durch grobe Fahrl\u00E4ssigkeit oder Vorsatz entstehen. " +
@@ -375,7 +375,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     doc.text(haftung, LEFT, y, { width: CW, align: "justify" });
     y += doc.heightOfString(haftung, { width: CW }) + 10;
 
-    // ━━━ § 5 Stornierung / Rücktritt ━━━━━━━━━━━━━━━━
+    //  § 5 Stornierung / Rcktritt 
     ensureSpace(18 + 30 + 4 * 16 + 40);
     sectionTitle("\u00A7 5 Stornierung / R\u00FCcktritt");
 
@@ -409,7 +409,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     doc.text(stornoNote, LEFT, y, { width: CW, align: "justify" });
     y += doc.heightOfString(stornoNote, { width: CW }) + 10;
 
-    // ━━━ § 6 Schlussbestimmungen ━━━━━━━━━━━━━━━━━━━━━
+    //  § 6 Schlussbestimmungen 
     ensureSpace(18 + 40);
     sectionTitle("\u00A7 6 Schlussbestimmungen");
     const schluss =
@@ -418,7 +418,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     doc.text(schluss, LEFT, y, { width: CW, align: "justify" });
     y += doc.heightOfString(schluss, { width: CW }) + 20;
 
-    // ━━━ SIGNATURES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  SIGNATURES 
     ensureSpace(130);
 
     doc.strokeColor(BLUE).lineWidth(1).moveTo(LEFT, y).lineTo(RIGHT, y).stroke();
@@ -491,7 +491,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
       doc.text(data.customerSignedName, LEFT + sigW + 30, y, { width: sigW });
     }
 
-    // ━━━ AGB PAGE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  AGB PAGE 
     doc.addPage();
     y = M;
 
@@ -586,7 +586,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
         "M\u00FCndliche Nebenabreden bestehen nicht.",
     ]);
 
-    // ━━━ FOOTER (every page) ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  FOOTER (every page) 
     function drawFooter() {
       const fy = H - M - FOOTER_H;
       doc.strokeColor(BORDER).lineWidth(0.5).moveTo(LEFT, fy).lineTo(RIGHT, fy).stroke();
@@ -612,3 +612,4 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     doc.end();
   });
 }
+

@@ -1,4 +1,4 @@
-import { BookingWizard } from "@/app/(wizard)/buchen/wizard-client";
+﻿import { BookingWizard } from "@/app/(wizard)/buchen/wizard-client";
 import { Container } from "@/components/container";
 import { loadBookingConfig } from "@/server/booking/load-booking-config";
 
@@ -26,3 +26,4 @@ export default async function MontageBookingEntryPage() {
     />
   );
 }
+

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { addDays } from "date-fns";
 import { prisma } from "@/server/db/prisma";
@@ -123,6 +123,14 @@ export async function POST(req: NextRequest) {
       serviceType: inquiry.serviceType,
       needNoParkingZone: inquiry.needNoParkingZone,
       addons: inquiry.addons,
+      checklist: Array.isArray(inquiry.checklist)
+        ? inquiry.checklist
+            .flatMap((entry: { item?: string; actions?: string[] }) => {
+              if (!entry?.item || !Array.isArray(entry.actions) || entry.actions.length === 0) return [];
+              const actions = entry.actions.join(" / ");
+              return [`${entry.item} (${actions})`];
+            })
+        : [],
       services,
       netCents,
       vatCents,
@@ -213,3 +221,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

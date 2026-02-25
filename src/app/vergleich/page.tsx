@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 import { Container } from "@/components/container";
 import { Button } from "@/components/ui/button";
@@ -51,3 +51,4 @@ export default function VergleichPage() {
     </Container>
   );
 }
+

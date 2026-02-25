@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 import { formatInTimeZone } from "date-fns-tz";
 
@@ -79,3 +79,4 @@ export async function GET(req: Request) {
     slotLabel: `${formatInTimeZone(order.slotStart, "Europe/Berlin", "dd.MM.yyyy HH:mm")} - ${formatInTimeZone(order.slotEnd, "Europe/Berlin", "HH:mm")}`,
   });
 }
+

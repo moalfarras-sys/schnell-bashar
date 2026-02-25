@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 import { formatInTimeZone } from "date-fns-tz";
 
@@ -64,7 +64,10 @@ export async function GET(req: Request) {
         date,
         durationMinutes: 90,
         slots: demoSlots,
+        mode: "demo",
         demoMode: true,
+        message:
+          "Live-Zeitfenster sind aktuell nicht erreichbar. Es werden vorübergehend Ersatz-Zeitfenster angezeigt.",
       });
     }
 
@@ -76,7 +79,10 @@ export async function GET(req: Request) {
         date,
         durationMinutes: 90,
         slots: demoSlots,
+        mode: "demo",
         demoMode: true,
+        message:
+          "Für diesen Zeitraum sind keine Live-Zeitfenster hinterlegt. Es werden Ersatz-Zeitfenster angezeigt.",
       });
     }
 
@@ -98,6 +104,7 @@ export async function GET(req: Request) {
       date,
       durationMinutes: loaded.context.durationMinutes ?? 90,
       slots: slotsWithLabels,
+      mode: "live",
     });
   } catch (err) {
     console.error("[GET /api/availability/slots]", err);
@@ -106,7 +113,11 @@ export async function GET(req: Request) {
       date,
       durationMinutes: 90,
       slots: demoSlots,
+      mode: "demo",
       demoMode: true,
+      message:
+        "Die Zeitfenster konnten nicht live geladen werden. Es werden Ersatz-Zeitfenster angezeigt.",
     });
   }
 }
+

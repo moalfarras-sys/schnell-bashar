@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import {
   CheckCircle2,
@@ -230,3 +230,4 @@ export default async function EntsorgungPage() {
     </>
   );
 }
+

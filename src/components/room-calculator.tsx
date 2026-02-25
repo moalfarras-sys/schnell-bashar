@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import { Home, Building2, Castle, Warehouse } from "lucide-react";
@@ -63,3 +63,4 @@ export function RoomCalculator({ onVolumeChange }: RoomCalculatorProps) {
     </div>
   );
 }
+

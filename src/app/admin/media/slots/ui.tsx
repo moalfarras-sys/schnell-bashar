@@ -7,6 +7,11 @@ type Asset = {
   filename: string;
   path: string;
   alt: string | null;
+  variants?: Array<{
+    id: string;
+    kind: "hero" | "gallery" | "thumbnail" | "custom";
+    path: string;
+  }>;
 };
 
 type SlotItem = {
@@ -178,21 +183,37 @@ export function ImageSlotsManagerClient({
                       <div className="grid gap-2 md:grid-cols-3">
                         <select
                           className="rounded-lg border border-slate-600 bg-slate-800 px-2 py-2 text-xs text-slate-100"
-                          value={item.slot?.assetId ?? ""}
+                          value={item.slot?.assetId ? `asset:${item.slot.assetId}` : item.slot?.value ? `path:${item.slot.value}` : ""}
                           onChange={(event) => {
-                            const next = event.target.value || null;
-                            patchSlot(item.registry.key, {
-                              assetId: next,
-                              value: next ? null : item.registry.defaultPath,
-                            });
+                            const next = event.target.value || "";
+                            if (!next) {
+                              patchSlot(item.registry.key, { assetId: null, value: item.registry.defaultPath });
+                              return;
+                            }
+                            if (next.startsWith("asset:")) {
+                              const assetId = next.replace("asset:", "");
+                              patchSlot(item.registry.key, { assetId, value: null });
+                              return;
+                            }
+                            if (next.startsWith("path:")) {
+                              const p = next.replace("path:", "");
+                              patchSlot(item.registry.key, { assetId: null, value: p });
+                            }
                           }}
                         >
-                          <option value="">Use path/default</option>
+                          <option value="">Use default path</option>
                           {assets.map((asset) => (
-                            <option key={asset.id} value={asset.id}>
+                            <option key={asset.id} value={`asset:${asset.id}`}>
                               {asset.filename}
                             </option>
                           ))}
+                          {assets.flatMap((asset) =>
+                            (asset.variants ?? []).map((variant) => (
+                              <option key={`${asset.id}-${variant.id}`} value={`path:${variant.path}`}>
+                                {asset.filename} ({variant.kind})
+                              </option>
+                            )),
+                          )}
                         </select>
                         <input
                           defaultValue={item.slot?.value ?? item.registry.defaultPath}

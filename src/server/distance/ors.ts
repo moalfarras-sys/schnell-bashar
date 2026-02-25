@@ -1,4 +1,4 @@
-import { prisma } from "@/server/db/prisma";
+﻿import { prisma } from "@/server/db/prisma";
 
 const ORS_BASE_URL = (process.env.ORS_BASE_URL || "https://api.openrouteservice.org").replace(/\/+$/, "");
 const ORS_PROFILE = "driving-car";
@@ -398,3 +398,4 @@ export async function resolveRouteDistance(input: RouteDistanceInput): Promise<R
     profile,
   };
 }
+

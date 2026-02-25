@@ -1,4 +1,4 @@
-import PDFDocument from "pdfkit";
+﻿import PDFDocument from "pdfkit";
 import path from "path";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
@@ -32,6 +32,7 @@ export interface OfferData {
   serviceType?: string;
   needNoParkingZone?: boolean;
   addons?: string[];
+  checklist?: string[];
 
   services: Array<{
     name: string;
@@ -140,7 +141,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       y += 12;
     }
 
-    // ━━━ HEADER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // â”â”â” HEADER â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
     const LOGO_W = 150;
     const INFO_FONT = 8.5;
     const INFO_BOLD_FONT = 9.5;
@@ -184,7 +185,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     doc.strokeColor(BLUE).lineWidth(1.5).moveTo(LEFT, y).lineTo(RIGHT, y).stroke();
     y += 20;
 
-    // ━━━ TITLE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // â”â”â” TITLE â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
     doc.font("Helvetica-Bold").fontSize(20).fillColor(DARK);
     doc.text("ANGEBOT", LEFT, y, { width: CW, align: "center" });
     y += 26;
@@ -196,7 +197,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     );
     y += 16;
 
-    // ━━━ KUNDENANGABEN ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // â”â”â” KUNDENANGABEN â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
     sectionHeading("Kundenangaben");
 
     const colW = Math.floor(CW / 2) - 8;
@@ -215,7 +216,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
 
     y = Math.max(leftColEnd, rightColEnd) + 4;
 
-    // ━━━ UMZUGSDETAILS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // â”â”â” UMZUGSDETAILS â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
     sectionHeading("Umzugsdetails");
 
     const savedY2 = y;
@@ -265,6 +266,14 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       doc.text(data.addons.join(", "), LEFT, y, { width: CW });
       y += doc.heightOfString(data.addons.join(", "), { width: CW }) + 4;
     }
+    if (data.checklist && data.checklist.length > 0) {
+      doc.font("Helvetica").fontSize(7).fillColor(MUTED);
+      doc.text("Checkliste", LEFT, y, { width: CW });
+      y += 8;
+      doc.font("Helvetica").fontSize(9).fillColor(BODY);
+      doc.text(data.checklist.join(", "), LEFT, y, { width: CW });
+      y += doc.heightOfString(data.checklist.join(", "), { width: CW }) + 4;
+    }
 
     if (data.notes) {
       doc.font("Helvetica").fontSize(7).fillColor(MUTED);
@@ -276,7 +285,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     }
     y += 4;
 
-    // ━━━ LEISTUNGEN ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // â”â”â” LEISTUNGEN â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
     ensureSpace(30 + data.services.length * 14);
     sectionHeading("Leistungsumfang");
 
@@ -295,7 +304,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     });
     y += 6;
 
-    // ━━━ PREIS\u00DCBERSICHT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // â”â”â” PREIS\u00DCBERSICHT â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
     const priceCardH = 84;
     ensureSpace(priceCardH + 28);
     sectionHeading("Preis\u00FCbersicht");
@@ -326,7 +335,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
 
     y += priceCardH + 10;
 
-    // ━━━ TERMS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // â”â”â” TERMS â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
     ensureSpace(20);
     doc.font("Helvetica").fontSize(7).fillColor(MUTED);
     doc.text(
@@ -334,7 +343,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       LEFT, y, { width: CW },
     );
 
-    // ━━━ FOOTER (every page) ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // â”â”â” FOOTER (every page) â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
     function drawFooter() {
       const fy = H - M - FOOTER_H;
       doc.strokeColor(BORDER).lineWidth(0.5).moveTo(LEFT, fy).lineTo(RIGHT, fy).stroke();
@@ -360,3 +369,4 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     doc.end();
   });
 }
+

@@ -57,7 +57,7 @@ export function ContactForm() {
 
       setStatus({
         type: "success",
-        message: "Vielen Dank. Ihre Anfrage wurde gesendet, wir melden uns schnellstmöglich.",
+        message: "Vielen Dank. Ihre Anfrage wurde gesendet, wir melden uns schnellstmglich.",
       });
       setName("");
       setEmail("");
@@ -80,7 +80,7 @@ export function ContactForm() {
           <Input required value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div>
-          <div className="text-xs font-semibold text-slate-800">E‑Mail *</div>
+          <div className="text-xs font-semibold text-slate-800">EMail *</div>
           <Input
             required
             type="email"
@@ -97,7 +97,7 @@ export function ContactForm() {
           <div className="text-xs font-semibold text-slate-800">Leistung</div>
           <Select value={serviceType} onChange={(e) => setServiceType(e.target.value)}>
             <option value="Umzug">Umzug</option>
-            <option value="Entsorgung">Entsorgung / Sperrmüll</option>
+            <option value="Entsorgung">Entsorgung / Sperrmll</option>
             <option value="Montage">Montage</option>
             <option value="Umzug + Entsorgung">Umzug + Entsorgung</option>
           </Select>
@@ -121,7 +121,7 @@ export function ContactForm() {
           required
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Teilen Sie uns Ihre Anfrage mit, wir melden uns schnellstmöglich."
+          placeholder="Teilen Sie uns Ihre Anfrage mit, wir melden uns schnellstmglich."
         />
       </div>
 
@@ -147,3 +147,4 @@ export function ContactForm() {
     </form>
   );
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { Save, Loader2, RotateCcw, Type } from "lucide-react";
@@ -232,3 +232,4 @@ export default function AdminContentPage() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-export type FaqEntry = {
+﻿export type FaqEntry = {
   id: string;
   question: string;
   answer: string;
@@ -48,3 +48,4 @@ export const faqDatabase: FaqEntry[] = [
     category: "contact",
   },
 ];
+

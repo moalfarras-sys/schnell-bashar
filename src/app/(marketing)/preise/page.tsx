@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import { BadgeEuro, CheckCircle2, Clock, Sparkles } from "lucide-react";
 
@@ -162,3 +162,4 @@ export default async function PreisePage() {
     </Container>
   );
 }
+

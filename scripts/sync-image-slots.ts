@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { prisma } from "../src/server/db/prisma";
+import { resolvePreferredImagePath } from "./image-fallback-map";
 
 type SlotEntry = {
   key: string;
@@ -45,6 +46,8 @@ async function main() {
   const validKeys = new Set(map.slots.map((entry) => entry.key));
 
   for (const entry of map.slots) {
+    const preferredDefaultPath = resolvePreferredImagePath(entry.defaultPath);
+
     const existingRegistry = await prisma.slotRegistry.findUnique({
       where: { key: entry.key },
       select: { id: true, defaultPath: true, discoveredFrom: true, usageType: true },
@@ -55,7 +58,7 @@ async function main() {
         await prisma.slotRegistry.create({
           data: {
             key: entry.key,
-            defaultPath: entry.defaultPath,
+            defaultPath: preferredDefaultPath,
             discoveredFrom: entry.discoveredFrom,
             usageType: entry.usageType,
           },
@@ -63,7 +66,7 @@ async function main() {
       }
       registryInserted += 1;
     } else if (
-      existingRegistry.defaultPath !== entry.defaultPath ||
+      existingRegistry.defaultPath !== preferredDefaultPath ||
       existingRegistry.discoveredFrom !== entry.discoveredFrom ||
       existingRegistry.usageType !== entry.usageType
     ) {
@@ -71,7 +74,7 @@ async function main() {
         await prisma.slotRegistry.update({
           where: { key: entry.key },
           data: {
-            defaultPath: entry.defaultPath,
+            defaultPath: preferredDefaultPath,
             discoveredFrom: entry.discoveredFrom,
             usageType: entry.usageType,
           },
@@ -90,7 +93,7 @@ async function main() {
           data: {
             key: entry.key,
             type: "image",
-            value: entry.defaultPath,
+            value: preferredDefaultPath,
           },
         });
       }

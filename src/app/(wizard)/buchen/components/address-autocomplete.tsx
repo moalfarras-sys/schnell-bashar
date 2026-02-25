@@ -73,7 +73,7 @@ export function AddressAutocomplete(props: {
   const helper = useMemo(() => {
     if (!open) return "";
     if (!canSearch) return "Mindestens 3 Zeichen eingeben.";
-    if (loading) return "Suche…";
+    if (loading) return "Suche⬦";
     if (results.length === 0) return "Keine Treffer.";
     return "";
   }, [open, canSearch, loading, results.length]);
@@ -91,7 +91,7 @@ export function AddressAutocomplete(props: {
             className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100"
           >
             <X className="h-4 w-4" />
-            Löschen
+            Lschen
           </button>
         ) : null}
       </div>
@@ -107,7 +107,7 @@ export function AddressAutocomplete(props: {
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder={props.placeholder ?? "Straße, Hausnummer, PLZ, Ort"}
+          placeholder={props.placeholder ?? "Strae, Hausnummer, PLZ, Ort"}
           className="pl-9"
         />
         {loading ? <Loader2 className="h-5 w-5 animate-spin text-slate-400" /> : null}
@@ -139,7 +139,7 @@ export function AddressAutocomplete(props: {
                     <div className="line-clamp-2">{r.displayName}</div>
                     <div className="mt-1 text-xs font-bold text-slate-600">
                       {r.postalCode} {r.city}
-                      {r.state ? ` · ${r.state}` : ""}
+                      {r.state ? `  ${r.state}` : ""}
                     </div>
                   </button>
                 </li>
@@ -148,11 +148,12 @@ export function AddressAutocomplete(props: {
           ) : null}
 
           <div className="border-t-2 border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700">
-            Adress-Suche via OpenStreetMap (Nominatim). In seltenen Fällen bitte PLZ/Ort prüfen.
+            Adress-Suche via OpenStreetMap (Nominatim). In seltenen Fllen bitte PLZ/Ort prfen.
           </div>
         </div>
       ) : null}
     </div>
   );
 }
+
 

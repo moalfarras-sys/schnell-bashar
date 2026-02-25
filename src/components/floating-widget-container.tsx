@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { FaqChatbot } from "@/components/faq-chatbot";
 import { MessageCircle } from "lucide-react";
@@ -20,3 +20,4 @@ export function FloatingWidgetContainer() {
     </div>
   );
 }
+

@@ -28,8 +28,8 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
     <header
       className={`glass-navbar sticky top-0 z-50 transition-all duration-300 ease-premium ${
         scrolled
-          ? "border-b border-[rgba(143,196,255,0.60)] bg-[rgba(232,243,255,0.84)] shadow-[0_0_0_0.5px_rgba(15,42,69,0.10),0_8px_24px_rgba(15,42,69,0.14),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/90 dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
-          : "border-b border-[rgba(183,217,255,0.56)] bg-[rgba(243,249,255,0.70)] shadow-[0_0_0_0.5px_rgba(15,42,69,0.08),0_2px_8px_rgba(15,42,69,0.10),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-lg dark:border-transparent dark:bg-slate-950/60"
+          ? "border-b border-[rgba(203,213,225,0.85)] bg-[rgba(255,255,255,0.84)] shadow-[0_0_0_0.5px_rgba(15,42,69,0.08),0_8px_24px_rgba(15,42,69,0.12),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/90 dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
+          : "border-b border-[rgba(226,232,240,0.9)] bg-[rgba(255,255,255,0.72)] shadow-[0_0_0_0.5px_rgba(15,42,69,0.06),0_2px_8px_rgba(15,42,69,0.08),inset_0_1px_0_rgba(255,255,255,0.84)] backdrop-blur-lg dark:border-transparent dark:bg-slate-950/60"
       }`}
     >
       <Container className="flex h-16 items-center justify-between">
@@ -54,7 +54,7 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
           <ThemeToggle />
           <Link
             href="/anfrage"
-            className="cursor-pointer rounded-xl px-3.5 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:bg-[rgba(232,243,255,0.85)] hover:text-brand-700 hover:shadow-[0_0_0_0.5px_rgba(15,42,69,0.10),0_2px_6px_rgba(15,42,69,0.10),inset_0_1px_0_rgba(255,255,255,0.65)] focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white dark:hover:shadow-none"
+            className="cursor-pointer rounded-xl px-3.5 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:bg-[rgba(248,250,252,0.95)] hover:text-brand-700 hover:shadow-[0_0_0_0.5px_rgba(15,42,69,0.08),0_2px_6px_rgba(15,42,69,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white dark:hover:shadow-none"
           >
             Anfrage verfolgen
           </Link>

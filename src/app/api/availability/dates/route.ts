@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 import { addDays, format, parseISO } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
@@ -82,7 +82,10 @@ export async function GET(req: Request) {
         availableDates: demoDates,
         effectiveFrom: from,
         to,
+        mode: "demo",
         demoMode: true,
+        message:
+          "Live-Verfügbarkeit ist aktuell nicht erreichbar. Wir zeigen vorübergehend verfügbare Ersatztermine.",
       });
     }
 
@@ -94,7 +97,10 @@ export async function GET(req: Request) {
         availableDates: demoDates,
         effectiveFrom: loaded.context.effectiveFrom,
         to: loaded.context.toISO,
+        mode: "demo",
         demoMode: true,
+        message:
+          "Aktuell sind keine Live-Verfügbarkeitsregeln hinterlegt. Es werden Ersatztermine angezeigt.",
       });
     }
 
@@ -121,6 +127,7 @@ export async function GET(req: Request) {
       availableDates,
       effectiveFrom: loaded.context.effectiveFrom,
       to: loaded.context.toISO,
+      mode: "live",
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -132,7 +139,10 @@ export async function GET(req: Request) {
         availableDates: demoDates,
         effectiveFrom: from,
         to,
+        mode: "demo",
         demoMode: true,
+        message:
+          "Die Verfügbarkeit konnte nicht live geladen werden. Es werden Ersatztermine angezeigt.",
       });
     }
     return NextResponse.json(
@@ -141,3 +151,4 @@ export async function GET(req: Request) {
     );
   }
 }
+

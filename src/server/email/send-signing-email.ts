@@ -1,4 +1,4 @@
-import { getDefaultFrom, sendEmail } from "./mailer";
+﻿import { getDefaultFrom, sendEmail } from "./mailer";
 
 interface SendSigningEmailParams {
   customerName: string;
@@ -170,4 +170,5 @@ kontakt@schnellsicherumzug.de`;
 
   return result;
 }
+
 

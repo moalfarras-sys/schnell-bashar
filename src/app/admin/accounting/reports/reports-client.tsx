@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Button } from "@/components/ui/button";
 import { Download, Truck, Recycle, Wrench, Package } from "lucide-react";
@@ -86,9 +86,7 @@ export function ReportsClient({
         </div>
         <div className="rounded-xl border-2 border-orange-200 bg-orange-50 p-5 shadow-sm">
           <div className="text-sm font-semibold text-orange-800">Offen</div>
-          <div className="mt-1 text-2xl font-bold text-orange-900">
-            {eur(totals.totalGross - totals.totalPaid)}
-          </div>
+          <div className="mt-1 text-2xl font-bold text-orange-900">{eur(totals.totalGross - totals.totalPaid)}</div>
           <div className="text-xs text-orange-700">{totals.unpaidCount} Rechnungen</div>
         </div>
         <div className="rounded-xl border-2 border-red-200 bg-red-50 p-5 shadow-sm">
@@ -114,9 +112,7 @@ export function ReportsClient({
 
       <div className="rounded-xl border-2 border-slate-200 bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">
-            Monatliche Übersicht — {year}
-          </h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">Monatliche Übersicht — {year}</h2>
           <Button variant="outline" size="sm" className="gap-1" onClick={exportCSV}>
             <Download className="h-3.5 w-3.5" />
             CSV Export
@@ -140,15 +136,11 @@ export function ReportsClient({
                 <tr key={row.month} className="border-b border-slate-50 hover:bg-slate-50">
                   <td className="px-6 py-3 font-semibold text-slate-900">{row.month}</td>
                   <td className="px-4 py-3 text-right text-slate-700">{row.invoiceCount}</td>
-                  <td className="px-4 py-3 text-right font-medium text-slate-900">
-                    {eur(row.totalGross)}
-                  </td>
+                  <td className="px-4 py-3 text-right font-medium text-slate-900">{eur(row.totalGross)}</td>
                   <td className="px-4 py-3 text-right text-slate-600">{eur(row.totalNet)}</td>
                   <td className="px-4 py-3 text-right text-slate-600">{eur(row.totalVat)}</td>
                   <td className="px-4 py-3 text-right text-green-600">{eur(row.totalPaid)}</td>
-                  <td
-                    className={`px-4 py-3 text-right font-medium ${row.outstanding > 0 ? "text-red-600" : "text-slate-400"}`}
-                  >
+                  <td className={`px-4 py-3 text-right font-medium ${row.outstanding > 0 ? "text-red-600" : "text-slate-400"}`}>
                     {eur(row.outstanding)}
                   </td>
                 </tr>
@@ -162,9 +154,7 @@ export function ReportsClient({
                 <td className="px-4 py-3 text-right text-slate-700">{eur(totals.totalNet)}</td>
                 <td className="px-4 py-3 text-right text-slate-700">{eur(totals.totalVat)}</td>
                 <td className="px-4 py-3 text-right text-green-600">{eur(totals.totalPaid)}</td>
-                <td className="px-4 py-3 text-right text-red-600">
-                  {eur(totals.totalGross - totals.totalPaid)}
-                </td>
+                <td className="px-4 py-3 text-right text-red-600">{eur(totals.totalGross - totals.totalPaid)}</td>
               </tr>
             </tfoot>
           </table>

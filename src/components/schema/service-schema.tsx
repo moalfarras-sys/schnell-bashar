@@ -1,4 +1,4 @@
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellumzug-berlin.de";
+﻿const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellumzug-berlin.de";
 
 export function ServiceSchema(props: {
   name: string;
@@ -56,3 +56,4 @@ export function ServiceSchema(props: {
     />
   );
 }
+

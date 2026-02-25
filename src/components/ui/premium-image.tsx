@@ -10,7 +10,7 @@ type PremiumImageProps = Omit<ImageProps, "alt"> & {
   overlay?: Overlay;
   zoom?: boolean;
   rounded?: "md" | "lg" | "xl" | "2xl" | "3xl" | "full";
-  aspect?: "video" | "square" | "portrait" | "wide" | "auto";
+  aspect?: "video" | "square" | "portrait" | "wide" | "fourThree" | "auto";
   className?: string;
   containerClassName?: string;
 };
@@ -44,6 +44,7 @@ const aspectClasses = {
   square: "aspect-square",
   portrait: "aspect-[3/4]",
   wide: "aspect-[21/9]",
+  fourThree: "aspect-[4/3]",
   auto: "",
 };
 

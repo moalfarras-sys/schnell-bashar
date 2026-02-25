@@ -107,7 +107,7 @@ export default function AdminJobsPage() {
   }
 
   async function deleteJob(id: string) {
-    if (!confirm("Stellenangebot wirklich löschen?")) return;
+    if (!confirm("Stellenangebot wirklich lschen?")) return;
     await fetch(`/api/admin/jobs/${id}`, { method: "DELETE" });
     await load();
   }
@@ -116,7 +116,7 @@ export default function AdminJobsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white">Stellenangebote</h1>
-        <span className="text-sm text-slate-400">{jobs.length} Einträge</span>
+        <span className="text-sm text-slate-400">{jobs.length} Eintrge</span>
       </div>
 
       <form
@@ -159,7 +159,7 @@ export default function AdminJobsPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-400">Beschäftigungsart</label>
+            <label className="mb-1 block text-xs font-medium text-slate-400">Beschftigungsart</label>
             <select
               className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white"
               value={form.type}
@@ -211,7 +211,7 @@ export default function AdminJobsPage() {
             disabled={saving}
             className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-50"
           >
-            {saving ? "Speichert …" : editingId ? "Aktualisieren" : "Erstellen"}
+            {saving ? "Speichert ⬦" : editingId ? "Aktualisieren" : "Erstellen"}
           </button>
           {editingId && (
             <button
@@ -226,7 +226,7 @@ export default function AdminJobsPage() {
       </form>
 
       {loading ? (
-        <p className="text-sm text-slate-400">Laden …</p>
+        <p className="text-sm text-slate-400">Laden ⬦</p>
       ) : jobs.length === 0 ? (
         <p className="text-sm text-slate-400">Noch keine Stellenangebote erstellt.</p>
       ) : (
@@ -240,8 +240,8 @@ export default function AdminJobsPage() {
                 <div className="min-w-0 flex-1">
                   <h3 className="text-base font-bold text-white">{job.title}</h3>
                   <p className="mt-1 text-xs text-slate-400">
-                    {job.location} · {job.type}
-                    {job.department ? ` · ${job.department}` : ""}
+                    {job.location}  {job.type}
+                    {job.department ? `  ${job.department}` : ""}
                   </p>
                   <p className="mt-2 line-clamp-2 text-sm text-slate-300">{job.description}</p>
                   {job.requirements && (
@@ -278,7 +278,7 @@ export default function AdminJobsPage() {
                   onClick={() => deleteJob(job.id)}
                   className="rounded-lg border border-red-800 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-900/30"
                 >
-                  Löschen
+                  Lschen
                 </button>
               </div>
             </article>
@@ -288,3 +288,4 @@ export default function AdminJobsPage() {
     </div>
   );
 }
+

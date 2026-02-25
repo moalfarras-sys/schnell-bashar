@@ -1,4 +1,4 @@
-import { prisma } from "@/server/db/prisma";
+﻿import { prisma } from "@/server/db/prisma";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -16,9 +16,17 @@ const categories = [
 ];
 
 export default async function AdminCatalogPage() {
-  const items = await prisma.catalogItem.findMany({
-    orderBy: [{ categoryKey: "asc" }, { sortOrder: "asc" }, { nameDe: "asc" }],
-  });
+  let dbWarning: string | null = null;
+  let items: Awaited<ReturnType<typeof prisma.catalogItem.findMany>> = [];
+
+  try {
+    items = await prisma.catalogItem.findMany({
+      orderBy: [{ categoryKey: "asc" }, { sortOrder: "asc" }, { nameDe: "asc" }],
+    });
+  } catch (error) {
+    console.error("[admin/catalog] failed to load catalog", error);
+    dbWarning = "Katalogdaten konnten gerade nicht geladen werden. Bitte Datenbankverbindung prüfen.";
+  }
 
   return (
     <div className="grid gap-6">
@@ -29,12 +37,18 @@ export default async function AdminCatalogPage() {
         </div>
       </div>
 
+      {dbWarning ? (
+        <div className="rounded-xl border border-amber-300 bg-amber-100/95 px-4 py-3 text-sm font-semibold text-amber-900">
+          {dbWarning}
+        </div>
+      ) : null}
+
       <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
         <div className="text-sm font-extrabold text-white">Neuer Artikel</div>
         <form action={createCatalogItemAction} className="mt-4 grid gap-3 md:grid-cols-6">
           <div className="md:col-span-2">
             <div className="text-xs font-bold text-slate-200">Name (DE)</div>
-            <Input name="nameDe" placeholder="z.B. Sofa (2‑Sitzer)" required className="border-2 border-slate-600 bg-slate-700 text-white placeholder:text-slate-400" />
+            <Input name="nameDe" placeholder="z.B. Sofa (2-Sitzer)" required className="border-2 border-slate-600 bg-slate-700 text-white placeholder:text-slate-400" />
           </div>
           <div>
             <div className="text-xs font-bold text-slate-200">Slug</div>
@@ -44,9 +58,7 @@ export default async function AdminCatalogPage() {
             <div className="text-xs font-bold text-slate-200">Kategorie</div>
             <Select name="categoryKey" defaultValue="furniture" className="border-2 border-slate-600 bg-slate-700 text-white">
               {categories.map((c) => (
-                <option key={c.key} value={c.key}>
-                  {c.label}
-                </option>
+                <option key={c.key} value={c.key}>{c.label}</option>
               ))}
             </Select>
           </div>
@@ -63,9 +75,7 @@ export default async function AdminCatalogPage() {
             <label className="inline-flex items-center gap-2 text-sm font-semibold text-slate-200">
               <Checkbox name="isHeavy" className="border-slate-600" /> Schwer
             </label>
-            <Button type="submit">
-              Erstellen
-            </Button>
+            <Button type="submit">Erstellen</Button>
           </div>
         </form>
       </div>
@@ -96,38 +106,16 @@ export default async function AdminCatalogPage() {
                       <Checkbox name="active" defaultChecked={it.active} className="border-slate-500" />
                       <Select name="categoryKey" defaultValue={it.categoryKey} className="h-10 w-[140px] border-2 border-slate-600 bg-slate-700 text-white">
                         {categories.map((c) => (
-                          <option key={c.key} value={c.key}>
-                            {c.label}
-                          </option>
+                          <option key={c.key} value={c.key}>{c.label}</option>
                         ))}
                       </Select>
                       <Input name="nameDe" defaultValue={it.nameDe} className="h-10 w-[260px] border-2 border-slate-600 bg-slate-700 text-white" />
                       <Input name="slugReadOnly" defaultValue={it.slug} className="h-10 w-[160px] border-2 border-slate-600 bg-slate-700 text-slate-300" disabled />
-                      <Input
-                        name="defaultVolumeM3"
-                        type="number"
-                        step="0.01"
-                        defaultValue={String(it.defaultVolumeM3)}
-                        className="h-10 w-[110px] border-2 border-slate-600 bg-slate-700 text-white"
-                      />
-                      <Input
-                        name="laborMinutesPerUnit"
-                        type="number"
-                        step="1"
-                        defaultValue={String(it.laborMinutesPerUnit)}
-                        className="h-10 w-[110px] border-2 border-slate-600 bg-slate-700 text-white"
-                      />
+                      <Input name="defaultVolumeM3" type="number" step="0.01" defaultValue={String(it.defaultVolumeM3)} className="h-10 w-[110px] border-2 border-slate-600 bg-slate-700 text-white" />
+                      <Input name="laborMinutesPerUnit" type="number" step="1" defaultValue={String(it.laborMinutesPerUnit)} className="h-10 w-[110px] border-2 border-slate-600 bg-slate-700 text-white" />
                       <Checkbox name="isHeavy" defaultChecked={it.isHeavy} className="border-slate-500" />
-                      <Input
-                        name="sortOrder"
-                        type="number"
-                        step="1"
-                        defaultValue={String(it.sortOrder)}
-                        className="h-10 w-[90px] border-2 border-slate-600 bg-slate-700 text-white"
-                      />
-                      <Button type="submit" size="sm">
-                        Speichern
-                      </Button>
+                      <Input name="sortOrder" type="number" step="1" defaultValue={String(it.sortOrder)} className="h-10 w-[90px] border-2 border-slate-600 bg-slate-700 text-white" />
+                      <Button type="submit" size="sm">Speichern</Button>
                     </form>
                   </td>
                 </tr>
@@ -151,4 +139,3 @@ export default async function AdminCatalogPage() {
     </div>
   );
 }
-

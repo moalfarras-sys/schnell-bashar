@@ -22,7 +22,7 @@ export default async function KontaktPage() {
       <div className="max-w-3xl">
         <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">Kontakt aufnehmen</h1>
         <p className="mt-4 text-base text-slate-800 dark:text-slate-200">
-          Teilen Sie uns Ihre Anfrage mit und wir melden uns schnellstmöglich. Wir helfen Ihnen schnell
+          Teilen Sie uns Ihre Anfrage mit und wir melden uns schnellstmglich. Wir helfen Ihnen schnell
           und sicher weiter.
         </p>
       </div>
@@ -31,8 +31,8 @@ export default async function KontaktPage() {
         <div className="premium-surface-emphasis rounded-3xl p-6 sm:p-8">
           <div className="text-lg font-extrabold text-slate-950 dark:text-white">Anfrage schicken</div>
           <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-            Für eine direkte Online-Buchung nutzen Sie unser Buchungsformular. Für allgemeine Fragen und
-            Rückrufe können Sie dieses Kontaktformular verwenden.
+            Fr eine direkte Online-Buchung nutzen Sie unser Buchungsformular. Fr allgemeine Fragen und
+            Rckrufe knnen Sie dieses Kontaktformular verwenden.
           </p>
           <div className="mt-5">
             <ContactForm />
@@ -60,15 +60,15 @@ export default async function KontaktPage() {
           />
           <Info
             icon={Mail}
-            title="E‑Mail"
+            title="EMail"
             lines={[{ label: "kontakt@schnellsicherumzug.de", href: "mailto:kontakt@schnellsicherumzug.de" }]}
           />
           <Info
             icon={MapPin}
             title="Standort"
             lines={[
-              { label: "Anzengruber Straße 9, 12043 Berlin" },
-              { label: "Erreichbarkeit: Mo – So, rund um die Uhr" },
+              { label: "Anzengruber Strae 9, 12043 Berlin" },
+              { label: "Erreichbarkeit: Mo  So, rund um die Uhr" },
             ]}
           />
         </div>
@@ -117,3 +117,4 @@ function Info(props: {
     </div>
   );
 }
+

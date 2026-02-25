@@ -45,6 +45,10 @@ export type EstimateBreakdown = {
   distanceSource?: "approx" | "ors" | "cache" | "fallback";
   driveChargeCents: number;
   subtotalCents: number;
+  packageTier: "STANDARD" | "PLUS" | "PREMIUM";
+  packageMultiplier: number;
+  packageAdjustmentCents: number;
+  discountCents: number;
   totalCents: number;
   priceMinCents: number;
   priceMaxCents: number;
@@ -68,6 +72,18 @@ function round2(n: number) {
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
+}
+
+function packageMultiplierFor(
+  serviceType: WizardPayload["serviceType"],
+  tier: WizardPayload["packageTier"],
+) {
+  const map: Record<WizardPayload["serviceType"], Record<WizardPayload["packageTier"], number>> = {
+    MOVING: { STANDARD: 0.96, PLUS: 1, PREMIUM: 1.12 },
+    DISPOSAL: { STANDARD: 0.94, PLUS: 1, PREMIUM: 1.1 },
+    BOTH: { STANDARD: 0.95, PLUS: 1, PREMIUM: 1.11 },
+  };
+  return map[serviceType][tier];
 }
 
 function haversineKm(a: { lat: number; lon: number }, b: { lat: number; lon: number }) {
@@ -256,8 +272,19 @@ export function estimateOrder(
 
   subtotalCents = Math.max(0, subtotalCents);
 
-  const mult = speedMultiplier(payload.timing.speed, pricing);
-  const totalCents = Math.round(subtotalCents * mult);
+  const speedMult = speedMultiplier(payload.timing.speed, pricing);
+  const packageTier = payload.packageTier ?? "PLUS";
+  const packageMultiplier = packageMultiplierFor(payload.serviceType, packageTier);
+  const subtotalWithSpeed = Math.round(subtotalCents * speedMult);
+  const totalAfterPackage = Math.round(subtotalWithSpeed * packageMultiplier);
+  const packageAdjustmentCents = totalAfterPackage - subtotalWithSpeed;
+
+  const discountFromPercent = payload.offerContext?.appliedDiscountPercent
+    ? Math.round(totalAfterPackage * (clamp(payload.offerContext.appliedDiscountPercent, 0, 100) / 100))
+    : 0;
+  const discountFromCents = payload.offerContext?.appliedDiscountCents ?? 0;
+  const discountCents = Math.max(0, discountFromPercent + discountFromCents);
+  const totalCents = Math.max(0, totalAfterPackage - discountCents);
 
   const u = clamp(pricing.uncertaintyPercent, 0, 30) / 100;
   const priceMinCents = Math.max(0, Math.round(totalCents * (1 - u)));
@@ -286,6 +313,10 @@ export function estimateOrder(
       distanceSource,
       driveChargeCents,
       subtotalCents,
+      packageTier,
+      packageMultiplier,
+      packageAdjustmentCents,
+      discountCents,
       totalCents,
       priceMinCents,
       priceMaxCents,

@@ -1,4 +1,4 @@
-import { ImageResponse } from "next/og";
+﻿import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 export const alt = "Schnell Sicher Umzug — Premium Umzug & Entsorgung";
@@ -100,3 +100,4 @@ export default async function Image() {
     },
   );
 }
+

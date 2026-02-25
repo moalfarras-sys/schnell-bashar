@@ -20,8 +20,8 @@ type SpeedType = "ECONOMY" | "STANDARD" | "EXPRESS";
 
 const ADDON_OPTIONS = [
   { key: "PACKING" as const, label: "Packservice" },
-  { key: "DISMANTLE_ASSEMBLE" as const, label: "Möbelmontage" },
-  { key: "ENTRUEMPELUNG" as const, label: "Entrümpelung" },
+  { key: "DISMANTLE_ASSEMBLE" as const, label: "Mbelmontage" },
+  { key: "ENTRUEMPELUNG" as const, label: "Entrmpelung" },
 ] as const;
 
 const ADDON_SURCHARGES_CENTS: Record<string, number> = {
@@ -89,19 +89,19 @@ function eur(cents: number) {
 
 const serviceLabels: Record<ServiceType, string> = {
   UMZUG: "Umzug",
-  ENTSORGUNG: "Entsorgung / Sperrmüll",
+  ENTSORGUNG: "Entsorgung / Sperrmll",
   KOMBI: "Umzug + Entsorgung",
 };
 
 const speedLabels: Record<SpeedType, string> = {
-  ECONOMY: "Günstig",
+  ECONOMY: "Gnstig",
   STANDARD: "Standard",
   EXPRESS: "Express",
 };
 
 const speedDescriptions: Record<SpeedType, string> = {
-  ECONOMY: "Günstiger, flexibler Termin",
-  STANDARD: "Schnelle Rückmeldung",
+  ECONOMY: "Gnstiger, flexibler Termin",
+  STANDARD: "Schnelle Rckmeldung",
   EXPRESS: "Priorisierte Planung",
 };
 
@@ -109,7 +109,7 @@ function distanceSourceLabel(source?: CalculatedEstimate["distanceSource"]) {
   if (source === "ors") return "OpenRouteService";
   if (source === "cache") return "PLZ-Cache";
   if (source === "fallback") return "Fallback";
-  return "Schätzung";
+  return "Schtzung";
 }
 
 const INQUIRY_STORAGE_KEY = "ssu_inquiry";
@@ -292,11 +292,11 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
         if (!res.ok) {
           throw new Error(
             (json && "error" in json && json.error) ||
-              "Preisberechnung konnte nicht durchgeführt werden.",
+              "Preisberechnung konnte nicht durchgefhrt werden.",
           );
         }
         if (!json || !("breakdown" in json)) {
-          throw new Error("Ungültige Antwort vom Preisservice.");
+          throw new Error("Ungltige Antwort vom Preisservice.");
         }
 
         if (cancelled) return;
@@ -323,7 +323,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
         setCalcError(
           error instanceof Error
             ? error.message
-            : "Preisberechnung konnte nicht durchgeführt werden.",
+            : "Preisberechnung konnte nicht durchgefhrt werden.",
         );
       } finally {
         if (!cancelled) setCalcLoading(false);
@@ -405,7 +405,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
         {/* Speed Type */}
         <fieldset>
           <legend className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Priorität
+            Prioritt
           </legend>
           <div className="grid gap-2">
             {(["ECONOMY", "STANDARD", "EXPRESS"] as SpeedType[]).map((s) => (
@@ -455,7 +455,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
             htmlFor="volume-input"
             className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400"
           >
-            Volumen (m³)
+            Volumen (m)
           </label>
           <div className="flex items-center gap-2 rounded-xl border-2 border-slate-300 bg-[color:var(--surface-elevated)] px-3 py-1.5 shadow-sm dark:border-slate-600 dark:bg-slate-800/60">
             <button
@@ -482,7 +482,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
               type="button"
               onClick={() => setVolumeM3((v) => Math.min(200, v + 1))}
               className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg bg-slate-100 text-lg font-bold text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
-              aria-label="Volumen erhöhen"
+              aria-label="Volumen erhhen"
             >
               +
             </button>
@@ -498,8 +498,8 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
           aria-label="Volumen Schieberegler"
         />
         <div className="mt-1 flex justify-between text-xs text-slate-600 dark:text-slate-400">
-          <span>1 m³</span>
-          <span>80 m³</span>
+          <span>1 m</span>
+          <span>80 m</span>
         </div>
       </div>
 
@@ -507,7 +507,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="from-address" className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Von (PLZ + Straße)
+            Von (PLZ + Strae)
           </label>
           <Input
             id="from-address"
@@ -519,7 +519,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
         </div>
         <div>
           <label htmlFor="to-address" className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Nach (PLZ + Straße)
+            Nach (PLZ + Strae)
           </label>
           <Input
             id="to-address"
@@ -533,12 +533,12 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
 
       {needsRoute && !hasRouteAddresses ? (
         <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
-          Für die genaue Fahrtkosten-Berechnung bitte beide Adressen (Von/Nach) mit PLZ angeben.
+          Fr die genaue Fahrtkosten-Berechnung bitte beide Adressen (Von/Nach) mit PLZ angeben.
         </div>
       ) : null}
       {calcLoading ? (
         <div className="mt-3 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
-          Preis wird live berechnet…
+          Preis wird live berechnet⬦
         </div>
       ) : null}
       {calcError ? (
@@ -581,7 +581,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
               type="button"
               onClick={() => setFloors((f) => Math.min(10, f + 1))}
               className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg bg-slate-100 text-lg font-bold text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
-              aria-label="Etagen erhöhen"
+              aria-label="Etagen erhhen"
             >
               +
             </button>
@@ -614,7 +614,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
             onChange={(e) => setNeedNoParkingZone(e.target.checked)}
             className="h-4 w-4 cursor-pointer rounded border-slate-300 accent-brand-600"
           />
-          Halteverbotszone benötigt
+          Halteverbotszone bentigt
         </label>
       </div>
 
@@ -658,11 +658,11 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
         </div>
         <div className="grid gap-1.5 text-sm">
           <div className="flex justify-between text-slate-700 dark:text-slate-400">
-            <span>Grundgebühr ({serviceLabels[service]})</span>
+            <span>Grundgebhr ({serviceLabels[service]})</span>
             <span className="font-semibold text-slate-900 dark:text-slate-100">{eur(estimate.baseCents)}</span>
           </div>
           <div className="flex justify-between text-slate-700 dark:text-slate-400">
-            <span>Volumen ({formatNumberDE(volumeM3)} m³)</span>
+            <span>Volumen ({formatNumberDE(volumeM3)} m)</span>
             <span className="font-semibold text-slate-900 dark:text-slate-100">{eur(estimate.volumeCents)}</span>
           </div>
           {estimate.floorsCents > 0 && (
@@ -705,14 +705,14 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
             </div>
           )}
           <div className="flex justify-between text-slate-700 dark:text-slate-400">
-            <span>Priorität ({speedLabels[speed]})</span>
+            <span>Prioritt ({speedLabels[speed]})</span>
             <span className="font-semibold text-slate-900 dark:text-slate-100">
-              {speed === "ECONOMY" ? "−10 %" : speed === "EXPRESS" ? "+30 %" : "±0 %"}
+              {speed === "ECONOMY" ? "10 %" : speed === "EXPRESS" ? "+30 %" : "±0 %"}
             </span>
           </div>
           <div className="my-1 border-t-2 border-slate-300 dark:border-slate-600" />
           <div className="flex justify-between text-slate-800 dark:text-slate-200">
-            <span className="font-semibold">Netto (geschätzt)</span>
+            <span className="font-semibold">Netto (geschtzt)</span>
             <span className="font-bold">{eur(estimate.netCents)}</span>
           </div>
           <div className="flex justify-between text-slate-600 dark:text-slate-400">
@@ -726,13 +726,13 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
       <div className="mt-4 rounded-2xl border-2 border-brand-400 bg-linear-to-r from-brand-50 to-blue-50 p-5 shadow-md dark:from-brand-900/30 dark:to-blue-900/20 dark:border-brand-600/50">
         <div className="flex items-center gap-2">
           <CirclePercent className="h-5 w-5 text-brand-700 dark:text-brand-400" />
-          <span className="text-sm font-bold text-brand-900 dark:text-brand-300">Geschätzter Preisrahmen</span>
+          <span className="text-sm font-bold text-brand-900 dark:text-brand-300">Geschtzter Preisrahmen</span>
         </div>
         <div className="mt-2 flex items-baseline gap-2">
           <span className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white">
             {eur(estimate.minCents)}
           </span>
-          <span className="text-lg font-bold text-slate-600 dark:text-slate-400">–</span>
+          <span className="text-lg font-bold text-slate-600 dark:text-slate-400"></span>
           <span className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white">
             {eur(estimate.maxCents)}
           </span>
@@ -749,7 +749,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
           className="w-full flex-1 gap-2"
           onClick={() => {
             if ((service === "UMZUG" || service === "KOMBI") && !hasRouteAddresses) {
-              setCalcError("Bitte geben Sie für Umzug/Kombi sowohl Von- als auch Nach-Adresse an.");
+              setCalcError("Bitte geben Sie fr Umzug/Kombi sowohl Von- als auch Nach-Adresse an.");
               return;
             }
             const inquiry = {
@@ -780,7 +780,7 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
           }}
         >
           <CalendarDays className="h-5 w-5" />
-          Termin auswählen
+          Termin auswhlen
           <ArrowRight className="h-4 w-4" />
         </Button>
         <a href="tel:+491729573681" className="flex-1 sm:flex-initial">
@@ -793,10 +793,11 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
       <div className="mt-4 flex items-start gap-2 text-xs text-slate-600 dark:text-slate-400">
         <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
         <span>
-          Das finale Angebot bestätigen wir nach kurzer Prüfung. Der Rechner dient als
+          Das finale Angebot besttigen wir nach kurzer Prfung. Der Rechner dient als
           unverbindliche Orientierung.
         </span>
       </div>
     </div>
   );
 }
+

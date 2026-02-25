@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { ORSDistanceError, resolveRouteDistance } from "@/server/distance/ors";
@@ -96,3 +96,4 @@ export async function POST(req: Request) {
     );
   }
 }
+

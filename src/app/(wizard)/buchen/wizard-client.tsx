@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -105,6 +105,29 @@ const speedLabels: Record<WizardPayload["timing"]["speed"], string> = {
   EXPRESS: "Express",
 };
 
+const packageLabels: Record<WizardPayload["packageTier"], string> = {
+  STANDARD: "Standard",
+  PLUS: "Plus",
+  PREMIUM: "Premium",
+};
+
+const packageDescriptions: Record<WizardPayload["serviceType"], Record<WizardPayload["packageTier"], string>> = {
+  MOVING: {
+    STANDARD: "Preisbewusst mit flexiblem Fenster",
+    PLUS: "Ausgewogen, schnell und transparent",
+    PREMIUM: "Priorisiert und schnellste Planung",
+  },
+  DISPOSAL: {
+    STANDARD: "Kosteneffizient mit flexiblem Timing",
+    PLUS: "Optimale Balance aus Preis und Tempo",
+    PREMIUM: "Priorisierte Abholung mit Express-Handling",
+  },
+  BOTH: {
+    STANDARD: "Kombi mit Fokus auf Budget",
+    PLUS: "Kombi mit bester Gesamtbalance",
+    PREMIUM: "Kombi mit maximaler Priorisierung",
+  },
+};
 const contactLabels: Record<WizardPayload["customer"]["contactPreference"], string> = {
   PHONE: "Telefon",
   WHATSAPP: "WhatsApp",
@@ -168,8 +191,10 @@ export function BookingWizard(props: {
   const variant = props.variant ?? "default";
   const lockedServiceType: WizardPayload["serviceType"] | undefined =
     variant === "montage" ? "MOVING" : variant === "entsorgung" ? "DISPOSAL" : undefined;
-  const forcedAddons: WizardPayload["addons"] =
-    variant === "montage" ? ["DISMANTLE_ASSEMBLE"] : [];
+  const forcedAddons = useMemo<WizardPayload["addons"]>(
+    () => (variant === "montage" ? ["DISMANTLE_ASSEMBLE"] : []),
+    [variant],
+  );
   const hideServiceStep = variant !== "default";
   const bookingContext: WizardPayload["bookingContext"] =
     variant === "montage"
@@ -205,6 +230,8 @@ export function BookingWizard(props: {
   const [photos, setPhotos] = useState<File[]>([]);
 
   const [speed, setSpeed] = useState<WizardPayload["timing"]["speed"]>("STANDARD");
+  const [packageTier, setPackageTier] = useState<WizardPayload["packageTier"]>("PLUS");
+  const [offerCode, setOfferCode] = useState("");
   const earliestISO = useMemo(() => {
     const d = addDays(new Date(), leadDays(speed, props.pricing));
     return format(d, "yyyy-MM-dd");
@@ -231,6 +258,21 @@ export function BookingWizard(props: {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const offerContext = useMemo(() => {
+    const code = offerCode.trim().toUpperCase();
+    let appliedDiscountPercent: number | undefined;
+    if (code === "MONTAGE10" && bookingContext === "MONTAGE") appliedDiscountPercent = 10;
+    if (code === "ENTSORGUNG10" && bookingContext === "ENTSORGUNG") appliedDiscountPercent = 10;
+    if (code === "KOMBI5" && serviceType === "BOTH") appliedDiscountPercent = 5;
+    return {
+      appliedDiscountPercent,
+      offerCode: code || undefined,
+      validUntil: appliedDiscountPercent
+        ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+        : undefined,
+    };
+  }, [bookingContext, offerCode, serviceType]);
 
   // Keep pickup address in sync for BOTH (optional)
   useEffect(() => {
@@ -259,7 +301,7 @@ export function BookingWizard(props: {
       for (const addon of forcedAddons) next.add(addon);
       return [...next] as WizardPayload["addons"];
     });
-  }, [forcedAddons.length]);
+  }, [forcedAddons]);
 
   const effectivePickup = serviceType === "BOTH" && samePickupAsStart ? startAddress : pickupAddress;
 
@@ -349,6 +391,8 @@ export function BookingWizard(props: {
   const estimate = useMemo(() => {
     const payloadForEstimate: WizardPayload = {
       bookingContext,
+      packageTier,
+      offerContext,
       serviceType,
       addons,
       pickupAddress: effectivePickup,
@@ -398,6 +442,8 @@ export function BookingWizard(props: {
       : undefined);
   }, [
     bookingContext,
+    packageTier,
+    offerContext,
     serviceType,
     addons,
     effectivePickup,
@@ -474,7 +520,7 @@ export function BookingWizard(props: {
     return () => {
       cancelled = true;
     };
-  }, [serviceType, speed, preferredFrom, preferredTo, jobDurationMinutes, step, selectedSlotStart]);
+  }, [serviceType, speed, preferredFrom, preferredTo, jobDurationMinutes, step, selectedSlotStart, hideServiceStep]);
 
   const steps = useMemo(() => getSteps(serviceType, { hideServiceStep }), [serviceType, hideServiceStep]);
   const current = steps[step] ?? steps[0];
@@ -492,6 +538,8 @@ export function BookingWizard(props: {
         return sumQty(itemsMove) > 0;
       case "disposal":
         return forbiddenConfirmed;
+      case "package":
+        return true;
       case "timing":
         return !!selectedSlotStart;
       case "customer":
@@ -525,6 +573,8 @@ export function BookingWizard(props: {
 
       const payload: WizardPayload = {
         bookingContext,
+        packageTier,
+        offerContext,
         serviceType,
         addons,
         pickupAddress: serviceType === "DISPOSAL" ? pickupAddress : effectivePickup,
@@ -588,6 +638,8 @@ export function BookingWizard(props: {
   useEffect(() => {
     const data = {
       serviceType,
+      packageTier,
+      offerCode,
       addons,
       startAddress,
       destinationAddress,
@@ -613,7 +665,10 @@ export function BookingWizard(props: {
     };
     localStorage.setItem(storageKey, JSON.stringify(data));
   }, [
+    storageKey,
     serviceType,
+    packageTier,
+    offerCode,
     addons,
     startAddress,
     destinationAddress,
@@ -644,6 +699,8 @@ export function BookingWizard(props: {
       if (!raw) return;
       const d = JSON.parse(raw);
       if (d.serviceType && !lockedServiceType) setServiceType(d.serviceType);
+      if (d.packageTier) setPackageTier(d.packageTier);
+      if (typeof d.offerCode === "string") setOfferCode(d.offerCode);
       if (Array.isArray(d.addons)) {
         const next = new Set<WizardPayload["addons"][number]>(d.addons);
         for (const addon of forcedAddons) next.add(addon);
@@ -685,7 +742,7 @@ export function BookingWizard(props: {
               <div className="text-base font-extrabold">Montage-Buchung</div>
               <div className="mt-1 font-semibold">
                 Dieser Ablauf ist speziell für Möbelmontage optimiert. Die Leistung
-                <span className="font-extrabold"> "Möbel Demontage/Montage"</span> ist bereits enthalten.
+                <span className="font-extrabold"> &quot;Möbel Demontage/Montage&quot;</span> ist bereits enthalten.
               </div>
             </div>
           ) : (
@@ -761,6 +818,17 @@ export function BookingWizard(props: {
               />
             ) : null}
 
+            {current.key === "package" ? (
+              <StepPackage
+                serviceType={serviceType}
+                packageTier={packageTier}
+                setPackageTier={setPackageTier}
+                offerCode={offerCode}
+                setOfferCode={setOfferCode}
+                offerContext={offerContext}
+              />
+            ) : null}
+
             {current.key === "timing" ? (
               <StepTiming
                 speed={speed}
@@ -797,6 +865,8 @@ export function BookingWizard(props: {
             {current.key === "summary" ? (
               <StepSummary
                 serviceType={serviceType}
+                packageTier={packageTier}
+                offerContext={offerContext}
                 addons={addons}
                 startAddress={startAddress}
                 destinationAddress={destinationAddress}
@@ -945,6 +1015,7 @@ function getSteps(
     { key: "items" as const, title: "Gegenstände" },
   ];
   const disposal = { key: "disposal" as const, title: "Entsorgung" };
+  const packageStep = { key: "package" as const, title: "Paket & Angebot" };
   const rest = [
     { key: "timing" as const, title: "Termin" },
     { key: "customer" as const, title: "Kontakt" },
@@ -953,8 +1024,8 @@ function getSteps(
 
   const withService =
     serviceType === "DISPOSAL" || serviceType === "BOTH"
-      ? [...base, disposal, ...rest]
-      : [...base, ...rest];
+      ? [...base, disposal, packageStep, ...rest]
+      : [...base, packageStep, ...rest];
 
   if (options?.hideServiceStep) {
     return withService.filter((step) => step.key !== "service");
@@ -1656,6 +1727,72 @@ function StepTiming(props: {
   );
 }
 
+function StepPackage(props: {
+  serviceType: WizardPayload["serviceType"];
+  packageTier: WizardPayload["packageTier"];
+  setPackageTier: (v: WizardPayload["packageTier"]) => void;
+  offerCode: string;
+  setOfferCode: (v: string) => void;
+  offerContext?: WizardPayload["offerContext"];
+}) {
+  const tiers: WizardPayload["packageTier"][] = ["STANDARD", "PLUS", "PREMIUM"];
+  return (
+    <div className="grid gap-6">
+      <div className="premium-surface-emphasis rounded-3xl p-6">
+        <div className="text-sm font-extrabold text-slate-900 dark:text-white">Paket wählen</div>
+        <div className="mt-4 grid gap-4 md:grid-cols-3">
+          {tiers.map((tier) => {
+            const active = props.packageTier === tier;
+            return (
+              <button
+                key={tier}
+                type="button"
+                className={cn(
+                  "premium-elevate rounded-2xl border-2 p-5 text-left shadow-sm",
+                  active
+                    ? "border-brand-500 bg-brand-50 dark:border-brand-400 dark:bg-brand-950/30"
+                    : "border-slate-300 bg-[color:var(--surface-elevated)] hover:border-slate-400 dark:border-slate-600 dark:bg-slate-800/60 dark:hover:border-slate-500",
+                )}
+                onClick={() => props.setPackageTier(tier)}
+              >
+                <div className="text-base font-extrabold text-slate-900 dark:text-white">
+                  {packageLabels[tier]}
+                </div>
+                <div className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  {packageDescriptions[props.serviceType][tier]}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="premium-surface-emphasis rounded-3xl p-6">
+        <div className="text-sm font-extrabold text-slate-900 dark:text-white">Angebotscode</div>
+        <div className="mt-3 text-xs font-semibold text-slate-600 dark:text-slate-400">
+          Optional: z. B. MONTAGE10, ENTSORGUNG10 oder KOMBI5.
+        </div>
+        <Input
+          className="mt-3"
+          value={props.offerCode}
+          onChange={(e) => props.setOfferCode(e.target.value.toUpperCase())}
+          placeholder="Code eingeben"
+          maxLength={50}
+        />
+        {props.offerContext?.appliedDiscountPercent ? (
+          <div className="mt-3 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">
+            Rabatt aktiv: {formatNumberDE(props.offerContext.appliedDiscountPercent)}%
+          </div>
+        ) : props.offerCode.trim() ? (
+          <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800">
+            Code erkannt, aber aktuell nicht auf diese Buchung anwendbar.
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 function SpeedCard(props: { active: boolean; title: string; desc: string; onClick: () => void }) {
   return (
     <button
@@ -1737,6 +1874,8 @@ function StepCustomer(props: {
 
 function StepSummary(props: {
   serviceType: WizardPayload["serviceType"];
+  packageTier: WizardPayload["packageTier"];
+  offerContext?: WizardPayload["offerContext"];
   addons: WizardPayload["addons"];
   startAddress?: AddressOption;
   destinationAddress?: AddressOption;
@@ -1775,6 +1914,14 @@ function StepSummary(props: {
             <span className="font-extrabold">Leistung:</span>{" "}
             {serviceTypeLabels[props.serviceType]} · {speedLabels[props.speed]}
           </div>
+          <div>
+            <span className="font-extrabold">Paket:</span> {packageLabels[props.packageTier]}
+          </div>
+          {props.offerContext?.offerCode ? (
+            <div>
+              <span className="font-extrabold">Angebotscode:</span> {props.offerContext.offerCode}
+            </div>
+          ) : null}
           {props.addons.length ? (
             <div>
               <span className="font-extrabold">Zusatzleistungen:</span>{" "}
@@ -1882,6 +2029,17 @@ function StepSummary(props: {
             <span className="font-extrabold">Preisrahmen:</span>{" "}
             {eur(props.estimate.priceMinCents)} – {eur(props.estimate.priceMaxCents)}
           </div>
+          {props.estimate.breakdown.packageAdjustmentCents !== 0 ? (
+            <div>
+              <span className="font-extrabold">Paket-Anpassung:</span>{" "}
+              {eur(props.estimate.breakdown.packageAdjustmentCents)}
+            </div>
+          ) : null}
+          {props.estimate.breakdown.discountCents > 0 ? (
+            <div>
+              <span className="font-extrabold">Rabatt:</span> -{eur(props.estimate.breakdown.discountCents)}
+            </div>
+          ) : null}
         </div>
       </div>
 

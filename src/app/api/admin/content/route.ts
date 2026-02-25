@@ -1,4 +1,4 @@
-import { revalidatePath, revalidateTag } from "next/cache";
+﻿import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 import { requireAdminSession } from "@/server/auth/require-admin";
@@ -56,3 +56,4 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Speichern fehlgeschlagen" }, { status: 500 });
   }
 }
+

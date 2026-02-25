@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
@@ -243,3 +243,4 @@ export function MegaMenuMobile({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
+

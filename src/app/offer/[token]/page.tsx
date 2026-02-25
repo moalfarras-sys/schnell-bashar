@@ -233,6 +233,19 @@ export default async function OfferPage({ params }: OfferPageProps) {
                     <span className="text-slate-600 dark:text-slate-400">{inquiry.addons.join(", ")}</span>
                   </div>
                 )}
+                {Array.isArray(inquiry.checklist) && inquiry.checklist.length > 0 && (
+                  <div className="sm:col-span-2">
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">Checkliste:</span>{" "}
+                    <span className="text-slate-600 dark:text-slate-400">
+                      {inquiry.checklist
+                        .flatMap((entry: { item?: string; actions?: string[] }) => {
+                          if (!entry?.item || !Array.isArray(entry.actions) || entry.actions.length === 0) return [];
+                          return [`${entry.item} (${entry.actions.join(" / ")})`];
+                        })
+                        .join(", ")}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 

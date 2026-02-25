@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import { isNonImageRoutePath } from "./image-fallback-map";
 
 type UsageType = "next-image" | "json-ld" | "pdf" | "upload-path" | "css-bg" | "other";
 
@@ -23,16 +24,6 @@ const OUTPUT_PATH = path.join(ROOT, "scripts", "generated", "image-slots-map.jso
 
 const EXPLICIT_KEY_BY_SOURCE: Record<string, string> = {
   "/media/brand/hero-logo.jpeg": "img.global.brand.logo_header",
-  "/media/gallery/hero_truck_v3_1771507485824.png": "img.home.hero.bg",
-  "/media/gallery/movers-boxes.jpeg": "img.home.services.umzug",
-  "/media/gallery/disposal-dumpster.jpeg": "img.home.services.entsorgung",
-  "/media/gallery/workshop.jpeg": "img.home.services.montage",
-  "/media/gallery/hero_truck_v1_1771507453273.png": "img.home.gallery.01",
-  "/media/gallery/team-portrait.jpeg": "img.home.gallery.02",
-  "/media/gallery/van-berlin.jpeg": "img.home.gallery.03",
-  "/media/gallery/fridge-load.jpeg": "img.home.gallery.04",
-  "/media/gallery/keys-box.jpeg": "img.home.gallery.05",
-  "/media/gallery/truck-street.jpeg": "img.home.gallery.06",
   "/media/gallery/team-back.jpeg": "img.home.cta.bg",
   "/media/gallery/calendar.jpeg": "img.kalender.main",
   "/media/gallery/money.jpeg": "img.preise.banner",
@@ -41,7 +32,7 @@ const EXPLICIT_KEY_BY_SOURCE: Record<string, string> = {
 };
 const ALLOWED_EXTENSIONS = [".png", ".jpg", ".jpeg", ".webp", ".avif", ".svg"];
 const ALLOWED_PREFIXES = ["/media/", "/uploads/"];
-const BLOCKED_PREFIXES = ["/api/", "/media/slots", "/media/image-meta"];
+const BLOCKED_PREFIXES = ["/api/"];
 
 function normalizePublicPath(raw: string): string {
   let value = raw.trim().replace(/\\/g, "/");
@@ -65,6 +56,9 @@ function toAutoKey(publicPath: string): string {
 function isAllowedImagePath(candidate: string): { ok: true } | { ok: false; reason: string } {
   if (BLOCKED_PREFIXES.some((prefix) => candidate.startsWith(prefix))) {
     return { ok: false, reason: "blocked prefix" };
+  }
+  if (isNonImageRoutePath(candidate)) {
+    return { ok: false, reason: "non-image route path" };
   }
   if (!ALLOWED_PREFIXES.some((prefix) => candidate.startsWith(prefix))) {
     return { ok: false, reason: "invalid prefix" };

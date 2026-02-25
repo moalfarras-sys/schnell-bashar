@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import { Leaf, ShieldCheck, Users } from "lucide-react";
 
@@ -84,3 +84,4 @@ function ValueCard(props: { icon: any; title: string; text: string }) {
     </Card>
   );
 }
+

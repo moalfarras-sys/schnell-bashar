@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 import crypto from "node:crypto";
 import path from "node:path";
@@ -174,8 +174,8 @@ export async function POST(req: Request) {
       console.error("[orders] distance lookup failed:", error);
       const message =
         error instanceof ORSDistanceError && error.code === "ORS_FORBIDDEN"
-          ? "Die Distanzberechnung ist derzeit nicht verfuegbar (ORS-Zugriff abgelehnt). Bitte kontaktieren Sie uns kurz."
-          : "Die Distanz konnte nicht berechnet werden. Bitte pruefen Sie die Adressen.";
+          ? "Die Distanzberechnung ist derzeit nicht verfügbar (ORS-Zugriff abgelehnt). Bitte kontaktieren Sie uns kurz."
+          : "Die Distanz konnte nicht berechnet werden. Bitte prüfen Sie die Adressen.";
       return NextResponse.json({ error: message }, { status: 400 });
     }
   }
@@ -458,3 +458,4 @@ export async function POST(req: Request) {
     whatsappUrl: waUrl,
   });
 }
+

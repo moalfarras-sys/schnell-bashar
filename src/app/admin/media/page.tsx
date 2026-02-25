@@ -18,6 +18,15 @@ export default async function AdminMediaPage() {
     size: number;
     width: number | null;
     height: number | null;
+    variants: Array<{
+      id: string;
+      kind: "hero" | "gallery" | "thumbnail" | "custom";
+      path: string;
+      width: number | null;
+      height: number | null;
+      mimeType: string;
+      sizeBytes: number;
+    }>;
   }> = [];
 
   try {
@@ -25,6 +34,7 @@ export default async function AdminMediaPage() {
       where: { deletedAt: null },
       orderBy: { createdAt: "desc" },
       take: 200,
+      include: { variants: { orderBy: { createdAt: "desc" } } },
     }) as typeof assets;
   } catch {}
 

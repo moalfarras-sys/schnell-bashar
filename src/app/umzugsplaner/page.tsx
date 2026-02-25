@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 
@@ -51,3 +51,4 @@ export default function UmzugsplanerPage() {
     </Container>
   );
 }
+

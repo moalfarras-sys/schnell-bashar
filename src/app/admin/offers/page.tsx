@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
@@ -178,14 +178,23 @@ export default async function AdminOffersPage({
     ];
   }
 
-  const offers = await prisma.offer.findMany({
-    where,
-    include: {
-      order: true,
-      contract: true,
-    },
-    orderBy: { createdAt: sort === "oldest" ? "asc" : "desc" },
-  });
+  let dbWarning: string | null = null;
+  let offers: any[] = [];
+  try {
+    offers = await prisma.offer.findMany({
+      where,
+      include: {
+        order: true,
+        contract: true,
+      },
+      orderBy: { createdAt: sort === "oldest" ? "asc" : "desc" },
+    });
+  } catch (error) {
+    dbWarning =
+      error instanceof Error
+        ? `Datenbankfehler: ${error.message}`
+        : "Datenbankfehler: Angebote konnten nicht geladen werden.";
+  }
 
   const stats = {
     total: offers.length,
@@ -202,6 +211,11 @@ export default async function AdminOffersPage({
           <h1 className="text-3xl font-bold text-slate-900">Angebote & Verträge</h1>
           <p className="mt-2 text-slate-600">Verwalten Sie alle Angebote und Verträge</p>
         </div>
+        {dbWarning ? (
+          <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            {dbWarning}
+          </div>
+        ) : null}
 
         <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="rounded-xl border-2 border-slate-200 bg-white p-4 shadow-sm">
@@ -330,7 +344,7 @@ export default async function AdminOffersPage({
                         </div>
                         {offer.moveFrom && offer.moveTo && (
                           <div>
-                            <span className="font-semibold">Route:</span> {offer.moveFrom} →{" "}
+                            <span className="font-semibold">Route:</span> {offer.moveFrom} â†’{" "}
                             {offer.moveTo}
                           </div>
                         )}
@@ -378,3 +392,4 @@ export default async function AdminOffersPage({
     </div>
   );
 }
+

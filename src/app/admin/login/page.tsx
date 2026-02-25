@@ -1,4 +1,4 @@
-import { Container } from "@/components/container";
+﻿import { Container } from "@/components/container";
 import { LoginForm } from "@/app/admin/login/login-form";
 
 export default async function AdminLoginPage({
@@ -24,4 +24,5 @@ export default async function AdminLoginPage({
     </div>
   );
 }
+
 

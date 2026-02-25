@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import {
   CheckCircle2,
@@ -76,20 +76,21 @@ export default async function UmzugPage() {
       />
 
       {/* Hero */}
-      <section className="relative min-h-[50vh] overflow-hidden">
+      <section className="relative min-h-[56vh] overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src={hero.src}
             alt={hero.alt || "Umzugstransporter unterwegs"}
             fill
             priority
-            className="object-cover"
+            className="object-cover hero-bg-image"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-slate-950/50 to-slate-950/30" />
+          <div className="hero-overlay-light absolute inset-0 dark:hidden" />
+          <div className="hero-overlay-dark absolute inset-0 hidden dark:block" />
         </div>
 
-        <Container className="relative z-10 flex min-h-[50vh] flex-col justify-end pb-16 pt-28">
+        <Container className="relative z-10 flex min-h-[56vh] flex-col justify-end pb-14 pt-24 sm:pb-16 sm:pt-28">
           <Reveal>
             <div className="inline-flex items-center gap-2 rounded-full border border-brand-400/40 bg-brand-500/20 px-4 py-1.5 text-xs font-bold text-brand-100 backdrop-blur-sm">
               <ShieldCheck className="h-4 w-4" />
@@ -237,3 +238,4 @@ export default async function UmzugPage() {
     </>
   );
 }
+

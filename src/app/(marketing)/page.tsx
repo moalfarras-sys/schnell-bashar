@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -47,7 +47,7 @@ const services = [
     icon: Wrench,
     href: "/montage",
     slotKey: "img.home.services.montage",
-    fallbackImage: "/media/gallery/workshop.jpeg",
+    fallbackImage: "/media/gallery/montage.jpeg",
   },
 ];
 
@@ -86,12 +86,12 @@ const defaultTestimonials = [
 ];
 
 const galleryImages = [
-  { slotKey: "img.home.gallery.01", fallbackSrc: "/media/gallery/hero_truck_v1_1771507453273.png", alt: "Umzugstransporter bei Nacht" },
+  { slotKey: "img.home.gallery.01", fallbackSrc: "/media/gallery/truck-street.jpeg", alt: "Umzugstransporter bei Nacht" },
   { slotKey: "img.home.gallery.02", fallbackSrc: "/media/gallery/1.jpeg", alt: "Unser Team" },
-  { slotKey: "img.home.gallery.03", fallbackSrc: "/media/gallery/move-action-01.jpeg", alt: "Umzug in Aktion" },
-  { slotKey: "img.home.gallery.04", fallbackSrc: "/media/gallery/loading-crew.jpeg", alt: "Verladung im Einsatz" },
+  { slotKey: "img.home.gallery.03", fallbackSrc: "/media/gallery/move-action-02.jpeg", alt: "Umzug in Aktion" },
+  { slotKey: "img.home.gallery.04", fallbackSrc: "/media/gallery/movers-boxes.jpeg", alt: "Verladung im Einsatz" },
   { slotKey: "img.home.gallery.05", fallbackSrc: "/media/gallery/keys-box.jpeg", alt: "Schlüssel und Umzugskarton" },
-  { slotKey: "img.home.gallery.06", fallbackSrc: "/media/gallery/truck-street.jpeg", alt: "Firmentransporter unterwegs" },
+  { slotKey: "img.home.gallery.06", fallbackSrc: "/media/gallery/team-portrait.jpeg", alt: "Firmenteam beim Umzug" },
 ];
 
 export default async function HomePage() {
@@ -116,65 +116,73 @@ export default async function HomePage() {
   }));
 
   const slotMap = await getImageSlots([
-    { key: "img.home.hero.bg", fallbackSrc: "/media/gallery/hero_truck_v1_1771507453273.png" },
+    { key: "img.home.hero.bg", fallbackSrc: "/media/gallery/move-action-04.jpeg" },
     { key: "img.home.services.umzug", fallbackSrc: "/media/gallery/movers-boxes.jpeg" },
     { key: "img.home.services.entsorgung", fallbackSrc: "/media/gallery/disposal-dumpster.jpeg" },
-    { key: "img.home.services.montage", fallbackSrc: "/media/gallery/workshop.jpeg" },
-    { key: "img.home.gallery.01", fallbackSrc: "/media/gallery/hero_truck_v1_1771507453273.png" },
+    { key: "img.home.services.montage", fallbackSrc: "/media/gallery/montage.jpeg" },
+    { key: "img.home.gallery.01", fallbackSrc: "/media/gallery/truck-street.jpeg" },
     { key: "img.home.gallery.02", fallbackSrc: "/media/gallery/1.jpeg" },
-    { key: "img.home.gallery.03", fallbackSrc: "/media/gallery/move-action-01.jpeg" },
-    { key: "img.home.gallery.04", fallbackSrc: "/media/gallery/loading-crew.jpeg" },
+    { key: "img.home.gallery.03", fallbackSrc: "/media/gallery/move-action-02.jpeg" },
+    { key: "img.home.gallery.04", fallbackSrc: "/media/gallery/movers-boxes.jpeg" },
     { key: "img.home.gallery.05", fallbackSrc: "/media/gallery/keys-box.jpeg" },
-    { key: "img.home.gallery.06", fallbackSrc: "/media/gallery/truck-street.jpeg" },
+    { key: "img.home.gallery.06", fallbackSrc: "/media/gallery/team-portrait.jpeg" },
     { key: "img.home.why_us.main", fallbackSrc: "/media/gallery/1.jpeg" },
     { key: "img.home.why_us.sub_1", fallbackSrc: "/media/gallery/move-action-02.jpeg" },
-    { key: "img.home.why_us.sub_2", fallbackSrc: "/media/gallery/loading-crew.jpeg" },
+    { key: "img.home.why_us.sub_2", fallbackSrc: "/media/gallery/movers-boxes.jpeg" },
     { key: "img.home.cta.bg", fallbackSrc: "/media/gallery/2.jpeg" },
   ]);
   return (
     <>
-      {/* ── Cinematic Hero ── */}
-      <section className="relative overflow-hidden section-divider-glow">
-        {/* Hero Background Image */}
+      {/* â”€â”€ Cinematic Hero â”€â”€ */}
+      <section className="relative overflow-hidden section-divider-glow aspect-[16/9] min-h-[24rem] md:min-h-[30rem]">
         <div className="absolute inset-0 z-0">
           <Image
-            src={slotMap["img.home.hero.bg"]?.src || "/media/gallery/hero_truck_v1_1771507453273.png"}
+            src={slotMap["img.home.hero.bg"]?.src || "/media/gallery/hero-home-light.webp"}
             alt=""
             fill
             priority
-            className="object-cover"
+            className="hero-bg-image object-cover object-[center_34%] dark:hidden"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-linear-to-b from-[rgba(244,248,255,0.88)] via-[rgba(240,246,254,0.76)] to-[rgba(244,248,255,0.90)] dark:from-slate-950/90 dark:via-slate-950/70 dark:to-slate-950/95" />
-          <div className="absolute inset-0 bg-linear-to-r from-[rgba(120,185,255,0.10)] via-transparent to-[rgba(150,170,255,0.06)] dark:from-brand-500/15 dark:via-transparent dark:to-brand-400/8" />
+          <Image
+            src={slotMap["img.home.hero.bg"]?.src || "/media/gallery/hero-home-dark.webp"}
+            alt=""
+            fill
+            priority
+            className="hero-bg-image hidden object-cover object-[center_34%] dark:block"
+            sizes="100vw"
+          />
+          <div className="hero-overlay-light absolute inset-0 dark:hidden" />
+          <div className="hero-overlay-dark absolute inset-0 hidden dark:block" />
         </div>
 
-        <div className="absolute -top-32 -left-32 z-1 h-96 w-96 rounded-full bg-[rgba(120,185,255,0.12)] blur-3xl dark:bg-brand-500/25" />
-        <div className="absolute -bottom-32 -right-32 z-1 h-80 w-80 rounded-full bg-[rgba(150,170,255,0.08)] blur-3xl dark:bg-brand-400/20" />
+        <div className="absolute -top-36 -left-24 z-1 h-[28rem] w-[28rem] rounded-full bg-sky-100/40 blur-3xl dark:bg-cyan-400/16" />
+        <div className="absolute -bottom-36 -right-24 z-1 h-[24rem] w-[24rem] rounded-full bg-blue-100/35 blur-3xl dark:bg-blue-500/18" />
 
-        <Container className="relative z-10 py-24 sm:py-28 lg:py-36">
-          <div className="mx-auto max-w-3xl text-center">
-            <div className="fade-in-up">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.55)] bg-[rgba(255,255,255,0.55)] px-4 py-1.5 text-xs font-bold text-brand-700 shadow-[0_0_0_0.5px_rgba(10,16,32,0.04),0_2px_8px_rgba(10,16,32,0.04),inset_0_1px_0_rgba(255,255,255,0.65)] backdrop-blur-md dark:border-brand-500/30 dark:bg-brand-950/50 dark:text-brand-300 dark:shadow-none dark:backdrop-blur-none">
+        <Container className="relative z-10 py-20 sm:py-24 lg:py-28">
+          <div className="mx-auto max-w-4xl text-center">
+            <div className="fade-in-up hero-panel-light rounded-3xl px-5 py-8 sm:px-8 sm:py-10 dark:hero-panel-dark">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-300/55 bg-white/76 px-4 py-1.5 text-xs font-bold text-sky-900 shadow-[0_0_0_0.5px_rgba(255,255,255,0.6),0_8px_20px_rgba(15,23,42,0.1)] backdrop-blur-md dark:border-cyan-300/35 dark:bg-slate-950/52 dark:text-cyan-100 dark:shadow-[0_0_0_0.5px_rgba(6,18,38,0.5),0_8px_24px_rgba(6,18,38,0.45),inset_0_1px_0_rgba(125,211,252,0.2)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Deutschlandweit verfügbar — 24/7
               </div>
 
-              <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
-                {txt["text.home.hero.headline"].includes(" ")
-                  ? <>
-                      {txt["text.home.hero.headline"].split(" ").slice(0, -2).join(" ")}{" "}
-                      <span className="block bg-linear-to-r from-[#2870d6] via-[#3a90f0] to-[#5cb0ff] bg-clip-text text-transparent dark:from-brand-400 dark:via-brand-300 dark:to-blue-300">
-                        {txt["text.home.hero.headline"].split(" ").slice(-2).join(" ")}
-                      </span>
-                    </>
-                  : <span className="block bg-linear-to-r from-[#2870d6] via-[#3a90f0] to-[#5cb0ff] bg-clip-text text-transparent dark:from-brand-400 dark:via-brand-300 dark:to-blue-300">
-                      {txt["text.home.hero.headline"]}
+              <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-950 drop-shadow-[0_10px_26px_rgba(255,255,255,0.45)] sm:text-5xl lg:text-6xl xl:text-7xl dark:text-white dark:drop-shadow-[0_10px_32px_rgba(8,23,48,0.72)]">
+                {txt["text.home.hero.headline"].includes(" ") ? (
+                  <>
+                    {txt["text.home.hero.headline"].split(" ").slice(0, -2).join(" ")}{" "}
+                    <span className="block bg-linear-to-r from-cyan-200 via-blue-300 to-blue-500 bg-clip-text text-transparent">
+                      {txt["text.home.hero.headline"].split(" ").slice(-2).join(" ")}
                     </span>
-                }
+                  </>
+                ) : (
+                  <span className="block bg-linear-to-r from-cyan-200 via-blue-300 to-blue-500 bg-clip-text text-transparent">
+                    {txt["text.home.hero.headline"]}
+                  </span>
+                )}
               </h1>
 
-              <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-700 sm:text-lg dark:text-slate-300">
+              <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-800 sm:text-lg dark:text-slate-200">
                 {txt["text.home.hero.subtitle"]}
               </p>
 
@@ -193,7 +201,7 @@ export default async function HomePage() {
                 </a>
               </div>
 
-              <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm font-semibold text-slate-700 dark:text-slate-300">
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm font-semibold text-slate-800 dark:text-slate-100">
                 {["24/7 Erreichbar", "Deutschlandweit", "Faire Preise"].map((label) => (
                   <span key={label} className="flex items-center gap-1.5">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500" />
@@ -206,10 +214,10 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ── Sofort-Preis-Schätzung ── */}
+      {/* â”€â”€ Sofort-Preis-Schätzung â”€â”€ */}
       <QuickEstimateWidget />
 
-      {/* ── Services with Images ── */}
+      {/* â”€â”€ Services with Images â”€â”€ */}
       <section className="relative overflow-hidden section-divider-glow">
         <div className="absolute inset-0 bg-linear-to-b from-[rgba(255,255,255,0.25)] to-[rgba(240,248,255,0.40)] dark:from-slate-900/50 dark:to-slate-950" />
         <Container className="relative py-20 sm:py-24">
@@ -237,7 +245,7 @@ export default async function HomePage() {
                   className="group relative overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.60)] bg-[rgba(255,255,255,0.65)] shadow-[0_0_0_0.5px_rgba(10,16,32,0.04),0_6px_20px_rgba(10,16,32,0.05),inset_0_1px_0_rgba(255,255,255,0.70)] backdrop-blur-md transition-all duration-300 hover:bg-[rgba(255,255,255,0.80)] hover:shadow-[0_0_0_0.5px_rgba(10,16,32,0.05),0_12px_32px_rgba(10,16,32,0.07),inset_0_1px_0_rgba(255,255,255,0.85)] hover:-translate-y-0.5 dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-brand-500/40 dark:hover:shadow-[0_16px_48px_rgba(59,130,246,0.1)] dark:backdrop-blur-none dark:shadow-sm"
                 >
                   {/* Service Image */}
-                  <div className="relative aspect-16/10 overflow-hidden">
+                  <div className="relative aspect-[4/3] overflow-hidden">
                     <Image
                       src={slotMap[s.slotKey]?.src || s.fallbackImage}
                       alt={s.title}
@@ -267,7 +275,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ── Gallery Showcase ── */}
+      {/* â”€â”€ Gallery Showcase â”€â”€ */}
       <section className="relative overflow-hidden section-divider-glow">
         <div className="absolute inset-0 bg-linear-to-b from-[rgba(240,248,255,0.35)] to-[rgba(255,255,255,0.20)] dark:from-slate-950 dark:to-slate-900/50" />
         <Container className="relative py-20 sm:py-24">
@@ -287,21 +295,19 @@ export default async function HomePage() {
 
           <Reveal className="mt-14">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {galleryImages.map((img, i) => (
-                <PremiumImage
+              {galleryImages.map((img) => (
+                <div
                   key={img.slotKey}
-                  src={slotMap[img.slotKey]?.src || img.fallbackSrc}
-                  alt={img.alt}
-                  fill
-                  overlay={i === 0 ? "brand" : "subtle"}
-                  aspect="video"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  containerClassName={
-                    i === 0
-                      ? "sm:col-span-2 sm:row-span-2 sm:aspect-auto sm:h-full"
-                      : ""
-                  }
-                />
+                  className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/60 bg-white/70 shadow-md"
+                >
+                  <Image
+                    src={slotMap[img.slotKey]?.src || img.fallbackSrc}
+                    alt={img.alt}
+                    fill
+                    className="object-cover transition-transform duration-700 ease-premium hover:scale-105"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                </div>
               ))}
             </div>
           </Reveal>
@@ -317,7 +323,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ── Quick Tools ── */}
+      {/* â”€â”€ Quick Tools â”€â”€ */}
       <section className="relative overflow-hidden section-divider-glow">
         <div className="absolute inset-0 bg-linear-to-b from-[rgba(255,255,255,0.20)] to-[rgba(240,248,255,0.35)] dark:from-slate-900/50 dark:to-slate-950" />
         <Container className="relative py-20 sm:py-24">
@@ -356,7 +362,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ── Why Us ── */}
+      {/* â”€â”€ Why Us â”€â”€ */}
       <section className="relative overflow-hidden section-divider-glow">
         <div className="absolute inset-0 bg-linear-to-b from-[rgba(240,248,255,0.35)] to-[rgba(255,255,255,0.20)] dark:from-slate-950 dark:to-slate-900/50" />
         <Container className="relative py-20 sm:py-24">
@@ -421,7 +427,7 @@ export default async function HomePage() {
                     sizes="(max-width: 1024px) 50vw, 25vw"
                   />
                   <PremiumImage
-                    src={slotMap["img.home.why_us.sub_2"]?.src || "/media/gallery/loading-crew.jpeg"}
+                    src={slotMap["img.home.why_us.sub_2"]?.src || "/media/gallery/movers-boxes.jpeg"}
                     alt="Professionelles Verladen"
                     width={300}
                     height={200}
@@ -435,7 +441,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ── Testimonials ── */}
+      {/* â”€â”€ Testimonials â”€â”€ */}
       <section className="relative overflow-hidden section-divider-glow">
         <div className="absolute inset-0 bg-linear-to-b from-[rgba(255,255,255,0.20)] to-[rgba(240,248,255,0.35)] dark:from-slate-900/50 dark:to-slate-950" />
         <Container className="relative py-20 sm:py-24">
@@ -489,7 +495,7 @@ export default async function HomePage() {
 
       <MovingFAQSection />
 
-      {/* ── Final CTA ── */}
+      {/* â”€â”€ Final CTA â”€â”€ */}
       <section className="relative overflow-hidden">
         {/* CTA Background Image */}
         <div className="absolute inset-0">
@@ -535,4 +541,5 @@ export default async function HomePage() {
     </>
   );
 }
+
 

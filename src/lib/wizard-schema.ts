@@ -4,6 +4,7 @@ export const serviceTypeSchema = z.enum(["MOVING", "DISPOSAL", "BOTH"]);
 export const speedTypeSchema = z.enum(["ECONOMY", "STANDARD", "EXPRESS"]);
 export const contactPreferenceSchema = z.enum(["PHONE", "WHATSAPP", "EMAIL"]);
 export const bookingContextSchema = z.enum(["STANDARD", "MONTAGE", "ENTSORGUNG"]);
+export const packageTierSchema = z.enum(["STANDARD", "PLUS", "PREMIUM"]);
 
 export const addonKeySchema = z.enum([
   "PACKING",
@@ -63,6 +64,15 @@ export const customerSchema = z.object({
 
 export const wizardPayloadSchema = z.object({
   bookingContext: bookingContextSchema.default("STANDARD"),
+  packageTier: packageTierSchema.default("PLUS"),
+  offerContext: z
+    .object({
+      appliedDiscountPercent: z.number().min(0).max(100).optional(),
+      appliedDiscountCents: z.number().int().min(0).optional(),
+      offerCode: z.string().trim().min(2).max(50).optional(),
+      validUntil: z.string().datetime().optional(),
+    })
+    .optional(),
   serviceType: serviceTypeSchema,
   addons: z.array(addonKeySchema).default([]),
 

@@ -1,4 +1,4 @@
-import { revalidatePath, revalidateTag } from "next/cache";
+﻿import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -77,3 +77,4 @@ export async function PATCH(req: Request) {
   revalidatePath("/", "layout");
   return NextResponse.json({ success: true });
 }
+

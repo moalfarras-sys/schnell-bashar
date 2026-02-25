@@ -5,6 +5,28 @@ import { slotAdminDelegates } from "@/server/content/slot-admin-db";
 
 export const runtime = "nodejs";
 
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const auth = await requireAdminSession();
+  if (!auth.ok) return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
+  const delegates = slotAdminDelegates();
+  if (!delegates.mediaAsset) return NextResponse.json({ error: "Media DB nicht bereit" }, { status: 503 });
+
+  try {
+    const { id } = await params;
+    const asset = await delegates.mediaAsset.findUnique({
+      where: { id },
+      include: { variants: { orderBy: { createdAt: "desc" } } },
+    });
+    if (!asset) return NextResponse.json({ error: "Nicht gefunden" }, { status: 404 });
+    return NextResponse.json({ asset });
+  } catch {
+    return NextResponse.json({ error: "Media DB Fehler" }, { status: 500 });
+  }
+}
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },

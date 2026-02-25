@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Loader2, Send, CheckCircle2, ExternalLink } from "lucide-react";
@@ -135,3 +135,4 @@ export function CreateOfferButton({ orderId, existingOffer }: Props) {
     </div>
   );
 }
+

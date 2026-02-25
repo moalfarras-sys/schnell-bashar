@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { LocalBusinessSchema } from "@/components/schema/local-business";
@@ -60,7 +60,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de" suppressHydrationWarning>
+    <html lang="de" className="dark" suppressHydrationWarning>
       <body className={`${inter.variable} ${manrope.variable} ${inter.className}`}>
         <ThemeProvider>
           <LocalBusinessSchema />
@@ -71,3 +71,4 @@ export default function RootLayout({
     </html>
   );
 }
+

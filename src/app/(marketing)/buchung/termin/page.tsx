@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
@@ -39,11 +39,25 @@ type InquiryData = {
   };
 };
 
+type ChecklistAction = "MOVE" | "ASSEMBLE" | "DISPOSE";
+type ChecklistEntry = { item: string; actions: ChecklistAction[] };
+
 const serviceTypeLabels: Record<InquiryData["serviceType"], string> = {
   UMZUG: "Umzug",
   ENTSORGUNG: "Entsorgung",
   KOMBI: "Umzug + Entsorgung",
 };
+
+const checklistCatalog = [
+  "Kühlschrank",
+  "Waschmaschine",
+  "Schrank",
+  "Sofa",
+  "Bett",
+  "Schreibtisch",
+  "Esstisch",
+  "TV / Elektronik",
+];
 
 type Slot = {
   start: string;
@@ -58,15 +72,19 @@ export default function BookingAppointmentPage() {
   const [loadingDates, setLoadingDates] = useState(false);
   const [dateError, setDateError] = useState<string | null>(null);
   const [demoMode, setDemoMode] = useState(false);
+  const [demoMessage, setDemoMessage] = useState<string | null>(null);
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [slots, setSlots] = useState<Slot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [selectedSlotStart, setSelectedSlotStart] = useState<string | null>(null);
+  const [slotsDemoMode, setSlotsDemoMode] = useState(false);
+  const [slotsDemoMessage, setSlotsDemoMessage] = useState<string | null>(null);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [checklistState, setChecklistState] = useState<Record<string, { move: boolean; assemble: boolean; dispose: boolean }>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -98,15 +116,19 @@ export default function BookingAppointmentPage() {
           setDateError(data?.error || data?.details || "Verfügbare Tage konnten nicht geladen werden.");
           setAvailableDates([]);
           setDemoMode(false);
+          setDemoMessage(null);
           return;
         }
         setAvailableDates(Array.isArray(data?.availableDates) ? data.availableDates : []);
         setDateError(null);
         setDemoMode(Boolean(data?.demoMode));
+        setDemoMessage(typeof data?.message === "string" ? data.message : null);
       })
       .catch(() => {
         setDateError("Verfügbare Tage konnten nicht geladen werden.");
         setAvailableDates([]);
+        setDemoMode(false);
+        setDemoMessage(null);
       })
       .finally(() => setLoadingDates(false));
   }, [inquiry]);
@@ -119,6 +141,8 @@ export default function BookingAppointmentPage() {
     if (!inquiry || !selectedDate) {
       setSlots([]);
       setSelectedSlotStart(null);
+      setSlotsDemoMode(false);
+      setSlotsDemoMessage(null);
       return;
     }
 
@@ -127,11 +151,13 @@ export default function BookingAppointmentPage() {
     setSlots([]);
     setSelectedSlotStart(null);
 
-    fetch(`/api/availability/slots?date=${date}&speed=${inquiry.speed}&volumeM3=${inquiry.volumeM3 ?? 1}`)
+    fetch(`/api/availability/slots?date=${date}&speed=${inquiry.speed}&volumeM3=${inquiry.volumeM3 || 1}`)
       .then(async (res) => {
         const data = await res.json();
         if (!res.ok) {
           setSlots([]);
+          setSlotsDemoMode(false);
+          setSlotsDemoMessage(null);
           return;
         }
 
@@ -157,10 +183,14 @@ export default function BookingAppointmentPage() {
             })
           : [];
         setSlots(parsed);
+        setSlotsDemoMode(Boolean(data?.demoMode));
+        setSlotsDemoMessage(typeof data?.message === "string" ? data.message : null);
       })
       .catch((err) => {
         console.warn("[slots] fetch failed:", err);
         setSlots([]);
+        setSlotsDemoMode(false);
+        setSlotsDemoMessage(null);
       })
       .finally(() => setLoadingSlots(false));
   }, [inquiry, selectedDate]);
@@ -176,11 +206,21 @@ export default function BookingAppointmentPage() {
     setSubmitError(null);
 
     try {
+      const checklist: ChecklistEntry[] = Object.entries(checklistState)
+        .flatMap(([item, flags]) => {
+          const actions: ChecklistAction[] = [];
+          if (flags.move) actions.push("MOVE");
+          if (flags.assemble) actions.push("ASSEMBLE");
+          if (flags.dispose) actions.push("DISPOSE");
+          if (actions.length === 0) return [];
+          return [{ item, actions }];
+        });
+
       const res = await fetch("/api/booking/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          inquiry,
+          inquiry: { ...inquiry, checklist },
           slotStart: selectedSlotStart,
           customer: { name: name.trim(), email: email.trim(), phone: phone.trim() },
         }),
@@ -247,6 +287,10 @@ export default function BookingAppointmentPage() {
   ];
 
   const selectedLabel = selectedSlotStart ? slots.find((s) => s.start === selectedSlotStart)?.label : null;
+  const selectedChecklistCount = Object.values(checklistState).reduce(
+    (total, flags) => total + (flags.move ? 1 : 0) + (flags.assemble ? 1 : 0) + (flags.dispose ? 1 : 0),
+    0,
+  );
 
   return (
     <Container className="py-14">
@@ -261,11 +305,16 @@ export default function BookingAppointmentPage() {
         {demoMode && (
           <div className="mt-6 rounded-xl border-2 border-amber-300 bg-amber-50 p-4 text-sm font-semibold text-amber-800 dark:border-amber-500/30 dark:bg-amber-950/20 dark:text-amber-300">
             <p>
-              <strong>Demo-Modus:</strong> Die Datenbank ist nicht erreichbar. Es werden Demo-Termine angezeigt.
-              Für die echte Buchung bitte <code className="rounded bg-amber-200 px-1">npm run db:up</code>,{" "}
-              <code className="rounded bg-amber-200 px-1">npm run prisma:migrate</code> und{" "}
-              <code className="rounded bg-amber-200 px-1">npm run db:seed</code> ausführen.
+              <strong>Hinweis:</strong>{" "}
+              {demoMessage ??
+                "Die Terminverfügbarkeit wird aktuell über ein gesichertes Ersatzmodell bereitgestellt. Ihre Anfrage kann weiterhin verarbeitet werden."}
             </p>
+          </div>
+        )}
+        {slotsDemoMode && selectedDate && (
+          <div className="mt-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200">
+            {slotsDemoMessage ??
+              "Die Zeitfenster werden momentan im Fallback-Modus angezeigt. Wir halten die Buchung weiterhin aktiv."}
           </div>
         )}
 
@@ -279,12 +328,9 @@ export default function BookingAppointmentPage() {
             {dateError && (
               <div className="mt-4 rounded-xl border-2 border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-800 dark:border-amber-500/30 dark:bg-amber-950/20 dark:text-amber-300">
                 <p className="mb-2">{dateError}</p>
-                <p className="mb-2 text-xs text-amber-700">Datenbank-Setup: Falls noch nicht geschehen, bitte nacheinander ausführen:</p>
-                <ol className="mb-3 list-inside list-decimal space-y-1 text-xs text-amber-700">
-                  <li><code className="rounded bg-amber-200 px-1">npm run db:up</code> (Datenbank starten)</li>
-                  <li><code className="rounded bg-amber-200 px-1">npm run prisma:migrate</code> (Tabellen anlegen)</li>
-                  <li><code className="rounded bg-amber-200 px-1">npm run db:seed</code> (Preise & Katalog laden)</li>
-                </ol>
+                <p className="mb-3 text-xs text-amber-700 dark:text-amber-300/80">
+                  Bitte laden Sie die Verfügbarkeit erneut. Wenn der Hinweis bestehen bleibt, kontaktieren Sie uns direkt.
+                </p>
                 <Button type="button" variant="outline" size="sm" onClick={loadAvailableDates} disabled={loadingDates}>
                   Erneut laden
                 </Button>
@@ -370,6 +416,64 @@ export default function BookingAppointmentPage() {
         </div>
 
         <div className="mt-8 rounded-3xl border-2 border-slate-200 bg-[color:var(--surface-elevated)] p-6 shadow-lg backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80">
+          <div className="text-lg font-extrabold text-slate-900 dark:text-white">Optionale Checkliste</div>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Optional: markieren Sie pro Gegenstand, ob Transport, Montage oder Entsorgung benötigt wird.
+          </p>
+          <div className="mt-4 grid gap-3">
+            {checklistCatalog.map((item) => {
+              const flags = checklistState[item] ?? { move: false, assemble: false, dispose: false };
+              return (
+                <div key={item} className="rounded-xl border border-slate-300 bg-white/70 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/70">
+                  <div className="text-sm font-bold text-slate-900 dark:text-slate-100">{item}</div>
+                  <div className="mt-2 flex flex-wrap gap-3 text-xs font-semibold">
+                    <label className="inline-flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={flags.move}
+                        onChange={(e) =>
+                          setChecklistState((prev) => ({
+                            ...prev,
+                            [item]: { ...flags, move: e.target.checked },
+                          }))
+                        }
+                      />
+                      Transport
+                    </label>
+                    <label className="inline-flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={flags.assemble}
+                        onChange={(e) =>
+                          setChecklistState((prev) => ({
+                            ...prev,
+                            [item]: { ...flags, assemble: e.target.checked },
+                          }))
+                        }
+                      />
+                      Montage
+                    </label>
+                    <label className="inline-flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={flags.dispose}
+                        onChange={(e) =>
+                          setChecklistState((prev) => ({
+                            ...prev,
+                            [item]: { ...flags, dispose: e.target.checked },
+                          }))
+                        }
+                      />
+                      Entsorgung
+                    </label>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-3xl border-2 border-slate-200 bg-[color:var(--surface-elevated)] p-6 shadow-lg backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80">
           <div className="text-lg font-extrabold text-slate-900 dark:text-white">Ihre Kontaktdaten</div>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
             <div>
@@ -403,6 +507,11 @@ export default function BookingAppointmentPage() {
                   Termin: {format(selectedDate, "dd.MM.yyyy", { locale: de })} {selectedLabel}
                 </div>
               )}
+              {selectedChecklistCount > 0 && (
+                <div className="mt-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Checkliste: {selectedChecklistCount} Auswahl(en)
+                </div>
+              )}
             </div>
             <Button size="lg" disabled={!selectedSlotStart || submitting} onClick={confirmBooking} className="gap-2">
               {submitting ? (
@@ -434,3 +543,4 @@ export default function BookingAppointmentPage() {
     </Container>
   );
 }
+

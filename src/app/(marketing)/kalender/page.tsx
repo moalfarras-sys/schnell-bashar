@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import { CalendarDays, CheckCircle2 } from "lucide-react";
 
@@ -82,3 +82,4 @@ function Info(props: { title: string; text: string }) {
     </div>
   );
 }
+

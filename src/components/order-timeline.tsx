@@ -1,4 +1,4 @@
-import { CheckCircle2, Circle, Clock3, Truck } from "lucide-react";
+﻿import { CheckCircle2, Circle, Clock3, Truck } from "lucide-react";
 
 const steps = [
   { key: "NEW", label: "Neu eingegangen", icon: Circle },
@@ -46,3 +46,4 @@ export function OrderTimeline(props: {
     </div>
   );
 }
+

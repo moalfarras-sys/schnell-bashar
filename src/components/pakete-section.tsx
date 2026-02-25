@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { CheckCircle2, Sparkles } from "lucide-react";
 
 import { Container } from "@/components/container";
@@ -115,3 +115,4 @@ export function PaketeSection({ service }: { service: ServiceSlug }) {
     </section>
   );
 }
+

@@ -6,6 +6,12 @@ type MediaAssetDelegate = {
   create: (args: unknown) => Promise<unknown>;
   update: (args: unknown) => Promise<unknown>;
 };
+type MediaAssetVariantDelegate = {
+  findMany: (args?: unknown) => Promise<unknown[]>;
+  create: (args: unknown) => Promise<unknown>;
+  upsert: (args: unknown) => Promise<unknown>;
+  deleteMany: (args: unknown) => Promise<unknown>;
+};
 
 type ContentSlotDelegate = {
   findMany: (args?: unknown) => Promise<unknown[]>;
@@ -26,6 +32,7 @@ type SlotRegistryDelegate = {
 export function slotAdminDelegates() {
   const p = prisma as unknown as {
     mediaAsset?: MediaAssetDelegate;
+    mediaAssetVariant?: MediaAssetVariantDelegate;
     contentSlot?: ContentSlotDelegate;
     slotRegistry?: SlotRegistryDelegate;
   };
@@ -37,6 +44,9 @@ export function slotAdminDelegates() {
     );
   return {
     mediaAsset: hasFns(p.mediaAsset, ["findMany", "findUnique", "create", "update"]) ? p.mediaAsset : null,
+    mediaAssetVariant: hasFns(p.mediaAssetVariant, ["findMany", "create", "upsert", "deleteMany"])
+      ? p.mediaAssetVariant
+      : null,
     contentSlot: hasFns(p.contentSlot, ["findMany", "findUnique", "upsert", "create", "deleteMany"])
       ? p.contentSlot
       : null,
@@ -48,5 +58,5 @@ export function slotAdminDelegates() {
 
 export function hasSlotAdminDelegates() {
   const d = slotAdminDelegates();
-  return Boolean(d.mediaAsset && d.contentSlot && d.slotRegistry);
+  return Boolean(d.mediaAsset && d.mediaAssetVariant && d.contentSlot && d.slotRegistry);
 }
