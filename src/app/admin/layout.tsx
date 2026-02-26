@@ -15,14 +15,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="luxury-bg-dark min-h-screen text-slate-100">
-      <header className="sticky top-0 z-50 border-b border-slate-800/60 bg-slate-900/90 backdrop-blur-xl">
+    <div className="luxury-bg min-h-screen text-slate-900 dark:text-slate-100">
+      <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] bg-[color:var(--surface-elevated)]/90 backdrop-blur-xl">
         <Container className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/admin" className="text-sm font-extrabold tracking-tight text-white">
+            <Link href="/admin" className="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
               Admin · Schnell Sicher Umzug
             </Link>
-            <Link href="/" className="text-xs font-medium text-slate-400 transition-colors hover:text-white">
+            <Link href="/" className="text-xs font-medium text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
               Zur Website
             </Link>
           </div>
@@ -35,7 +35,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </header>
 
       <Container className="grid gap-6 py-8 lg:grid-cols-[240px_1fr]">
-        <aside className="h-fit rounded-xl border border-slate-800/60 bg-slate-900/80 p-3 backdrop-blur-md">
+        <aside className="surface-glass h-fit rounded-2xl border p-3">
           <AdminNav newOrderCount={newOrderCount} />
         </aside>
         <main>{children}</main>

@@ -60,7 +60,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de" className="dark" suppressHydrationWarning>
+    <html lang="de" suppressHydrationWarning>
       <body className={`${inter.variable} ${manrope.variable} ${inter.className}`}>
         <ThemeProvider>
           <LocalBusinessSchema />
@@ -71,5 +71,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-

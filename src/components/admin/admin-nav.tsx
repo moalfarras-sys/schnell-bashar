@@ -80,14 +80,14 @@ export function AdminNav({ newOrderCount }: { newOrderCount?: number }) {
       <Link
         key={n.href}
         href={n.href}
-        className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+        className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200 ${
           active
-            ? "bg-brand-600/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
-            : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
+            ? "bg-brand-500/18 text-brand-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] dark:text-brand-200"
+            : "text-slate-700 hover:bg-white/55 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white"
         }`}
       >
         <Icon
-          className={`h-4 w-4 shrink-0 ${active ? "text-brand-400" : "text-slate-500 group-hover:text-slate-300"}`}
+          className={`h-4 w-4 shrink-0 ${active ? "text-brand-600 dark:text-brand-300" : "text-slate-500 group-hover:text-slate-700 dark:text-slate-500 dark:group-hover:text-slate-300"}`}
         />
         <span className="truncate">{n.label}</span>
         {n.badge != null && n.badge > 0 && (
@@ -104,8 +104,8 @@ export function AdminNav({ newOrderCount }: { newOrderCount?: number }) {
       {mainItems.map(renderItem)}
       {accountingItems.length > 0 && (
         <>
-          <div className="my-2 border-t border-slate-700/50" />
-          <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+          <div className="my-2 border-t border-[color:var(--line-soft)]" />
+          <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Buchhaltung
           </div>
           {accountingItems.map(renderItem)}
