@@ -165,6 +165,25 @@ const packageDescriptions: Record<WizardPayload["serviceType"], Record<WizardPay
     PREMIUM: "Kombi mit maximaler Priorisierung",
   },
 };
+
+const bookingFlowSteps = [
+  { key: "service", title: "Leistung" },
+  { key: "details", title: "Details" },
+  { key: "timing", title: "Wunschtermin" },
+  { key: "pricing", title: "Preise & Pakete" },
+  { key: "contact", title: "Kontakt & Senden" },
+] as const;
+
+const bookingFlowByStepKey: Record<string, (typeof bookingFlowSteps)[number]["key"]> = {
+  service: "service",
+  location: "details",
+  items: "details",
+  disposal: "details",
+  timing: "timing",
+  package: "pricing",
+  customer: "contact",
+  summary: "contact",
+};
 const contactLabels: Record<WizardPayload["customer"]["contactPreference"], string> = {
   PHONE: "Telefon",
   WHATSAPP: "WhatsApp",
@@ -242,7 +261,7 @@ export function BookingWizard(props: {
         : [],
     [variant],
   );
-  const hideServiceStep = variant !== "default";
+  const hideServiceStep = false;
   const bookingContext: WizardPayload["bookingContext"] =
     variant === "montage"
       ? "MONTAGE"
@@ -728,6 +747,11 @@ export function BookingWizard(props: {
     [serviceType, hideServiceStep],
   );
   const current = steps[step] ?? steps[0];
+  const currentFlowKey = bookingFlowByStepKey[current.key] ?? "details";
+  const currentFlowStep = Math.max(
+    0,
+    bookingFlowSteps.findIndex((flowStep) => flowStep.key === currentFlowKey),
+  );
 
   const canNext = useMemo(() => {
     switch (current.key) {
@@ -1008,7 +1032,7 @@ export function BookingWizard(props: {
       ) : null}
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="glass-card-solid rounded-3xl">
-          <WizardHeader steps={steps} step={step} />
+          <WizardHeader steps={bookingFlowSteps} step={currentFlowStep} />
 
           <div className="p-6 sm:p-8">
             {current.key === "service" ? (
@@ -1342,7 +1366,7 @@ function getSteps(
   return withService;
 }
 
-function WizardHeader(props: { steps: { key: string; title: string }[]; step: number }) {
+function WizardHeader(props: { steps: ReadonlyArray<{ key: string; title: string }>; step: number }) {
   const pct = Math.round(((props.step + 1) / props.steps.length) * 100);
   return (
     <div className="border-b border-slate-300 bg-gradient-to-r from-[color:var(--surface-elevated)] via-brand-50/50 to-slate-50 p-6 sm:p-8 dark:border-slate-700 dark:from-slate-900/95 dark:via-slate-900/92 dark:to-brand-950/25">
