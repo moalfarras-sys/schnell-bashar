@@ -9,24 +9,24 @@ export function WizardStepRail(props: {
   const pct = Math.round(((props.step + 1) / props.steps.length) * 100);
 
   return (
-    <div className="booking-glass-card booking-motion-reveal rounded-3xl p-5 sm:p-6">
+    <div className="booking-glass-card booking-motion-reveal booking-step-rail rounded-3xl p-5 sm:p-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <div className="text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--booking-text-muted)]">
+          <div className="text-xs font-bold uppercase tracking-[0.12em] text-cyan-300/90">
             Schritt {props.step + 1} von {props.steps.length}
           </div>
-          <div className="mt-1 text-2xl font-black text-[color:var(--booking-text-strong)] sm:text-3xl">
+          <div className="mt-1 text-2xl font-black text-[color:var(--booking-text-strong)] sm:text-[2.15rem]">
             {props.steps[props.step]?.title}
           </div>
         </div>
-        <div className="booking-glass-card-active flex h-14 w-14 items-center justify-center rounded-2xl text-sm font-black">
+        <div className="booking-glass-card-active booking-glow-badge flex h-16 w-16 items-center justify-center rounded-2xl text-base font-black">
           {pct}%
         </div>
       </div>
 
-      <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-200/80 dark:bg-slate-800/80">
+      <div className="mt-4 h-3 overflow-hidden rounded-full bg-slate-200/70 dark:bg-slate-800/75">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-brand-500 to-indigo-500 transition-all duration-500"
+          className="h-full rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-indigo-400 transition-all duration-500"
           style={{ width: `${pct}%` }}
         />
       </div>

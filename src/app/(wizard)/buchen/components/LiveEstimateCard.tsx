@@ -20,9 +20,9 @@ export function LiveEstimateCard(props: {
   routeError: string | null;
 }) {
   return (
-    <aside className="booking-glass-card booking-motion-reveal hidden h-fit rounded-3xl p-6 lg:sticky lg:top-24 lg:block">
+    <aside className="booking-glass-card booking-motion-reveal booking-live-panel hidden h-fit rounded-3xl p-6 lg:sticky lg:top-24 lg:block">
       <div className="text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--booking-text-muted)]">Live-Schaetzung</div>
-      <div className="mt-1 text-2xl font-black text-[color:var(--booking-text-strong)]">
+      <div className="booking-price-band mt-2 text-3xl font-black text-[color:var(--booking-text-strong)]">
         {props.priceMin} - {props.priceMax}
       </div>
 
