@@ -2,7 +2,10 @@
 import Image from "next/image";
 import { BadgeEuro, CheckCircle2, Clock, Sparkles } from "lucide-react";
 
-import { type PricingData } from "@/app/(marketing)/preise/price-calculator";
+import {
+  type MontageCalculatorOption,
+  type PricingData,
+} from "@/app/(marketing)/preise/price-calculator";
 import { Container } from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { Preisbeispiele } from "@/components/preisbeispiele";
@@ -76,7 +79,7 @@ async function getPricing(): Promise<PricingData | null> {
 }
 
 export default async function PreisePage() {
-  const [banner, pricing, settings] = await Promise.all([
+  const [banner, pricing, settings, montageOptions] = await Promise.all([
     getImageSlot({
       key: "img.preise.banner",
       fallbackSrc: "/media/gallery/money.jpeg",
@@ -84,7 +87,29 @@ export default async function PreisePage() {
     }),
     getPricing(),
     loadOperationalSettings(),
+    prisma.serviceOption.findMany({
+      where: {
+        active: true,
+        deletedAt: null,
+        module: { slug: "MONTAGE", active: true, deletedAt: null },
+      },
+      orderBy: [{ sortOrder: "asc" }, { nameDe: "asc" }],
+      select: {
+        code: true,
+        nameDe: true,
+        descriptionDe: true,
+        defaultPriceCents: true,
+        requiresQuantity: true,
+      },
+    }),
   ]);
+  const montageCalculatorOptions: MontageCalculatorOption[] = montageOptions.map((option) => ({
+    code: option.code,
+    nameDe: option.nameDe,
+    descriptionDe: option.descriptionDe,
+    defaultPriceCents: option.defaultPriceCents,
+    requiresQuantity: option.requiresQuantity,
+  }));
 
   return (
     <Container className="py-14">
@@ -157,7 +182,58 @@ export default async function PreisePage() {
         </div>
       </Reveal>
 
-      <PreiseCalculatorSection pricing={pricing} />
+      <PreiseCalculatorSection pricing={pricing} montageOptions={montageCalculatorOptions} />
+
+      <Reveal className="mt-12">
+        <div className="rounded-3xl border-2 border-slate-300 bg-[color:var(--surface-elevated)] p-6 shadow-md dark:border-slate-700 dark:bg-slate-900/80">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div className="text-xl font-extrabold text-slate-950 dark:text-white">
+                Montage Leistungen & ab-Preise
+              </div>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                Transparente Orientierung für Küchen-, Geräte- und Möbelmontage.
+              </p>
+            </div>
+            <Link href="/buchen?context=MONTAGE">
+              <Button>Jetzt Montage anfragen</Button>
+            </Link>
+          </div>
+
+          <div className="mt-5 grid gap-3 md:grid-cols-2">
+            {montageCalculatorOptions.map((option, idx) => (
+              <div
+                key={option.code}
+                className="rounded-2xl border border-slate-300 bg-slate-50/70 p-4 dark:border-slate-700 dark:bg-slate-800/60"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-extrabold text-slate-900 dark:text-white">
+                      {option.nameDe}
+                    </div>
+                    {option.descriptionDe ? (
+                      <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                        {option.descriptionDe}
+                      </div>
+                    ) : null}
+                  </div>
+                  {idx < 2 ? (
+                    <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                      Beliebt
+                    </span>
+                  ) : null}
+                </div>
+                <div className="mt-2 text-base font-extrabold text-brand-700 dark:text-brand-400">
+                  ab {Math.max(1, Math.round(option.defaultPriceCents / 100))} €
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-xs font-semibold text-amber-900 dark:border-amber-500/40 dark:bg-amber-950/20 dark:text-amber-200">
+            Richtpreis: Endgültiger Preis nach Prüfung/Angebot.
+          </div>
+        </div>
+      </Reveal>
 
       <Preisbeispiele
         starts={{

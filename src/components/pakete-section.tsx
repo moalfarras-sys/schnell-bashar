@@ -22,9 +22,9 @@ const paketeConfig: Record<
     premium: "/preise?service=ENTSORGUNG&speed=EXPRESS",
   },
   montage: {
-    standard: "/preise?service=UMZUG&addons=DISMANTLE_ASSEMBLE&speed=ECONOMY",
-    plus: "/preise?service=UMZUG&addons=DISMANTLE_ASSEMBLE&speed=STANDARD",
-    premium: "/preise?service=UMZUG&addons=DISMANTLE_ASSEMBLE&speed=EXPRESS",
+    standard: "/preise?service=MONTAGE&speed=ECONOMY",
+    plus: "/preise?service=MONTAGE&speed=STANDARD",
+    premium: "/preise?service=MONTAGE&speed=EXPRESS",
   },
 };
 

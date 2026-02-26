@@ -109,7 +109,17 @@ export async function POST(req: Request) {
 
   // Normalize required addresses based on service type
   if (payload.serviceType === "MOVING") {
-    if (!payload.startAddress || !payload.destinationAddress) {
+    if (payload.bookingContext === "MONTAGE") {
+      if (!payload.pickupAddress) {
+        return NextResponse.json(
+          { error: "Einsatzadresse ist für Montage erforderlich." },
+          { status: 400 },
+        );
+      }
+      if (!payload.accessPickup && payload.accessStart) {
+        payload.accessPickup = payload.accessStart;
+      }
+    } else if (!payload.startAddress || !payload.destinationAddress) {
       return NextResponse.json(
         { error: "Start- und Zieladresse sind erforderlich." },
         { status: 400 },

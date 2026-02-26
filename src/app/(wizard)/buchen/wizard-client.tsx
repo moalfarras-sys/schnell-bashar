@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
@@ -227,6 +227,7 @@ export function BookingWizard(props: {
   variant?: BookingVariant;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const variant = props.variant ?? "default";
   const lockedServiceType: WizardPayload["serviceType"] | undefined =
     variant === "montage" ? "MOVING" : variant === "entsorgung" ? "DISPOSAL" : undefined;
@@ -298,6 +299,31 @@ export function BookingWizard(props: {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!searchParams) return;
+    const speedParam = (searchParams.get("speed") || "").toUpperCase();
+    if (speedParam === "ECONOMY" || speedParam === "STANDARD" || speedParam === "EXPRESS") {
+      setSpeed(speedParam);
+    }
+    const optionsParam = searchParams.get("options");
+    if (!optionsParam) return;
+    const parsed = Object.fromEntries(
+      optionsParam
+        .split(",")
+        .map((token) => token.trim())
+        .filter(Boolean)
+        .map((token) => {
+          const [codePart, qtyPart] = token.split(":");
+          const code = codePart?.trim();
+          if (!code) return null;
+          const qty = Math.max(1, Math.min(50, Number(qtyPart || "1") || 1));
+          return [code, qty] as const;
+        })
+        .filter((row): row is readonly [string, number] => Boolean(row)),
+    );
+    if (Object.keys(parsed).length > 0) setSelectedServiceOptions(parsed);
+  }, [searchParams]);
 
   const activeModuleSlug =
     variant === "montage"
@@ -404,7 +430,8 @@ export function BookingWizard(props: {
   const effectivePickup = serviceType === "BOTH" && samePickupAsStart ? startAddress : pickupAddress;
 
   useEffect(() => {
-    const shouldResolveRoute = serviceType === "MOVING" || serviceType === "BOTH";
+    const shouldResolveRoute =
+      (serviceType === "MOVING" || serviceType === "BOTH") && bookingContext !== "MONTAGE";
     if (!shouldResolveRoute) {
       setRoutePricing(null);
       setRouteError(null);
@@ -484,7 +511,7 @@ export function BookingWizard(props: {
       controller.abort();
       clearTimeout(timer);
     };
-  }, [serviceType, startAddress, destinationAddress]);
+  }, [serviceType, startAddress, destinationAddress, bookingContext]);
 
   const estimate = useMemo(() => {
     const payloadForEstimate: WizardPayload = {
@@ -496,12 +523,25 @@ export function BookingWizard(props: {
         .map(([code, qty]) => ({ code, qty })),
       serviceType,
       addons,
-      pickupAddress: effectivePickup,
-      startAddress,
-      destinationAddress,
-      accessPickup: effectivePickup ? accessPickup : undefined,
-      accessStart: startAddress ? accessStart : undefined,
-      accessDestination: destinationAddress ? accessDestination : undefined,
+      pickupAddress: bookingContext === "MONTAGE" ? pickupAddress : effectivePickup,
+      startAddress: bookingContext === "MONTAGE" ? undefined : startAddress,
+      destinationAddress: bookingContext === "MONTAGE" ? undefined : destinationAddress,
+      accessPickup:
+        bookingContext === "MONTAGE"
+          ? pickupAddress
+            ? accessPickup
+            : undefined
+          : effectivePickup
+            ? accessPickup
+            : undefined,
+      accessStart:
+        bookingContext === "MONTAGE" ? undefined : startAddress ? accessStart : undefined,
+      accessDestination:
+        bookingContext === "MONTAGE"
+          ? undefined
+          : destinationAddress
+            ? accessDestination
+            : undefined,
       itemsMove: serviceType === "MOVING" || serviceType === "BOTH" ? itemsMove : {},
       itemsDisposal: serviceType === "DISPOSAL" || serviceType === "BOTH" ? itemsDisposal : {},
       disposal:
@@ -549,6 +589,7 @@ export function BookingWizard(props: {
     selectedServiceOptions,
     serviceType,
     addons,
+    pickupAddress,
     effectivePickup,
     startAddress,
     destinationAddress,
@@ -607,6 +648,7 @@ export function BookingWizard(props: {
       case "service":
         return true;
       case "location":
+        if (bookingContext === "MONTAGE") return !!pickupAddress;
         if (serviceType === "MOVING") return !!startAddress && !!destinationAddress;
         if (serviceType === "DISPOSAL") return !!pickupAddress;
         return !!startAddress && !!destinationAddress; // BOTH
@@ -630,6 +672,7 @@ export function BookingWizard(props: {
   }, [
     current.key,
     variant,
+    bookingContext,
     serviceType,
     startAddress,
     destinationAddress,
@@ -659,17 +702,42 @@ export function BookingWizard(props: {
           .map(([code, qty]) => ({ code, qty })),
         serviceType,
         addons,
-        pickupAddress: serviceType === "DISPOSAL" ? pickupAddress : effectivePickup,
-        startAddress: serviceType === "MOVING" || serviceType === "BOTH" ? startAddress : undefined,
+        pickupAddress:
+          bookingContext === "MONTAGE"
+            ? pickupAddress
+            : serviceType === "DISPOSAL"
+              ? pickupAddress
+              : effectivePickup,
+        startAddress:
+          bookingContext === "MONTAGE"
+            ? undefined
+            : serviceType === "MOVING" || serviceType === "BOTH"
+              ? startAddress
+              : undefined,
         destinationAddress:
-          serviceType === "MOVING" || serviceType === "BOTH" ? destinationAddress : undefined,
+          bookingContext === "MONTAGE"
+            ? undefined
+            : serviceType === "MOVING" || serviceType === "BOTH"
+              ? destinationAddress
+              : undefined,
         accessPickup:
-          serviceType === "DISPOSAL" || serviceType === "BOTH"
+          bookingContext === "MONTAGE"
+            ? accessPickup
+            : serviceType === "DISPOSAL" || serviceType === "BOTH"
             ? (serviceType === "BOTH" && samePickupAsStart ? accessStart : accessPickup)
             : undefined,
-        accessStart: serviceType === "MOVING" || serviceType === "BOTH" ? accessStart : undefined,
+        accessStart:
+          bookingContext === "MONTAGE"
+            ? undefined
+            : serviceType === "MOVING" || serviceType === "BOTH"
+              ? accessStart
+              : undefined,
         accessDestination:
-          serviceType === "MOVING" || serviceType === "BOTH" ? accessDestination : undefined,
+          bookingContext === "MONTAGE"
+            ? undefined
+            : serviceType === "MOVING" || serviceType === "BOTH"
+              ? accessDestination
+              : undefined,
         itemsMove: serviceType === "MOVING" || serviceType === "BOTH" ? itemsMove : {},
         itemsDisposal: serviceType === "DISPOSAL" || serviceType === "BOTH" ? itemsDisposal : {},
         disposal:
@@ -859,6 +927,7 @@ export function BookingWizard(props: {
 
             {current.key === "location" ? (
               <StepLocation
+                bookingContext={bookingContext}
                 serviceType={serviceType}
                 startAddress={startAddress}
                 setStartAddress={setStartAddress}
@@ -974,7 +1043,9 @@ export function BookingWizard(props: {
                     : undefined
                 }
                 accessPickup={
-                  serviceType === "DISPOSAL" || serviceType === "BOTH"
+                  bookingContext === "MONTAGE"
+                    ? accessPickup
+                    : serviceType === "DISPOSAL" || serviceType === "BOTH"
                     ? serviceType === "BOTH" && samePickupAsStart
                       ? accessStart
                       : accessPickup
@@ -1327,6 +1398,7 @@ function ServiceCard(props: {
 }
 
 function StepLocation(props: {
+  bookingContext: WizardPayload["bookingContext"];
   serviceType: WizardPayload["serviceType"];
   startAddress?: AddressOption;
   setStartAddress: (v?: AddressOption) => void;
@@ -1344,6 +1416,7 @@ function StepLocation(props: {
   setAccessPickup: (v: Access) => void;
 }) {
   const [showExtraAccess, setShowExtraAccess] = useState(false);
+  const isMontage = props.bookingContext === "MONTAGE";
 
   return (
     <div className="grid gap-8">
@@ -1356,7 +1429,18 @@ function StepLocation(props: {
         </div>
       </div>
 
-      {props.serviceType === "MOVING" || props.serviceType === "BOTH" ? (
+      {isMontage ? (
+        <div className="grid gap-6">
+          <AddressAutocomplete
+            label="Einsatzadresse"
+            required
+            value={props.pickupAddress}
+            onChange={props.setPickupAddress}
+          />
+        </div>
+      ) : null}
+
+      {!isMontage && (props.serviceType === "MOVING" || props.serviceType === "BOTH") ? (
         <div className="grid gap-6">
           <AddressAutocomplete
             label="Startadresse"
@@ -1374,7 +1458,7 @@ function StepLocation(props: {
         </div>
       ) : null}
 
-      {props.serviceType === "DISPOSAL" ? (
+      {!isMontage && props.serviceType === "DISPOSAL" ? (
         <div className="grid gap-6">
           <AddressAutocomplete
             label="Abholadresse"
@@ -1385,7 +1469,7 @@ function StepLocation(props: {
         </div>
       ) : null}
 
-      {props.serviceType === "BOTH" ? (
+      {!isMontage && props.serviceType === "BOTH" ? (
         <div className="premium-surface-emphasis rounded-3xl p-6">
           <div className="flex items-start gap-3">
             <Checkbox
@@ -1436,7 +1520,10 @@ function StepLocation(props: {
 
       {showExtraAccess ? (
         <div className="grid gap-6">
-          {(props.serviceType === "MOVING" || props.serviceType === "BOTH") && (
+          {isMontage && (
+            <AccessCard title="Zugang (Einsatzort)" value={props.accessPickup} onChange={props.setAccessPickup} />
+          )}
+          {!isMontage && (props.serviceType === "MOVING" || props.serviceType === "BOTH") && (
             <>
               <AccessCard title="Zugang (Start)" value={props.accessStart} onChange={props.setAccessStart} />
               <AccessCard
@@ -1446,10 +1533,10 @@ function StepLocation(props: {
               />
             </>
           )}
-          {props.serviceType === "DISPOSAL" && (
+          {!isMontage && props.serviceType === "DISPOSAL" && (
             <AccessCard title="Zugang (Abholung)" value={props.accessPickup} onChange={props.setAccessPickup} />
           )}
-          {props.serviceType === "BOTH" && !props.samePickupAsStart && (
+          {!isMontage && props.serviceType === "BOTH" && !props.samePickupAsStart && (
             <AccessCard
               title="Zugang (Abholung)"
               value={props.accessPickup}

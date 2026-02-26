@@ -88,12 +88,9 @@ function buildPreiseUrl(
   const speed =
     urgency === "NORMAL" ? "STANDARD" : urgency === "EXPRESS" ? "EXPRESS" : "ECONOMY";
   const params = new URLSearchParams();
-  params.set("service", service === "MONTAGE" ? "UMZUG" : service);
+  params.set("service", service);
   params.set("volumeM3", String(volumeM3));
   params.set("speed", speed);
-  if (service === "MONTAGE") {
-    params.set("addons", "DISMANTLE_ASSEMBLE");
-  }
   return `/preise?${params.toString()}`;
 }
 

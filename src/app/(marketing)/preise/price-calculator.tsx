@@ -2,33 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  ArrowRight,
-  Calculator,
-  CalendarDays,
-  CheckCircle2,
-  CirclePercent,
-  Info,
-} from "lucide-react";
+import { ArrowRight, Calculator, CalendarDays } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatNumberDE } from "@/lib/format-number";
 
-type ServiceType = "UMZUG" | "ENTSORGUNG" | "KOMBI";
+type ServiceType = "UMZUG" | "ENTSORGUNG" | "KOMBI" | "MONTAGE";
 type SpeedType = "ECONOMY" | "STANDARD" | "EXPRESS";
-
-const ADDON_OPTIONS = [
-  { key: "PACKING" as const, label: "Packservice" },
-  { key: "DISMANTLE_ASSEMBLE" as const, label: "Möbelmontage" },
-  { key: "ENTRUEMPELUNG" as const, label: "Entrümpelung" },
-] as const;
-
-const ADDON_SURCHARGES_CENTS: Record<string, number> = {
-  PACKING: 2500,
-  DISMANTLE_ASSEMBLE: 3500,
-  ENTRUEMPELUNG: 4000,
-};
 
 export type PricingData = {
   movingBaseFeeCents: number;
@@ -43,6 +24,14 @@ export type PricingData = {
   expressMultiplier: number;
 };
 
+export type MontageCalculatorOption = {
+  code: string;
+  nameDe: string;
+  descriptionDe?: string | null;
+  defaultPriceCents: number;
+  requiresQuantity: boolean;
+};
+
 type PriceBreakdown = {
   baseCents: number;
   volumeCents: number;
@@ -55,23 +44,8 @@ type PriceBreakdown = {
   maxCents: number;
   distanceKm?: number;
   distanceSource?: "approx" | "ors" | "cache" | "fallback";
-};
-
-type CalculatedEstimate = {
-  baseCents: number;
-  volumeCents: number;
-  floorsCents: number;
-  parkingCents: number;
-  addonsCents: number;
-  driveChargeCents: number;
-  subtotalCents: number;
-  minCents: number;
-  maxCents: number;
-  netCents: number;
-  vatCents: number;
-  grossCents: number;
-  distanceKm?: number;
-  distanceSource?: "approx" | "ors" | "cache" | "fallback";
+  serviceOptionsCents?: number;
+  minimumOrderAppliedCents?: number;
 };
 
 type PriceCalcApiResponse = {
@@ -81,197 +55,87 @@ type PriceCalcApiResponse = {
   breakdown: PriceBreakdown;
 };
 
-function eur(cents: number) {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(
-    cents / 100,
-  );
-}
+const ADDON_SURCHARGES_CENTS: Record<string, number> = {
+  PACKING: 2500,
+  DISMANTLE_ASSEMBLE: 3500,
+  ENTRUEMPELUNG: 4000,
+};
 
 const serviceLabels: Record<ServiceType, string> = {
   UMZUG: "Umzug",
   ENTSORGUNG: "Entsorgung / Sperrmüll",
   KOMBI: "Umzug + Entsorgung",
+  MONTAGE: "Montage",
 };
-
-const speedLabels: Record<SpeedType, string> = {
-  ECONOMY: "Günstig",
-  STANDARD: "Standard",
-  EXPRESS: "Express",
-};
-
-const speedDescriptions: Record<SpeedType, string> = {
-  ECONOMY: "Günstiger, flexibler Termin",
-  STANDARD: "Schnelle Rückmeldung",
-  EXPRESS: "Priorisierte Planung",
-};
-
-function distanceSourceLabel(source?: CalculatedEstimate["distanceSource"]) {
-  if (source === "ors") return "exakt berechnet";
-  if (source === "cache") return "berechnet";
-  if (source === "fallback") return "geschätzt";
-  return "geschätzt";
-}
 
 const INQUIRY_STORAGE_KEY = "ssu_inquiry";
 
-export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: PricingData | null; externalVolumeM3?: number }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+function eur(cents: number) {
+  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(cents / 100);
+}
 
-  const paramService = searchParams.get("service");
-  const paramVolume = searchParams.get("volumeM3");
-  const paramSpeed = searchParams.get("speed");
-  const paramAddons = searchParams.get("addons");
+function parseOptions(value: string | null) {
+  if (!value) return {} as Record<string, number>;
+  return Object.fromEntries(
+    value
+      .split(",")
+      .map((token) => token.trim())
+      .filter(Boolean)
+      .map((token) => {
+        const [code, qtyRaw] = token.split(":");
+        const qty = Math.max(1, Math.min(50, Number(qtyRaw || "1") || 1));
+        return [code.trim(), qty] as const;
+      }),
+  );
+}
+
+export function PriceCalculator({
+  pricing,
+  montageOptions = [],
+  externalVolumeM3,
+}: {
+  pricing?: PricingData | null;
+  montageOptions?: MontageCalculatorOption[];
+  externalVolumeM3?: number;
+}) {
+  const router = useRouter();
+  const sp = useSearchParams();
 
   const [service, setService] = useState<ServiceType>(() => {
-    if (paramService === "UMZUG" || paramService === "ENTSORGUNG" || paramService === "KOMBI")
-      return paramService;
-    return "UMZUG";
+    const v = sp.get("service");
+    return v === "UMZUG" || v === "ENTSORGUNG" || v === "KOMBI" || v === "MONTAGE" ? v : "UMZUG";
   });
   const [speed, setSpeed] = useState<SpeedType>(() => {
-    if (paramSpeed === "ECONOMY" || paramSpeed === "STANDARD" || paramSpeed === "EXPRESS")
-      return paramSpeed;
-    return "STANDARD";
+    const v = sp.get("speed");
+    return v === "ECONOMY" || v === "STANDARD" || v === "EXPRESS" ? v : "STANDARD";
   });
-  const [volumeM3, setVolumeM3] = useState(() => {
-    const v = Number(paramVolume);
-    return !Number.isNaN(v) && v >= 1 && v <= 200 ? v : 12;
+  const [volumeM3, setVolumeM3] = useState<number>(() => {
+    const v = Number(sp.get("volumeM3"));
+    return Number.isFinite(v) && v >= 1 && v <= 200 ? v : 12;
   });
   const [floors, setFloors] = useState(0);
   const [hasElevator, setHasElevator] = useState(false);
   const [needNoParkingZone, setNeedNoParkingZone] = useState(false);
-  const [addons, setAddons] = useState<string[]>(() => {
-    if (!paramAddons || typeof paramAddons !== "string") return [];
-    return paramAddons
-      .split(",")
-      .map((a) => a.trim())
-      .filter((a) => ADDON_OPTIONS.some((o) => o.key === a));
-  });
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
-  const [serverEstimate, setServerEstimate] = useState<CalculatedEstimate | null>(null);
-  const [calcLoading, setCalcLoading] = useState(false);
+  const [addons, setAddons] = useState<string[]>([]);
+  const [selectedServiceOptions, setSelectedServiceOptions] = useState<Record<string, number>>(
+    () => parseOptions(sp.get("options")),
+  );
   const [calcError, setCalcError] = useState<string | null>(null);
+  const [server, setServer] = useState<PriceCalcApiResponse | null>(null);
 
   useEffect(() => {
-    if (paramService === "UMZUG" || paramService === "ENTSORGUNG" || paramService === "KOMBI")
-      setService(paramService);
-    if (paramSpeed === "ECONOMY" || paramSpeed === "STANDARD" || paramSpeed === "EXPRESS")
-      setSpeed(paramSpeed);
-    const v = Number(paramVolume);
-    if (!Number.isNaN(v) && v >= 1 && v <= 200) setVolumeM3(v);
-    if (paramAddons && typeof paramAddons === "string") {
-      const list = paramAddons
-        .split(",")
-        .map((a) => a.trim())
-        .filter((a) => ADDON_OPTIONS.some((o) => o.key === a));
-      setAddons(list);
-    }
-  }, [paramService, paramSpeed, paramVolume, paramAddons]);
-
-  useEffect(() => {
-    if (externalVolumeM3 !== undefined && externalVolumeM3 >= 1 && externalVolumeM3 <= 200) {
-      setVolumeM3(externalVolumeM3);
-    }
+    if (externalVolumeM3 && externalVolumeM3 >= 1 && externalVolumeM3 <= 200) setVolumeM3(externalVolumeM3);
   }, [externalVolumeM3]);
 
-  const localEstimate = useMemo<CalculatedEstimate>(() => {
-    let baseCents: number;
-    let volumeCents: number;
-
-    if (pricing) {
-      const baseMove = pricing.movingBaseFeeCents;
-      const baseDisposal = pricing.disposalBaseFeeCents;
-      const perM3Move = pricing.perM3MovingCents;
-      const perM3Disposal = pricing.perM3DisposalCents;
-
-      if (service === "UMZUG") {
-        baseCents = baseMove;
-        volumeCents = volumeM3 * perM3Move;
-      } else if (service === "ENTSORGUNG") {
-        baseCents = baseDisposal;
-        volumeCents = volumeM3 * perM3Disposal;
-      } else {
-        baseCents = baseMove + baseDisposal;
-        volumeCents = volumeM3 * (perM3Move + perM3Disposal) / 2;
-      }
-    } else {
-      const baseFee: Record<ServiceType, number> = {
-        UMZUG: 19000,
-        ENTSORGUNG: 14000,
-        KOMBI: 29000,
-      };
-      const perM3: Record<ServiceType, number> = {
-        UMZUG: 3400,
-        ENTSORGUNG: 4800,
-        KOMBI: 6200,
-      };
-      baseCents = baseFee[service];
-      volumeCents = volumeM3 * perM3[service];
-    }
-
-    let floorsCents = 0;
-    if (floors > 0 && !hasElevator) {
-      const perFloor = pricing?.stairsSurchargePerFloorCents ?? 2500;
-      floorsCents = floors * perFloor;
-    }
-
-    let parkingCents = 0;
-    if (needNoParkingZone) {
-      parkingCents = pricing?.parkingSurchargeHardCents ?? 12000;
-    }
-
-    let addonsCents = 0;
-    for (const a of addons) {
-      addonsCents += ADDON_SURCHARGES_CENTS[a] ?? 0;
-    }
-
-    let subtotalCents = baseCents + volumeCents + floorsCents + parkingCents + addonsCents;
-
-    const speedMult = pricing
-      ? { ECONOMY: pricing.economyMultiplier, STANDARD: pricing.standardMultiplier, EXPRESS: pricing.expressMultiplier }
-      : { ECONOMY: 0.9, STANDARD: 1.0, EXPRESS: 1.3 };
-
-    subtotalCents = Math.round(subtotalCents * speedMult[speed]);
-
-    const uncertainty = pricing?.uncertaintyPercent ?? 12;
-    const minCents = Math.max(0, Math.round(subtotalCents * (1 - uncertainty / 100)));
-    const maxCents = Math.round(subtotalCents * (1 + uncertainty / 100));
-
-    const vatRate = 0.19;
-    const netCents = maxCents;
-    const vatCents = Math.round(netCents * vatRate);
-    const grossCents = netCents + vatCents;
-
-    return {
-      baseCents,
-      volumeCents,
-      floorsCents,
-      parkingCents,
-      addonsCents,
-      driveChargeCents: 0,
-      subtotalCents,
-      minCents,
-      maxCents,
-      netCents,
-      vatCents,
-      grossCents,
-    };
-  }, [service, speed, volumeM3, floors, hasElevator, needNoParkingZone, addons, pricing]);
-
   useEffect(() => {
-    let cancelled = false;
-    const controller = new AbortController();
-
+    let cancel = false;
     const timer = window.setTimeout(async () => {
-      setCalcLoading(true);
-      setCalcError(null);
-
       try {
         const res = await fetch("/api/price/calc", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          signal: controller.signal,
           body: JSON.stringify({
             serviceType: service,
             speed,
@@ -280,528 +144,207 @@ export function PriceCalculator({ pricing, externalVolumeM3 }: { pricing?: Prici
             hasElevator,
             needNoParkingZone,
             addons,
+            selectedServiceOptions: Object.entries(selectedServiceOptions).map(([code, qty]) => ({ code, qty })),
             fromAddress: fromAddress.trim() || undefined,
             toAddress: toAddress.trim() || undefined,
           }),
         });
-
-        const json = (await res.json().catch(() => null)) as
-          | PriceCalcApiResponse
-          | { error?: string }
-          | null;
-        if (!res.ok) {
-          throw new Error(
-            (json && "error" in json && json.error) ||
-              "Preisberechnung konnte nicht durchgefhrt werden.",
-          );
+        const json = (await res.json()) as PriceCalcApiResponse | { error?: string };
+        if (!res.ok) throw new Error(("error" in json && json.error) || "Preisberechnung fehlgeschlagen.");
+        if (!cancel) {
+          setServer(json as PriceCalcApiResponse);
+          setCalcError(null);
         }
-        if (!json || !("breakdown" in json)) {
-          throw new Error("Ungltige Antwort vom Preisservice.");
+      } catch (e) {
+        if (!cancel) {
+          setServer(null);
+          setCalcError(e instanceof Error ? e.message : "Preisberechnung fehlgeschlagen.");
         }
-
-        if (cancelled) return;
-        setServerEstimate({
-          baseCents: json.breakdown.baseCents,
-          volumeCents: json.breakdown.volumeCents,
-          floorsCents: json.breakdown.floorsCents,
-          parkingCents: json.breakdown.parkingCents,
-          addonsCents: json.breakdown.addonsCents,
-          driveChargeCents: json.breakdown.driveChargeCents,
-          subtotalCents: json.breakdown.subtotalCents,
-          minCents: json.breakdown.minCents,
-          maxCents: json.breakdown.maxCents,
-          netCents: json.priceNet,
-          vatCents: json.vat,
-          grossCents: json.priceGross,
-          distanceKm: json.breakdown.distanceKm,
-          distanceSource: json.breakdown.distanceSource,
-        });
-      } catch (error) {
-        if (cancelled) return;
-        if (error instanceof Error && error.name === "AbortError") return;
-        setServerEstimate(null);
-        setCalcError(
-          error instanceof Error
-            ? error.message
-            : "Preisberechnung konnte nicht durchgefhrt werden.",
-        );
-      } finally {
-        if (!cancelled) setCalcLoading(false);
       }
-    }, 450);
-
+    }, 350);
     return () => {
-      cancelled = true;
-      controller.abort();
+      cancel = true;
       clearTimeout(timer);
     };
-  }, [
-    service,
-    speed,
-    volumeM3,
-    floors,
-    hasElevator,
-    needNoParkingZone,
-    addons,
-    fromAddress,
-    toAddress,
-  ]);
+  }, [service, speed, volumeM3, floors, hasElevator, needNoParkingZone, addons, selectedServiceOptions, fromAddress, toAddress]);
 
-  const estimate = serverEstimate ?? localEstimate;
-  const needsRoute = service === "UMZUG" || service === "KOMBI";
-  const hasRouteAddresses = fromAddress.trim().length > 0 && toAddress.trim().length > 0;
+  const local = useMemo(() => {
+    const selectedMontage = Object.entries(selectedServiceOptions).reduce((sum, [code, qty]) => {
+      const option = montageOptions.find((o) => o.code === code);
+      if (!option) return sum;
+      const units = option.requiresQuantity ? Math.max(1, qty) : 1;
+      return sum + option.defaultPriceCents * units;
+    }, 0);
+    const base =
+      service === "MONTAGE"
+        ? pricing?.movingBaseFeeCents ?? 19000
+        : service === "ENTSORGUNG"
+          ? pricing?.disposalBaseFeeCents ?? 14000
+          : service === "KOMBI"
+            ? (pricing?.movingBaseFeeCents ?? 19000) + (pricing?.disposalBaseFeeCents ?? 14000)
+            : pricing?.movingBaseFeeCents ?? 19000;
+    const perM3 =
+      service === "MONTAGE"
+        ? 0
+        : service === "ENTSORGUNG"
+          ? pricing?.perM3DisposalCents ?? 4800
+          : service === "KOMBI"
+            ? Math.round(((pricing?.perM3MovingCents ?? 3400) + (pricing?.perM3DisposalCents ?? 4800)) / 2)
+            : pricing?.perM3MovingCents ?? 3400;
+    const floorsCents = service === "MONTAGE" ? 0 : floors > 0 && !hasElevator ? floors * (pricing?.stairsSurchargePerFloorCents ?? 2500) : 0;
+    const parkingCents = service === "MONTAGE" ? 0 : needNoParkingZone ? pricing?.parkingSurchargeHardCents ?? 12000 : 0;
+    const addonsCents = service === "MONTAGE" ? selectedMontage : addons.reduce((sum, key) => sum + (ADDON_SURCHARGES_CENTS[key] ?? 0), 0);
+    const speedMult =
+      speed === "ECONOMY" ? pricing?.economyMultiplier ?? 0.9 : speed === "EXPRESS" ? pricing?.expressMultiplier ?? 1.3 : pricing?.standardMultiplier ?? 1;
+    let subtotalCents = Math.round((base + volumeM3 * perM3 + floorsCents + parkingCents + addonsCents) * speedMult);
+    let minimumOrderAppliedCents = 0;
+    if (service === "MONTAGE") {
+      const min = pricing?.movingBaseFeeCents ?? 19000;
+      if (subtotalCents < min) {
+        minimumOrderAppliedCents = min - subtotalCents;
+        subtotalCents = min;
+      }
+    }
+    const u = (pricing?.uncertaintyPercent ?? 12) / 100;
+    const minCents = Math.max(0, Math.round(subtotalCents * (1 - u)));
+    const maxCents = Math.round(subtotalCents * (1 + u));
+    const vat = Math.round(maxCents * 0.19);
+    return {
+      breakdown: {
+        baseCents: base,
+        volumeCents: Math.round(volumeM3 * perM3),
+        floorsCents,
+        parkingCents,
+        addonsCents,
+        driveChargeCents: 0,
+        subtotalCents,
+        minCents,
+        maxCents,
+        minimumOrderAppliedCents,
+      } satisfies PriceBreakdown,
+      priceNet: maxCents,
+      vat,
+      priceGross: maxCents + vat,
+    };
+  }, [service, speed, volumeM3, floors, hasElevator, needNoParkingZone, addons, selectedServiceOptions, montageOptions, pricing]);
+
+  const estimate = server ?? local;
+  const isMontage = service === "MONTAGE";
+  const showRouteHint = (service === "UMZUG" || service === "KOMBI") && (!fromAddress.trim() || !toAddress.trim());
 
   return (
     <div className="rounded-3xl border-2 border-slate-300 bg-[color:var(--surface-elevated)] p-6 shadow-lg sm:p-8 dark:border-slate-700 dark:bg-slate-900/80">
       <div className="flex items-center gap-3">
-        <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-100 text-brand-700 shadow-sm dark:bg-brand-900/40 dark:text-brand-400">
-          <Calculator className="h-5 w-5" />
-        </div>
-        <div>
-          <div className="text-lg font-extrabold text-slate-900 dark:text-white">Preisrechner</div>
-          <div className="text-xs font-semibold text-slate-600 dark:text-slate-400">Unverbindliche Orientierung</div>
-        </div>
+        <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-100 text-brand-700 dark:bg-brand-900/40 dark:text-brand-400"><Calculator className="h-5 w-5" /></div>
+        <div className="text-lg font-extrabold text-slate-900 dark:text-white">Preisrechner</div>
       </div>
 
-      <div className="mt-6 grid gap-5 sm:grid-cols-2">
-        {/* Service Type */}
-        <fieldset>
-          <legend className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Leistung
-          </legend>
-          <div className="grid gap-2">
-            {(["UMZUG", "ENTSORGUNG", "KOMBI"] as ServiceType[]).map((s) => (
-              <label
-                key={s}
-                className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all ${service === s
-                    ? "border-brand-500 bg-brand-50 text-brand-800 shadow-md dark:bg-brand-900/30 dark:text-brand-300"
-                    : "border-slate-300 bg-[color:var(--surface-elevated)] text-slate-800 hover:border-slate-400 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-700/60"
-                  }`}
-              >
-                <input
-                  type="radio"
-                  name="service"
-                  value={s}
-                  checked={service === s}
-                  onChange={() => setService(s)}
-                  className="sr-only"
-                />
-                <div
-                  className={`h-4 w-4 shrink-0 rounded-full border-2 ${service === s ? "border-brand-500 bg-brand-500" : "border-slate-300 dark:border-slate-600"
-                    }`}
-                >
-                  {service === s && (
-                    <div className="flex h-full w-full items-center justify-center">
-                      <div className="h-1.5 w-1.5 rounded-full bg-white" />
-                    </div>
-                  )}
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <select className="rounded-xl border-2 border-slate-300 bg-transparent px-3 py-3 text-sm font-semibold" value={service} onChange={(e) => setService(e.target.value as ServiceType)}>
+          <option value="UMZUG">Umzug</option>
+          <option value="ENTSORGUNG">Entsorgung</option>
+          <option value="KOMBI">Kombi</option>
+          <option value="MONTAGE">Montage</option>
+        </select>
+        <select className="rounded-xl border-2 border-slate-300 bg-transparent px-3 py-3 text-sm font-semibold" value={speed} onChange={(e) => setSpeed(e.target.value as SpeedType)}>
+          <option value="ECONOMY">Günstig</option>
+          <option value="STANDARD">Standard</option>
+          <option value="EXPRESS">Express</option>
+        </select>
+      </div>
+
+      {!isMontage ? (
+        <div className="mt-4">
+          <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Volumen (m³)</label>
+          <Input type="number" min={1} max={200} value={volumeM3} onChange={(e) => setVolumeM3(Math.max(1, Math.min(200, Number(e.target.value) || 1)))} />
+        </div>
+      ) : null}
+
+      <div className={`mt-4 grid gap-3 ${isMontage ? "" : "sm:grid-cols-2"}`}>
+        <Input placeholder={isMontage ? "Einsatzadresse (optional)" : "Von (PLZ + Straße)"} value={fromAddress} onChange={(e) => setFromAddress(e.target.value)} />
+        {!isMontage ? <Input placeholder="Nach (PLZ + Straße)" value={toAddress} onChange={(e) => setToAddress(e.target.value)} /> : null}
+      </div>
+
+      {isMontage ? (
+        <div className="mt-4 grid gap-2">
+          {montageOptions.map((opt) => {
+            const qty = selectedServiceOptions[opt.code] ?? 0;
+            return (
+              <div key={opt.code} className="flex items-center justify-between rounded-xl border border-slate-300 p-3">
+                <div>
+                  <div className="text-sm font-bold">{opt.nameDe}</div>
+                  <div className="text-xs text-slate-500">ab {Math.max(1, Math.round(opt.defaultPriceCents / 100))} €</div>
                 </div>
-                {serviceLabels[s]}
-              </label>
-            ))}
-          </div>
-        </fieldset>
+                {opt.requiresQuantity ? (
+                  <Input className="w-20" type="number" min={0} max={50} value={qty} onChange={(e) => setSelectedServiceOptions((prev) => ({ ...prev, [opt.code]: Math.max(0, Math.min(50, Number(e.target.value) || 0)) }))} />
+                ) : (
+                  <input type="checkbox" checked={qty > 0} onChange={(e) => setSelectedServiceOptions((prev) => (e.target.checked ? { ...prev, [opt.code]: 1 } : Object.fromEntries(Object.entries(prev).filter(([key]) => key !== opt.code))))} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <Input type="number" min={0} max={10} value={floors} onChange={(e) => setFloors(Math.max(0, Math.min(10, Number(e.target.value) || 0)))} placeholder="Etagen" />
+          <label className="flex items-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm"><input type="checkbox" checked={hasElevator} onChange={(e) => setHasElevator(e.target.checked)} /> Aufzug</label>
+          <label className="flex items-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm"><input type="checkbox" checked={needNoParkingZone} onChange={(e) => setNeedNoParkingZone(e.target.checked)} /> Halteverbotszone</label>
+        </div>
+      )}
 
-        {/* Speed Type */}
-        <fieldset>
-          <legend className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Prioritt
-          </legend>
-          <div className="grid gap-2">
-            {(["ECONOMY", "STANDARD", "EXPRESS"] as SpeedType[]).map((s) => (
-              <label
-                key={s}
-                className={`flex cursor-pointer items-center justify-between rounded-xl border-2 px-4 py-3 text-sm transition-all ${speed === s
-                    ? "border-brand-500 bg-brand-50 shadow-md dark:bg-brand-900/30"
-                    : "border-slate-300 bg-[color:var(--surface-elevated)] hover:border-slate-400 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800/60 dark:hover:border-slate-500 dark:hover:bg-slate-700/60"
-                  }`}
-              >
-                <div className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    name="speed"
-                    value={s}
-                    checked={speed === s}
-                    onChange={() => setSpeed(s)}
-                    className="sr-only"
-                  />
-                  <div
-                    className={`h-4 w-4 shrink-0 rounded-full border-2 ${speed === s ? "border-brand-500 bg-brand-500" : "border-slate-300 dark:border-slate-600"
-                      }`}
-                  >
-                    {speed === s && (
-                      <div className="flex h-full w-full items-center justify-center">
-                        <div className="h-1.5 w-1.5 rounded-full bg-white" />
-                      </div>
-                    )}
-                  </div>
-                  <span className={`font-semibold ${speed === s ? "text-brand-800 dark:text-brand-300" : "text-slate-700 dark:text-slate-200"}`}>
-                    {speedLabels[s]}
-                  </span>
-                </div>
-                <span className={`text-xs ${speed === s ? "text-brand-700 dark:text-brand-400" : "text-slate-600 dark:text-slate-400"}`}>
-                  {speedDescriptions[s]}
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
+      {showRouteHint ? <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">Für genaue Fahrtkosten bitte beide Adressen angeben.</div> : null}
+      {calcError ? <div className="mt-3 rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-xs font-semibold text-red-800">{calcError}</div> : null}
+
+      <div className="mt-5 rounded-2xl border border-slate-300 bg-slate-50 p-4 text-sm">
+        <div className="flex justify-between"><span>Leistung</span><span className="font-bold">{serviceLabels[service]}</span></div>
+        {!isMontage ? <div className="flex justify-between"><span>Volumen</span><span className="font-bold">{formatNumberDE(volumeM3)} m³</span></div> : null}
+        <div className="mt-2 flex justify-between text-lg font-extrabold"><span>Preisrahmen</span><span>{eur(estimate.breakdown.minCents)} - {eur(estimate.breakdown.maxCents)}</span></div>
+        <div className="text-xs text-slate-500">Richtpreis: Endpreis nach Angebot.</div>
       </div>
 
-      {/* Volume */}
-      <div className="mt-6">
-        <div className="flex items-center justify-between gap-3">
-          <label
-            htmlFor="volume-input"
-            className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400"
-          >
-            Volumen (m)
-          </label>
-          <div className="flex items-center gap-2 rounded-xl border-2 border-slate-300 bg-[color:var(--surface-elevated)] px-3 py-1.5 shadow-sm dark:border-slate-600 dark:bg-slate-800/60">
-            <button
-              type="button"
-              onClick={() => setVolumeM3((v) => Math.max(1, v - 1))}
-              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg bg-slate-100 text-lg font-bold text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
-              aria-label="Volumen verringern"
-            >
-              -
-            </button>
-            <input
-              id="volume-input"
-              type="number"
-              min={1}
-              max={200}
-              value={volumeM3}
-              onChange={(e) => setVolumeM3(Math.max(1, Math.min(200, Number(e.target.value) || 1)))}
-              inputMode="numeric"
-              pattern="[0-9]*"
-              className="w-14 border-0 bg-transparent p-0 text-center text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-0 dark:text-white"
-              aria-label="Volumen in Kubikmetern"
-            />
-            <button
-              type="button"
-              onClick={() => setVolumeM3((v) => Math.min(200, v + 1))}
-              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg bg-slate-100 text-lg font-bold text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
-              aria-label="Volumen erhhen"
-            >
-              +
-            </button>
-          </div>
-        </div>
-        <input
-          type="range"
-          min={1}
-          max={80}
-          value={Math.min(volumeM3, 80)}
-          onChange={(e) => setVolumeM3(Number(e.target.value))}
-          className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-brand-600 dark:bg-slate-700"
-          aria-label="Volumen Schieberegler"
-        />
-        <div className="mt-1 flex justify-between text-xs text-slate-600 dark:text-slate-400">
-          <span>1 m</span>
-          <span>80 m</span>
-        </div>
-      </div>
-
-      {/* Addresses */}
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="from-address" className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Von (PLZ + Straße)
-          </label>
-          <Input
-            id="from-address"
-            value={fromAddress}
-            onChange={(e) => setFromAddress(e.target.value)}
-            placeholder="z.B. 12043 Berlin, Anzengruber Str. 9"
-            className="border-2 border-slate-300"
-          />
-        </div>
-        <div>
-          <label htmlFor="to-address" className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-            Nach (PLZ + Straße)
-          </label>
-          <Input
-            id="to-address"
-            value={toAddress}
-            onChange={(e) => setToAddress(e.target.value)}
-            placeholder="z.B. 10115 Berlin, Alexanderplatz 1"
-            className="border-2 border-slate-300"
-          />
-        </div>
-      </div>
-
-      {needsRoute && !hasRouteAddresses ? (
-        <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
-          F?r die genaue Fahrtkosten-Berechnung bitte beide Adressen (Von/Nach) mit PLZ angeben.
-        </div>
-      ) : null}
-      {calcLoading ? (
-        <div className="mt-3 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
-          Preis wird live berechnet…
-        </div>
-      ) : null}
-      {calcError ? (
-        <div className="mt-3 rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-xs font-semibold text-red-800">
-          {calcError}
-        </div>
-      ) : null}
-
-      {/* Extras */}
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <div>
-          <label
-            htmlFor="floors-input"
-            className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400"
-          >
-            Etagen ohne Aufzug
-          </label>
-          <div className="flex items-center gap-2 rounded-xl border-2 border-slate-300 bg-[color:var(--surface-elevated)] px-3 py-2 shadow-sm dark:border-slate-600 dark:bg-slate-800/60">
-            <button
-              type="button"
-              onClick={() => setFloors((f) => Math.max(0, f - 1))}
-              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg bg-slate-100 text-lg font-bold text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
-              aria-label="Etagen verringern"
-            >
-              -
-            </button>
-            <input
-              id="floors-input"
-              type="number"
-              min={0}
-              max={10}
-              value={floors}
-              onChange={(e) => setFloors(Math.max(0, Math.min(10, Number(e.target.value) || 0)))}
-              inputMode="numeric"
-              pattern="[0-9]*"
-              className="w-12 border-0 bg-transparent p-0 text-center text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-0 dark:text-white"
-              aria-label="Anzahl der Etagen"
-            />
-            <button
-              type="button"
-              onClick={() => setFloors((f) => Math.min(10, f + 1))}
-              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg bg-slate-100 text-lg font-bold text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
-              aria-label="Etagen erhhen"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        <label
-          className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all ${hasElevator
-              ? "border-brand-500 bg-brand-50 text-brand-800 shadow-md dark:bg-brand-900/30 dark:text-brand-300"
-              : "border-slate-300 bg-[color:var(--surface-elevated)] text-slate-800 hover:border-slate-400 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-200 dark:hover:border-slate-500"
-            }`}
-        >
-          <input
-            type="checkbox"
-            checked={hasElevator}
-            onChange={(e) => setHasElevator(e.target.checked)}
-            className="h-4 w-4 cursor-pointer rounded border-slate-300 accent-brand-600"
-          />
-          Aufzug vorhanden
-        </label>
-        <label
-          className={`flex cursor-pointer items-center gap-3 self-end rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all ${needNoParkingZone
-              ? "border-brand-500 bg-brand-50 text-brand-800 shadow-md dark:bg-brand-900/30 dark:text-brand-300"
-              : "border-slate-300 bg-[color:var(--surface-elevated)] text-slate-800 hover:border-slate-400 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-200 dark:hover:border-slate-500"
-            }`}
-        >
-          <input
-            type="checkbox"
-            checked={needNoParkingZone}
-            onChange={(e) => setNeedNoParkingZone(e.target.checked)}
-            className="h-4 w-4 cursor-pointer rounded border-slate-300 accent-brand-600"
-          />
-          Halteverbotszone benötigt
-        </label>
-      </div>
-
-      {/* Zusatzleistungen */}
-      <div className="mt-4">
-        <div className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
-          Zusatzleistungen
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {ADDON_OPTIONS.map((opt) => (
-            <label
-              key={opt.key}
-              className={`flex cursor-pointer items-center gap-2 rounded-xl border-2 px-4 py-2.5 text-sm font-semibold transition-all ${addons.includes(opt.key)
-                  ? "border-brand-500 bg-brand-50 text-brand-800 dark:bg-brand-900/30 dark:text-brand-300"
-                  : "border-slate-300 bg-[color:var(--surface-elevated)] text-slate-700 hover:border-slate-400 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-200 dark:hover:border-slate-500"
-                }`}
-            >
-              <input
-                type="checkbox"
-                checked={addons.includes(opt.key)}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setAddons((a) => [...a, opt.key]);
-                  } else {
-                    setAddons((a) => a.filter((x) => x !== opt.key));
-                  }
-                }}
-                className="h-4 w-4 cursor-pointer rounded border-slate-300 accent-brand-600"
-              />
-              {opt.label}
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Price Breakdown */}
-      <div className="mt-6 rounded-2xl border-2 border-slate-300 bg-slate-50 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800/60">
-        <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-          <Info className="h-3.5 w-3.5" />
-          Preisdetails
-        </div>
-        <div className="grid gap-1.5 text-sm">
-          <div className="flex justify-between text-slate-700 dark:text-slate-400">
-            <span>Grundgebhr ({serviceLabels[service]})</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-100">{eur(estimate.baseCents)}</span>
-          </div>
-          <div className="flex justify-between text-slate-700 dark:text-slate-400">
-            <span>Volumen ({formatNumberDE(volumeM3)} m)</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-100">{eur(estimate.volumeCents)}</span>
-          </div>
-          {estimate.floorsCents > 0 && (
-            <div className="flex justify-between text-slate-700 dark:text-slate-400">
-              <span>Treppenzuschlag ({floors} Etagen)</span>
-              <span className="font-semibold text-slate-900 dark:text-slate-100">{eur(estimate.floorsCents)}</span>
-            </div>
-          )}
-          {estimate.parkingCents > 0 && (
-            <div className="flex justify-between text-slate-700 dark:text-slate-400">
-              <span>Halteverbotszone</span>
-              <span className="font-semibold text-slate-900 dark:text-slate-100">{eur(estimate.parkingCents)}</span>
-            </div>
-          )}
-          {estimate.addonsCents > 0 && (
-            <div className="flex justify-between text-slate-700 dark:text-slate-400">
-              <span>Zusatzleistungen</span>
-              <span className="font-semibold text-slate-900 dark:text-slate-100">{eur(estimate.addonsCents)}</span>
-            </div>
-          )}
-          {estimate.driveChargeCents > 0 && (
-            <div className="flex justify-between text-slate-700 dark:text-slate-400">
-              <span>
-                Fahrtkosten
-                {estimate.distanceKm != null
-                  ? ` (${formatNumberDE(estimate.distanceKm)} km)`
-                  : ""}
-              </span>
-              <span className="font-semibold text-slate-900 dark:text-slate-100">
-                {eur(estimate.driveChargeCents)}
-              </span>
-            </div>
-          )}
-          {estimate.distanceKm != null && (
-            <div className="flex justify-between text-slate-700 dark:text-slate-400">
-              <span>Distanz-Quelle</span>
-              <span className="font-semibold text-slate-900 dark:text-slate-100">
-                {distanceSourceLabel(estimate.distanceSource)}
-              </span>
-            </div>
-          )}
-          <div className="flex justify-between text-slate-700 dark:text-slate-400">
-            <span>Prioritt ({speedLabels[speed]})</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-100">
-              {speed === "ECONOMY" ? "-10 %" : speed === "EXPRESS" ? "+30 %" : "±0 %"}
-            </span>
-          </div>
-          <div className="my-1 border-t-2 border-slate-300 dark:border-slate-600" />
-          <div className="flex justify-between text-slate-800 dark:text-slate-200">
-            <span className="font-semibold">Netto (geschätzt)</span>
-            <span className="font-bold">{eur(estimate.netCents)}</span>
-          </div>
-          <div className="flex justify-between text-slate-600 dark:text-slate-400">
-            <span>zzgl. MwSt. (19 %)</span>
-            <span className="font-semibold">{eur(estimate.vatCents)}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Price Result */}
-      <div className="mt-4 rounded-2xl border-2 border-brand-400 bg-linear-to-r from-brand-50 to-blue-50 p-5 shadow-md dark:from-brand-900/30 dark:to-blue-900/20 dark:border-brand-600/50">
-        <div className="flex items-center gap-2">
-          <CirclePercent className="h-5 w-5 text-brand-700 dark:text-brand-400" />
-          <span className="text-sm font-bold text-brand-900 dark:text-brand-300">geschätzter Preisrahmen</span>
-        </div>
-        <div className="mt-2 flex items-baseline gap-2">
-          <span className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white">
-            {eur(estimate.minCents)}
-          </span>
-          <span className="text-lg font-bold text-slate-600 dark:text-slate-400"></span>
-          <span className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white">
-            {eur(estimate.maxCents)}
-          </span>
-        </div>
-        <div className="mt-1 text-xs text-slate-700 dark:text-slate-400">
-          inkl. MwSt.: {eur(estimate.grossCents)} (Basis: Obergrenze)
-        </div>
-      </div>
-
-      {/* CTA */}
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row">
         <Button
           size="lg"
-          className="w-full flex-1 gap-2"
+          className="flex-1 gap-2"
           onClick={() => {
-            if ((service === "UMZUG" || service === "KOMBI") && !hasRouteAddresses) {
-              setCalcError("Bitte geben Sie für Umzug/Kombi sowohl Von- als auch Nach-Adresse an.");
-              return;
+            if (service === "UMZUG" || service === "KOMBI") {
+              if (!fromAddress.trim() || !toAddress.trim()) {
+                setCalcError("Bitte Start- und Zieladresse ergänzen.");
+                return;
+              }
             }
-            const inquiry = {
-              serviceType: service,
-              speed,
-              volumeM3,
-              floors,
-              hasElevator,
-              needNoParkingZone,
-              addons,
-              fromAddress: fromAddress.trim() || undefined,
-              toAddress: toAddress.trim() || undefined,
-              distanceKm: estimate.distanceKm,
-              distanceSource: estimate.distanceSource,
-              driveChargeCents: estimate.driveChargeCents,
-              price: {
-                netCents: estimate.netCents,
-                vatCents: estimate.vatCents,
-                grossCents: estimate.grossCents,
-                minCents: estimate.minCents,
-                maxCents: estimate.maxCents,
-              },
-            };
-            if (typeof window !== "undefined") {
-              sessionStorage.setItem(INQUIRY_STORAGE_KEY, JSON.stringify(inquiry));
+            sessionStorage.setItem(
+              INQUIRY_STORAGE_KEY,
+              JSON.stringify({ service, speed, volumeM3, fromAddress, toAddress, selectedServiceOptions, estimate }),
+            );
+            const params = new URLSearchParams();
+            params.set("speed", speed);
+            if (service === "MONTAGE") {
+              params.set("context", "MONTAGE");
+              const options = Object.entries(selectedServiceOptions)
+                .filter(([, qty]) => qty > 0)
+                .map(([code, qty]) => `${code}:${qty}`)
+                .join(",");
+              if (options) params.set("options", options);
+            } else if (service === "ENTSORGUNG") {
+              params.set("context", "ENTSORGUNG");
+            } else if (service === "KOMBI") {
+              params.set("service", "BOTH");
+            } else {
+              params.set("context", "MOVING");
             }
-            router.push("/buchen?context=MOVING");
+            router.push(`/buchen?${params.toString()}`);
           }}
         >
           <CalendarDays className="h-5 w-5" />
-          Termin auswhlen
+          Termin auswählen
           <ArrowRight className="h-4 w-4" />
         </Button>
-        <a href="tel:+491729573681" className="flex-1 sm:flex-initial">
-          <Button size="lg" variant="outline" className="w-full gap-2">
-            Lieber anrufen: +49 172 9573681
-          </Button>
+        <a href="tel:+491729573681" className="sm:w-auto">
+          <Button size="lg" variant="outline">+49 172 9573681</Button>
         </a>
-      </div>
-
-      <div className="mt-4 flex items-start gap-2 text-xs text-slate-600 dark:text-slate-400">
-        <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
-        <span>
-          Das finale Angebot bestätigen wir nach kurzer Prüfung. Der Rechner dient als
-          unverbindliche Orientierung.
-        </span>
       </div>
     </div>
   );
 }
-
-
-
-
 

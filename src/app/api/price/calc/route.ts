@@ -8,11 +8,13 @@ import {
   type LegacyAddon,
   type LegacyPricing,
 } from "@/server/calc/legacy-price";
+import { estimateOrder } from "@/server/calc/estimate";
+import type { WizardPayload } from "@/lib/wizard-schema";
 
 export const runtime = "nodejs";
 
 const priceCalcSchema = z.object({
-  serviceType: z.enum(["UMZUG", "ENTSORGUNG", "KOMBI"]),
+  serviceType: z.enum(["UMZUG", "ENTSORGUNG", "KOMBI", "MONTAGE"]),
   speed: z.enum(["ECONOMY", "STANDARD", "EXPRESS"]),
   volumeM3: z.coerce.number().min(1).max(200),
   floors: z.coerce.number().min(0).max(10).default(0),
@@ -20,6 +22,14 @@ const priceCalcSchema = z.object({
   needNoParkingZone: z.boolean().default(false),
   addons: z
     .array(z.enum(["PACKING", "DISMANTLE_ASSEMBLE", "HALTEVERBOT", "ENTRUEMPELUNG"]))
+    .default([]),
+  selectedServiceOptions: z
+    .array(
+      z.object({
+        code: z.string().trim().min(2).max(80),
+        qty: z.coerce.number().int().min(1).max(50).default(1),
+      }),
+    )
     .default([]),
   fromAddress: z.string().optional(),
   toAddress: z.string().optional(),
@@ -65,6 +75,7 @@ export async function POST(req: Request) {
     hasElevator,
     needNoParkingZone,
     addons,
+    selectedServiceOptions,
     fromAddress,
     toAddress,
   } = parsed.data;
@@ -84,6 +95,18 @@ export async function POST(req: Request) {
       standardMultiplier: true,
       expressMultiplier: true,
       perKmCents: true,
+      hourlyRateCents: true,
+      currency: true,
+      heavyItemSurchargeCents: true,
+      carryDistanceSurchargePer25mCents: true,
+      parkingSurchargeMediumCents: true,
+      elevatorDiscountSmallCents: true,
+      elevatorDiscountLargeCents: true,
+      montageBaseFeeCents: true,
+      montageStandardMultiplier: true,
+      montagePlusMultiplier: true,
+      montagePremiumMultiplier: true,
+      montageMinimumOrderCents: true,
     },
   });
 
@@ -112,6 +135,121 @@ export async function POST(req: Request) {
           : "Die Distanz konnte nicht berechnet werden. Bitte prüfen Sie die Adressen (inkl. PLZ).";
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
+  }
+
+  if (serviceType === "MONTAGE") {
+    const montageOptions = await prisma.serviceOption.findMany({
+      where: {
+        active: true,
+        deletedAt: null,
+        module: { slug: "MONTAGE", active: true, deletedAt: null },
+      },
+      select: {
+        code: true,
+        pricingType: true,
+        defaultPriceCents: true,
+        defaultLaborMinutes: true,
+        isHeavy: true,
+        requiresQuantity: true,
+      },
+    });
+
+    const payload: WizardPayload = {
+      bookingContext: "MONTAGE",
+      packageTier: "PLUS",
+      serviceType: "MOVING",
+      addons: [],
+      selectedServiceOptions: selectedServiceOptions.map((item) => ({
+        code: item.code,
+        qty: Math.max(1, item.qty || 1),
+      })),
+      pickupAddress: undefined,
+      startAddress: undefined,
+      destinationAddress: undefined,
+      accessPickup: undefined,
+      accessStart: undefined,
+      accessDestination: undefined,
+      itemsMove: {},
+      itemsDisposal: {},
+      disposal: undefined,
+      timing: {
+        speed,
+        requestedFrom: new Date().toISOString(),
+        requestedTo: new Date().toISOString(),
+        preferredTimeWindow: "FLEXIBLE",
+        jobDurationMinutes: 120,
+      },
+      customer: {
+        name: "Kunde",
+        phone: "+49",
+        email: "kunde@example.com",
+        contactPreference: "EMAIL",
+        note: "",
+      },
+    };
+
+    const estimate = estimateOrder(
+      payload,
+      {
+        catalog: [],
+        pricing: {
+          currency: pricingDb?.currency ?? "EUR",
+          movingBaseFeeCents: pricing.movingBaseFeeCents,
+          disposalBaseFeeCents: pricing.disposalBaseFeeCents,
+          hourlyRateCents: pricingDb?.hourlyRateCents ?? 0,
+          perM3MovingCents: pricing.perM3MovingCents,
+          perM3DisposalCents: pricing.perM3DisposalCents,
+          perKmCents: pricing.perKmCents,
+          heavyItemSurchargeCents: pricingDb?.heavyItemSurchargeCents ?? 0,
+          stairsSurchargePerFloorCents: pricing.stairsSurchargePerFloorCents,
+          carryDistanceSurchargePer25mCents: pricingDb?.carryDistanceSurchargePer25mCents ?? 0,
+          parkingSurchargeMediumCents: pricingDb?.parkingSurchargeMediumCents ?? 0,
+          parkingSurchargeHardCents: pricing.parkingSurchargeHardCents,
+          elevatorDiscountSmallCents: pricingDb?.elevatorDiscountSmallCents ?? 0,
+          elevatorDiscountLargeCents: pricingDb?.elevatorDiscountLargeCents ?? 0,
+          uncertaintyPercent: pricing.uncertaintyPercent,
+          economyMultiplier: pricing.economyMultiplier,
+          standardMultiplier: pricing.standardMultiplier,
+          expressMultiplier: pricing.expressMultiplier,
+          montageBaseFeeCents: pricingDb?.montageBaseFeeCents ?? pricing.movingBaseFeeCents,
+          montageStandardMultiplier: pricingDb?.montageStandardMultiplier ?? 0.98,
+          montagePlusMultiplier: pricingDb?.montagePlusMultiplier ?? 1,
+          montagePremiumMultiplier: pricingDb?.montagePremiumMultiplier ?? 1.12,
+          montageMinimumOrderCents: pricingDb?.montageMinimumOrderCents ?? pricing.movingBaseFeeCents,
+        },
+        serviceOptions: montageOptions.map((option) => ({
+          code: option.code,
+          moduleSlug: "MONTAGE",
+          pricingType: option.pricingType,
+          defaultPriceCents: option.defaultPriceCents,
+          defaultLaborMinutes: option.defaultLaborMinutes,
+          isHeavy: option.isHeavy,
+          requiresQuantity: option.requiresQuantity,
+        })),
+      },
+      undefined,
+    );
+
+    const net = estimate.priceMaxCents;
+    const vat = Math.round(net * 0.19);
+    return NextResponse.json({
+      priceNet: net,
+      vat,
+      priceGross: net + vat,
+      breakdown: {
+        baseCents: pricingDb?.montageBaseFeeCents ?? pricing.movingBaseFeeCents,
+        volumeCents: 0,
+        floorsCents: 0,
+        parkingCents: 0,
+        addonsCents: 0,
+        driveChargeCents: 0,
+        subtotalCents: estimate.breakdown.totalCents,
+        minCents: estimate.priceMinCents,
+        maxCents: estimate.priceMaxCents,
+        serviceOptionsCents: estimate.breakdown.serviceOptionsCents,
+        minimumOrderAppliedCents: estimate.breakdown.minimumOrderAppliedCents,
+      },
+    });
   }
 
   const estimate = calculateLegacyPrice(

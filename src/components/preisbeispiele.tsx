@@ -125,7 +125,7 @@ export function Preisbeispiele({
           {
             title: "Montage",
             examples: montageExamples,
-            href: "/preise?service=UMZUG&addons=DISMANTLE_ASSEMBLE",
+            href: "/preise?service=MONTAGE",
           },
         ]
       : service === "UMZUG"
@@ -142,7 +142,7 @@ export function Preisbeispiele({
               {
                 title: "Montage",
                 examples: montageExamples,
-                href: "/preise?service=UMZUG&addons=DISMANTLE_ASSEMBLE",
+                href: "/preise?service=MONTAGE",
               },
             ];
 
