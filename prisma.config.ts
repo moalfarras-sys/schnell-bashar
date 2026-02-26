@@ -1,7 +1,8 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
-const databaseUrl = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
+const directUrl = process.env.DIRECT_URL?.trim();
+const databaseUrl = directUrl || process.env.DATABASE_URL?.trim();
 
 if (!databaseUrl) {
   throw new Error("Missing database connection string. Set DATABASE_URL (and optionally DIRECT_URL).");
