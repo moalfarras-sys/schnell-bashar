@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
@@ -18,7 +17,6 @@ import {
 import { addDays, format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 
-import { Container } from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -27,6 +25,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/components/ui/cn";
 
 import { AddressAutocomplete, type AddressOption } from "@/app/(wizard)/buchen/components/address-autocomplete";
+import { BookingPanel } from "@/app/(wizard)/buchen/components/BookingPanel";
+import { BookingShell } from "@/app/(wizard)/buchen/components/BookingShell";
+import { BottomActionBar } from "@/app/(wizard)/buchen/components/BottomActionBar";
+import { LiveEstimateCard } from "@/app/(wizard)/buchen/components/LiveEstimateCard";
+import { ValidationBanner } from "@/app/(wizard)/buchen/components/ValidationBanner";
+import { WizardStepRail } from "@/app/(wizard)/buchen/components/WizardStepRail";
 import { estimateOrder, type PricingConfigLite } from "@/server/calc/estimate";
 import type { WizardPayload } from "@/lib/wizard-schema";
 import { formatNumberDE } from "@/lib/format-number";
@@ -1034,362 +1038,272 @@ export function BookingWizard(props: {
   }, [storageKey]);
 
   return (
-    <Container className="py-10 lg:py-12">
-      {variant !== "default" ? (
-        <div className="mb-6 rounded-3xl border border-brand-300/40 bg-gradient-to-r from-slate-900/95 via-slate-900/92 to-brand-950/40 px-5 py-4 text-sm text-slate-100 shadow-[0_10px_28px_rgba(2,8,23,0.45)]">
-          {variant === "montage" ? (
-            <div>
-              <div className="text-base font-extrabold">Montage-Buchung</div>
-              <div className="mt-1 font-semibold">
-                Dieser Ablauf ist speziell für Möbelmontage optimiert. Die Leistung
-                <span className="font-extrabold"> &quot;Möbel Demontage/Montage&quot;</span> ist bereits enthalten.
-              </div>
-            </div>
-          ) : (
-            <div>
-              <div className="text-base font-extrabold">Entsorgungs-Buchung</div>
-              <div className="mt-1 font-semibold">
-                Dieser Ablauf ist auf Sperrmüll und Entsorgung ausgelegt, inklusive Kategorien, Verbots-Check und Foto-Upload.
-              </div>
-            </div>
-          )}
-        </div>
-      ) : null}
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="glass-card-solid rounded-3xl">
-          <WizardHeader steps={steps} step={step} />
-
-          <div className="p-6 sm:p-8" ref={wizardBodyRef}>
-            {showStepValidation && stepErrors.length > 0 ? (
-              <div className="mb-6 rounded-2xl border border-red-300 bg-red-50/90 p-4 text-sm font-semibold text-red-900">
-                <div className="font-extrabold">Bitte prüfen Sie die markierten Angaben:</div>
-                <ul className="mt-2 list-disc space-y-1 pl-5">
-                  {stepErrors.map((error) => (
-                    <li key={error}>{error}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-            {/* STEP 1: Service & Adresse */}
-            {current.key === "start" ? (
-              <div className="space-y-8">
-                <StepService
-                  serviceType={serviceType}
-                  setServiceType={setServiceType}
-                  addons={addons}
-                  setAddons={setAddons}
-                  forcedAddons={forcedAddons}
-                />
-                <div className="border-t border-slate-200 pt-8 dark:border-slate-700">
-                  <StepLocation
-                    bookingContext={bookingContext}
+    <BookingShell
+      variant={variant}
+      left={
+        <>
+          <WizardStepRail steps={steps} step={step} />
+          <BookingPanel>
+            <div ref={wizardBodyRef}>
+              <ValidationBanner errors={showStepValidation ? stepErrors : []} />
+              {/* STEP 1: Service & Adresse */}
+              {current.key === "start" ? (
+                <div className="space-y-8 booking-motion-reveal">
+                  <StepService
                     serviceType={serviceType}
-                    startAddress={startAddress}
-                    setStartAddress={setStartAddress}
-                    destinationAddress={destinationAddress}
-                    setDestinationAddress={setDestinationAddress}
-                    pickupAddress={pickupAddress}
-                    setPickupAddress={setPickupAddress}
-                    samePickupAsStart={samePickupAsStart}
-                    setSamePickupAsStart={setSamePickupAsStart}
-                    accessStart={accessStart}
-                    setAccessStart={setAccessStart}
-                    accessDestination={accessDestination}
-                    setAccessDestination={setAccessDestination}
-                    accessPickup={accessPickup}
-                    setAccessPickup={setAccessPickup}
-                    invalidAddress={showStepValidation && stepErrors.some((error) => error.includes("adresse"))}
+                    setServiceType={setServiceType}
+                    addons={addons}
+                    setAddons={setAddons}
+                    forcedAddons={forcedAddons}
                   />
-                </div>
-              </div>
-            ) : null}
-
-            {/* STEP 2: Details & Termin */}
-            {current.key === "details" ? (
-              <div className="space-y-8">
-                {variant === "default" ? (
-                  <StepItems
-                    serviceType={serviceType}
-                    catalog={props.catalog}
-                    modules={props.modules}
-                    bookingContext={bookingContext}
-                    itemsMove={itemsMove}
-                    setItemsMove={setItemsMove}
-                    itemsDisposal={itemsDisposal}
-                    setItemsDisposal={setItemsDisposal}
-                    selectedServiceOptions={selectedServiceOptions}
-                    setSelectedServiceOptions={setSelectedServiceOptions}
-                  />
-                ) : (
-                  <StepServiceOptions
-                    title={variant === "montage" ? "Leistungen & Geräte" : "Entsorgungsleistungen"}
-                    options={activeModuleOptions}
-                    selected={selectedServiceOptions}
-                    setSelected={setSelectedServiceOptions}
-                  />
-                )}
-
-                {(serviceType === "DISPOSAL" || serviceType === "BOTH") ? (
-                  <div className="border-t border-slate-200 pt-8 dark:border-slate-700">
-                    <StepDisposal
+                  <div className="border-t border-slate-200/80 pt-8 dark:border-slate-700/80">
+                    <StepLocation
+                      bookingContext={bookingContext}
                       serviceType={serviceType}
-                      catalog={props.catalog}
-                      itemsDisposal={itemsDisposal}
-                      setItemsDisposal={setItemsDisposal}
-                      disposalCategories={disposalCategories as any}
-                      setDisposalCategories={setDisposalCategories as any}
-                      disposalExtraM3={disposalExtraM3}
-                      setDisposalExtraM3={setDisposalExtraM3}
-                      forbiddenConfirmed={forbiddenConfirmed}
-                      setForbiddenConfirmed={setForbiddenConfirmed}
-                      photos={photos}
-                      setPhotos={setPhotos}
-                      invalidForbidden={
-                        showStepValidation &&
-                        stepErrors.some((error) => error.includes("Ausschlüsse"))
-                      }
+                      startAddress={startAddress}
+                      setStartAddress={setStartAddress}
+                      destinationAddress={destinationAddress}
+                      setDestinationAddress={setDestinationAddress}
+                      pickupAddress={pickupAddress}
+                      setPickupAddress={setPickupAddress}
+                      samePickupAsStart={samePickupAsStart}
+                      setSamePickupAsStart={setSamePickupAsStart}
+                      accessStart={accessStart}
+                      setAccessStart={setAccessStart}
+                      accessDestination={accessDestination}
+                      setAccessDestination={setAccessDestination}
+                      accessPickup={accessPickup}
+                      setAccessPickup={setAccessPickup}
+                      invalidAddress={showStepValidation && stepErrors.some((error) => error.includes("adresse"))}
                     />
                   </div>
-                ) : null}
-
-                <div className="border-t border-slate-200 pt-8 dark:border-slate-700">
-                  <StepPackage
-                    serviceType={serviceType}
-                    packageTier={packageTier}
-                    setPackageTier={setPackageTier}
-                    offerCode={offerCode}
-                    setOfferCode={setOfferCode}
-                    offerContext={offerContext}
-                    promoMatched={Boolean(promoRuleMatch)}
-                  />
                 </div>
+              ) : null}
 
-                <div className="border-t border-slate-200 pt-8 dark:border-slate-700">
-                  <StepTiming
-                    speed={speed}
-                    setSpeed={setSpeed}
-                    earliestISO={earliestISO}
-                    preferredFrom={preferredFrom}
-                    setPreferredFrom={setPreferredFrom}
-                    preferredTo={preferredTo}
-                    setPreferredTo={setPreferredTo}
-                    preferredTimeWindow={preferredTimeWindow}
-                    setPreferredTimeWindow={setPreferredTimeWindow}
-                    jobDurationMinutes={jobDurationMinutes}
-                    invalidDateRange={
-                      showStepValidation &&
-                      stepErrors.some((error) => error.includes("Zeitraum") || error.includes("Enddatum"))
-                    }
-                  />
+              {/* STEP 2: Details & Termin */}
+              {current.key === "details" ? (
+                <div className="space-y-8 booking-motion-reveal">
+                  {variant === "default" ? (
+                    <StepItems
+                      serviceType={serviceType}
+                      catalog={props.catalog}
+                      modules={props.modules}
+                      bookingContext={bookingContext}
+                      itemsMove={itemsMove}
+                      setItemsMove={setItemsMove}
+                      itemsDisposal={itemsDisposal}
+                      setItemsDisposal={setItemsDisposal}
+                      selectedServiceOptions={selectedServiceOptions}
+                      setSelectedServiceOptions={setSelectedServiceOptions}
+                    />
+                  ) : (
+                    <StepServiceOptions
+                      title={variant === "montage" ? "Leistungen & Geräte" : "Entsorgungsleistungen"}
+                      options={activeModuleOptions}
+                      selected={selectedServiceOptions}
+                      setSelected={setSelectedServiceOptions}
+                    />
+                  )}
+
+                  {serviceType === "DISPOSAL" || serviceType === "BOTH" ? (
+                    <div className="border-t border-slate-200/80 pt-8 dark:border-slate-700/80">
+                      <StepDisposal
+                        serviceType={serviceType}
+                        catalog={props.catalog}
+                        itemsDisposal={itemsDisposal}
+                        setItemsDisposal={setItemsDisposal}
+                        disposalCategories={disposalCategories as any}
+                        setDisposalCategories={setDisposalCategories as any}
+                        disposalExtraM3={disposalExtraM3}
+                        setDisposalExtraM3={setDisposalExtraM3}
+                        forbiddenConfirmed={forbiddenConfirmed}
+                        setForbiddenConfirmed={setForbiddenConfirmed}
+                        photos={photos}
+                        setPhotos={setPhotos}
+                        invalidForbidden={showStepValidation && stepErrors.some((error) => error.includes("Ausschlüsse"))}
+                      />
+                    </div>
+                  ) : null}
+
+                  <div className="border-t border-slate-200/80 pt-8 dark:border-slate-700/80">
+                    <StepPackage
+                      serviceType={serviceType}
+                      packageTier={packageTier}
+                      setPackageTier={setPackageTier}
+                      offerCode={offerCode}
+                      setOfferCode={setOfferCode}
+                      offerContext={offerContext}
+                      promoMatched={Boolean(promoRuleMatch)}
+                    />
+                  </div>
+
+                  <div className="border-t border-slate-200/80 pt-8 dark:border-slate-700/80">
+                    <StepTiming
+                      speed={speed}
+                      setSpeed={setSpeed}
+                      earliestISO={earliestISO}
+                      preferredFrom={preferredFrom}
+                      setPreferredFrom={setPreferredFrom}
+                      preferredTo={preferredTo}
+                      setPreferredTo={setPreferredTo}
+                      preferredTimeWindow={preferredTimeWindow}
+                      setPreferredTimeWindow={setPreferredTimeWindow}
+                      jobDurationMinutes={jobDurationMinutes}
+                      invalidDateRange={showStepValidation && stepErrors.some((error) => error.includes("Zeitraum") || error.includes("Enddatum"))}
+                    />
+                  </div>
                 </div>
-              </div>
-            ) : null}
+              ) : null}
 
-            {/* STEP 3: Kontakt & Absenden */}
-            {current.key === "finish" ? (
-              <div className="min-w-0 max-w-full space-y-8 overflow-x-hidden">
-                <StepCustomer
-                  customerName={customerName}
-                  setCustomerName={setCustomerName}
-                  customerPhone={customerPhone}
-                  setCustomerPhone={setCustomerPhone}
-                  customerEmail={customerEmail}
-                  setCustomerEmail={setCustomerEmail}
-                  contactPreference={contactPreference}
-                  setContactPreference={setContactPreference}
-                  note={note}
-                  setNote={setNote}
-                  invalidName={showStepValidation && stepErrors.some((error) => error.includes("Namen"))}
-                  invalidPhone={showStepValidation && stepErrors.some((error) => error.includes("Telefon"))}
-                  invalidEmail={showStepValidation && stepErrors.some((error) => error.includes("E-Mail"))}
-                />
-
-                <div className="border-t border-slate-200 pt-6 dark:border-slate-700">
-                  <StepSummary
-                    serviceType={serviceType}
-                    packageTier={packageTier}
-                    offerContext={offerContext}
-                    selectedServiceOptions={selectedServiceOptions}
-                    serviceOptions={props.modules.flatMap((module) => module.options)}
-                    addons={addons}
-                    startAddress={startAddress}
-                    destinationAddress={destinationAddress}
-                    pickupAddress={pickupAddress}
-                    accessStart={accessStart}
-                    accessDestination={accessDestination}
-                    accessPickup={accessPickup}
-                    itemsMove={itemsMove}
-                    itemsDisposal={itemsDisposal}
-                    catalog={props.catalog}
-                    disposalCategories={disposalCategories as string[]}
-                    disposalExtraM3={disposalExtraM3}
-                    forbiddenConfirmed={forbiddenConfirmed}
-                    speed={speed}
-                    requestedFrom={preferredFrom}
-                    requestedTo={preferredTo}
-                    preferredTimeWindow={preferredTimeWindow}
+              {/* STEP 3: Kontakt & Absenden */}
+              {current.key === "finish" ? (
+                <div className="min-w-0 max-w-full space-y-8 overflow-x-hidden booking-motion-reveal">
+                  <StepCustomer
                     customerName={customerName}
+                    setCustomerName={setCustomerName}
                     customerPhone={customerPhone}
+                    setCustomerPhone={setCustomerPhone}
                     customerEmail={customerEmail}
+                    setCustomerEmail={setCustomerEmail}
                     contactPreference={contactPreference}
+                    setContactPreference={setContactPreference}
                     note={note}
-                    estimate={estimate}
-                    routeLoading={routeLoading}
-                    routeError={routeError}
+                    setNote={setNote}
+                    invalidName={showStepValidation && stepErrors.some((error) => error.includes("Namen"))}
+                    invalidPhone={showStepValidation && stepErrors.some((error) => error.includes("Telefon"))}
+                    invalidEmail={showStepValidation && stepErrors.some((error) => error.includes("E-Mail"))}
                   />
+
+                  <div className="border-t border-slate-200/80 pt-6 dark:border-slate-700/80">
+                    <StepSummary
+                      serviceType={serviceType}
+                      packageTier={packageTier}
+                      offerContext={offerContext}
+                      selectedServiceOptions={selectedServiceOptions}
+                      serviceOptions={props.modules.flatMap((module) => module.options)}
+                      addons={addons}
+                      startAddress={startAddress}
+                      destinationAddress={destinationAddress}
+                      pickupAddress={pickupAddress}
+                      accessStart={accessStart}
+                      accessDestination={accessDestination}
+                      accessPickup={accessPickup}
+                      itemsMove={itemsMove}
+                      itemsDisposal={itemsDisposal}
+                      catalog={props.catalog}
+                      disposalCategories={disposalCategories as string[]}
+                      disposalExtraM3={disposalExtraM3}
+                      forbiddenConfirmed={forbiddenConfirmed}
+                      speed={speed}
+                      requestedFrom={preferredFrom}
+                      requestedTo={preferredTo}
+                      preferredTimeWindow={preferredTimeWindow}
+                      customerName={customerName}
+                      customerPhone={customerPhone}
+                      customerEmail={customerEmail}
+                      contactPreference={contactPreference}
+                      note={note}
+                      estimate={estimate}
+                      routeLoading={routeLoading}
+                      routeError={routeError}
+                    />
+                  </div>
                 </div>
-              </div>
-            ) : null}
+              ) : null}
 
-            {submitError ? (
-              <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-800 shadow-premiumSoft">
-                {submitError}
-              </div>
-            ) : null}
+              {submitError ? (
+                <div className="booking-glass-card booking-error-inline mt-6 rounded-2xl p-4 text-sm font-semibold">
+                  {submitError}
+                </div>
+              ) : null}
 
-            <div className="mt-8 hidden flex-col gap-3 sm:flex sm:flex-row sm:items-center sm:justify-between">
-              <Button
-                variant="outline"
-                onClick={() => setStep((s) => Math.max(0, s - 1))}
-                disabled={step === 0 || submitting}
-                className="transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Zurück
-              </Button>
-
-              {current.key !== "finish" ? (
-                <Button
-                  onClick={goNextStep}
-                  disabled={submitting}
-                  className="shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  Weiter
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button onClick={submitWithValidation} disabled={submitting} className="shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]">
-                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-                  Anfrage senden
-                </Button>
-              )}
-            </div>
-
-            <div className="mt-4 text-xs font-semibold text-slate-600 dark:text-slate-400">
-              Preise sind Schätzwerte. Nach Prüfung bestätigen wir Ihr finales Angebot.
-            </div>
-            <div className="mt-6 rounded-2xl border border-slate-300 bg-[color:var(--surface-elevated)] p-4 sm:hidden">
-              <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Live-Schätzung</div>
-              <div className="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">
-                {eur(estimate.priceMinCents)} – {eur(estimate.priceMaxCents)}
-              </div>
-              <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                {formatNumberDE(estimate.totalVolumeM3)} m³ · {formatNumberDE(estimate.laborHours)} Std.
-              </div>
-            </div>
-
-            <div className={cn("sm:hidden", current.key === "finish" ? "h-36" : "h-28")} />
-            <div
-              className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-[color:var(--surface-elevated)]/95 px-4 pt-3 backdrop-blur sm:hidden dark:border-slate-700"
-              style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
-            >
-              <div className="mx-auto flex max-w-xl gap-3">
+              <div className="mt-8 hidden flex-col gap-3 sm:flex sm:flex-row sm:items-center sm:justify-between">
                 <Button
                   variant="outline"
                   onClick={() => setStep((s) => Math.max(0, s - 1))}
                   disabled={step === 0 || submitting}
-                  className="flex-1"
+                  className="booking-glass-card-interactive"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Zurück
                 </Button>
+
                 {current.key !== "finish" ? (
-                  <Button
-                    onClick={goNextStep}
-                    disabled={submitting}
-                    className="flex-1"
-                  >
+                  <Button onClick={goNextStep} disabled={submitting} className="booking-glass-card-interactive">
                     Weiter
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button onClick={submitWithValidation} disabled={submitting} className="flex-1">
+                  <Button onClick={submitWithValidation} disabled={submitting} className="booking-glass-card-interactive">
                     {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-                    Senden
+                    Anfrage senden
                   </Button>
                 )}
               </div>
-            </div>
-          </div>
-        </div>
 
-        <aside className="glass-card-solid hidden h-fit rounded-3xl p-6 lg:sticky lg:top-24 lg:block">
-          <div className="text-sm font-extrabold text-slate-900 dark:text-white">Live-Schätzung</div>
-          <div className="mt-4 grid gap-3 text-sm">
-            <div className="rounded-2xl border border-slate-300/80 bg-gradient-to-br from-slate-50 to-[color:var(--surface-elevated)] p-4 shadow-sm dark:border-slate-600 dark:from-slate-800/90 dark:to-slate-900/90">
-              <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Paket</div>
-              <div className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">{packageLabels[packageTier]}</div>
-              {offerContext?.offerCode ? (
-                <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                  Code: {offerContext.offerCode}
-                </div>
-              ) : null}
-            </div>
-            <div className="rounded-2xl border border-slate-300/80 bg-gradient-to-br from-slate-50 to-[color:var(--surface-elevated)] p-4 shadow-sm dark:border-slate-600 dark:from-slate-800/90 dark:to-slate-900/90">
-              <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Volumen</div>
-              <div className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">{formatNumberDE(estimate.totalVolumeM3)} m³</div>
-            </div>
-            <div className="rounded-2xl border border-slate-300/80 bg-gradient-to-br from-slate-50 to-[color:var(--surface-elevated)] p-4 shadow-sm dark:border-slate-600 dark:from-slate-800/90 dark:to-slate-900/90">
-              <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Arbeitszeit</div>
-              <div className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">{formatNumberDE(estimate.laborHours)} Std.</div>
-            </div>
-            <div className="rounded-2xl border border-brand-400/70 bg-gradient-to-br from-brand-50 to-[color:var(--surface-elevated)] p-4 shadow-sm dark:border-brand-500/70 dark:from-brand-900/25 dark:to-slate-900/95">
-              <div className="text-xs font-bold text-brand-700 dark:text-brand-300">Preisrahmen</div>
-              <div className="mt-1 text-lg font-extrabold text-brand-800 dark:text-brand-300">
-                {eur(estimate.priceMinCents)} – {eur(estimate.priceMaxCents)}
+              <div className="mt-4 text-xs font-semibold text-[color:var(--booking-text-muted)]">
+                Preise sind Schätzwerte. Nach Prüfung bestätigen wir Ihr finales Angebot.
               </div>
-              {estimate.distanceKm != null ? (
-                <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                  Distanz ({distanceSourceLabel(estimate.distanceSource)}):{" "}
-                  {formatNumberDE(estimate.distanceKm)} km
-                </div>
-              ) : null}
-              {(serviceType === "MOVING" || serviceType === "BOTH") && estimate.driveChargeCents > 0 ? (
-                <div className="mt-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Fahrkosten: {eur(estimate.driveChargeCents)}
-                </div>
-              ) : null}
-              {routeLoading ? (
-                <div className="mt-2 rounded-xl border border-slate-300/80 bg-slate-50/90 px-2 py-1.5 text-xs font-semibold text-slate-700 animate-pulse dark:border-slate-600 dark:bg-slate-800/70 dark:text-slate-300">
-                  Distanz wird berechnet...
-                </div>
-              ) : null}
-              {routeError ? (
-                <div className="mt-2 rounded-xl border border-amber-300 bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-800">
-                  {routeError}
-                </div>
-              ) : null}
-            </div>
-          </div>
 
-          <div className="mt-6 rounded-2xl border-2 border-slate-200 bg-[color:var(--surface-elevated)] p-4 text-sm shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/60">
-            <div className="flex items-start gap-2">
-              <CircleAlert className="mt-0.5 h-5 w-5 text-brand-700 dark:text-brand-400" />
-              <div>
-                <div className="font-extrabold text-slate-900 dark:text-white">Ohne lange Texte</div>
-                <div className="mt-1 text-slate-600 dark:text-slate-400">
-                  Bitte wählen Sie möglichst genau aus. Notizen sind optional und kurz.
+              <div className="booking-glass-card mt-6 rounded-2xl p-4 sm:hidden">
+                <div className="text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--booking-text-muted)]">Live-Schaetzung</div>
+                <div className="mt-1 text-sm font-extrabold text-[color:var(--booking-text-strong)]">
+                  {eur(estimate.priceMinCents)} - {eur(estimate.priceMaxCents)}
+                </div>
+                <div className="mt-1 text-xs font-semibold text-[color:var(--booking-text-muted)]">
+                  {formatNumberDE(estimate.totalVolumeM3)} m3 - {formatNumberDE(estimate.laborHours)} Std.
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="mt-6 text-xs font-semibold text-slate-600 dark:text-slate-400">
-            Probleme? <Link className="font-bold text-brand-700 hover:underline dark:text-brand-300" href="/kontakt">Kontakt</Link>
-          </div>
-        </aside>
-      </div>
-    </Container>
+              <BottomActionBar
+                spacerTall={current.key === "finish"}
+                left={
+                  <Button
+                    variant="outline"
+                    onClick={() => setStep((s) => Math.max(0, s - 1))}
+                    disabled={step === 0 || submitting}
+                    className="w-full booking-glass-card-interactive"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Zurück
+                  </Button>
+                }
+                right={
+                  current.key !== "finish" ? (
+                    <Button onClick={goNextStep} disabled={submitting} className="w-full booking-glass-card-interactive">
+                      Weiter
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <Button onClick={submitWithValidation} disabled={submitting} className="w-full booking-glass-card-interactive">
+                      {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                      Senden
+                    </Button>
+                  )
+                }
+              />
+            </div>
+          </BookingPanel>
+        </>
+      }
+      right={
+        <LiveEstimateCard
+          packageLabel={packageLabels[packageTier]}
+          offerCode={offerContext?.offerCode}
+          promoMatched={Boolean(promoRuleMatch)}
+          volumeM3={estimate.totalVolumeM3}
+          laborHours={estimate.laborHours}
+          priceMin={eur(estimate.priceMinCents)}
+          priceMax={eur(estimate.priceMaxCents)}
+          distanceKm={estimate.distanceKm}
+          distanceSourceLabel={distanceSourceLabel(estimate.distanceSource)}
+          driveChargeCents={serviceType === "MOVING" || serviceType === "BOTH" ? estimate.driveChargeCents : 0}
+          driveChargeLabel={eur(estimate.driveChargeCents)}
+          routeLoading={routeLoading}
+          routeError={routeError}
+        />
+      }
+    />
   );
 }
 
@@ -1402,53 +1316,6 @@ function getSteps(
     { key: "details" as const, title: "Details & Termin" },
     { key: "finish" as const, title: "Absenden" },
   ];
-}
-
-function WizardHeader(props: { steps: ReadonlyArray<{ key: string; title: string }>; step: number }) {
-  const pct = Math.round(((props.step + 1) / props.steps.length) * 100);
-  return (
-    <div className="border-b border-slate-300 bg-gradient-to-r from-[color:var(--surface-elevated)] via-brand-50/50 to-slate-50 p-6 sm:p-8 dark:border-slate-700 dark:from-slate-900/95 dark:via-slate-900/92 dark:to-brand-950/25">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <div className="text-xs font-bold text-brand-700 dark:text-brand-300">
-            Schritt {props.step + 1} von {props.steps.length}
-          </div>
-          <div className="mt-1 text-xl font-extrabold text-slate-950 dark:text-white">
-            {props.steps[props.step]?.title}
-          </div>
-        </div>
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-brand-50 text-sm font-extrabold text-brand-700 shadow-sm dark:from-brand-900/50 dark:to-slate-800 dark:text-brand-300">
-          {pct}%
-        </div>
-      </div>
-      <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-        <div
-          className="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-700 transition-all duration-500 ease-out"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <div className="mt-4 hidden flex-nowrap gap-2 overflow-x-auto pb-1 sm:flex">
-        {props.steps.map((s, idx) => (
-          <div
-            key={s.key}
-            className={cn(
-              "whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-bold transition-all duration-300",
-              idx === props.step
-                ? "bg-brand-600 text-white shadow-md shadow-brand-200 dark:shadow-brand-900/40"
-                : idx < props.step
-                  ? "bg-brand-50 text-brand-800 dark:bg-brand-900/35 dark:text-brand-300"
-                  : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
-            )}
-          >
-            {idx < props.step ? (
-              <span className="mr-1">OK</span>
-            ) : null}
-            {s.title}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
 }
 
 function StepService(props: {
