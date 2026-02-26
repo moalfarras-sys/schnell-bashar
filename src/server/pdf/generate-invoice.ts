@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { existsSync } from "fs";
 import { getImageSlot, publicSrcToAbsolute } from "@/server/content/slots";
+import { sanitizePdfText } from "@/server/pdf/layout";
 
 export interface InvoiceData {
   invoiceId: string;
@@ -151,7 +152,7 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
         .font(line.bold ? "Helvetica-Bold" : "Helvetica")
         .fontSize(fs)
         .fillColor(line.bold ? DARK : MUTED);
-      doc.text(line.text, LEFT, cy, { width: CW, align: "right" });
+      doc.text(sanitizePdfText(line.text), LEFT, cy, { width: CW, align: "right" });
       cy += INFO_LINE_H;
     }
 
@@ -199,7 +200,7 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
 
     const items = data.lineItems ?? [];
     if (items.length > 0) {
-      ensureSpace(30 + items.length * 14);
+      ensureSpace(30 + items.length * 20);
       sectionHeading("Positionen");
 
       const hasPrice = items.some((s) => s.priceCents !== undefined);

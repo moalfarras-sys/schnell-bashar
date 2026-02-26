@@ -7,6 +7,7 @@ import {
   resolveCompanyStampPath,
 } from "@/server/pdf/company-seal-assets";
 import { getImageSlots, publicSrcToAbsolute } from "@/server/content/slots";
+import { drawSectionCard, ensurePageSpace, sanitizePdfText } from "@/server/pdf/layout";
 
 export interface ContractData {
   contractId: string;
@@ -102,11 +103,10 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
 
     let y = M;
 
+    const pageLayout = { top: M, bottom: M, pageHeight: H, footerHeight: FOOTER_H };
+
     function ensureSpace(need: number) {
-      if (y + need > SAFE_BOTTOM) {
-        doc.addPage();
-        y = M;
-      }
+      y = ensurePageSpace(doc, y, need, pageLayout);
     }
 
     function sectionTitle(title: string) {
@@ -148,7 +148,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     let cy = y;
     for (const line of companyLines) {
       doc.font(line.bold ? "Helvetica-Bold" : "Helvetica").fontSize(line.size).fillColor(line.bold ? DARK : MUTED);
-      doc.text(line.text, LEFT, cy, { width: CW, align: "right" });
+      doc.text(sanitizePdfText(line.text), LEFT, cy, { width: CW, align: "right" });
       cy += line.bold ? 13 : 11;
     }
 
@@ -305,10 +305,16 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
 
     const priceBoxH = 76;
     const priceBoxY = y;
-    doc.save();
-    doc.rect(tblX, priceBoxY, tblW, priceBoxH).fill(LIGHT_BG);
-    doc.rect(tblX, priceBoxY, tblW, priceBoxH).strokeColor(BORDER).lineWidth(0.5).stroke();
-    doc.restore();
+    drawSectionCard(doc, {
+      x: tblX,
+      y: priceBoxY,
+      width: tblW,
+      height: priceBoxH,
+      fill: LIGHT_BG,
+      border: BORDER,
+      borderWidth: 0.5,
+      radius: 0,
+    });
 
     const priceRightX = tblX + tblW - padH;
     const priceLabelX = tblX + Math.floor(tblW * 0.5);

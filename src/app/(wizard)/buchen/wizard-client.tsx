@@ -1288,8 +1288,11 @@ export function BookingWizard(props: {
               </div>
             </div>
 
-            <div className={cn("sm:hidden", current.key === "finish" ? "h-32" : "h-24")} />
-            <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-[color:var(--surface-elevated)]/95 px-4 py-3 backdrop-blur sm:hidden dark:border-slate-700">
+            <div className={cn("sm:hidden", current.key === "finish" ? "h-36" : "h-28")} />
+            <div
+              className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-[color:var(--surface-elevated)]/95 px-4 pt-3 backdrop-blur sm:hidden dark:border-slate-700"
+              style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+            >
               <div className="mx-auto flex max-w-xl gap-3">
                 <Button
                   variant="outline"
@@ -1357,7 +1360,7 @@ export function BookingWizard(props: {
                 </div>
               ) : null}
               {routeLoading ? (
-                <div className="mt-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                <div className="mt-2 rounded-xl border border-slate-300/80 bg-slate-50/90 px-2 py-1.5 text-xs font-semibold text-slate-700 animate-pulse dark:border-slate-600 dark:bg-slate-800/70 dark:text-slate-300">
                   Distanz wird berechnet...
                 </div>
               ) : null}

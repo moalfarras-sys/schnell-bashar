@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { existsSync } from "fs";
 import { getImageSlot, publicSrcToAbsolute } from "@/server/content/slots";
+import { sanitizePdfText } from "@/server/pdf/layout";
 
 export interface OfferData {
   offerId: string;
@@ -176,7 +177,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     for (const line of companyLines) {
       const fs = line.bold ? INFO_BOLD_FONT : INFO_FONT;
       doc.font(line.bold ? "Helvetica-Bold" : "Helvetica").fontSize(fs).fillColor(line.bold ? DARK : MUTED);
-      doc.text(line.text, LEFT, cy, { width: CW, align: "right" });
+      doc.text(sanitizePdfText(line.text), LEFT, cy, { width: CW, align: "right" });
       cy += INFO_LINE_H;
     }
 
@@ -263,16 +264,18 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       doc.text("Zusatzleistungen", LEFT, y, { width: CW });
       y += 8;
       doc.font("Helvetica").fontSize(9).fillColor(BODY);
-      doc.text(data.addons.join(", "), LEFT, y, { width: CW });
-      y += doc.heightOfString(data.addons.join(", "), { width: CW }) + 4;
+      const addonsText = sanitizePdfText(data.addons.join(", "));
+      doc.text(addonsText, LEFT, y, { width: CW, lineGap: 1.5 });
+      y += doc.heightOfString(addonsText, { width: CW, lineGap: 1.5 }) + 4;
     }
     if (data.checklist && data.checklist.length > 0) {
       doc.font("Helvetica").fontSize(7).fillColor(MUTED);
       doc.text("Checkliste", LEFT, y, { width: CW });
       y += 8;
       doc.font("Helvetica").fontSize(9).fillColor(BODY);
-      doc.text(data.checklist.join(", "), LEFT, y, { width: CW });
-      y += doc.heightOfString(data.checklist.join(", "), { width: CW }) + 4;
+      const checklistText = sanitizePdfText(data.checklist.join(", "));
+      doc.text(checklistText, LEFT, y, { width: CW, lineGap: 1.5 });
+      y += doc.heightOfString(checklistText, { width: CW, lineGap: 1.5 }) + 4;
     }
 
     if (data.notes) {
@@ -286,7 +289,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     y += 4;
 
     // LEISTUNGEN
-    ensureSpace(30 + data.services.length * 14);
+    ensureSpace(30 + data.services.length * 20);
     sectionHeading("Leistungsumfang");
 
     const hasPrice = data.services.some((s) => s.priceCents !== undefined);

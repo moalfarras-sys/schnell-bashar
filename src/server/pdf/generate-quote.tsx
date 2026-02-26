@@ -2,6 +2,7 @@
 import path from "path";
 import { existsSync } from "fs";
 import { getImageSlot, publicSrcToAbsolute } from "@/server/content/slots";
+import { sanitizePdfText } from "@/server/pdf/layout";
 
 type QuoteLine = { label: string; qty: number; unit: number; total: number };
 
@@ -118,7 +119,7 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
     let cy = y;
     for (const line of companyLines) {
       doc.font(line.bold ? "Helvetica-Bold" : "Helvetica").fontSize(7.5).fillColor(MUTED);
-      doc.text(line.text, LEFT, cy, { width: CW, align: "right" });
+      doc.text(sanitizePdfText(line.text), LEFT, cy, { width: CW, align: "right" });
       cy += 9;
     }
 
@@ -181,7 +182,7 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
 
     // LEISTUNGEN
     if (input.lines.length > 0) {
-      ensureSpace(40 + input.lines.length * 18);
+      ensureSpace(40 + input.lines.length * 24);
       sectionHeading("Leistungsumfang");
 
       doc.font("Helvetica").fontSize(9.5).fillColor(BODY);
