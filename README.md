@@ -219,6 +219,9 @@ npm run build
 **Standalone (Linux):**
 
 ```bash
+mkdir -p .next/standalone/.next
+cp -r .next/static .next/standalone/.next/static
+cp -r public .next/standalone/public
 pm2 start ecosystem.config.cjs --only schnell-sicher-umzug
 pm2 status
 pm2 save
@@ -239,6 +242,9 @@ npm ci
 npm run prisma:generate
 npm run prisma:deploy
 npm run build
+mkdir -p .next/standalone/.next
+cp -r .next/static .next/standalone/.next/static
+cp -r public .next/standalone/public
 pm2 restart schnell-sicher-umzug
 ```
 
