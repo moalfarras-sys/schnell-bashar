@@ -73,6 +73,7 @@ export const ModelName = {
   SlotRegistry: 'SlotRegistry',
   JobPosting: 'JobPosting',
   Invoice: 'Invoice',
+  InvoiceItem: 'InvoiceItem',
   Payment: 'Payment',
   AdminUser: 'AdminUser',
   Role: 'Role',
@@ -531,6 +532,7 @@ export type JobPostingScalarFieldEnum = (typeof JobPostingScalarFieldEnum)[keyof
 export const InvoiceScalarFieldEnum = {
   id: 'id',
   invoiceNo: 'invoiceNo',
+  companyId: 'companyId',
   contractId: 'contractId',
   offerId: 'offerId',
   orderId: 'orderId',
@@ -541,6 +543,9 @@ export const InvoiceScalarFieldEnum = {
   address: 'address',
   description: 'description',
   lineItems: 'lineItems',
+  discountPercent: 'discountPercent',
+  discountCents: 'discountCents',
+  notes: 'notes',
   issuedAt: 'issuedAt',
   dueAt: 'dueAt',
   netCents: 'netCents',
@@ -557,6 +562,22 @@ export const InvoiceScalarFieldEnum = {
 } as const
 
 export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+export const InvoiceItemScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  description: 'description',
+  quantity: 'quantity',
+  unit: 'unit',
+  unitPriceCents: 'unitPriceCents',
+  vatPercent: 'vatPercent',
+  lineTotalCents: 'lineTotalCents',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type InvoiceItemScalarFieldEnum = (typeof InvoiceItemScalarFieldEnum)[keyof typeof InvoiceItemScalarFieldEnum]
 
 
 export const PaymentScalarFieldEnum = {

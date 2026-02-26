@@ -128,6 +128,11 @@ export type JobPosting = Prisma.JobPostingModel
  */
 export type Invoice = Prisma.InvoiceModel
 /**
+ * Model InvoiceItem
+ * 
+ */
+export type InvoiceItem = Prisma.InvoiceItemModel
+/**
  * Model Payment
  * 
  */

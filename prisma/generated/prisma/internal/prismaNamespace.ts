@@ -406,6 +406,7 @@ export const ModelName = {
   SlotRegistry: 'SlotRegistry',
   JobPosting: 'JobPosting',
   Invoice: 'Invoice',
+  InvoiceItem: 'InvoiceItem',
   Payment: 'Payment',
   AdminUser: 'AdminUser',
   Role: 'Role',
@@ -429,7 +430,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "catalogItem" | "pricingConfig" | "serviceModule" | "serviceOption" | "promoRule" | "availabilityRule" | "availabilityException" | "order" | "orderServiceItem" | "orderLine" | "orderUpload" | "whatsAppConversation" | "offer" | "contract" | "routeDistanceCache" | "documentSequence" | "mediaAsset" | "mediaAssetVariant" | "contentSlot" | "slotRegistry" | "jobPosting" | "invoice" | "payment" | "adminUser" | "role" | "permission" | "userRole" | "rolePermission" | "auditLog" | "contentRevision"
+    modelProps: "catalogItem" | "pricingConfig" | "serviceModule" | "serviceOption" | "promoRule" | "availabilityRule" | "availabilityException" | "order" | "orderServiceItem" | "orderLine" | "orderUpload" | "whatsAppConversation" | "offer" | "contract" | "routeDistanceCache" | "documentSequence" | "mediaAsset" | "mediaAssetVariant" | "contentSlot" | "slotRegistry" | "jobPosting" | "invoice" | "invoiceItem" | "payment" | "adminUser" | "role" | "permission" | "userRole" | "rolePermission" | "auditLog" | "contentRevision"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2061,6 +2062,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    InvoiceItem: {
+      payload: Prisma.$InvoiceItemPayload<ExtArgs>
+      fields: Prisma.InvoiceItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvoiceItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvoiceItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceItemPayload>
+        }
+        findFirst: {
+          args: Prisma.InvoiceItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvoiceItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceItemPayload>
+        }
+        findMany: {
+          args: Prisma.InvoiceItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceItemPayload>[]
+        }
+        create: {
+          args: Prisma.InvoiceItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceItemPayload>
+        }
+        createMany: {
+          args: Prisma.InvoiceItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InvoiceItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceItemPayload>[]
+        }
+        delete: {
+          args: Prisma.InvoiceItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceItemPayload>
+        }
+        update: {
+          args: Prisma.InvoiceItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.InvoiceItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvoiceItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InvoiceItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.InvoiceItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceItemPayload>
+        }
+        aggregate: {
+          args: Prisma.InvoiceItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvoiceItem>
+        }
+        groupBy: {
+          args: Prisma.InvoiceItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvoiceItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceItemCountAggregateOutputType> | number
+        }
+      }
+    }
     Payment: {
       payload: Prisma.$PaymentPayload<ExtArgs>
       fields: Prisma.PaymentFieldRefs
@@ -3124,6 +3199,7 @@ export type JobPostingScalarFieldEnum = (typeof JobPostingScalarFieldEnum)[keyof
 export const InvoiceScalarFieldEnum = {
   id: 'id',
   invoiceNo: 'invoiceNo',
+  companyId: 'companyId',
   contractId: 'contractId',
   offerId: 'offerId',
   orderId: 'orderId',
@@ -3134,6 +3210,9 @@ export const InvoiceScalarFieldEnum = {
   address: 'address',
   description: 'description',
   lineItems: 'lineItems',
+  discountPercent: 'discountPercent',
+  discountCents: 'discountCents',
+  notes: 'notes',
   issuedAt: 'issuedAt',
   dueAt: 'dueAt',
   netCents: 'netCents',
@@ -3150,6 +3229,22 @@ export const InvoiceScalarFieldEnum = {
 } as const
 
 export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+export const InvoiceItemScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  description: 'description',
+  quantity: 'quantity',
+  unit: 'unit',
+  unitPriceCents: 'unitPriceCents',
+  vatPercent: 'vatPercent',
+  lineTotalCents: 'lineTotalCents',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type InvoiceItemScalarFieldEnum = (typeof InvoiceItemScalarFieldEnum)[keyof typeof InvoiceItemScalarFieldEnum]
 
 
 export const PaymentScalarFieldEnum = {
@@ -3731,6 +3826,7 @@ export type GlobalOmitConfig = {
   slotRegistry?: Prisma.SlotRegistryOmit
   jobPosting?: Prisma.JobPostingOmit
   invoice?: Prisma.InvoiceOmit
+  invoiceItem?: Prisma.InvoiceItemOmit
   payment?: Prisma.PaymentOmit
   adminUser?: Prisma.AdminUserOmit
   role?: Prisma.RoleOmit

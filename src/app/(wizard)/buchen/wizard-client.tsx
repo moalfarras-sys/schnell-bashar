@@ -167,22 +167,15 @@ const packageDescriptions: Record<WizardPayload["serviceType"], Record<WizardPay
 };
 
 const bookingFlowSteps = [
-  { key: "service", title: "Leistung" },
-  { key: "details", title: "Details" },
-  { key: "timing", title: "Wunschtermin" },
-  { key: "pricing", title: "Preise & Pakete" },
-  { key: "contact", title: "Kontakt & Senden" },
+  { key: "start", title: "Service & Adresse" },
+  { key: "details", title: "Details & Termin" },
+  { key: "finish", title: "Absenden" },
 ] as const;
 
 const bookingFlowByStepKey: Record<string, (typeof bookingFlowSteps)[number]["key"]> = {
-  service: "service",
-  location: "details",
-  items: "details",
-  disposal: "details",
-  timing: "timing",
-  package: "pricing",
-  customer: "contact",
-  summary: "contact",
+  start: "start",
+  details: "details",
+  finish: "finish",
 };
 const contactLabels: Record<WizardPayload["customer"]["contactPreference"], string> = {
   PHONE: "Telefon",
@@ -297,7 +290,7 @@ export function BookingWizard(props: {
     WizardPayload["disposal"] extends infer T ? (T extends { categories: infer C } ? C : never) : never
   >([]);
   const [disposalExtraM3, setDisposalExtraM3] = useState(0);
-  const [forbiddenConfirmed, setForbiddenConfirmed] = useState(false);
+  const [forbiddenConfirmed, setForbiddenConfirmed] = useState(true);
   const [photos, setPhotos] = useState<File[]>([]);
 
   const [speed, setSpeed] = useState<WizardPayload["timing"]["speed"]>("STANDARD");
@@ -747,57 +740,29 @@ export function BookingWizard(props: {
     [serviceType, hideServiceStep],
   );
   const current = steps[step] ?? steps[0];
-  const currentFlowKey = bookingFlowByStepKey[current.key] ?? "details";
-  const currentFlowStep = Math.max(
-    0,
-    bookingFlowSteps.findIndex((flowStep) => flowStep.key === currentFlowKey),
-  );
 
   const canNext = useMemo(() => {
     switch (current.key) {
-      case "service":
-        return true;
-      case "location":
+      case "start": {
         if (bookingContext === "MONTAGE" || bookingContext === "SPECIAL") return !!pickupAddress;
         if (serviceType === "MOVING") return !!startAddress && !!destinationAddress;
         if (serviceType === "DISPOSAL") return !!pickupAddress;
-        return !!startAddress && !!destinationAddress; // BOTH
-      case "items":
-        if (variant !== "default") return Object.values(selectedServiceOptions).some((qty) => qty > 0);
-        if (serviceType === "DISPOSAL") {
-          return (
-            sumQty(itemsDisposal) > 0 ||
-            disposalExtraM3 > 0 ||
-            Object.values(selectedServiceOptions).some((qty) => qty > 0)
-          );
-        }
-        return sumQty(itemsMove) > 0 || Object.values(selectedServiceOptions).some((qty) => qty > 0);
-      case "disposal":
-        return forbiddenConfirmed;
-      case "package":
-        return true;
-      case "timing":
+        return !!startAddress && !!destinationAddress;
+      }
+      case "details":
         return Boolean(preferredFrom && preferredTo && preferredFrom <= preferredTo);
-      case "customer":
+      case "finish":
         return customerName.trim().length >= 2 && customerPhone.trim().length >= 6 && customerEmail.includes("@");
-      case "summary":
-        return true;
       default:
         return false;
     }
   }, [
     current.key,
-    variant,
     bookingContext,
     serviceType,
     startAddress,
     destinationAddress,
     pickupAddress,
-    itemsMove,
-    itemsDisposal,
-    selectedServiceOptions,
-    disposalExtraM3,
-    forbiddenConfirmed,
     preferredFrom,
     preferredTo,
     customerName,
@@ -1032,168 +997,153 @@ export function BookingWizard(props: {
       ) : null}
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="glass-card-solid rounded-3xl">
-          <WizardHeader steps={bookingFlowSteps} step={currentFlowStep} />
+          <WizardHeader steps={steps} step={step} />
 
           <div className="p-6 sm:p-8">
-            {current.key === "service" ? (
-              <StepService
-                serviceType={serviceType}
-                setServiceType={setServiceType}
-                addons={addons}
-                setAddons={setAddons}
-                forcedAddons={forcedAddons}
-              />
-            ) : null}
-
-            {current.key === "location" ? (
-              <StepLocation
-                bookingContext={bookingContext}
-                serviceType={serviceType}
-                startAddress={startAddress}
-                setStartAddress={setStartAddress}
-                destinationAddress={destinationAddress}
-                setDestinationAddress={setDestinationAddress}
-                pickupAddress={pickupAddress}
-                setPickupAddress={setPickupAddress}
-                samePickupAsStart={samePickupAsStart}
-                setSamePickupAsStart={setSamePickupAsStart}
-                accessStart={accessStart}
-                setAccessStart={setAccessStart}
-                accessDestination={accessDestination}
-                setAccessDestination={setAccessDestination}
-                accessPickup={accessPickup}
-                setAccessPickup={setAccessPickup}
-              />
-            ) : null}
-
-            {current.key === "items" ? (
-              variant === "default" ? (
-                <StepItems
+            {/* STEP 1: Service & Adresse */}
+            {current.key === "start" ? (
+              <div className="space-y-8">
+                <StepService
                   serviceType={serviceType}
-                  catalog={props.catalog}
-                  modules={props.modules}
-                  bookingContext={bookingContext}
-                  itemsMove={itemsMove}
-                  setItemsMove={setItemsMove}
-                  itemsDisposal={itemsDisposal}
-                  setItemsDisposal={setItemsDisposal}
-                  selectedServiceOptions={selectedServiceOptions}
-                  setSelectedServiceOptions={setSelectedServiceOptions}
+                  setServiceType={setServiceType}
+                  addons={addons}
+                  setAddons={setAddons}
+                  forcedAddons={forcedAddons}
                 />
-              ) : (
-                <StepServiceOptions
-                  title={variant === "montage" ? "Leistungen & Geräte" : "Entsorgungsleistungen"}
-                  options={activeModuleOptions}
-                  selected={selectedServiceOptions}
-                  setSelected={setSelectedServiceOptions}
+                <div className="border-t border-slate-200 pt-8 dark:border-slate-700">
+                  <StepLocation
+                    bookingContext={bookingContext}
+                    serviceType={serviceType}
+                    startAddress={startAddress}
+                    setStartAddress={setStartAddress}
+                    destinationAddress={destinationAddress}
+                    setDestinationAddress={setDestinationAddress}
+                    pickupAddress={pickupAddress}
+                    setPickupAddress={setPickupAddress}
+                    samePickupAsStart={samePickupAsStart}
+                    setSamePickupAsStart={setSamePickupAsStart}
+                    accessStart={accessStart}
+                    setAccessStart={setAccessStart}
+                    accessDestination={accessDestination}
+                    setAccessDestination={setAccessDestination}
+                    accessPickup={accessPickup}
+                    setAccessPickup={setAccessPickup}
+                  />
+                </div>
+              </div>
+            ) : null}
+
+            {/* STEP 2: Details & Termin */}
+            {current.key === "details" ? (
+              <div className="space-y-8">
+                {variant === "default" ? (
+                  <StepItems
+                    serviceType={serviceType}
+                    catalog={props.catalog}
+                    modules={props.modules}
+                    bookingContext={bookingContext}
+                    itemsMove={itemsMove}
+                    setItemsMove={setItemsMove}
+                    itemsDisposal={itemsDisposal}
+                    setItemsDisposal={setItemsDisposal}
+                    selectedServiceOptions={selectedServiceOptions}
+                    setSelectedServiceOptions={setSelectedServiceOptions}
+                  />
+                ) : (
+                  <StepServiceOptions
+                    title={variant === "montage" ? "Leistungen & Geräte" : "Entsorgungsleistungen"}
+                    options={activeModuleOptions}
+                    selected={selectedServiceOptions}
+                    setSelected={setSelectedServiceOptions}
+                  />
+                )}
+
+                {(serviceType === "DISPOSAL" || serviceType === "BOTH") ? (
+                  <div className="border-t border-slate-200 pt-8 dark:border-slate-700">
+                    <StepDisposal
+                      serviceType={serviceType}
+                      catalog={props.catalog}
+                      itemsDisposal={itemsDisposal}
+                      setItemsDisposal={setItemsDisposal}
+                      disposalCategories={disposalCategories as any}
+                      setDisposalCategories={setDisposalCategories as any}
+                      disposalExtraM3={disposalExtraM3}
+                      setDisposalExtraM3={setDisposalExtraM3}
+                      forbiddenConfirmed={forbiddenConfirmed}
+                      setForbiddenConfirmed={setForbiddenConfirmed}
+                      photos={photos}
+                      setPhotos={setPhotos}
+                    />
+                  </div>
+                ) : null}
+
+                <div className="border-t border-slate-200 pt-8 dark:border-slate-700">
+                  <StepTiming
+                    speed={speed}
+                    setSpeed={setSpeed}
+                    earliestISO={earliestISO}
+                    preferredFrom={preferredFrom}
+                    setPreferredFrom={setPreferredFrom}
+                    preferredTo={preferredTo}
+                    setPreferredTo={setPreferredTo}
+                    preferredTimeWindow={preferredTimeWindow}
+                    setPreferredTimeWindow={setPreferredTimeWindow}
+                    jobDurationMinutes={jobDurationMinutes}
+                  />
+                </div>
+              </div>
+            ) : null}
+
+            {/* STEP 3: Kontakt & Absenden */}
+            {current.key === "finish" ? (
+              <div className="space-y-8">
+                <StepCustomer
+                  customerName={customerName}
+                  setCustomerName={setCustomerName}
+                  customerPhone={customerPhone}
+                  setCustomerPhone={setCustomerPhone}
+                  customerEmail={customerEmail}
+                  setCustomerEmail={setCustomerEmail}
+                  contactPreference={contactPreference}
+                  setContactPreference={setContactPreference}
+                  note={note}
+                  setNote={setNote}
                 />
-              )
-            ) : null}
 
-            {current.key === "disposal" ? (
-              <StepDisposal
-                serviceType={serviceType}
-                catalog={props.catalog}
-                itemsDisposal={itemsDisposal}
-                setItemsDisposal={setItemsDisposal}
-                disposalCategories={disposalCategories as any}
-                setDisposalCategories={setDisposalCategories as any}
-                disposalExtraM3={disposalExtraM3}
-                setDisposalExtraM3={setDisposalExtraM3}
-                forbiddenConfirmed={forbiddenConfirmed}
-                setForbiddenConfirmed={setForbiddenConfirmed}
-                photos={photos}
-                setPhotos={setPhotos}
-              />
-            ) : null}
-
-            {current.key === "package" ? (
-              <StepPackage
-                serviceType={serviceType}
-                packageTier={packageTier}
-                setPackageTier={setPackageTier}
-                offerCode={offerCode}
-                setOfferCode={setOfferCode}
-                offerContext={offerContext}
-                promoMatched={!!promoRuleMatch}
-              />
-            ) : null}
-
-            {current.key === "timing" ? (
-              <StepTiming
-                speed={speed}
-                setSpeed={setSpeed}
-                earliestISO={earliestISO}
-                preferredFrom={preferredFrom}
-                setPreferredFrom={setPreferredFrom}
-                preferredTo={preferredTo}
-                setPreferredTo={setPreferredTo}
-                preferredTimeWindow={preferredTimeWindow}
-                setPreferredTimeWindow={setPreferredTimeWindow}
-                jobDurationMinutes={jobDurationMinutes}
-              />
-            ) : null}
-
-            {current.key === "customer" ? (
-              <StepCustomer
-                customerName={customerName}
-                setCustomerName={setCustomerName}
-                customerPhone={customerPhone}
-                setCustomerPhone={setCustomerPhone}
-                customerEmail={customerEmail}
-                setCustomerEmail={setCustomerEmail}
-                contactPreference={contactPreference}
-                setContactPreference={setContactPreference}
-                note={note}
-                setNote={setNote}
-              />
-            ) : null}
-
-            {current.key === "summary" ? (
-              <StepSummary
-                serviceType={serviceType}
-                packageTier={packageTier}
-                offerContext={offerContext}
-                selectedServiceOptions={selectedServiceOptions}
-                serviceOptions={activeModuleOptions}
-                addons={addons}
-                startAddress={startAddress}
-                destinationAddress={destinationAddress}
-                pickupAddress={effectivePickup}
-                accessStart={serviceType === "MOVING" || serviceType === "BOTH" ? accessStart : undefined}
-                accessDestination={
-                  serviceType === "MOVING" || serviceType === "BOTH"
-                    ? accessDestination
-                    : undefined
-                }
-                accessPickup={
-                  bookingContext === "MONTAGE" || bookingContext === "SPECIAL"
-                    ? accessPickup
-                    : serviceType === "DISPOSAL" || serviceType === "BOTH"
-                    ? serviceType === "BOTH" && samePickupAsStart
-                      ? accessStart
-                      : accessPickup
-                    : undefined
-                }
-                itemsMove={itemsMove}
-                itemsDisposal={itemsDisposal}
-                catalog={props.catalog}
-                disposalCategories={disposalCategories as any}
-                disposalExtraM3={disposalExtraM3}
-                forbiddenConfirmed={forbiddenConfirmed}
-                speed={speed}
-                requestedFrom={preferredFrom}
-                requestedTo={preferredTo}
-                preferredTimeWindow={preferredTimeWindow}
-                customerName={customerName}
-                customerPhone={customerPhone}
-                customerEmail={customerEmail}
-                contactPreference={contactPreference}
-                note={note}
-                estimate={estimate}
-                routeLoading={routeLoading}
-                routeError={routeError}
-              />
+                <div className="border-t border-slate-200 pt-6 dark:border-slate-700">
+                  <div className="rounded-2xl border border-brand-200 bg-brand-50/50 p-5 dark:border-brand-800 dark:bg-brand-950/30">
+                    <div className="text-sm font-extrabold text-slate-900 dark:text-white">Ihre Anfrage im Überblick</div>
+                    <div className="mt-3 grid gap-2 text-sm text-slate-700 dark:text-slate-300">
+                      <div className="flex justify-between">
+                        <span className="font-semibold">Service</span>
+                        <span className="font-bold">{serviceTypeLabels[serviceType]}</span>
+                      </div>
+                      {(startAddress || pickupAddress) ? (
+                        <div className="flex justify-between gap-4">
+                          <span className="font-semibold shrink-0">Von</span>
+                          <span className="font-bold text-right truncate">{startAddress?.displayName || pickupAddress?.displayName}</span>
+                        </div>
+                      ) : null}
+                      {destinationAddress ? (
+                        <div className="flex justify-between gap-4">
+                          <span className="font-semibold shrink-0">Nach</span>
+                          <span className="font-bold text-right truncate">{destinationAddress.displayName}</span>
+                        </div>
+                      ) : null}
+                      {preferredFrom ? (
+                        <div className="flex justify-between">
+                          <span className="font-semibold">Wunschtermin</span>
+                          <span className="font-bold">{preferredFrom}{preferredTo && preferredTo !== preferredFrom ? ` – ${preferredTo}` : ""}</span>
+                        </div>
+                      ) : null}
+                      <div className="mt-2 flex justify-between border-t border-brand-200 pt-2 dark:border-brand-700">
+                        <span className="font-extrabold text-brand-700 dark:text-brand-300">Preisrahmen</span>
+                        <span className="font-extrabold text-brand-700 dark:text-brand-300">{eur(estimate.priceMinCents)} – {eur(estimate.priceMaxCents)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ) : null}
 
             {submitError ? (
@@ -1213,7 +1163,7 @@ export function BookingWizard(props: {
                 Zurück
               </Button>
 
-              {current.key !== "summary" ? (
+              {current.key !== "finish" ? (
                 <Button
                   onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))}
                   disabled={!canNext || submitting}
@@ -1231,12 +1181,12 @@ export function BookingWizard(props: {
             </div>
 
             <div className="mt-4 text-xs font-semibold text-slate-600 dark:text-slate-400">
-              Hinweis: Preise sind Schätzwerte auf Basis Ihrer Auswahl. Nach Prüfung bestätigen wir das finale Angebot.
+              Preise sind Schätzwerte. Nach Prüfung bestätigen wir Ihr finales Angebot.
             </div>
             <div className="mt-6 rounded-2xl border border-slate-300 bg-[color:var(--surface-elevated)] p-4 sm:hidden">
               <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Live-Schätzung</div>
               <div className="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">
-                {eur(estimate.priceMinCents)} - {eur(estimate.priceMaxCents)}
+                {eur(estimate.priceMinCents)} – {eur(estimate.priceMaxCents)}
               </div>
               <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
                 {formatNumberDE(estimate.totalVolumeM3)} m³ · {formatNumberDE(estimate.laborHours)} Std.
@@ -1255,7 +1205,7 @@ export function BookingWizard(props: {
                   <ArrowLeft className="h-4 w-4" />
                   Zurück
                 </Button>
-                {current.key !== "summary" ? (
+                {current.key !== "finish" ? (
                   <Button
                     onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))}
                     disabled={!canNext || submitting}
@@ -1337,33 +1287,14 @@ export function BookingWizard(props: {
 }
 
 function getSteps(
-  serviceType: WizardPayload["serviceType"],
-  options?: { hideServiceStep?: boolean; itemsTitle?: string },
+  _serviceType: WizardPayload["serviceType"],
+  _options?: { hideServiceStep?: boolean; itemsTitle?: string },
 ) {
-  const itemsTitle = options?.itemsTitle?.trim() || "Umfang";
-  const base = [
-    { key: "service" as const, title: "Leistung" },
-    { key: "location" as const, title: "Adressen" },
-    { key: "items" as const, title: itemsTitle },
+  return [
+    { key: "start" as const, title: "Service & Adresse" },
+    { key: "details" as const, title: "Details & Termin" },
+    { key: "finish" as const, title: "Absenden" },
   ];
-  const disposal = { key: "disposal" as const, title: "Entsorgung" };
-  const packageStep = { key: "package" as const, title: "Paket & Angebot" };
-  const rest = [
-    { key: "timing" as const, title: "Wunschtermin" },
-    { key: "customer" as const, title: "Kontakt" },
-    { key: "summary" as const, title: "Prüfen & Senden" },
-  ];
-
-  const withService =
-    serviceType === "DISPOSAL" || serviceType === "BOTH"
-      ? [...base, disposal, packageStep, ...rest]
-      : [...base, packageStep, ...rest];
-
-  if (options?.hideServiceStep) {
-    return withService.filter((step) => step.key !== "service");
-  }
-
-  return withService;
 }
 
 function WizardHeader(props: { steps: ReadonlyArray<{ key: string; title: string }>; step: number }) {
