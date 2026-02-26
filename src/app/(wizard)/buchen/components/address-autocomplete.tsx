@@ -93,14 +93,14 @@ export function AddressAutocomplete(props: {
   return (
     <div className="relative" ref={wrapperRef}>
       <div className="flex items-center justify-between gap-3">
-        <label className="text-sm font-extrabold text-slate-900">
-          {props.label} {props.required ? <span className="text-brand-700">*</span> : null}
+        <label className="text-sm font-extrabold text-slate-900 dark:text-white">
+          {props.label} {props.required ? <span className="text-brand-700 dark:text-brand-400">*</span> : null}
         </label>
         {props.value ? (
           <button
             type="button"
             onClick={() => props.onChange(undefined)}
-            className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100"
+            className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             <X className="h-4 w-4" />
             Löschen
@@ -132,7 +132,7 @@ export function AddressAutocomplete(props: {
           )}
         >
           {helper ? (
-            <div className="px-4 py-3 text-sm font-semibold text-slate-700">{helper}</div>
+            <div className="px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300">{helper}</div>
           ) : null}
 
           {results.length ? (
@@ -141,7 +141,7 @@ export function AddressAutocomplete(props: {
                 <li key={`${r.lat}-${r.lon}-${r.postalCode}`}>
                   <button
                     type="button"
-                    className="w-full px-4 py-3 text-left text-sm font-semibold text-slate-800 hover:bg-slate-50"
+                    className="w-full px-4 py-3 text-left text-sm font-semibold text-slate-800 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
                     onClick={() => {
                       props.onChange(r);
                       setQ(r.displayName);
@@ -159,7 +159,7 @@ export function AddressAutocomplete(props: {
             </ul>
           ) : null}
 
-          <div className="border-t-2 border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700">
+          <div className="border-t-2 border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400">
             Adress-Suche via OpenStreetMap (Nominatim). In seltenen Fällen bitte PLZ/Ort prüfen.
           </div>
         </div>
