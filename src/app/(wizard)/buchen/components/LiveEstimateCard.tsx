@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { FieldHint } from "@/app/(wizard)/buchen/components/FieldHint";
-import { CircleAlert } from "lucide-react";
+import { CircleAlert, Rocket } from "lucide-react";
 import { formatNumberDE } from "@/lib/format-number";
 
 export function LiveEstimateCard(props: {
@@ -21,9 +21,12 @@ export function LiveEstimateCard(props: {
 }) {
   return (
     <aside className="booking-glass-card booking-motion-reveal booking-live-panel hidden h-fit rounded-3xl p-6 lg:sticky lg:top-24 lg:block">
-      <div className="text-xs font-bold uppercase tracking-[0.12em] text-[color:var(--booking-text-muted)]">Live-Schaetzung</div>
+      <div className="text-xs font-bold uppercase tracking-[0.14em] text-[color:var(--booking-text-muted)]">Live-Schätzung</div>
       <div className="booking-price-band mt-2 text-3xl font-black text-[color:var(--booking-text-strong)]">
         {props.priceMin} - {props.priceMax}
+      </div>
+      <div className="mt-2 text-xs font-semibold text-[color:var(--booking-text-muted)]">
+        Dynamisch aus Leistung, Volumen, Zeit und Distanz berechnet.
       </div>
 
       <div className="mt-4 grid gap-3">
@@ -77,14 +80,23 @@ export function LiveEstimateCard(props: {
       </div>
 
       <div className="mt-4">
-        <FieldHint tone="info" text="Preise sind Schaetzwerte bis zur finalen Pruefung." />
+        <FieldHint tone="info" text="Preise sind Schätzwerte bis zur finalen Prüfung." />
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-cyan-300/45 bg-cyan-500/10 p-3">
+        <div className="flex items-start gap-2">
+          <Rocket className="mt-0.5 h-4 w-4 text-cyan-300" />
+          <div className="text-xs font-semibold text-[color:var(--booking-text-muted)]">
+            Je genauer Ihre Angaben, desto präziser wird die finale Preisbestätigung.
+          </div>
+        </div>
       </div>
 
       <div className="mt-6 rounded-2xl border border-slate-300/70 bg-[color:var(--booking-glass-bg-2)] p-4">
         <div className="flex items-start gap-2">
           <CircleAlert className="mt-0.5 h-4 w-4 text-brand-700 dark:text-brand-300" />
           <div className="text-xs font-semibold text-[color:var(--booking-text-muted)]">
-            Bitte erfassen Sie nur relevante Angaben. Fuer Sonderfaelle nutzen Sie das Notizfeld.
+            Bitte erfassen Sie nur relevante Angaben. Für Sonderfälle nutzen Sie das Notizfeld.
           </div>
         </div>
       </div>
