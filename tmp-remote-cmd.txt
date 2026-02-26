@@ -1,0 +1,8 @@
+echo P1
+ls -la /docker/schnell-bashar/public/uploads/signed-contracts || true
+echo P2
+ls -la /docker/schnell-bashar/.next/standalone/public/uploads/signed-contracts || true
+echo P3
+ls -la /docker/schnell-bashar/public/uploads/contracts || true
+echo P4
+ls -la /docker/schnell-bashar/.next/standalone/public/uploads/contracts || true
