@@ -1096,7 +1096,7 @@ export function BookingWizard(props: {
 
             {/* STEP 3: Kontakt & Absenden */}
             {current.key === "finish" ? (
-              <div className="space-y-8">
+              <div className="space-y-8 min-w-0 max-w-full overflow-hidden">
                 <StepCustomer
                   customerName={customerName}
                   setCustomerName={setCustomerName}
@@ -1111,23 +1111,23 @@ export function BookingWizard(props: {
                 />
 
                 <div className="border-t border-slate-200 pt-6 dark:border-slate-700">
-                  <div className="rounded-2xl border border-brand-200 bg-brand-50/50 p-5 dark:border-brand-800 dark:bg-brand-950/30">
+                  <div className="w-full max-w-full overflow-hidden rounded-2xl border border-brand-200 bg-brand-50/50 p-5 dark:border-brand-800 dark:bg-brand-950/30">
                     <div className="text-sm font-extrabold text-slate-900 dark:text-white">Ihre Anfrage im Überblick</div>
-                    <div className="mt-3 grid gap-2 text-sm text-slate-700 dark:text-slate-300">
+                    <div className="mt-3 grid min-w-0 gap-2 text-sm text-slate-700 dark:text-slate-300">
                       <div className="flex justify-between">
                         <span className="font-semibold">Service</span>
                         <span className="font-bold">{serviceTypeLabels[serviceType]}</span>
                       </div>
                       {(startAddress || pickupAddress) ? (
-                        <div className="flex justify-between gap-4">
+                        <div className="flex min-w-0 items-start justify-between gap-4">
                           <span className="font-semibold shrink-0">Von</span>
-                          <span className="font-bold text-right truncate">{startAddress?.displayName || pickupAddress?.displayName}</span>
+                          <span className="min-w-0 max-w-[72%] font-bold text-right break-words [overflow-wrap:anywhere]">{startAddress?.displayName || pickupAddress?.displayName}</span>
                         </div>
                       ) : null}
                       {destinationAddress ? (
-                        <div className="flex justify-between gap-4">
+                        <div className="flex min-w-0 items-start justify-between gap-4">
                           <span className="font-semibold shrink-0">Nach</span>
-                          <span className="font-bold text-right truncate">{destinationAddress.displayName}</span>
+                          <span className="min-w-0 max-w-[72%] font-bold text-right break-words [overflow-wrap:anywhere]">{destinationAddress.displayName}</span>
                         </div>
                       ) : null}
                       {preferredFrom ? (
@@ -1138,7 +1138,7 @@ export function BookingWizard(props: {
                       ) : null}
                       <div className="mt-2 flex justify-between border-t border-brand-200 pt-2 dark:border-brand-700">
                         <span className="font-extrabold text-brand-700 dark:text-brand-300">Preisrahmen</span>
-                        <span className="font-extrabold text-brand-700 dark:text-brand-300">{eur(estimate.priceMinCents)} – {eur(estimate.priceMaxCents)}</span>
+                        <span className="min-w-0 text-right font-extrabold text-brand-700 break-words [overflow-wrap:anywhere] dark:text-brand-300">{eur(estimate.priceMinCents)} – {eur(estimate.priceMaxCents)}</span>
                       </div>
                     </div>
                   </div>

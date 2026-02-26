@@ -27,6 +27,8 @@ export function AddressAutocomplete(props: {
   const [q, setQ] = useState(props.value?.displayName ?? "");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resolvingManual, setResolvingManual] = useState(false);
+  const [manualError, setManualError] = useState("");
   const [results, setResults] = useState<AddressOption[]>([]);
   const abortRef = useRef<AbortController | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -83,12 +85,44 @@ export function AddressAutocomplete(props: {
   }, [trimmed, canSearch, open]);
 
   const helper = useMemo(() => {
+    if (manualError) return manualError;
     if (!open) return "";
     if (!canSearch) return "Mindestens 3 Zeichen eingeben.";
-    if (loading) return "Suche\u2026";
+    if (loading || resolvingManual) return "Suche...";
     if (results.length === 0) return "Keine Treffer.";
     return "";
-  }, [open, canSearch, loading, results.length]);
+  }, [manualError, open, canSearch, loading, resolvingManual, results.length]);
+
+  const resolveFreeTextAddress = useCallback(async () => {
+    const typed = q.trim();
+    if (typed.length < 3) return;
+
+    const selected = props.value?.displayName?.trim();
+    if (selected && selected.toLowerCase() === typed.toLowerCase()) return;
+
+    setResolvingManual(true);
+    setManualError("");
+
+    try {
+      const res = await fetch(`/api/geocode?q=${encodeURIComponent(typed)}&limit=1`);
+      if (!res.ok) throw new Error("geocode failed");
+      const json = (await res.json()) as { results?: AddressOption[] };
+      const first = json.results?.[0];
+      if (!first) {
+        props.onChange(undefined);
+        setManualError("Adresse konnte nicht eindeutig gefunden werden. Bitte Vorschlag ausw\u00e4hlen.");
+        return;
+      }
+
+      props.onChange(first);
+      setQ(first.displayName);
+      setOpen(false);
+    } catch {
+      setManualError("Adresse konnte nicht aufgel\u00f6st werden. Bitte Vorschlag ausw\u00e4hlen.");
+    } finally {
+      setResolvingManual(false);
+    }
+  }, [props, q]);
 
   return (
     <div className="relative" ref={wrapperRef}>
@@ -103,7 +137,7 @@ export function AddressAutocomplete(props: {
             className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             <X className="h-4 w-4" />
-            Löschen
+            {"L\u00f6schen"}
           </button>
         ) : null}
       </div>
@@ -115,14 +149,38 @@ export function AddressAutocomplete(props: {
         <Input
           value={q}
           onChange={(e) => {
-            setQ(e.target.value);
+            const next = e.target.value;
+            setQ(next);
+            setManualError("");
+            if (props.value && next.trim().toLowerCase() !== props.value.displayName.trim().toLowerCase()) {
+              props.onChange(undefined);
+            }
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder={props.placeholder ?? "Straße, Hausnummer, PLZ, Ort"}
+          onBlur={() => {
+            window.setTimeout(() => {
+              void resolveFreeTextAddress();
+            }, 120);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              if (results[0]) {
+                props.onChange(results[0]);
+                setQ(results[0].displayName);
+                setOpen(false);
+                return;
+              }
+              void resolveFreeTextAddress();
+            }
+          }}
+          placeholder={props.placeholder ?? "Stra\u00dfe, Hausnummer, PLZ, Ort"}
           className="pl-9"
         />
-        {loading ? <Loader2 className="h-5 w-5 animate-spin text-slate-400" /> : null}
+        {loading || resolvingManual ? (
+          <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+        ) : null}
       </div>
 
       {open ? (
@@ -160,7 +218,7 @@ export function AddressAutocomplete(props: {
           ) : null}
 
           <div className="border-t-2 border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400">
-            Adress-Suche via OpenStreetMap (Nominatim). In seltenen Fällen bitte PLZ/Ort prüfen.
+            {"Adress-Suche via OpenStreetMap (Nominatim). In seltenen F\u00e4llen bitte PLZ/Ort pr\u00fcfen."}
           </div>
         </div>
       ) : null}

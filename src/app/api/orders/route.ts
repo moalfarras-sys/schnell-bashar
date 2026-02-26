@@ -11,7 +11,7 @@ import type { Prisma } from "../../../../prisma/generated/prisma/client";
 import { prisma } from "@/server/db/prisma";
 import { wizardPayloadSchema, type WizardPayload } from "@/lib/wizard-schema";
 import { estimateOrder } from "@/server/calc/estimate";
-import { ORSDistanceError, resolveRouteDistance } from "@/server/distance/ors";
+import { resolveRouteDistance } from "@/server/distance/ors";
 import { resolveDistancePricingConfig } from "@/server/calc/distance-pricing";
 import {
   normalizePromoCode,
@@ -293,9 +293,9 @@ export async function POST(req: Request) {
   }
 
   let routeDistance:
-    | {
+      | {
         distanceKm: number;
-        source: "cache" | "ors";
+        source: "cache" | "ors" | "fallback";
       }
     | undefined;
 
@@ -310,21 +310,23 @@ export async function POST(req: Request) {
           lat: payload.startAddress.lat,
           lon: payload.startAddress.lon,
           postalCode: payload.startAddress.postalCode,
+          text: payload.startAddress.displayName,
         },
         to: {
           lat: payload.destinationAddress.lat,
           lon: payload.destinationAddress.lon,
           postalCode: payload.destinationAddress.postalCode,
+          text: payload.destinationAddress.displayName,
         },
         profile: "driving-car",
       });
     } catch (error) {
-      console.error("[orders] distance lookup failed:", error);
-      const message =
-        error instanceof ORSDistanceError && error.code === "ORS_FORBIDDEN"
-          ? "Die Distanzberechnung ist derzeit nicht verfügbar (ORS-Zugriff abgelehnt). Bitte kontaktieren Sie uns kurz."
-          : "Die Distanz konnte nicht berechnet werden. Bitte prüfen Sie die Adressen.";
-      return NextResponse.json({ error: message }, { status: 400 });
+      console.error("[orders] distance lookup failed; continuing without route distance", {
+        error: error instanceof Error ? error.message : String(error),
+        from: payload.startAddress.displayName,
+        to: payload.destinationAddress.displayName,
+      });
+      routeDistance = undefined;
     }
   }
 

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
@@ -12,6 +12,7 @@ import {
   FileCheck,
   FileArchive,
   ExternalLink,
+  Copy,
   XCircle,
   Pencil,
 } from "lucide-react";
@@ -113,9 +114,10 @@ export function OfferFilterBar() {
 
 interface ResendSigningButtonProps {
   offerId: string;
+  onSigningUrl?: (url: string) => void;
 }
 
-export function ResendSigningButton({ offerId }: ResendSigningButtonProps) {
+export function ResendSigningButton({ offerId, onSigningUrl }: ResendSigningButtonProps) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -131,11 +133,15 @@ export function ResendSigningButton({ offerId }: ResendSigningButtonProps) {
         message?: string;
         provider?: "INTERNAL";
         fallbackActivated?: boolean;
+        signingUrl?: string;
       };
       if (!res.ok) {
         throw new Error(data.error || "Fehler beim erneuten Senden");
       }
       const successText = data.message || "Signatur-Link erneut gesendet";
+      if (data.signingUrl) {
+        onSigningUrl?.(data.signingUrl);
+      }
       setMessage({ type: "success", text: successText });
     } catch (err) {
       setMessage({
@@ -157,7 +163,7 @@ export function ResendSigningButton({ offerId }: ResendSigningButtonProps) {
         disabled={loading}
       >
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-        Erneut senden
+        Signierlink senden
       </Button>
       {message && (
         <span
@@ -166,6 +172,31 @@ export function ResendSigningButton({ offerId }: ResendSigningButtonProps) {
           {message.text}
         </span>
       )}
+    </div>
+  );
+}
+
+function CopySigningLinkButton({ signingUrl }: { signingUrl: string }) {
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(signingUrl);
+      setStatus("success");
+      window.setTimeout(() => setStatus("idle"), 2500);
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  return (
+    <div className="inline-flex flex-col items-start gap-1">
+      <Button variant="outline" size="sm" className="gap-1" onClick={handleCopy}>
+        <Copy className="h-4 w-4" />
+        Link kopieren
+      </Button>
+      {status === "success" ? <span className="text-xs text-green-600">Link kopiert</span> : null}
+      {status === "error" ? <span className="text-xs text-red-600">Kopieren fehlgeschlagen</span> : null}
     </div>
   );
 }
@@ -201,7 +232,12 @@ export function OfferActionButtons({
 }: OfferActionButtonsProps) {
   const router = useRouter();
   const [closing, setClosing] = useState<"offer" | "contract" | null>(null);
+  const [currentSigningUrl, setCurrentSigningUrl] = useState(signingUrl);
   const showResend = contractStatus === "PENDING_SIGNATURE";
+
+  useEffect(() => {
+    setCurrentSigningUrl(signingUrl);
+  }, [signingUrl]);
 
   async function closeOffer() {
     setClosing("offer");
@@ -287,14 +323,18 @@ export function OfferActionButtons({
         </a>
       )}
 
-      {signingUrl && contractStatus === "PENDING_SIGNATURE" && (
-        <a href={signingUrl} target="_blank" rel="noopener noreferrer">
+      {currentSigningUrl && contractStatus === "PENDING_SIGNATURE" && (
+        <a href={currentSigningUrl} target="_blank" rel="noopener noreferrer">
           <Button variant="outline" size="sm" className="gap-1">
             <ExternalLink className="h-4 w-4" />
-            Signatur-Link öffnen
+            Signierlink öffnen
           </Button>
         </a>
       )}
+
+      {currentSigningUrl && contractStatus === "PENDING_SIGNATURE" ? (
+        <CopySigningLinkButton signingUrl={currentSigningUrl} />
+      ) : null}
 
       <a href={`/offer/${offerToken}`} target="_blank" rel="noopener noreferrer">
         <Button variant="outline" size="sm" className="gap-1">
@@ -303,7 +343,7 @@ export function OfferActionButtons({
         </Button>
       </a>
 
-      {showResend && <ResendSigningButton offerId={offerId} />}
+      {showResend && <ResendSigningButton offerId={offerId} onSigningUrl={setCurrentSigningUrl} />}
 
       <Button
         type="button"

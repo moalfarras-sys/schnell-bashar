@@ -80,7 +80,9 @@ export async function POST(req: Request) {
       profile: route.profile,
     });
   } catch (error) {
-    console.error("[distance/route] failed:", error);
+    console.error("[distance/route] failed", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     if (error instanceof ORSDistanceError && error.code === "ORS_FORBIDDEN") {
       return NextResponse.json(
         {
@@ -88,6 +90,12 @@ export async function POST(req: Request) {
             "Die Distanzberechnung ist derzeit nicht verfügbar (ORS-Zugriff abgelehnt). Bitte API-Schlüssel prüfen.",
         },
         { status: 503 },
+      );
+    }
+    if (error instanceof Error && /Address not found|Point requires either|Invalid geocoding/i.test(error.message)) {
+      return NextResponse.json(
+        { error: "Die Distanz konnte nicht berechnet werden. Bitte Adressen prüfen." },
+        { status: 400 },
       );
     }
     return NextResponse.json(

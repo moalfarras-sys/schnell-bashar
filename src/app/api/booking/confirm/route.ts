@@ -216,7 +216,7 @@ export async function POST(req: Request) {
   const checklist = Array.isArray(inquiry.checklist) ? inquiry.checklist : [];
 
   let distanceKm: number | undefined;
-  let distanceSource: "ors" | "cache" | undefined;
+  let distanceSource: "ors" | "cache" | "fallback" | undefined;
   const shouldCalculateDistance =
     inquiry.serviceType === "UMZUG" || inquiry.serviceType === "KOMBI";
 

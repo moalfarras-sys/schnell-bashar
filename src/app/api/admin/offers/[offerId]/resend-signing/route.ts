@@ -92,7 +92,11 @@ export async function POST(
 
   if (!result.success) {
     return NextResponse.json(
-      { error: result.error || "E-Mail konnte nicht gesendet werden.", provider: "INTERNAL" },
+      {
+        error: result.error || "E-Mail konnte nicht gesendet werden.",
+        provider: "INTERNAL",
+        signingUrl,
+      },
       { status: 500 },
     );
   }
@@ -101,5 +105,6 @@ export async function POST(
     success: true,
     provider: "INTERNAL",
     message: "Signatur-Link erneut gesendet.",
+    signingUrl,
   });
 }

@@ -4,7 +4,7 @@ const ORS_BASE_URL = (process.env.ORS_BASE_URL || "https://api.openrouteservice.
 const ORS_PROFILE = "driving-car";
 const DEFAULT_CACHE_TTL_DAYS = 30;
 
-export type DistanceSource = "cache" | "ors";
+export type DistanceSource = "cache" | "ors" | "fallback";
 
 export class ORSDistanceError extends Error {
   code:
@@ -59,6 +59,21 @@ type ResolvedPoint = {
 
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
+}
+
+function degToRad(value: number): number {
+  return (value * Math.PI) / 180;
+}
+
+function haversineDistanceKm(from: ResolvedPoint, to: ResolvedPoint): number {
+  const earthRadiusKm = 6371;
+  const dLat = degToRad(to.lat - from.lat);
+  const dLon = degToRad(to.lon - from.lon);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(degToRad(from.lat)) * Math.cos(degToRad(to.lat)) * Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return earthRadiusKm * c;
 }
 
 function parsePositiveNumber(raw: string | undefined, fallback: number): number {
@@ -383,7 +398,29 @@ export async function resolveRouteDistance(input: RouteDistanceInput): Promise<R
     }
   }
 
-  const orsKm = await callORS(from, to, profile);
+  let orsKm: number;
+  try {
+    orsKm = await callORS(from, to, profile);
+  } catch (error) {
+    const straightKm = haversineDistanceKm(from, to);
+    // Road distance fallback: apply a conservative multiplier over straight-line distance.
+    const fallbackKm = round2(Math.max(1, straightKm * 1.25));
+    console.error("[distance/ors] ORS failed, using fallback distance", {
+      error: error instanceof Error ? error.message : "unknown",
+      fromPostalCode,
+      toPostalCode,
+      profile,
+      fallbackKm,
+    });
+    return {
+      distanceKm: fallbackKm,
+      source: "fallback",
+      fromPostalCode,
+      toPostalCode,
+      profile,
+    };
+  }
+
   if (fromPostalCode && toPostalCode) {
     await setCachedDistance(fromPostalCode, toPostalCode, profile, orsKm);
   }
