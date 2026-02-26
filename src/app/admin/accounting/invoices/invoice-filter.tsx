@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
@@ -69,7 +69,7 @@ export function InvoiceFilterBar() {
             <option value="unpaid">Unbezahlt</option>
             <option value="partial">Teilbezahlt</option>
             <option value="paid">Bezahlt</option>
-            <option value="overdue">Ueberfaellig</option>
+            <option value="overdue">Überfällig</option>
             <option value="cancelled">Storniert</option>
           </select>
         </div>

@@ -1,4 +1,4 @@
-﻿import { cookies } from "next/headers";
+import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
@@ -19,7 +19,7 @@ import { prisma } from "@/server/db/prisma";
 import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
 import { Container } from "@/components/container";
 import { Button } from "@/components/ui/button";
-import { PaymentForm, CancelInvoiceButton } from "./invoice-actions";
+import { PaymentForm, MarkAsPaidButton, CancelInvoiceButton } from "./invoice-actions";
 
 function formatEuro(cents: number): string {
   return new Intl.NumberFormat("de-DE", {
@@ -150,6 +150,12 @@ export default async function InvoiceDetailPage({
                 PDF herunterladen
               </Button>
             </a>
+            {invoice.status !== "CANCELLED" && invoice.status !== "PAID" && (
+              <MarkAsPaidButton
+                invoiceId={invoice.id}
+                outstandingCents={outstanding}
+              />
+            )}
             {invoice.status !== "CANCELLED" && invoice.status !== "PAID" && (
               <CancelInvoiceButton invoiceId={invoice.id} />
             )}
@@ -293,7 +299,7 @@ export default async function InvoiceDetailPage({
                   </div>
                 </div>
                 <div>
-                  <span className="text-slate-500">Faellig am</span>
+                  <span className="text-slate-500">Fällig am</span>
                   <div className={`font-semibold ${isOverdue ? "text-red-600" : "text-slate-900"}`}>
                     {format(invoice.dueAt, "dd.MM.yyyy", { locale: de })}
                   </div>

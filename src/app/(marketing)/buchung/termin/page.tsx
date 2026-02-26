@@ -159,7 +159,11 @@ export default function BuchungTerminPage() {
       if (!res.ok) throw new Error(data?.error ?? "Buchung konnte nicht bestätigt werden.");
 
       sessionStorage.removeItem(INQUIRY_STORAGE_KEY);
-      router.push(`/buchen/bestaetigt?code=${data.trackingCode}&pdfToken=${data.pdfToken ?? ""}`);
+      const qp = new URLSearchParams({ order: data.trackingCode ?? "" });
+      if (data.pdfToken) qp.set("token", data.pdfToken);
+      if (data.offerToken) qp.set("offerToken", data.offerToken);
+      if (data.offerNo) qp.set("offerNo", data.offerNo);
+      router.push(`/buchen/bestaetigt?${qp.toString()}`);
     } catch (e) {
       setSubmitError(e instanceof Error ? e.message : "Ein Fehler ist aufgetreten.");
     } finally {
@@ -232,7 +236,7 @@ export default function BuchungTerminPage() {
                 <button
                   type="button"
                   onClick={() => setCurrentMonth(addMonths(currentMonth, -1))}
-                  className="rounded-xl px-3 py-1.5 text-sm font-bold text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                  className="flex h-10 w-10 items-center justify-center rounded-full text-base font-bold text-slate-700 transition hover:bg-slate-100 active:scale-95 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
                   ←
                 </button>
@@ -242,7 +246,7 @@ export default function BuchungTerminPage() {
                 <button
                   type="button"
                   onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                  className="rounded-xl px-3 py-1.5 text-sm font-bold text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                  className="flex h-10 w-10 items-center justify-center rounded-full text-base font-bold text-slate-700 transition hover:bg-slate-100 active:scale-95 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
                   →
                 </button>
@@ -269,7 +273,7 @@ export default function BuchungTerminPage() {
                       type="button"
                       disabled={disabled}
                       onClick={() => handleDateSelect(day)}
-                      className={`relative flex h-10 items-center justify-center rounded-xl text-sm font-semibold transition-all duration-150 sm:h-11 ${
+                      className={`relative flex min-h-[44px] items-center justify-center rounded-xl text-sm font-semibold transition-all duration-150 sm:min-h-[48px] ${
                         isSelected
                           ? "bg-brand-600 text-white shadow-md"
                           : disabled
@@ -334,7 +338,7 @@ export default function BuchungTerminPage() {
                     </a>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     {slots.map((slot) => {
                       const isActive = selectedSlot?.start === slot.start;
                       return (
@@ -342,7 +346,7 @@ export default function BuchungTerminPage() {
                           key={slot.start}
                           type="button"
                           onClick={() => setSelectedSlot(slot)}
-                          className={`flex items-center justify-center gap-1.5 rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-all duration-150 ${
+                          className={`flex min-h-[52px] items-center justify-center gap-1.5 rounded-xl border-2 px-3 py-3 text-base font-bold transition-all duration-150 sm:text-sm sm:py-2.5 ${
                             isActive
                               ? "border-brand-500 bg-brand-50 text-brand-800 shadow-sm dark:bg-brand-900/30 dark:text-brand-200"
                               : "border-slate-200 bg-white/60 text-slate-700 hover:border-brand-300 hover:bg-brand-50/40 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-200 dark:hover:border-brand-500/40"
@@ -413,8 +417,8 @@ export default function BuchungTerminPage() {
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button
-                size="lg"
-                className="flex-1 gap-2"
+                size="xl"
+                className="w-full gap-2 sm:flex-1"
                 disabled={submitting || !name.trim() || !email.trim() || !phone.trim()}
                 onClick={handleConfirm}
               >
@@ -428,7 +432,7 @@ export default function BuchungTerminPage() {
                   </>
                 )}
               </Button>
-              <a href="tel:+491729573681" className="sm:w-auto">
+              <a href="tel:+491729573681" className="w-full sm:w-auto">
                 <Button variant="outline" size="lg" className="w-full gap-2 sm:w-auto">
                   <Phone className="h-4 w-4" /> Rückruf anfordern
                 </Button>
@@ -438,6 +442,31 @@ export default function BuchungTerminPage() {
             <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
               Nach Bestätigung erhalten Sie eine E-Mail mit Angebot (PDF) und Tracking-Code.
             </p>
+
+            {/* spacer for mobile sticky bar */}
+            <div className="h-20 sm:hidden" />
+          </div>
+        )}
+
+        {/* Sticky mobile confirm bar */}
+        {selectedSlot && name.trim() && email.trim() && phone.trim() && (
+          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-[color:var(--surface-elevated)]/95 px-4 py-3 backdrop-blur sm:hidden dark:border-slate-700">
+            <Button
+              size="xl"
+              className="w-full gap-2"
+              disabled={submitting}
+              onClick={handleConfirm}
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" /> Wird gebucht...
+                </>
+              ) : (
+                <>
+                  <Send className="h-5 w-5" /> Buchung bestätigen
+                </>
+              )}
+            </Button>
           </div>
         )}
       </div>

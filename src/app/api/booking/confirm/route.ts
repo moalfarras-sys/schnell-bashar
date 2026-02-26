@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { addDays } from "date-fns";
@@ -501,6 +501,7 @@ export async function POST(req: Request) {
     trackingCode: order.publicId,
     offerId: createdOfferId,
     offerNo: createdOfferId ? offerNo : null,
+    offerToken: createdOfferId ? token : null,
     orderNo: orderNo,
     pdfToken,
   });

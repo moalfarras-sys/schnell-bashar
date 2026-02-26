@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Loader2, MapPin, X } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,7 @@ export function AddressAutocomplete(props: {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<AddressOption[]>([]);
   const abortRef = useRef<AbortController | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const trimmed = q.trim();
   const canSearch = trimmed.length >= 3;
@@ -36,6 +37,17 @@ export function AddressAutocomplete(props: {
   useEffect(() => {
     setQ(props.value?.displayName ?? "");
   }, [props.value?.displayName]);
+
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      setOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [handleClickOutside]);
 
   useEffect(() => {
     if (!open) return;
@@ -73,13 +85,13 @@ export function AddressAutocomplete(props: {
   const helper = useMemo(() => {
     if (!open) return "";
     if (!canSearch) return "Mindestens 3 Zeichen eingeben.";
-    if (loading) return "Suche…";
+    if (loading) return "Suche\u2026";
     if (results.length === 0) return "Keine Treffer.";
     return "";
   }, [open, canSearch, loading, results.length]);
 
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       <div className="flex items-center justify-between gap-3">
         <label className="text-sm font-extrabold text-slate-900">
           {props.label} {props.required ? <span className="text-brand-700">*</span> : null}
@@ -155,7 +167,3 @@ export function AddressAutocomplete(props: {
     </div>
   );
 }
-
-
-
-

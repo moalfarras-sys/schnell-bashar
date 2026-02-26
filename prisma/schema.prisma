@@ -578,6 +578,8 @@ model Invoice {
   id        String @id @default(cuid())
   invoiceNo String? @unique
 
+  companyId String?
+
   contractId String?
   contract   Contract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
 
@@ -597,6 +599,10 @@ model Invoice {
   description String? @db.Text
   lineItems   Json?
 
+  discountPercent Float?
+  discountCents   Int?
+  notes           String? @db.Text
+
   issuedAt DateTime @default(now())
   dueAt    DateTime
 
@@ -612,14 +618,34 @@ model Invoice {
   deletedBy String?
   version   Int      @default(1)
 
+  items    InvoiceItem[]
   payments Payment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([companyId])
   @@index([status])
   @@index([issuedAt])
   @@index([dueAt])
+}
+
+model InvoiceItem {
+  id             String   @id @default(cuid())
+  invoiceId      String
+  invoice        Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  description    String
+  quantity       Float    @default(1)
+  unit           String   @default("Stück")
+  unitPriceCents Int
+  vatPercent     Float    @default(19)
+  lineTotalCents Int
+  sortOrder      Int      @default(0)
+
+  createdAt      DateTime @default(now())
+
+  @@index([invoiceId])
 }
 
 model Payment {

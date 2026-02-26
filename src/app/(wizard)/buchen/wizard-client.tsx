@@ -1389,7 +1389,7 @@ function WizardHeader(props: { steps: ReadonlyArray<{ key: string; title: string
           style={{ width: `${pct}%` }}
         />
       </div>
-      <div className="mt-4 flex flex-nowrap gap-2 overflow-x-auto pb-1">
+      <div className="mt-4 hidden flex-nowrap gap-2 overflow-x-auto pb-1 sm:flex">
         {props.steps.map((s, idx) => (
           <div
             key={s.key}

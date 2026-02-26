@@ -1,20 +1,20 @@
-﻿@layer base {
+@layer base {
   :root {
     /* Glass background levels (translucent white, true glass) */
-    --glass-bg-ultra-light: rgba(231, 244, 255, 0.52);
-    --glass-bg-light: rgba(232, 243, 255, 0.68);
-    --glass-bg-soft: rgba(226, 240, 255, 0.78);
-    --glass-bg-primary: rgba(220, 237, 255, 0.84);
-    --glass-bg-secondary: rgba(218, 235, 255, 0.80);
-    --glass-bg-tertiary: rgba(214, 232, 255, 0.72);
-    --glass-bg-strong: rgba(236, 246, 255, 0.92);
-    --glass-bg-solid: rgba(243, 249, 255, 0.98);
+    --glass-bg-ultra-light: rgba(226, 235, 246, 0.52);
+    --glass-bg-light: rgba(227, 237, 249, 0.68);
+    --glass-bg-soft: rgba(222, 233, 247, 0.78);
+    --glass-bg-primary: rgba(216, 230, 246, 0.84);
+    --glass-bg-secondary: rgba(214, 228, 245, 0.80);
+    --glass-bg-tertiary: rgba(210, 225, 243, 0.72);
+    --glass-bg-strong: rgba(239, 244, 252, 0.92);
+    --glass-bg-solid: rgba(247, 250, 254, 0.98);
 
     /* Glass borders (white edges, Apple-glass style) */
-    --glass-border-subtle: rgba(183, 217, 255, 0.55);
-    --glass-border: rgba(152, 198, 246, 0.58);
-    --glass-border-strong: rgba(120, 176, 238, 0.68);
-    --glass-border-solid: rgba(102, 168, 246, 0.78);
+    --glass-border-subtle: rgba(190, 210, 235, 0.55);
+    --glass-border: rgba(165, 195, 230, 0.58);
+    --glass-border-strong: rgba(140, 175, 218, 0.68);
+    --glass-border-solid: rgba(120, 165, 218, 0.78);
     --glass-border-emphasis: rgba(15, 42, 69, 0.22);
 
     /* Inset highlight (top-edge light catch) */
@@ -57,28 +57,28 @@
     /* Gradients */
     --glass-gradient-hero: linear-gradient(
       135deg,
-      rgba(143, 196, 255, 0.26) 0%,
-      rgba(99, 168, 246, 0.18) 50%,
-      rgba(183, 217, 255, 0.24) 100%
+      rgba(143, 196, 255, 0.14) 0%,
+      rgba(99, 168, 246, 0.09) 50%,
+      rgba(183, 217, 255, 0.12) 100%
     );
 
     --glass-gradient-section: linear-gradient(
       180deg,
-      rgba(243, 249, 255, 0.70) 0%,
-      rgba(232, 243, 255, 0.88) 100%
+      rgba(246, 249, 253, 0.70) 0%,
+      rgba(238, 244, 251, 0.88) 100%
     );
 
     --glass-gradient-card: linear-gradient(
       180deg,
-      rgba(243, 249, 255, 0.94) 0%,
-      rgba(232, 243, 255, 0.84) 100%
+      rgba(246, 249, 253, 0.94) 0%,
+      rgba(238, 244, 251, 0.84) 100%
     );
 
     --glass-gradient-premium: linear-gradient(
       135deg,
-      rgba(143, 196, 255, 0.28) 0%,
-      rgba(99, 168, 246, 0.18) 50%,
-      rgba(183, 217, 255, 0.24) 100%
+      rgba(143, 196, 255, 0.14) 0%,
+      rgba(99, 168, 246, 0.09) 50%,
+      rgba(183, 217, 255, 0.12) 100%
     );
 
     /* Button gradients (vibrant, Apple-like) */

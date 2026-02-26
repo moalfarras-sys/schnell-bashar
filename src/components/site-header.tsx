@@ -76,7 +76,7 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
       </Container>
 
       {open && (
-        <div className="border-t border-[rgba(183,217,255,0.55)] bg-[rgba(232,243,255,0.86)] backdrop-blur-xl lg:hidden dark:border-slate-800 dark:bg-slate-950/95">
+        <div className="max-h-[80vh] overflow-y-auto border-t border-[rgba(183,217,255,0.55)] bg-[rgba(232,243,255,0.86)] backdrop-blur-xl lg:hidden dark:border-slate-800 dark:bg-slate-950/95">
           <Container className="py-4">
             <MegaMenuMobile onClose={closeMobile} />
             <div className="mt-3 border-t border-[rgba(10,16,32,0.06)] pt-3 dark:border-slate-800">

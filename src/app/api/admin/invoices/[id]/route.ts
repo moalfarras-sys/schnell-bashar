@@ -27,7 +27,7 @@ export async function GET(
   const { id } = await params;
   const invoice = await prisma.invoice.findUnique({
     where: { id },
-    include: { payments: { orderBy: { paidAt: "desc" } }, contract: true, offer: true, order: true },
+    include: { payments: { orderBy: { paidAt: "desc" } }, items: { orderBy: { sortOrder: "asc" } }, contract: true, offer: true, order: true },
   });
 
   if (!invoice) {

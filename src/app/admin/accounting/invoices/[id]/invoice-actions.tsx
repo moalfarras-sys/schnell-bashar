@@ -1,8 +1,8 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function formatEuro(cents: number): string {
@@ -38,7 +38,7 @@ export function PaymentForm({
     const paidAt = form.get("paidAt") as string;
 
     if (amountCents <= 0) {
-      setError("Betrag muss groesser als 0 sein.");
+      setError("Betrag muss größer als 0 sein.");
       setLoading(false);
       return;
     }
@@ -85,7 +85,7 @@ export function PaymentForm({
           defaultValue="BANK_TRANSFER"
           className="w-full rounded-lg border-2 border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 focus:border-brand-500 focus:outline-none"
         >
-          <option value="BANK_TRANSFER">Ueberweisung</option>
+          <option value="BANK_TRANSFER">Überweisung</option>
           <option value="CASH">Bargeld</option>
           <option value="CARD">Karte</option>
           <option value="PAYPAL">PayPal</option>
@@ -137,6 +137,53 @@ export function PaymentForm({
         )}
       </Button>
     </form>
+  );
+}
+
+export function MarkAsPaidButton({
+  invoiceId,
+  outstandingCents,
+}: {
+  invoiceId: string;
+  outstandingCents: number;
+}) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  async function handleMarkPaid() {
+    if (!confirm("Rechnung als vollständig bezahlt markieren?")) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/invoices/${invoiceId}/payments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amountCents: outstandingCents,
+          method: "BANK_TRANSFER",
+          notes: "Als bezahlt markiert",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Fehler");
+      router.refresh();
+    } catch {
+      alert("Fehler beim Markieren als bezahlt");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      className="gap-1 text-green-600 hover:text-green-700"
+      onClick={handleMarkPaid}
+      disabled={loading}
+    >
+      <CheckCircle2 className="h-4 w-4" />
+      {loading ? "Wird markiert..." : "Als bezahlt markieren"}
+    </Button>
   );
 }
 

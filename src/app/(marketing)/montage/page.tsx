@@ -118,14 +118,14 @@ export default async function MontagePage() {
               Einzelaufbau - wir erledigen es professionell.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/preise?service=MONTAGE">
-                <Button size="lg" className="gap-2">
+              <Link href="/preise?service=MONTAGE" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full gap-2 sm:w-auto">
                   <Wrench className="h-5 w-5" />
                   Richtpreis berechnen
                 </Button>
               </Link>
-              <Link href="/buchung/termin">
-                <Button size="lg" variant="outline" className="gap-2 border-white/50 bg-white/10 text-white hover:bg-white/20">
+              <Link href="/buchung/termin" className="w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="w-full gap-2 border-white/50 bg-white/10 text-white hover:bg-white/20 sm:w-auto">
                   <CalendarDays className="h-5 w-5" />
                   Termin wählen
                 </Button>

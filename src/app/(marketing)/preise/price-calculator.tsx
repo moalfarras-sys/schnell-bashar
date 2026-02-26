@@ -237,7 +237,7 @@ export function PriceCalculator({
         <div className="text-lg font-extrabold text-slate-900 dark:text-white">Preisrechner</div>
       </div>
 
-      <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-4">
         {(["UMZUG", "MONTAGE", "ENTSORGUNG", "SPECIAL"] as const).map((kind) => {
           const active = selectedServices.includes(kind);
           return (
@@ -257,9 +257,9 @@ export function PriceCalculator({
         })}
       </div>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+      <div className="mt-4 grid grid-cols-2 gap-4">
         <select
-          className="rounded-xl border-2 border-slate-300 bg-transparent px-3 py-3 text-sm font-semibold"
+          className="rounded-xl border-2 border-slate-300 bg-transparent px-3 py-3 text-sm font-semibold dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
           value={speed}
           onChange={(e) => setSpeed(e.target.value as SpeedType)}
         >
@@ -301,10 +301,10 @@ export function PriceCalculator({
           onChange={(e) => setFloors(Math.max(0, Math.min(10, Number(e.target.value) || 0)))}
           placeholder="Etagen"
         />
-        <label className="flex items-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm">
+        <label className="flex items-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:text-slate-200">
           <input type="checkbox" checked={hasElevator} onChange={(e) => setHasElevator(e.target.checked)} /> Aufzug
         </label>
-        <label className="flex items-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm">
+        <label className="flex items-center gap-2 rounded-xl border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:text-slate-200">
           <input
             type="checkbox"
             checked={needNoParkingZone}
@@ -321,7 +321,7 @@ export function PriceCalculator({
             return (
               <div
                 key={opt.code}
-                className="flex items-center justify-between rounded-xl border border-slate-300 p-3"
+                className="flex items-center justify-between rounded-xl border border-slate-300 p-3 dark:border-slate-600"
               >
                 <div>
                   <div className="text-sm font-bold">{opt.nameDe}</div>
@@ -363,12 +363,12 @@ export function PriceCalculator({
       ) : null}
 
       {showRouteHint ? (
-        <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
+        <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800 dark:border-amber-600 dark:bg-amber-900/30 dark:text-amber-200">
           Für genaue Fahrtkosten bitte beide Adressen angeben.
         </div>
       ) : null}
       {calcError ? (
-        <div className="mt-3 rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-xs font-semibold text-red-800">
+        <div className="mt-3 rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-xs font-semibold text-red-800 dark:border-red-600 dark:bg-red-900/30 dark:text-red-200">
           {calcError}
         </div>
       ) : null}
@@ -376,28 +376,38 @@ export function PriceCalculator({
       <div className="mt-5 rounded-2xl border border-slate-300 bg-slate-50 p-4 text-sm dark:border-slate-700 dark:bg-slate-900/70">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span>Leistungen</span>
-          <span className="font-bold">{selectedServices.map((kind) => serviceLabels[kind]).join(" + ")}</span>
+          <span className="text-right font-bold">{selectedServices.map((kind) => serviceLabels[kind]).join(" + ")}</span>
         </div>
         <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
           <span>Umfang</span>
-          <span className="font-bold">{formatNumberDE(volumeM3)} m³</span>
+          <span className="text-right font-bold">{formatNumberDE(volumeM3)} m³</span>
         </div>
         <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
           Richtpreis: Endpreis nach Angebot.
         </div>
       </div>
 
-      {server?.packages?.length ? (
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+      {loading && !server?.packages?.length ? (
+        <div className="mt-4 grid grid-cols-3 gap-3">
+          {[1, 2, 3].map((n) => (
+            <div key={n} className="animate-pulse rounded-2xl border border-slate-300 p-3 dark:border-slate-700">
+              <div className="h-3 w-16 rounded bg-slate-200 dark:bg-slate-700" />
+              <div className="mt-2 h-4 w-24 rounded bg-slate-200 dark:bg-slate-700" />
+              <div className="mt-1 h-3 w-20 rounded bg-slate-200 dark:bg-slate-700" />
+            </div>
+          ))}
+        </div>
+      ) : server?.packages?.length ? (
+        <div className="mt-4 grid grid-cols-3 gap-3">
           {server.packages.map((pkg) => (
-            <div key={pkg.tier} className="rounded-2xl border border-slate-300 p-3 dark:border-slate-700">
-              <div className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            <div key={pkg.tier} className="min-w-0 overflow-hidden rounded-2xl border border-slate-300 p-3 dark:border-slate-700">
+              <div className="truncate text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 {pkg.tier}
               </div>
-              <div className="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">
-                {eur(pkg.minCents)} - {eur(pkg.maxCents)}
+              <div className="mt-1 truncate text-sm font-extrabold text-slate-900 dark:text-white">
+                {eur(pkg.minCents)} – {eur(pkg.maxCents)}
               </div>
-              <div className="text-xs text-slate-500 dark:text-slate-400">inkl. MwSt. Richtpreis</div>
+              <div className="truncate text-xs text-slate-500 dark:text-slate-400">inkl. MwSt.</div>
             </div>
           ))}
         </div>
@@ -447,8 +457,8 @@ export function PriceCalculator({
           Jetzt buchen
           <ArrowRight className="h-4 w-4" />
         </Button>
-        <a href="tel:+491729573681" className="sm:w-auto">
-          <Button size="lg" variant="outline">
+        <a href="tel:+491729573681" className="w-full sm:w-auto">
+          <Button size="lg" variant="outline" className="w-full sm:w-auto">
             +49 172 9573681
           </Button>
         </a>

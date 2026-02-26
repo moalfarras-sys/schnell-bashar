@@ -53,9 +53,9 @@ const services = [
 
 const tools = [
   { icon: Calculator, label: "Preisrechner", href: "/preise", desc: "Schnelle Orientierung" },
-  { icon: ClipboardList, label: "Anfrage starten", href: "/buchen?context=MOVING", desc: "Direkt buchen" },
+  { icon: ClipboardList, label: "Anfrage starten", href: "/buchen", desc: "Direkt buchen" },
+  { icon: CalendarDays, label: "Termine", href: "/buchung/termin", desc: "Zeitfenster wählen" },
   { icon: Search, label: "Anfrage verfolgen", href: "/anfrage", desc: "Status prüfen" },
-  { icon: CalendarDays, label: "Termine", href: "/buchen?context=MOVING", desc: "Zeitfenster wählen" },
 ];
 
 const defaultTestimonials = [

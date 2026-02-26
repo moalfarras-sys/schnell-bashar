@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -54,6 +54,7 @@ const navItems: NavItem[] = [
   { href: "/admin/audit", label: "Audit-Log", icon: ScrollText },
   { href: "/admin/accounting", label: "Buchhaltung", icon: Wallet, section: "accounting" },
   { href: "/admin/accounting/invoices", label: "Rechnungen", icon: Receipt, section: "accounting" },
+  { href: "/admin/accounting/invoices/new", label: "Neue Rechnung (manuell)", icon: PlusCircle, section: "accounting" },
   { href: "/admin/accounting/reports", label: "Berichte", icon: BarChart3, section: "accounting" },
 ];
 
@@ -82,7 +83,7 @@ export function AdminNav({ newOrderCount }: { newOrderCount?: number }) {
         href={n.href}
         className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200 ${
           active
-            ? "bg-brand-500/18 text-brand-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] dark:text-brand-200"
+            ? "bg-brand-500/20 text-brand-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] border-l-[3px] border-l-brand-500 dark:text-brand-100 dark:bg-brand-500/25"
             : "text-slate-700 hover:bg-white/55 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white"
         }`}
       >
