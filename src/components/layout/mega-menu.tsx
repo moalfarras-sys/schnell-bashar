@@ -55,7 +55,7 @@ const menuSections: MenuSection[] = [
         title: "Online buchen",
         links: [
           { label: "Angebot berechnen", href: "/preise", desc: "Richtpreis sofort erhalten", icon: BadgeEuro },
-          { label: "Termin & Kalender", href: "/buchung/termin", desc: "Zeitfenster wählen", icon: CalendarDays },
+          { label: "Termin & Kalender", href: "/buchen?context=MOVING", desc: "Zeitfenster wählen", icon: CalendarDays },
           { label: "Anfrage verfolgen", href: "/anfrage", desc: "Status prüfen", icon: Search },
         ],
       },

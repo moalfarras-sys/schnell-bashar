@@ -161,10 +161,10 @@ export default async function SignContractPage({
             <div className="mt-1">
               <span className="font-semibold">Gesamt:</span> {formatEuro(contract.offer.grossCents)}
             </div>
-            {contract.contractPdfUrl ? (
+            {(contract.contractPdfUrl || contract.signedPdfUrl) ? (
               <div className="mt-2">
                 <a
-                  href={contract.contractPdfUrl}
+                  href={`/api/contracts/signature/${contract.offer.token}/pdf?kind=contract`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline"

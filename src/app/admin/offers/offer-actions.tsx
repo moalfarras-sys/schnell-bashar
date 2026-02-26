@@ -303,7 +303,11 @@ export function OfferActionButtons({
 
       {(signedPdfUrl || (contractStatus === "SIGNED" && contractPdfUrl)) && (
         <a
-          href={signedPdfUrl || contractPdfUrl || "#"}
+          href={
+            contractId
+              ? `/api/admin/contracts/${contractId}/signed-pdf`
+              : (signedPdfUrl || contractPdfUrl || "#")
+          }
           target="_blank"
           rel="noopener noreferrer"
         >

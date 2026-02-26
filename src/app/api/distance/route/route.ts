@@ -30,6 +30,12 @@ const bodySchema = z.object({
     .optional(),
 });
 
+function extractPostalCandidate(point: { postalCode?: string; text?: string }): string | null {
+  if (point.postalCode?.trim()) return `${point.postalCode.trim()} Deutschland`;
+  const fromText = point.text?.match(/\b\d{5}\b/)?.[0] ?? null;
+  return fromText ? `${fromText} Deutschland` : null;
+}
+
 function shouldApplyDrivePricing(serviceType: string | undefined) {
   return (
     serviceType === "MOVING" ||
@@ -40,6 +46,7 @@ function shouldApplyDrivePricing(serviceType: string | undefined) {
 }
 
 export async function POST(req: Request) {
+  let parsedData: z.infer<typeof bodySchema> | null = null;
   try {
     const body = await req.json().catch(() => null);
     const parsed = bodySchema.safeParse(body);
@@ -51,6 +58,8 @@ export async function POST(req: Request) {
       );
     }
 
+    parsedData = parsed.data;
+
     const pricing = await prisma.pricingConfig.findFirst({
       where: { active: true },
       orderBy: { updatedAt: "desc" },
@@ -60,12 +69,12 @@ export async function POST(req: Request) {
     const distancePricing = resolveDistancePricingConfig(perKmFallback);
 
     const route = await resolveRouteDistance({
-      from: parsed.data.from,
-      to: parsed.data.to,
-      profile: parsed.data.profile,
+      from: parsedData.from,
+      to: parsedData.to,
+      profile: parsedData.profile,
     });
 
-    const driveChargeCents = shouldApplyDrivePricing(parsed.data.serviceType)
+    const driveChargeCents = shouldApplyDrivePricing(parsedData.serviceType)
       ? calculateDriveChargeCents(route.distanceKm, distancePricing)
       : 0;
 
@@ -93,8 +102,47 @@ export async function POST(req: Request) {
       );
     }
     if (error instanceof Error && /Address not found|Point requires either|Invalid geocoding/i.test(error.message)) {
+      const fromFallback = parsedData ? extractPostalCandidate(parsedData.from) : null;
+      const toFallback = parsedData ? extractPostalCandidate(parsedData.to) : null;
+      if (fromFallback && toFallback) {
+        try {
+          const pricing = await prisma.pricingConfig.findFirst({
+            where: { active: true },
+            orderBy: { updatedAt: "desc" },
+            select: { perKmCents: true },
+          });
+          const distancePricing = resolveDistancePricingConfig(pricing?.perKmCents ?? 250);
+          const route = await resolveRouteDistance({
+            from: { text: fromFallback },
+            to: { text: toFallback },
+            profile: "driving-car",
+          });
+          return NextResponse.json({
+            distanceKm: route.distanceKm,
+            source: route.source,
+            driveChargeCents: shouldApplyDrivePricing(parsedData?.serviceType)
+              ? calculateDriveChargeCents(route.distanceKm, distancePricing)
+              : 0,
+            perKmCents: distancePricing.perKmCents,
+            minDriveCents: distancePricing.minDriveCents,
+            fromPostalCode: route.fromPostalCode,
+            toPostalCode: route.toPostalCode,
+            profile: route.profile,
+            warning:
+              "Adresse wurde über PLZ-Fallback aufgelöst. Bitte Hausnummer/Ort prüfen.",
+          });
+        } catch (fallbackError) {
+          console.error("[distance/route] postal fallback failed", {
+            error:
+              fallbackError instanceof Error ? fallbackError.message : String(fallbackError),
+            fromFallback,
+            toFallback,
+          });
+        }
+      }
+
       return NextResponse.json(
-        { error: "Die Distanz konnte nicht berechnet werden. Bitte Adressen prüfen." },
+        { error: "Die Distanz konnte nicht berechnet werden. Bitte Adressen (inkl. PLZ) prüfen." },
         { status: 400 },
       );
     }
@@ -104,5 +152,3 @@ export async function POST(req: Request) {
     );
   }
 }
-
-

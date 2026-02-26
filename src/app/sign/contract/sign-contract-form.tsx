@@ -74,10 +74,10 @@ export function SignContractForm({
 
   if (state.type === "success") {
     return (
-      <div className="space-y-4 rounded-xl border border-green-500/40 bg-green-900/20 p-5 text-green-100">
+      <div className="max-w-full space-y-4 overflow-hidden rounded-xl border border-green-500/40 bg-green-900/20 p-5 text-green-100">
         <h2 className="text-lg font-bold">Vielen Dank. Vertrag erfolgreich unterschrieben.</h2>
         {state.signedAt ? <p className="text-sm">Zeitpunkt: {new Date(state.signedAt).toLocaleString("de-DE")}</p> : null}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex max-w-full flex-wrap gap-2">
           {state.pdfUrl ? (
             <a href={state.pdfUrl} target="_blank" rel="noopener noreferrer">
               <Button type="button" variant="outline">

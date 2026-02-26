@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -559,11 +559,13 @@ export function BookingWizard(props: {
               lat: startAddress.lat,
               lon: startAddress.lon,
               postalCode: startAddress.postalCode,
+              text: startAddress.displayName,
             },
             to: {
               lat: destinationAddress.lat,
               lon: destinationAddress.lon,
               postalCode: destinationAddress.postalCode,
+              text: destinationAddress.displayName,
             },
           }),
         });
@@ -1096,7 +1098,7 @@ export function BookingWizard(props: {
 
             {/* STEP 3: Kontakt & Absenden */}
             {current.key === "finish" ? (
-              <div className="space-y-8 min-w-0 max-w-full overflow-hidden">
+              <div className="min-w-0 max-w-full space-y-8 overflow-x-hidden">
                 <StepCustomer
                   customerName={customerName}
                   setCustomerName={setCustomerName}
@@ -1114,9 +1116,9 @@ export function BookingWizard(props: {
                   <div className="w-full max-w-full overflow-hidden rounded-2xl border border-brand-200 bg-brand-50/50 p-5 dark:border-brand-800 dark:bg-brand-950/30">
                     <div className="text-sm font-extrabold text-slate-900 dark:text-white">Ihre Anfrage im Überblick</div>
                     <div className="mt-3 grid min-w-0 gap-2 text-sm text-slate-700 dark:text-slate-300">
-                      <div className="flex justify-between">
+                      <div className="flex min-w-0 items-start justify-between gap-3">
                         <span className="font-semibold">Service</span>
-                        <span className="font-bold">{serviceTypeLabels[serviceType]}</span>
+                        <span className="min-w-0 max-w-[72%] break-words text-right font-bold [overflow-wrap:anywhere]">{serviceTypeLabels[serviceType]}</span>
                       </div>
                       {(startAddress || pickupAddress) ? (
                         <div className="flex min-w-0 items-start justify-between gap-4">
@@ -1131,12 +1133,12 @@ export function BookingWizard(props: {
                         </div>
                       ) : null}
                       {preferredFrom ? (
-                        <div className="flex justify-between">
+                        <div className="flex min-w-0 items-start justify-between gap-3">
                           <span className="font-semibold">Wunschtermin</span>
-                          <span className="font-bold">{preferredFrom}{preferredTo && preferredTo !== preferredFrom ? ` – ${preferredTo}` : ""}</span>
+                          <span className="min-w-0 max-w-[72%] break-words text-right font-bold [overflow-wrap:anywhere]">{preferredFrom}{preferredTo && preferredTo !== preferredFrom ? ` – ${preferredTo}` : ""}</span>
                         </div>
                       ) : null}
-                      <div className="mt-2 flex justify-between border-t border-brand-200 pt-2 dark:border-brand-700">
+                      <div className="mt-2 flex min-w-0 items-start justify-between gap-3 border-t border-brand-200 pt-2 dark:border-brand-700">
                         <span className="font-extrabold text-brand-700 dark:text-brand-300">Preisrahmen</span>
                         <span className="min-w-0 text-right font-extrabold text-brand-700 break-words [overflow-wrap:anywhere] dark:text-brand-300">{eur(estimate.priceMinCents)} – {eur(estimate.priceMaxCents)}</span>
                       </div>
@@ -1254,7 +1256,7 @@ export function BookingWizard(props: {
               ) : null}
               {routeLoading ? (
                 <div className="mt-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                  Distanz wird berechnet…
+                  Distanz wird berechnet...
                 </div>
               ) : null}
               {routeError ? (
@@ -2258,7 +2260,7 @@ function StepCustomer(props: {
         </div>
         <div>
           <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Telefon *</div>
-          <Input value={props.customerPhone} onChange={(e) => props.setCustomerPhone(e.target.value)} placeholder="+49 …" />
+          <Input value={props.customerPhone} onChange={(e) => props.setCustomerPhone(e.target.value)} placeholder="+49 ..." />
         </div>
         <div>
           <div className="text-xs font-bold text-slate-700 dark:text-slate-300">E-Mail *</div>
@@ -2451,7 +2453,7 @@ function StepSummary(props: {
           ) : null}
           {props.routeLoading ? (
             <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
-              Distanz wird berechnet…
+              Distanz wird berechnet...
             </div>
           ) : null}
           {props.routeError ? (
@@ -2600,6 +2602,11 @@ function SummaryServiceOptions(props: {
     </div>
   );
 }
+
+
+
+
+
 
 
 

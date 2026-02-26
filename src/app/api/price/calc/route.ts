@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@/server/db/prisma";
-import { ORSDistanceError, resolveRouteDistance } from "@/server/distance/ors";
+import { resolveRouteDistance } from "@/server/distance/ors";
 import { estimateOrder } from "@/server/calc/estimate";
 import type { WizardPayload } from "@/lib/wizard-schema";
 
@@ -258,12 +258,13 @@ export async function POST(req: Request) {
       distanceKm = route.distanceKm;
       distanceSource = route.source;
     } catch (error) {
-      console.error("[price/calc] distance lookup failed:", error);
-      const errorMessage =
-        error instanceof ORSDistanceError && error.code === "ORS_FORBIDDEN"
-          ? "Die Distanzberechnung ist derzeit nicht verfügbar (ORS-Zugriff abgelehnt). Bitte kontaktieren Sie uns kurz."
-          : "Die Distanz konnte nicht berechnet werden. Bitte prüfen Sie die Adressen (inkl. PLZ).";
-      return NextResponse.json({ error: errorMessage }, { status: 400 });
+      console.error("[price/calc] distance lookup failed; continue with estimate", {
+        error: error instanceof Error ? error.message : String(error),
+        fromAddress: input.fromAddress,
+        toAddress: input.toAddress,
+      });
+      distanceKm = undefined;
+      distanceSource = "approx";
     }
   }
 
@@ -481,3 +482,5 @@ export async function POST(req: Request) {
     },
   });
 }
+
+

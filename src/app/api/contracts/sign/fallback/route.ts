@@ -130,6 +130,7 @@ export async function POST(req: NextRequest) {
     });
 
     let signedPdfUrl: string | null = null;
+    let signedPdfStorage: "remote" | "local" | "none" = "none";
     try {
       const displayOrderNo = contract.offer.order ? orderDisplayNo(contract.offer.order) : contract.offer.id;
       const displayOfferNo = offerDisplayNo({
@@ -194,6 +195,7 @@ export async function POST(req: NextRequest) {
             .from(STORAGE_BUCKETS.SIGNED_CONTRACTS)
             .getPublicUrl(signedFileName);
           signedPdfUrl = urlData.publicUrl;
+          signedPdfStorage = "remote";
         } else {
           console.warn("[fallback-sign] Signed PDF upload failed:", uploadError.message);
         }
@@ -211,6 +213,7 @@ export async function POST(req: NextRequest) {
           const localFile = `signed-contract-${displayContractNo}-${Date.now()}.pdf`;
           writeFileSync(path.join(dir, localFile), signedPdfBuffer);
           signedPdfUrl = `/uploads/signed-contracts/${localFile}`;
+          signedPdfStorage = "local";
           console.info("[fallback-sign] Signed PDF saved locally:", signedPdfUrl);
         } catch (localErr) {
           console.error(
@@ -225,6 +228,12 @@ export async function POST(req: NextRequest) {
         data: {
           signedPdfUrl,
         },
+      });
+
+      console.info("[fallback-sign] Signed PDF finalized", {
+        contractId: contract.id,
+        storage: signedPdfStorage,
+        signedPdfUrl,
       });
 
       await sendSignedContractEmail({
@@ -255,7 +264,8 @@ export async function POST(req: NextRequest) {
       signedAt: updated.signedAt,
       contractId: updated.id,
       offerToken: contract.offer.token,
-      pdfUrl: signedPdfUrl || updated.signedPdfUrl || updated.contractPdfUrl || null,
+      pdfUrl: `/api/contracts/signature/${contract.offer.token}/pdf?kind=signed`,
+      signedPdfUrl: signedPdfUrl || updated.signedPdfUrl || null,
     });
   } catch (error) {
     console.error("[fallback-sign] Error:", error);

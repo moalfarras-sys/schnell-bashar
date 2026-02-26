@@ -125,7 +125,7 @@ export default async function EntsorgungPage() {
                   Richtpreis berechnen
                 </Button>
               </Link>
-              <Link href="/buchung/termin" className="w-full sm:w-auto">
+              <Link href="/buchen?context=ENTSORGUNG" className="w-full sm:w-auto">
                 <Button size="lg" variant="outline" className="w-full gap-2 border-white/50 bg-white/10 text-white hover:bg-white/20 sm:w-auto">
                   <CalendarDays className="h-5 w-5" />
                   Termin wählen

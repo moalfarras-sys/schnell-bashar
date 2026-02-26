@@ -175,7 +175,7 @@ export function ManualContractForm() {
         <div className="mt-6 rounded-2xl border border-emerald-300 bg-emerald-50 p-5 text-sm">
           <div className="font-bold text-emerald-900">Vertrag {result.contractNo} erstellt.</div>
           <div className="mt-2 break-all">Signatur-Link: <a className="text-brand-700 underline" href={result.signingUrl} target="_blank" rel="noopener noreferrer">öffnen</a></div>
-          <div className="mt-1 break-all">PDF: <a className="text-brand-700 underline" href={result.contractPdfUrl} target="_blank" rel="noopener noreferrer">anzeigen</a></div>
+          <div className="mt-1 break-all">PDF: <a className="text-brand-700 underline" href={`/api/contracts/${result.contractId}/pdf`} target="_blank" rel="noopener noreferrer">anzeigen</a></div>
           <div className="mt-3 flex gap-3">
             <Button type="button" variant="outline" onClick={() => resendSigning(result.contractId)}>
               Signatur-Link per E-Mail senden
