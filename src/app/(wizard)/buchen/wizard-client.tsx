@@ -1378,7 +1378,7 @@ function StepService(props: {
       </div>
 
       <div className="mt-8">
-        <div className="text-sm font-extrabold text-slate-900">Optionale Zusatzleistungen</div>
+        <div className="text-sm font-extrabold text-slate-900 dark:text-white">Optionale Zusatzleistungen</div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {addonDefs.map((a) => {
             const checked = props.addons.includes(a.key);
@@ -1402,8 +1402,8 @@ function StepService(props: {
                   }}
                 />
                 <div>
-                  <div className="text-sm font-extrabold text-slate-900">{a.label}</div>
-                  <div className="mt-1 text-xs font-semibold text-slate-600">
+                  <div className="text-sm font-extrabold text-slate-900 dark:text-white">{a.label}</div>
+                  <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
                     {forced
                       ? "In diesem Buchungsweg automatisch enthalten."
                       : "Als strukturierte Option - Details klären wir im Angebot."}
@@ -1532,10 +1532,10 @@ function StepLocation(props: {
               onChange={(e) => props.setSamePickupAsStart(e.target.checked)}
             />
             <div>
-              <div className="text-sm font-extrabold text-slate-900">
+              <div className="text-sm font-extrabold text-slate-900 dark:text-white">
                 Abholadresse für Entsorgung = Startadresse
               </div>
-              <div className="mt-1 text-xs font-semibold text-slate-700">
+              <div className="mt-1 text-xs font-semibold text-slate-700 dark:text-slate-300">
                 Aktivieren, um Tippen zu sparen. (Sie können später eine andere Abholadresse wählen.)
               </div>
             </div>
@@ -1609,10 +1609,10 @@ function AccessCard(props: { title: string; value: Access; onChange: (v: Access)
   const set = (patch: Partial<Access>) => props.onChange({ ...v, ...patch });
   return (
     <div className="premium-surface-emphasis rounded-3xl p-6">
-      <div className="text-sm font-extrabold text-slate-900">{props.title}</div>
+      <div className="text-sm font-extrabold text-slate-900 dark:text-white">{props.title}</div>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div>
-          <div className="text-xs font-bold text-slate-600">Objekt</div>
+          <div className="text-xs font-bold text-slate-600 dark:text-slate-300">Objekt</div>
           <div className="mt-2">
             <Select
               value={v.propertyType}
@@ -1627,7 +1627,7 @@ function AccessCard(props: { title: string; value: Access; onChange: (v: Access)
         </div>
 
         <div>
-          <div className="text-xs font-bold text-slate-600">Etage</div>
+          <div className="text-xs font-bold text-slate-600 dark:text-slate-300">Etage</div>
           <div className="mt-2">
             <Select value={String(v.floor)} onChange={(e) => set({ floor: Number(e.target.value) })}>
               <option value="-1">Keller (-1)</option>
@@ -1642,7 +1642,7 @@ function AccessCard(props: { title: string; value: Access; onChange: (v: Access)
         </div>
 
         <div>
-          <div className="text-xs font-bold text-slate-600">Aufzug</div>
+          <div className="text-xs font-bold text-slate-600 dark:text-slate-300">Aufzug</div>
           <div className="mt-2">
             <Select
               value={v.elevator}
@@ -1656,7 +1656,7 @@ function AccessCard(props: { title: string; value: Access; onChange: (v: Access)
         </div>
 
         <div>
-          <div className="text-xs font-bold text-slate-600">Treppen</div>
+          <div className="text-xs font-bold text-slate-600 dark:text-slate-300">Treppen</div>
           <div className="mt-2">
             <Select value={v.stairs} onChange={(e) => set({ stairs: e.target.value as any })}>
               <option value="none">Keine</option>
@@ -1667,7 +1667,7 @@ function AccessCard(props: { title: string; value: Access; onChange: (v: Access)
         </div>
 
         <div>
-          <div className="text-xs font-bold text-slate-600">Parken</div>
+          <div className="text-xs font-bold text-slate-600 dark:text-slate-300">Parken</div>
           <div className="mt-2">
             <Select value={v.parking} onChange={(e) => set({ parking: e.target.value as any })}>
               <option value="easy">Einfach</option>
@@ -1687,7 +1687,7 @@ function AccessCard(props: { title: string; value: Access; onChange: (v: Access)
         </div>
 
         <div>
-          <div className="text-xs font-bold text-slate-600">Trageweg</div>
+          <div className="text-xs font-bold text-slate-600 dark:text-slate-300">Trageweg</div>
           <div className="mt-2">
             <input
               type="range"
@@ -1937,7 +1937,7 @@ function StepDisposal(props: {
     <div className="grid gap-8">
       {props.serviceType === "BOTH" ? (
         <div className="premium-surface-emphasis rounded-3xl p-6">
-          <div className="flex items-center gap-2 text-sm font-extrabold text-slate-900">
+          <div className="flex items-center gap-2 text-sm font-extrabold text-slate-900 dark:text-white">
             <Recycle className="h-5 w-5 text-brand-700" />
             Was soll entsorgt werden?
           </div>
@@ -2010,7 +2010,7 @@ function StepDisposal(props: {
                   checked={props.forbiddenConfirmed}
                   onChange={(e) => props.setForbiddenConfirmed(e.target.checked)}
                 />
-                <span className="text-xs font-bold text-slate-900">
+                <span className="text-xs font-bold text-slate-900 dark:text-white">
                   Ich bestätige, dass keine ausgeschlossenen Materialien enthalten sind. *
                 </span>
               </label>
@@ -2019,8 +2019,8 @@ function StepDisposal(props: {
         </div>
 
         <div className="mt-6">
-          <div className="text-sm font-extrabold text-slate-900">Fotos (optional)</div>
-          <div className="mt-2 text-xs font-semibold text-slate-600">Max. 10 Bilder, je 8MB.</div>
+          <div className="text-sm font-extrabold text-slate-900 dark:text-white">Fotos (optional)</div>
+          <div className="mt-2 text-xs font-semibold text-slate-600 dark:text-slate-400">Max. 10 Bilder, je 8MB.</div>
           <input
             className="mt-3 block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-slate-900 file:px-3 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-slate-800"
             type="file"
@@ -2080,13 +2080,13 @@ function StepTiming(props: {
       </div>
 
       <div className="premium-surface-emphasis mt-8 rounded-3xl p-6">
-        <div className="flex items-center gap-2 text-sm font-extrabold text-slate-900">
+        <div className="flex items-center gap-2 text-sm font-extrabold text-slate-900 dark:text-white">
           <CalendarDays className="h-5 w-5 text-brand-700" />
           Wunschtermin
         </div>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
-            <div className="text-xs font-bold text-slate-600">Von</div>
+            <div className="text-xs font-bold text-slate-600 dark:text-slate-300">Von</div>
             <Input
               type="date"
               value={props.preferredFrom}
@@ -2098,7 +2098,7 @@ function StepTiming(props: {
             </div>
           </div>
           <div>
-            <div className="text-xs font-bold text-slate-600">Bis</div>
+            <div className="text-xs font-bold text-slate-600 dark:text-slate-300">Bis</div>
             <Input
               type="date"
               value={props.preferredTo}
@@ -2113,7 +2113,7 @@ function StepTiming(props: {
         </div>
 
         <div className="mt-6">
-          <div className="text-sm font-extrabold text-slate-900">Bevorzugtes Zeitfenster</div>
+          <div className="text-sm font-extrabold text-slate-900 dark:text-white">Bevorzugtes Zeitfenster</div>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             {[
               { key: "FLEXIBLE", label: "Flexibel" },
@@ -2250,18 +2250,18 @@ function StepCustomer(props: {
 }) {
   return (
     <div className="premium-surface-emphasis rounded-3xl p-6">
-      <div className="text-sm font-extrabold text-slate-900">Ihre Kontaktdaten</div>
+      <div className="text-sm font-extrabold text-slate-900 dark:text-white">Ihre Kontaktdaten</div>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <div className="text-xs font-bold text-slate-700">Name *</div>
+          <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Name *</div>
           <Input value={props.customerName} onChange={(e) => props.setCustomerName(e.target.value)} />
         </div>
         <div>
-          <div className="text-xs font-bold text-slate-700">Telefon *</div>
+          <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Telefon *</div>
           <Input value={props.customerPhone} onChange={(e) => props.setCustomerPhone(e.target.value)} placeholder="+49 …" />
         </div>
         <div>
-          <div className="text-xs font-bold text-slate-700">E-Mail *</div>
+          <div className="text-xs font-bold text-slate-700 dark:text-slate-300">E-Mail *</div>
           <Input type="email" value={props.customerEmail} onChange={(e) => props.setCustomerEmail(e.target.value)} placeholder="name@email.de" />
         </div>
         <div className="sm:col-span-2">
