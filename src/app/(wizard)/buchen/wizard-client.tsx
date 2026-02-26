@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -1325,34 +1325,119 @@ function StepService(props: {
   setAddons: (v: WizardPayload["addons"]) => void;
   forcedAddons: WizardPayload["addons"];
 }) {
+  const hasMontageAddon = props.addons.includes("DISMANTLE_ASSEMBLE");
+
+  const applyPreset = (preset: "moving" | "montage" | "disposal" | "combo") => {
+    const forced = new Set<WizardPayload["addons"][number]>(props.forcedAddons);
+
+    if (preset === "moving") {
+      props.setServiceType("MOVING");
+      props.setAddons([...forced] as WizardPayload["addons"]);
+      return;
+    }
+
+    if (preset === "montage") {
+      props.setServiceType("MOVING");
+      forced.add("DISMANTLE_ASSEMBLE");
+      props.setAddons([...forced] as WizardPayload["addons"]);
+      return;
+    }
+
+    if (preset === "disposal") {
+      props.setServiceType("DISPOSAL");
+      props.setAddons([...forced] as WizardPayload["addons"]);
+      return;
+    }
+
+    props.setServiceType("BOTH");
+    props.setAddons([...forced] as WizardPayload["addons"]);
+  };
+
   return (
-    <div>
+    <div className="space-y-6">
+      <div className="booking-glass-card rounded-2xl p-4 sm:p-5">
+        <div className="text-[0.72rem] font-black uppercase tracking-[0.14em] text-cyan-300/90">Schnell-Auswahl</div>
+        <div className="mt-2 text-xl font-black text-[color:var(--booking-text-strong)]">
+          Was möchten Sie heute buchen?
+        </div>
+        <div className="mt-1 text-sm font-semibold text-[color:var(--booking-text-muted)]">
+          Wählen Sie eine intelligente Vorlage. Sie können danach alles fein anpassen.
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            className="booking-glass-card booking-glass-card-interactive rounded-xl p-3 text-left"
+            onClick={() => applyPreset("moving")}
+          >
+            <div className="flex items-center gap-2 text-sm font-extrabold text-[color:var(--booking-text-strong)]">
+              <Truck className="h-4 w-4" /> Nur Umzug
+            </div>
+            <div className="mt-1 text-xs font-semibold text-[color:var(--booking-text-muted)]">Transport mit Start- und Zieladresse</div>
+          </button>
+          <button
+            type="button"
+            className="booking-glass-card booking-glass-card-interactive rounded-xl p-3 text-left"
+            onClick={() => applyPreset("montage")}
+          >
+            <div className="flex items-center gap-2 text-sm font-extrabold text-[color:var(--booking-text-strong)]">
+              <Wrench className="h-4 w-4" /> Umzug + Montage
+            </div>
+            <div className="mt-1 text-xs font-semibold text-[color:var(--booking-text-muted)]">Montage-Service direkt aktivieren</div>
+          </button>
+          <button
+            type="button"
+            className="booking-glass-card booking-glass-card-interactive rounded-xl p-3 text-left"
+            onClick={() => applyPreset("disposal")}
+          >
+            <div className="flex items-center gap-2 text-sm font-extrabold text-[color:var(--booking-text-strong)]">
+              <Recycle className="h-4 w-4" /> Nur Entsorgung
+            </div>
+            <div className="mt-1 text-xs font-semibold text-[color:var(--booking-text-muted)]">Sperrmüll und Altmobiliar abholen</div>
+          </button>
+          <button
+            type="button"
+            className="booking-glass-card booking-glass-card-interactive rounded-xl p-3 text-left"
+            onClick={() => applyPreset("combo")}
+          >
+            <div className="flex items-center gap-2 text-sm font-extrabold text-[color:var(--booking-text-strong)]">
+              <Package className="h-4 w-4" /> Komplett-Kombi
+            </div>
+            <div className="mt-1 text-xs font-semibold text-[color:var(--booking-text-muted)]">Umzug und Entsorgung zusammen planen</div>
+          </button>
+        </div>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-3">
         <ServiceCard
           active={props.serviceType === "MOVING"}
           title="Umzug"
-          desc="Transport und Planung - privat oder gewerblich."
+          desc="Transport, Tragehilfe und strukturierte Planung für privat oder gewerblich."
           icon={Truck}
           onClick={() => props.setServiceType("MOVING")}
         />
         <ServiceCard
           active={props.serviceType === "DISPOSAL"}
           title="Entsorgung / Sperrmüll"
-          desc="Abholung und Entsorgung - klar strukturiert."
+          desc="Abholung, Sortierung und fachgerechte Entsorgung in einem klaren Ablauf."
           icon={Recycle}
           onClick={() => props.setServiceType("DISPOSAL")}
         />
         <ServiceCard
           active={props.serviceType === "BOTH"}
           title="Umzug + Entsorgung"
-          desc="Beides kombiniert - weniger Aufwand."
+          desc="Beides kombiniert für weniger Koordination und schnellere Abwicklung."
           icon={Package}
           onClick={() => props.setServiceType("BOTH")}
         />
       </div>
 
       <div className="mt-8">
-        <div className="text-sm font-extrabold text-slate-900 dark:text-white">Optionale Zusatzleistungen</div>
+        <div className="flex items-center justify-between gap-3">
+          <div className="text-sm font-extrabold text-slate-900 dark:text-white">Optionale Zusatzleistungen</div>
+          <div className="text-xs font-semibold text-[color:var(--booking-text-muted)]">
+            {hasMontageAddon ? "Montage aktiv" : "Zusatzleistungen optional"}
+          </div>
+        </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {addonDefs.map((a) => {
             const checked = props.addons.includes(a.key);
@@ -1380,7 +1465,7 @@ function StepService(props: {
                   <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
                     {forced
                       ? "In diesem Buchungsweg automatisch enthalten."
-                      : "Als strukturierte Option - Details klären wir im Angebot."}
+                      : "Als strukturierte Option. Details klären wir im Angebot."}
                   </div>
                 </div>
               </label>
@@ -1391,7 +1476,6 @@ function StepService(props: {
     </div>
   );
 }
-
 function ServiceCard(props: {
   active: boolean;
   title: string;
@@ -1419,9 +1503,9 @@ function ServiceCard(props: {
         >
           <Icon className="h-6 w-6" />
         </div>
-        <div className="text-lg font-extrabold text-slate-950">{props.title}</div>
+        <div className="text-lg font-extrabold text-slate-950 dark:text-white">{props.title}</div>
       </div>
-      <div className="mt-3 text-sm font-semibold text-slate-700">{props.desc}</div>
+      <div className="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-300">{props.desc}</div>
     </button>
   );
 }
@@ -1452,7 +1536,7 @@ function StepLocation(props: {
     <div className="grid gap-8" data-invalid={props.invalidAddress ? "true" : undefined}>
       <div className="rounded-2xl border border-slate-300 bg-[color:var(--surface-elevated)] p-4">
         <div className="text-sm font-extrabold text-slate-900 dark:text-white">
-          Adresse zuerst, Details optional
+          Adressen zuerst, Details optional
         </div>
         <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
           Für ein schnelles Angebot reichen die Adressen. Zugangsdaten können Sie optional ergänzen.
@@ -2460,7 +2544,7 @@ function StepSummary(props: {
           ) : null}
           <div>
             <span className="font-extrabold">Preisrahmen:</span>{" "}
-            {eur(props.estimate.priceMinCents)} – {eur(props.estimate.priceMaxCents)}
+            {eur(props.estimate.priceMinCents)} - {eur(props.estimate.priceMaxCents)}
           </div>
           {props.estimate.breakdown.packageAdjustmentCents !== 0 ? (
             <div>
@@ -2599,6 +2683,8 @@ function SummaryServiceOptions(props: {
     </div>
   );
 }
+
+
 
 
 
