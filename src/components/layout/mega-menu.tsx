@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
@@ -54,8 +54,8 @@ const menuSections: MenuSection[] = [
       {
         title: "Online buchen",
         links: [
-          { label: "Jetzt buchen", href: "/buchen?context=MOVING", desc: "Anfrage starten", icon: ClipboardList },
-          { label: "Termin & Kalender", href: "/buchen?context=MOVING", desc: "Zeitfenster wählen", icon: CalendarDays },
+          { label: "Angebot berechnen", href: "/preise", desc: "Richtpreis sofort erhalten", icon: BadgeEuro },
+          { label: "Termin & Kalender", href: "/buchung/termin", desc: "Zeitfenster wählen", icon: CalendarDays },
           { label: "Anfrage verfolgen", href: "/anfrage", desc: "Status prüfen", icon: Search },
         ],
       },

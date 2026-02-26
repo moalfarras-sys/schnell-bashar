@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
+  CalendarDays,
   CheckCircle2,
   Clock,
   MapPin,
@@ -104,15 +105,16 @@ export default async function UmzugPage() {
               und sichere Durchführung – von der ersten Anfrage bis zur Übergabe.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/buchen?context=MOVING">
+              <Link href="/preise?service=UMZUG">
                 <Button size="lg" className="gap-2">
                   <Truck className="h-5 w-5" />
-                  Angebot berechnen
+                  Richtpreis berechnen
                 </Button>
               </Link>
-              <Link href="/kontakt">
+              <Link href="/buchung/termin">
                 <Button size="lg" variant="outline" className="gap-2 border-white/50 bg-white/10 text-white hover:bg-white/20">
-                  Kontakt
+                  <CalendarDays className="h-5 w-5" />
+                  Termin wählen
                 </Button>
               </Link>
             </div>

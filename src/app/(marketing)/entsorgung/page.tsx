@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   Building2,
+  CalendarDays,
   CheckCircle2,
   Clock,
   Home,
@@ -118,15 +119,16 @@ export default async function EntsorgungPage() {
               entsorgen umweltbewusst. Schnelle Rückmeldung und faire Preise.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/buchen?context=ENTSORGUNG">
+              <Link href="/preise?service=ENTSORGUNG">
                 <Button size="lg" className="gap-2">
                   <Recycle className="h-5 w-5" />
-                  Abholung anfragen
+                  Richtpreis berechnen
                 </Button>
               </Link>
-              <Link href="/kontakt">
+              <Link href="/buchung/termin">
                 <Button size="lg" variant="outline" className="gap-2 border-white/50 bg-white/10 text-white hover:bg-white/20">
-                  Kontakt
+                  <CalendarDays className="h-5 w-5" />
+                  Termin wählen
                 </Button>
               </Link>
             </div>

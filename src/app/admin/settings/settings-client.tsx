@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { Loader2, Save, Send } from "lucide-react";
@@ -124,14 +124,11 @@ export function SettingsClient(props: { initialSettings: SettingsModel }) {
           </label>
           <div className="sm:col-span-2">
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Signatur-Modus</label>
-            <select
-              value={form.signingMode}
-              onChange={(e) => patch("signingMode", e.target.value as SettingsModel["signingMode"])}
-              className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white"
-            >
-              <option value="INTERNAL_ONLY">Internal only (empfohlen)</option>
-              <option value="HYBRID">Hybrid (Internal + DocuSign)</option>
-            </select>
+            <div className="flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white">
+              <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" />
+              Interne Signatur (aktiv)
+            </div>
+            <input type="hidden" value="INTERNAL_ONLY" />
           </div>
         </div>
       </section>

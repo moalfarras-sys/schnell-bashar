@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
+  CalendarDays,
   CheckCircle2,
   Clock,
   CookingPot,
@@ -117,15 +118,16 @@ export default async function MontagePage() {
               Einzelaufbau - wir erledigen es professionell.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/buchen?context=MONTAGE">
+              <Link href="/preise?service=MONTAGE">
                 <Button size="lg" className="gap-2">
                   <Wrench className="h-5 w-5" />
-                  Montage anfragen
+                  Richtpreis berechnen
                 </Button>
               </Link>
-              <Link href="/kontakt">
+              <Link href="/buchung/termin">
                 <Button size="lg" variant="outline" className="gap-2 border-white/50 bg-white/10 text-white hover:bg-white/20">
-                  Kontakt
+                  <CalendarDays className="h-5 w-5" />
+                  Termin wählen
                 </Button>
               </Link>
             </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { AlertCircle, CheckCircle2, Loader2, MapPin, Search } from "lucide-react";
@@ -48,6 +48,31 @@ export default function AnfrageCodePage() {
   const [data, setData] = useState<TrackingData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needsEmail, setNeedsEmail] = useState(false);
+
+  useEffect(() => {
+    if (!code) return;
+    let cancel = false;
+    setLoading(true);
+    setError(null);
+    fetch(`/api/tracking/${encodeURIComponent(code)}`)
+      .then((res) => res.json().then((json) => ({ ok: res.ok, json })))
+      .then(({ ok, json }) => {
+        if (cancel) return;
+        if (ok) {
+          setData(json);
+        } else {
+          setNeedsEmail(true);
+        }
+      })
+      .catch(() => {
+        if (!cancel) setNeedsEmail(true);
+      })
+      .finally(() => {
+        if (!cancel) setLoading(false);
+      });
+    return () => { cancel = true; };
+  }, [code]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -69,6 +94,7 @@ export default function AnfrageCodePage() {
       }
 
       setData(json);
+      setNeedsEmail(false);
     } catch {
       setError("Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.");
     } finally {
@@ -187,76 +213,86 @@ export default function AnfrageCodePage() {
     );
   }
 
-  return (
-    <Container className="py-14">
-      <div className="mx-auto max-w-xl">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
-          Anfrage verfolgen
-        </h1>
-        <p className="mt-4 text-slate-700 dark:text-slate-300">
-          Geben Sie Ihre E-Mail-Adresse ein, um den Status Ihrer Anfrage einzusehen. Die E-Mail muss
-          mit der bei der Buchung angegebenen Adresse übereinstimmen.
-        </p>
-
-        <form
-          onSubmit={onSubmit}
-          className="mt-8 rounded-3xl border-2 border-slate-200 bg-[color:var(--surface-elevated)] p-6 shadow-md backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80"
-        >
-          <div>
-            <label className="block text-sm font-bold text-slate-800 dark:text-slate-200">Tracking-Code</label>
-            <Input
-              value={code}
-              readOnly
-              className="mt-1 bg-slate-50 dark:bg-slate-800/60"
-            />
-          </div>
-          <div className="mt-4">
-            <label htmlFor="email" className="block text-sm font-bold text-slate-800 dark:text-slate-200">
-              E-Mail-Adresse
-            </label>
-            <Input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@email.de"
-              className="mt-1"
-            />
-          </div>
-
-          {error && (
-            <div className="mt-4 rounded-xl border-2 border-red-300 bg-red-50 p-3 text-sm font-semibold text-red-800 dark:border-red-500/30 dark:bg-red-950/30 dark:text-red-300">
-              {error}
-            </div>
-          )}
-
-          <Button type="submit" className="mt-6 gap-2" size="lg" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" />
-                Prüfen...
-              </>
-            ) : (
-              <>
-                <Search className="h-5 w-5" />
-                Status prüfen
-              </>
-            )}
-          </Button>
-        </form>
-
-        <p className="mt-6 text-sm text-slate-600 dark:text-slate-400">
-          Den Tracking-Code finden Sie in Ihrer Buchungsbestätigung per E-Mail.
-        </p>
-
-        <div className="mt-6 text-center">
-          <Link href="/anfrage" className="text-sm font-semibold text-brand-600 hover:underline dark:text-brand-400">
-            Anderen Code eingeben
-          </Link>
+  if (loading && !needsEmail) {
+    return (
+      <Container className="py-14">
+        <div className="mx-auto flex max-w-xl flex-col items-center gap-4 py-12 text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
+          <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Anfrage wird geladen...</p>
         </div>
-      </div>
-    </Container>
-  );
+      </Container>
+    );
+  }
+
+  if (needsEmail) {
+    return (
+      <Container className="py-14">
+        <div className="mx-auto max-w-xl">
+          <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
+            Anfrage verfolgen
+          </h1>
+          <p className="mt-4 text-slate-700 dark:text-slate-300">
+            Bitte geben Sie Ihre E-Mail-Adresse ein, um den Status Ihrer Anfrage einzusehen.
+          </p>
+
+          <form
+            onSubmit={onSubmit}
+            className="mt-8 rounded-3xl border-2 border-slate-200 bg-[color:var(--surface-elevated)] p-6 shadow-md backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80"
+          >
+            <div>
+              <label className="block text-sm font-bold text-slate-800 dark:text-slate-200">Tracking-Code</label>
+              <Input
+                value={code}
+                readOnly
+                className="mt-1 bg-slate-50 dark:bg-slate-800/60"
+              />
+            </div>
+            <div className="mt-4">
+              <label htmlFor="email" className="block text-sm font-bold text-slate-800 dark:text-slate-200">
+                E-Mail-Adresse
+              </label>
+              <Input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@email.de"
+                className="mt-1"
+              />
+            </div>
+
+            {error && (
+              <div className="mt-4 rounded-xl border-2 border-red-300 bg-red-50 p-3 text-sm font-semibold text-red-800 dark:border-red-500/30 dark:bg-red-950/30 dark:text-red-300">
+                {error}
+              </div>
+            )}
+
+            <Button type="submit" className="mt-6 gap-2" size="lg" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Prüfen...
+                </>
+              ) : (
+                <>
+                  <Search className="h-5 w-5" />
+                  Status prüfen
+                </>
+              )}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <Link href="/anfrage" className="text-sm font-semibold text-brand-600 hover:underline dark:text-brand-400">
+              Anderen Code eingeben
+            </Link>
+          </div>
+        </div>
+      </Container>
+    );
+  }
+
+  return null;
 }
 
