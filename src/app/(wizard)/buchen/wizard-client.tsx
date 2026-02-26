@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -320,6 +320,8 @@ export function BookingWizard(props: {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showStepValidation, setShowStepValidation] = useState(false);
+  const wizardBodyRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!searchParams) return;
@@ -743,34 +745,90 @@ export function BookingWizard(props: {
   );
   const current = steps[step] ?? steps[0];
 
-  const canNext = useMemo(() => {
-    switch (current.key) {
-      case "start": {
-        if (bookingContext === "MONTAGE" || bookingContext === "SPECIAL") return !!pickupAddress;
-        if (serviceType === "MOVING") return !!startAddress && !!destinationAddress;
-        if (serviceType === "DISPOSAL") return !!pickupAddress;
-        return !!startAddress && !!destinationAddress;
+  const stepErrors = useMemo(() => {
+    const errors: string[] = [];
+    if (current.key === "start") {
+      if (bookingContext === "MONTAGE" || bookingContext === "SPECIAL") {
+        if (!pickupAddress) errors.push("Bitte wählen Sie die Einsatzadresse aus.");
+      } else if (serviceType === "DISPOSAL") {
+        if (!pickupAddress) errors.push("Bitte wählen Sie die Abholadresse aus.");
+      } else {
+        if (!startAddress) errors.push("Bitte wählen Sie die Startadresse aus.");
+        if (!destinationAddress) errors.push("Bitte wählen Sie die Zieladresse aus.");
       }
-      case "details":
-        return Boolean(preferredFrom && preferredTo && preferredFrom <= preferredTo);
-      case "finish":
-        return customerName.trim().length >= 2 && customerPhone.trim().length >= 6 && customerEmail.includes("@");
-      default:
-        return false;
+      return errors;
     }
+
+    if (current.key === "details") {
+      if (!preferredFrom || !preferredTo) errors.push("Bitte wählen Sie den gewünschten Zeitraum.");
+      if (preferredFrom && preferredTo && preferredFrom > preferredTo) {
+        errors.push("Das Enddatum darf nicht vor dem Startdatum liegen.");
+      }
+      if ((serviceType === "DISPOSAL" || serviceType === "BOTH") && !forbiddenConfirmed) {
+        errors.push("Bitte bestätigen Sie die Ausschlüsse für die Entsorgung.");
+      }
+      return errors;
+    }
+
+    if (current.key === "finish") {
+      if (customerName.trim().length < 2) errors.push("Bitte geben Sie einen vollständigen Namen ein.");
+      if (customerPhone.trim().length < 6) errors.push("Bitte geben Sie eine gültige Telefonnummer ein.");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim())) {
+        errors.push("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
+      }
+      return errors;
+    }
+
+    return errors;
   }, [
     current.key,
     bookingContext,
+    pickupAddress,
     serviceType,
     startAddress,
     destinationAddress,
-    pickupAddress,
     preferredFrom,
     preferredTo,
+    forbiddenConfirmed,
     customerName,
     customerPhone,
     customerEmail,
   ]);
+
+  const canNext = useMemo(() => {
+    return stepErrors.length === 0;
+  }, [stepErrors]);
+
+  useEffect(() => {
+    setShowStepValidation(false);
+  }, [step]);
+
+  function focusFirstInvalidField() {
+    const root = wizardBodyRef.current;
+    if (!root) return;
+    const invalid = root.querySelector<HTMLElement>("[aria-invalid='true'], [data-invalid='true']");
+    if (!invalid) return;
+    invalid.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (typeof invalid.focus === "function") invalid.focus();
+  }
+
+  function goNextStep() {
+    if (canNext) {
+      setStep((s) => Math.min(steps.length - 1, s + 1));
+      return;
+    }
+    setShowStepValidation(true);
+    focusFirstInvalidField();
+  }
+
+  function submitWithValidation() {
+    if (!canNext) {
+      setShowStepValidation(true);
+      focusFirstInvalidField();
+      return;
+    }
+    void submit();
+  }
 
   async function submit() {
     setSubmitting(true);
@@ -1001,7 +1059,17 @@ export function BookingWizard(props: {
         <div className="glass-card-solid rounded-3xl">
           <WizardHeader steps={steps} step={step} />
 
-          <div className="p-6 sm:p-8">
+          <div className="p-6 sm:p-8" ref={wizardBodyRef}>
+            {showStepValidation && stepErrors.length > 0 ? (
+              <div className="mb-6 rounded-2xl border border-red-300 bg-red-50/90 p-4 text-sm font-semibold text-red-900">
+                <div className="font-extrabold">Bitte prüfen Sie die markierten Angaben:</div>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  {stepErrors.map((error) => (
+                    <li key={error}>{error}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             {/* STEP 1: Service & Adresse */}
             {current.key === "start" ? (
               <div className="space-y-8">
@@ -1030,6 +1098,7 @@ export function BookingWizard(props: {
                     setAccessDestination={setAccessDestination}
                     accessPickup={accessPickup}
                     setAccessPickup={setAccessPickup}
+                    invalidAddress={showStepValidation && stepErrors.some((error) => error.includes("adresse"))}
                   />
                 </div>
               </div>
@@ -1075,9 +1144,25 @@ export function BookingWizard(props: {
                       setForbiddenConfirmed={setForbiddenConfirmed}
                       photos={photos}
                       setPhotos={setPhotos}
+                      invalidForbidden={
+                        showStepValidation &&
+                        stepErrors.some((error) => error.includes("Ausschlüsse"))
+                      }
                     />
                   </div>
                 ) : null}
+
+                <div className="border-t border-slate-200 pt-8 dark:border-slate-700">
+                  <StepPackage
+                    serviceType={serviceType}
+                    packageTier={packageTier}
+                    setPackageTier={setPackageTier}
+                    offerCode={offerCode}
+                    setOfferCode={setOfferCode}
+                    offerContext={offerContext}
+                    promoMatched={Boolean(promoRuleMatch)}
+                  />
+                </div>
 
                 <div className="border-t border-slate-200 pt-8 dark:border-slate-700">
                   <StepTiming
@@ -1091,6 +1176,10 @@ export function BookingWizard(props: {
                     preferredTimeWindow={preferredTimeWindow}
                     setPreferredTimeWindow={setPreferredTimeWindow}
                     jobDurationMinutes={jobDurationMinutes}
+                    invalidDateRange={
+                      showStepValidation &&
+                      stepErrors.some((error) => error.includes("Zeitraum") || error.includes("Enddatum"))
+                    }
                   />
                 </div>
               </div>
@@ -1110,40 +1199,44 @@ export function BookingWizard(props: {
                   setContactPreference={setContactPreference}
                   note={note}
                   setNote={setNote}
+                  invalidName={showStepValidation && stepErrors.some((error) => error.includes("Namen"))}
+                  invalidPhone={showStepValidation && stepErrors.some((error) => error.includes("Telefon"))}
+                  invalidEmail={showStepValidation && stepErrors.some((error) => error.includes("E-Mail"))}
                 />
 
                 <div className="border-t border-slate-200 pt-6 dark:border-slate-700">
-                  <div className="w-full max-w-full overflow-hidden rounded-2xl border border-brand-200 bg-brand-50/50 p-5 dark:border-brand-800 dark:bg-brand-950/30">
-                    <div className="text-sm font-extrabold text-slate-900 dark:text-white">Ihre Anfrage im Überblick</div>
-                    <div className="mt-3 grid min-w-0 gap-2 text-sm text-slate-700 dark:text-slate-300">
-                      <div className="flex min-w-0 items-start justify-between gap-3">
-                        <span className="font-semibold">Service</span>
-                        <span className="min-w-0 max-w-[72%] break-words text-right font-bold [overflow-wrap:anywhere]">{serviceTypeLabels[serviceType]}</span>
-                      </div>
-                      {(startAddress || pickupAddress) ? (
-                        <div className="flex min-w-0 items-start justify-between gap-4">
-                          <span className="font-semibold shrink-0">Von</span>
-                          <span className="min-w-0 max-w-[72%] font-bold text-right break-words [overflow-wrap:anywhere]">{startAddress?.displayName || pickupAddress?.displayName}</span>
-                        </div>
-                      ) : null}
-                      {destinationAddress ? (
-                        <div className="flex min-w-0 items-start justify-between gap-4">
-                          <span className="font-semibold shrink-0">Nach</span>
-                          <span className="min-w-0 max-w-[72%] font-bold text-right break-words [overflow-wrap:anywhere]">{destinationAddress.displayName}</span>
-                        </div>
-                      ) : null}
-                      {preferredFrom ? (
-                        <div className="flex min-w-0 items-start justify-between gap-3">
-                          <span className="font-semibold">Wunschtermin</span>
-                          <span className="min-w-0 max-w-[72%] break-words text-right font-bold [overflow-wrap:anywhere]">{preferredFrom}{preferredTo && preferredTo !== preferredFrom ? ` – ${preferredTo}` : ""}</span>
-                        </div>
-                      ) : null}
-                      <div className="mt-2 flex min-w-0 items-start justify-between gap-3 border-t border-brand-200 pt-2 dark:border-brand-700">
-                        <span className="font-extrabold text-brand-700 dark:text-brand-300">Preisrahmen</span>
-                        <span className="min-w-0 text-right font-extrabold text-brand-700 break-words [overflow-wrap:anywhere] dark:text-brand-300">{eur(estimate.priceMinCents)} – {eur(estimate.priceMaxCents)}</span>
-                      </div>
-                    </div>
-                  </div>
+                  <StepSummary
+                    serviceType={serviceType}
+                    packageTier={packageTier}
+                    offerContext={offerContext}
+                    selectedServiceOptions={selectedServiceOptions}
+                    serviceOptions={props.modules.flatMap((module) => module.options)}
+                    addons={addons}
+                    startAddress={startAddress}
+                    destinationAddress={destinationAddress}
+                    pickupAddress={pickupAddress}
+                    accessStart={accessStart}
+                    accessDestination={accessDestination}
+                    accessPickup={accessPickup}
+                    itemsMove={itemsMove}
+                    itemsDisposal={itemsDisposal}
+                    catalog={props.catalog}
+                    disposalCategories={disposalCategories as string[]}
+                    disposalExtraM3={disposalExtraM3}
+                    forbiddenConfirmed={forbiddenConfirmed}
+                    speed={speed}
+                    requestedFrom={preferredFrom}
+                    requestedTo={preferredTo}
+                    preferredTimeWindow={preferredTimeWindow}
+                    customerName={customerName}
+                    customerPhone={customerPhone}
+                    customerEmail={customerEmail}
+                    contactPreference={contactPreference}
+                    note={note}
+                    estimate={estimate}
+                    routeLoading={routeLoading}
+                    routeError={routeError}
+                  />
                 </div>
               </div>
             ) : null}
@@ -1167,15 +1260,15 @@ export function BookingWizard(props: {
 
               {current.key !== "finish" ? (
                 <Button
-                  onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))}
-                  disabled={!canNext || submitting}
+                  onClick={goNextStep}
+                  disabled={submitting}
                   className="shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
                 >
                   Weiter
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               ) : (
-                <Button onClick={submit} disabled={submitting || !canNext} className="shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]">
+                <Button onClick={submitWithValidation} disabled={submitting} className="shadow-md transition-all duration-300 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                   Anfrage senden
                 </Button>
@@ -1195,7 +1288,7 @@ export function BookingWizard(props: {
               </div>
             </div>
 
-            <div className="h-24 sm:hidden" />
+            <div className={cn("sm:hidden", current.key === "finish" ? "h-32" : "h-24")} />
             <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-[color:var(--surface-elevated)]/95 px-4 py-3 backdrop-blur sm:hidden dark:border-slate-700">
               <div className="mx-auto flex max-w-xl gap-3">
                 <Button
@@ -1209,15 +1302,15 @@ export function BookingWizard(props: {
                 </Button>
                 {current.key !== "finish" ? (
                   <Button
-                    onClick={() => setStep((s) => Math.min(steps.length - 1, s + 1))}
-                    disabled={!canNext || submitting}
+                    onClick={goNextStep}
+                    disabled={submitting}
                     className="flex-1"
                   >
                     Weiter
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button onClick={submit} disabled={submitting || !canNext} className="flex-1">
+                  <Button onClick={submitWithValidation} disabled={submitting} className="flex-1">
                     {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                     Senden
                   </Button>
@@ -1231,6 +1324,15 @@ export function BookingWizard(props: {
           <div className="text-sm font-extrabold text-slate-900 dark:text-white">Live-Schätzung</div>
           <div className="mt-4 grid gap-3 text-sm">
             <div className="rounded-2xl border border-slate-300/80 bg-gradient-to-br from-slate-50 to-[color:var(--surface-elevated)] p-4 shadow-sm dark:border-slate-600 dark:from-slate-800/90 dark:to-slate-900/90">
+              <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Paket</div>
+              <div className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">{packageLabels[packageTier]}</div>
+              {offerContext?.offerCode ? (
+                <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                  Code: {offerContext.offerCode}
+                </div>
+              ) : null}
+            </div>
+            <div className="rounded-2xl border border-slate-300/80 bg-gradient-to-br from-slate-50 to-[color:var(--surface-elevated)] p-4 shadow-sm dark:border-slate-600 dark:from-slate-800/90 dark:to-slate-900/90">
               <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Volumen</div>
               <div className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">{formatNumberDE(estimate.totalVolumeM3)} m³</div>
             </div>
@@ -1241,7 +1343,7 @@ export function BookingWizard(props: {
             <div className="rounded-2xl border border-brand-400/70 bg-gradient-to-br from-brand-50 to-[color:var(--surface-elevated)] p-4 shadow-sm dark:border-brand-500/70 dark:from-brand-900/25 dark:to-slate-900/95">
               <div className="text-xs font-bold text-brand-700 dark:text-brand-300">Preisrahmen</div>
               <div className="mt-1 text-lg font-extrabold text-brand-800 dark:text-brand-300">
-                {eur(estimate.priceMinCents)}  {eur(estimate.priceMaxCents)}
+                {eur(estimate.priceMinCents)} – {eur(estimate.priceMaxCents)}
               </div>
               {estimate.distanceKm != null ? (
                 <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
@@ -1471,12 +1573,13 @@ function StepLocation(props: {
   setAccessDestination: (v: Access) => void;
   accessPickup: Access;
   setAccessPickup: (v: Access) => void;
+  invalidAddress?: boolean;
 }) {
   const [showExtraAccess, setShowExtraAccess] = useState(false);
   const isMontage = props.bookingContext === "MONTAGE" || props.bookingContext === "SPECIAL";
 
   return (
-    <div className="grid gap-8">
+    <div className="grid gap-8" data-invalid={props.invalidAddress ? "true" : undefined}>
       <div className="rounded-2xl border border-slate-300 bg-[color:var(--surface-elevated)] p-4">
         <div className="text-sm font-extrabold text-slate-900 dark:text-white">
           Adresse zuerst, Details optional
@@ -1906,7 +2009,7 @@ function QtyStepper(props: { value: number; onChange: (v: number) => void }) {
         onClick={() => props.onChange(props.value - 1)}
         aria-label="Minus"
       >
-        
+        -
       </button>
       <div className="w-10 text-center text-sm font-extrabold text-slate-900 dark:text-white" lang="de" dir="ltr">{formatNumberDE(props.value)}</div>
       <button
@@ -1934,6 +2037,7 @@ function StepDisposal(props: {
   setForbiddenConfirmed: (v: boolean) => void;
   photos: File[];
   setPhotos: (v: File[]) => void;
+  invalidForbidden?: boolean;
 }) {
   return (
     <div className="grid gap-8">
@@ -1999,7 +2103,13 @@ function StepDisposal(props: {
           <div className="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">{formatNumberDE(props.disposalExtraM3)} m³</div>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-500/30 dark:bg-amber-950/20">
+        <div
+          className={cn(
+            "mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-500/30 dark:bg-amber-950/20",
+            props.invalidForbidden ? "ring-2 ring-red-300" : "",
+          )}
+          data-invalid={props.invalidForbidden ? "true" : undefined}
+        >
           <div className="flex items-start gap-3">
             <CircleAlert className="mt-0.5 h-5 w-5 text-amber-700 dark:text-amber-400" />
             <div>
@@ -2011,11 +2121,17 @@ function StepDisposal(props: {
                 <Checkbox
                   checked={props.forbiddenConfirmed}
                   onChange={(e) => props.setForbiddenConfirmed(e.target.checked)}
+                  aria-invalid={props.invalidForbidden ? "true" : "false"}
                 />
                 <span className="text-xs font-bold text-slate-900 dark:text-white">
                   Ich bestätige, dass keine ausgeschlossenen Materialien enthalten sind. *
                 </span>
               </label>
+              {props.invalidForbidden ? (
+                <div className="mt-2 text-xs font-bold text-red-700">
+                  Bitte bestätigen Sie die Ausschlüsse.
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
@@ -2057,6 +2173,7 @@ function StepTiming(props: {
   preferredTimeWindow: WizardPayload["timing"]["preferredTimeWindow"];
   setPreferredTimeWindow: (v: WizardPayload["timing"]["preferredTimeWindow"]) => void;
   jobDurationMinutes: number;
+  invalidDateRange?: boolean;
 }) {
   return (
     <div>
@@ -2076,12 +2193,12 @@ function StepTiming(props: {
         <SpeedCard
           active={props.speed === "EXPRESS"}
           title="Express"
-          desc="Schnellstmglich, hherer Preis."
+          desc="Schnellstmöglich, höherer Preis."
           onClick={() => props.setSpeed("EXPRESS")}
         />
       </div>
 
-      <div className="premium-surface-emphasis mt-8 rounded-3xl p-6">
+      <div className="premium-surface-emphasis mt-8 rounded-3xl p-6" data-invalid={props.invalidDateRange ? "true" : undefined}>
         <div className="flex items-center gap-2 text-sm font-extrabold text-slate-900 dark:text-white">
           <CalendarDays className="h-5 w-5 text-brand-700" />
           Wunschtermin
@@ -2094,9 +2211,10 @@ function StepTiming(props: {
               value={props.preferredFrom}
               min={props.earliestISO}
               onChange={(e) => props.setPreferredFrom(e.target.value)}
+              aria-invalid={props.invalidDateRange ? "true" : "false"}
             />
             <div className="mt-1 text-xs font-semibold text-slate-600">
-              Frhestens: {props.earliestISO}
+              Frühestens: {props.earliestISO}
             </div>
           </div>
           <div>
@@ -2106,13 +2224,19 @@ function StepTiming(props: {
               value={props.preferredTo}
               min={props.preferredFrom}
               onChange={(e) => props.setPreferredTo(e.target.value)}
+              aria-invalid={props.invalidDateRange ? "true" : "false"}
             />
           </div>
         </div>
 
         <div className="mt-6 text-xs font-semibold text-slate-600">
-          Geschtzte Dauer: {props.jobDurationMinutes} Minuten
+          Geschätzte Dauer: {props.jobDurationMinutes} Minuten
         </div>
+        {props.invalidDateRange ? (
+          <div className="mt-2 text-xs font-bold text-red-700">
+            Bitte prüfen Sie den gewählten Zeitraum.
+          </div>
+        ) : null}
 
         <div className="mt-6">
           <div className="text-sm font-extrabold text-slate-900 dark:text-white">Bevorzugtes Zeitfenster</div>
@@ -2249,22 +2373,25 @@ function StepCustomer(props: {
   setContactPreference: (v: WizardPayload["customer"]["contactPreference"]) => void;
   note: string;
   setNote: (v: string) => void;
+  invalidName?: boolean;
+  invalidPhone?: boolean;
+  invalidEmail?: boolean;
 }) {
   return (
-    <div className="premium-surface-emphasis rounded-3xl p-6">
+    <div className="premium-surface-emphasis rounded-3xl p-6" data-invalid={props.invalidName || props.invalidPhone || props.invalidEmail ? "true" : undefined}>
       <div className="text-sm font-extrabold text-slate-900 dark:text-white">Ihre Kontaktdaten</div>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Name *</div>
-          <Input value={props.customerName} onChange={(e) => props.setCustomerName(e.target.value)} />
+          <Input aria-invalid={props.invalidName ? "true" : "false"} value={props.customerName} onChange={(e) => props.setCustomerName(e.target.value)} />
         </div>
         <div>
           <div className="text-xs font-bold text-slate-700 dark:text-slate-300">Telefon *</div>
-          <Input value={props.customerPhone} onChange={(e) => props.setCustomerPhone(e.target.value)} placeholder="+49 ..." />
+          <Input aria-invalid={props.invalidPhone ? "true" : "false"} value={props.customerPhone} onChange={(e) => props.setCustomerPhone(e.target.value)} placeholder="+49 ..." />
         </div>
         <div>
           <div className="text-xs font-bold text-slate-700 dark:text-slate-300">E-Mail *</div>
-          <Input type="email" value={props.customerEmail} onChange={(e) => props.setCustomerEmail(e.target.value)} placeholder="name@email.de" />
+          <Input aria-invalid={props.invalidEmail ? "true" : "false"} type="email" value={props.customerEmail} onChange={(e) => props.setCustomerEmail(e.target.value)} placeholder="name@email.de" />
         </div>
         <div className="sm:col-span-2">
           <div className="text-xs font-bold text-slate-700 dark:text-slate-400">Bevorzugter Kontakt</div>
@@ -2463,7 +2590,7 @@ function StepSummary(props: {
           ) : null}
           <div>
             <span className="font-extrabold">Preisrahmen:</span>{" "}
-            {eur(props.estimate.priceMinCents)}  {eur(props.estimate.priceMaxCents)}
+            {eur(props.estimate.priceMinCents)} – {eur(props.estimate.priceMaxCents)}
           </div>
           {props.estimate.breakdown.packageAdjustmentCents !== 0 ? (
             <div>

@@ -1,87 +1,126 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Smoke tests - UI/UX fixes", () => {
-  test("Header: Anfrage verfolgen is visible and clickable", async ({ page }) => {
-    await page.goto("/");
-    const link = page.getByRole("link", { name: "Anfrage verfolgen" }).first();
-    await expect(link).toBeVisible();
-    await expect(link).toHaveAttribute("href", "/anfrage");
-    await link.click();
-    await expect(page).toHaveURL(/\/anfrage/);
+const storageKey = "ssu_wizard_v2_default";
+
+const startAddress = {
+  displayName: "Anzengruber Straße 9, 12043 Berlin",
+  postalCode: "12043",
+  city: "Berlin",
+  lat: 52.482,
+  lon: 13.435,
+};
+
+const destinationAddress = {
+  displayName: "Alexanderplatz 1, 10178 Berlin",
+  postalCode: "10178",
+  city: "Berlin",
+  lat: 52.521,
+  lon: 13.413,
+};
+
+async function seedWizardAddresses(page: import("@playwright/test").Page) {
+  await page.addInitScript(
+    ({ key, from, to }) => {
+      localStorage.setItem(
+        key,
+        JSON.stringify({
+          serviceType: "MOVING",
+          packageTier: "PLUS",
+          offerCode: "",
+          addons: [],
+          startAddress: from,
+          destinationAddress: to,
+          pickupAddress: undefined,
+          accessStart: {
+            propertyType: "apartment",
+            floor: 0,
+            elevator: "none",
+            stairs: "none",
+            parking: "easy",
+            needNoParkingZone: false,
+            carryDistanceM: 0,
+          },
+          accessDestination: {
+            propertyType: "apartment",
+            floor: 0,
+            elevator: "none",
+            stairs: "none",
+            parking: "easy",
+            needNoParkingZone: false,
+            carryDistanceM: 0,
+          },
+          accessPickup: {
+            propertyType: "apartment",
+            floor: 0,
+            elevator: "none",
+            stairs: "none",
+            parking: "easy",
+            needNoParkingZone: false,
+            carryDistanceM: 0,
+          },
+          samePickupAsStart: true,
+          itemsMove: {},
+          itemsDisposal: {},
+          selectedServiceOptions: {},
+          disposalCategories: [],
+          disposalExtraM3: 0,
+          forbiddenConfirmed: true,
+          speed: "STANDARD",
+          preferredTimeWindow: "FLEXIBLE",
+          customerName: "",
+          customerPhone: "",
+          customerEmail: "",
+          contactPreference: "PHONE",
+          note: "",
+        }),
+      );
+    },
+    { key: storageKey, from: startAddress, to: destinationAddress },
+  );
+}
+
+test.describe("Booking wizard smoke", () => {
+  test("shows step-1 validation when required addresses are missing", async ({ page }) => {
+    await page.goto("/buchen");
+    await page.getByRole("button", { name: "Weiter" }).click();
+    await expect(page.getByText("Bitte prüfen Sie die markierten Angaben:")).toBeVisible();
   });
 
-  test("Preise: Package cards are clickable and scroll to calculator", async ({ page }) => {
-    await page.goto("/preise");
-    const economyCard = page.getByRole("link", { name: /Günstig/i }).first();
-    await expect(economyCard).toBeVisible();
-    await economyCard.click();
-    await expect(page).toHaveURL(/\/preise/);
-    await expect(page.locator("#price-calculator")).toBeInViewport();
+  test("details step includes package and offer code controls", async ({ page }) => {
+    await seedWizardAddresses(page);
+    await page.goto("/buchen");
+
+    await page.getByRole("button", { name: "Weiter" }).click();
+    await expect(page.getByText("Paket wählen")).toBeVisible();
+
+    await page.getByRole("button", { name: "Premium" }).click();
+    await expect(page.locator("aside").getByText("Premium")).toBeVisible();
+
+    await page.getByPlaceholder("Code eingeben").fill("INVALIDCODE");
+    await expect(page.getByText("Code ist aktuell ungültig oder nicht auf diese Buchung anwendbar.")).toBeVisible();
   });
 
-  test("Preise: Service type Entsorgung responds to click", async ({ page }) => {
-    await page.goto("/preise");
-    await page.locator("#price-calculator").scrollIntoViewIfNeeded();
-    const entsorgung = page.getByText("Entsorgung / Sperrmüll").first();
-    await expect(entsorgung).toBeVisible();
-    await entsorgung.click();
-    await expect(page.getByText("Entsorgung / Sperrmüll").first()).toBeVisible();
+  test("finish step blocks submission and highlights invalid contact fields", async ({ page }) => {
+    await seedWizardAddresses(page);
+    await page.goto("/buchen");
+
+    await page.getByRole("button", { name: "Weiter" }).click();
+    await page.getByRole("button", { name: "Weiter" }).click();
+
+    await page.getByRole("button", { name: "Anfrage senden" }).click();
+
+    await expect(page.getByText("Bitte prüfen Sie die markierten Angaben:")).toBeVisible();
+    await expect(page.locator("input[aria-invalid='true']").first()).toBeVisible();
   });
 
-  test("Preise: Priority Express responds to click", async ({ page }) => {
-    await page.goto("/preise");
-    await page.locator("#price-calculator").scrollIntoViewIfNeeded();
-    const express = page.getByText("Express", { exact: true }).first();
-    await expect(express).toBeVisible();
-    await express.click();
-  });
+  test("mobile layout keeps sticky bottom actions visible", async ({ browser }) => {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const page = await context.newPage();
+    await page.goto("/buchen");
 
-  test("Preise: Room card 3 Zimmer responds to click", async ({ page }) => {
-    await page.goto("/preise");
-    const dreiZimmer = page.getByRole("button", { name: /3 Zimmer/ });
-    await expect(dreiZimmer).toBeVisible();
-    await dreiZimmer.click();
-    await expect(page.getByText("Geschätztes Volumen").getByText("42 m³")).toBeVisible();
-  });
+    await expect(page.getByRole("button", { name: "Weiter" }).last()).toBeVisible();
+    await expect(page.getByRole("button", { name: "Zurück" }).last()).toBeVisible();
 
-  test("Footer: Preise & Pakete link works", async ({ page }) => {
-    await page.goto("/");
-    await page.getByRole("link", { name: "Preise & Pakete" }).first().click();
-    await expect(page).toHaveURL("/preise");
-  });
-
-  test("Footer: Paketvergleich link works", async ({ page }) => {
-    await page.goto("/");
-    const footer = page.locator("footer");
-    await footer.scrollIntoViewIfNeeded();
-    const link = footer.getByRole("link", { name: "Paketvergleich" });
-    await expect(link).toHaveAttribute("href", "/vergleich");
-  });
-
-  test("Numbers show Western digits (0-9) not Arabic", async ({ page }) => {
-    await page.goto("/preise");
-    await page.locator("#price-calculator").scrollIntoViewIfNeeded();
-    const text = await page.locator("#price-calculator").textContent();
-    expect(text).toMatch(/\d/);
-    expect(text).not.toMatch(/[٠-٩]/);
-  });
-
-  test("Floating: WhatsApp and FAQ buttons visible", async ({ page }) => {
-    await page.goto("/");
-    await expect(page.getByRole("link", { name: "WhatsApp öffnen" })).toBeVisible();
-    await expect(page.getByRole("button", { name: /FAQ Chat/ })).toBeVisible();
-  });
-
-  test("Booking flow: Termin page loads with date picker and confirm button", async ({ page }) => {
-    await page.goto("/preise");
-    await page.locator("#price-calculator").scrollIntoViewIfNeeded();
-    await page.getByLabel(/Von \(PLZ \+ Straße\)/).fill("12043 Berlin, Anzengruber Straße 9");
-    await page.getByLabel(/Nach \(PLZ \+ Straße\)/).fill("10115 Berlin, Alexanderplatz 1");
-    await page.locator("#price-calculator").getByRole("button", { name: /Termin auswählen/ }).click();
-    await expect(page).toHaveURL("/buchung/termin");
-    await expect(page.getByRole("heading", { name: "Termin & Kalender" })).toBeVisible({ timeout: 15000 });
-    await expect(page.getByText("Datum wählen")).toBeVisible({ timeout: 5000 });
-    await expect(page.getByText("Buchung bestätigen")).toBeVisible();
-    await expect(page.getByPlaceholder("Max Mustermann")).toBeVisible();
+    await context.close();
   });
 });

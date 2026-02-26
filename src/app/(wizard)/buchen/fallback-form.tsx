@@ -52,7 +52,7 @@ export function BookingFallbackForm() {
       setState({
         status: "success",
         message:
-          "Ihre Anfrage wurde gesendet. Wir melden uns schnellstmöglich per Telefon oder E-Mail.",
+          "Ihre Anfrage wurde gesendet. Wir melden uns schnellstmÃ¶glich per Telefon oder E-Mail.",
       });
       setName("");
       setPhone("");
@@ -115,7 +115,7 @@ export function BookingFallbackForm() {
           required
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Kurz beschreiben: Start/Ziel, gewnschter Zeitraum, besondere Hinweise."
+          placeholder="Kurz beschreiben: Start/Ziel, gewÃ¼nschter Zeitraum, besondere Hinweise."
         />
       </div>
 
@@ -146,4 +146,3 @@ export function BookingFallbackForm() {
     </form>
   );
 }
-

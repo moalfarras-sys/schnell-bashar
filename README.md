@@ -1,12 +1,12 @@
-## Schnell Sicher Umzug — Premium Booking Platform (Deutsch)
+## Schnell Sicher Umzug  -  Premium Booking Platform (Deutsch)
 
-Modernes, mobilfreundliches Portal für **Umzug + Entsorgung** mit:
+Modernes, mobilfreundliches Portal fuer **Umzug + Entsorgung** mit:
 
-- **Multi‑Step Wizard** (Auswahl statt Freitext): m³‑Schätzung, Zeit‑Schätzung, Preisrahmen, Termin‑Slots
-- **Online Terminbuchung** (Kapazitätsprüfung)
+- **Multi-Step Wizard** (Auswahl statt Freitext): m3-Schaetzung, Zeit-Schaetzung, Preisrahmen, Termin-Slots
+- **Online Terminbuchung** (Kapazitaetspruefung)
 - **Uploads** (optional, max. 10 Fotos)
-- **Order-Erstellung**: Speicherung in DB + E‑Mail an `kontakt@schnellsicherumzug.de`
-- **Admin Dashboard**: Aufträge, Katalog, Preise, Zeitfenster, CSV‑Export
+- **Order-Erstellung**: Speicherung in DB + E-Mail an `kontakt@schnellsicherumzug.de`
+- **Admin Dashboard**: Auftraege, Katalog, Preise, Zeitfenster, CSV-Export
 
 ---
 
@@ -16,7 +16,7 @@ Modernes, mobilfreundliches Portal für **Umzug + Entsorgung** mit:
 - Tailwind CSS v4
 - Prisma ORM v7 (inkl. `prisma.config.ts`) + Postgres (VPS)
 - Nodemailer (SMTP)
-- JWT Cookie Admin‑Auth (via `jose`)
+- JWT Cookie Admin-Auth (via `jose`)
 
 ---
 
@@ -30,7 +30,7 @@ npm install
 
 ### 2) Env
 
-Kopiere `.env.example` → `.env` und setze mindestens:
+Kopiere `.env.example` -> `.env` und setze mindestens:
 
 - `DATABASE_URL`
 - `SESSION_SECRET`
@@ -43,7 +43,7 @@ npm run prisma:generate
 
 ### 4) Migrationen + Seed
 
-> Hinweis: Dieses Projekt nutzt **Postgres**. Lokal brauchst du eine laufende Postgres‑DB.
+> Hinweis: Dieses Projekt nutzt **Postgres**. Lokal brauchst du eine laufende Postgres-DB.
 
 ```bash
 npm run prisma:migrate
@@ -154,7 +154,7 @@ Dann den Output als `ADMIN_PASSWORD_HASH` in `.env` eintragen.
 - Postgres (z. B. 16)
 - Nginx
 - PM2
-- Domain + SSL (Let’s Encrypt)
+- Domain + SSL (Let's Encrypt)
 
 ### B) Projekt auf den Server bringen
 
@@ -175,7 +175,7 @@ Mindestens:
 Optional:
 
 - `DATABASE_SSL_REJECT_UNAUTHORIZED="false"` (falls Provider/SSL Probleme macht)
-- `UPLOAD_DIR="/var/www/schnell/uploads"` (persistente Uploads außerhalb des Deploy‑Ordners)
+- `UPLOAD_DIR="/var/www/schnell/uploads"` (persistente Uploads ausserhalb des Deploy-Ordners)
 
 Empfohlenes Beispiel:
 
@@ -225,7 +225,7 @@ pm2 save
 pm2 startup
 ```
 
-Alternative: ohne Standalone (weniger “clean”, aber ok)
+Alternative: ohne Standalone (weniger "clean", aber ok)
 
 ```bash
 pm2 start npm --name schnell-sicher-umzug -- start
@@ -268,7 +268,7 @@ server {
 }
 ```
 
-**Uploads außerhalb von `public/` (optional):** Nginx Alias
+**Uploads ausserhalb von `public/` (optional):** Nginx Alias
 
 ```nginx
 location /uploads/ {
@@ -276,7 +276,7 @@ location /uploads/ {
 }
 ```
 
-### H) SSL (Let’s Encrypt)
+### H) SSL (Let's Encrypt)
 
 ```bash
 sudo apt update
@@ -296,13 +296,13 @@ curl -I https://deine-domain.de/admin/login
 curl "https://deine-domain.de/api/slots?speed=STANDARD&from=2026-03-10&to=2026-03-12&durationMinutes=120"
 ```
 
-Manuell im Browser prüfen:
+Manuell im Browser pruefen:
 
-1. `/buchen`: Service wählen -> Gegenstände wählen -> Slot wählen -> Anfrage senden.
+1. `/buchen`: Service waehlen -> Gegenstaende waehlen -> Slot waehlen -> Anfrage senden.
 2. `/admin/orders`: neuer Auftrag sichtbar.
-3. Auftrag öffnen -> Status ändern.
-4. CSV Export über `/admin/orders/export`.
-5. Mobile/Tablet/Desktop kurz gegenprüfen (Header, Cards, Wizard Sidebar, Footer).
+3. Auftrag oeffnen -> Status aendern.
+4. CSV Export ueber `/admin/orders/export`.
+5. Mobile/Tablet/Desktop kurz gegenpruefen (Header, Cards, Wizard Sidebar, Footer).
 
 ### J) Rollback (schnell)
 
@@ -311,7 +311,7 @@ pm2 logs schnell-sicher-umzug --lines 120
 pm2 restart schnell-sicher-umzug
 ```
 
-Falls nötig, letzte stabile Version aus Git auschecken und erneut `npm ci && npm run build && pm2 restart ...`.
+Falls noetig, letzte stabile Version aus Git auschecken und erneut `npm ci && npm run build && pm2 restart ...`.
 
 ---
 
