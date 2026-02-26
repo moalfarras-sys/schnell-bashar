@@ -170,7 +170,7 @@ export async function POST(req: NextRequest) {
                 unit: li.unit,
                 priceCents: li.lineTotalCents,
               }))
-            : null,
+            : undefined,
         payments: isPaid
           ? {
               create: {
