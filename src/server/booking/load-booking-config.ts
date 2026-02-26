@@ -61,7 +61,7 @@ export type BookingServiceOption = {
 
 export type BookingServiceModule = {
   id: string;
-  slug: "MONTAGE" | "ENTSORGUNG";
+  slug: "MONTAGE" | "ENTSORGUNG" | "SPECIAL";
   nameDe: string;
   descriptionDe: string | null;
   sortOrder: number;
@@ -71,7 +71,7 @@ export type BookingServiceModule = {
 export type BookingPromoRule = {
   id: string;
   code: string;
-  moduleSlug: "MONTAGE" | "ENTSORGUNG" | null;
+  moduleSlug: "MONTAGE" | "ENTSORGUNG" | "SPECIAL" | null;
   serviceTypeScope: "MOVING" | "DISPOSAL" | "BOTH" | null;
   discountType: "PERCENT" | "FLAT_CENTS";
   discountValue: number;

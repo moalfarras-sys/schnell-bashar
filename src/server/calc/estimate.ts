@@ -43,7 +43,7 @@ export type PricingConfigLite = {
 
 export type ServiceOptionLite = {
   code: string;
-  moduleSlug: "MONTAGE" | "ENTSORGUNG";
+  moduleSlug: "MONTAGE" | "ENTSORGUNG" | "SPECIAL";
   pricingType: "FLAT" | "PER_UNIT" | "PER_M3" | "PER_HOUR";
   defaultPriceCents: number;
   defaultLaborMinutes: number;
@@ -54,7 +54,7 @@ export type ServiceOptionLite = {
 export type PromoRuleLite = {
   id?: string;
   code: string;
-  moduleSlug: "MONTAGE" | "ENTSORGUNG" | null;
+  moduleSlug: "MONTAGE" | "ENTSORGUNG" | "SPECIAL" | null;
   serviceTypeScope: WizardPayload["serviceType"] | null;
   discountType: "PERCENT" | "FLAT_CENTS";
   discountValue: number;
@@ -110,6 +110,7 @@ function clamp(n: number, min: number, max: number) {
 function bookingModuleSlug(context?: WizardPayload["bookingContext"]) {
   if (context === "MONTAGE") return "MONTAGE" as const;
   if (context === "ENTSORGUNG") return "ENTSORGUNG" as const;
+  if (context === "SPECIAL") return "SPECIAL" as const;
   return undefined;
 }
 
@@ -117,7 +118,7 @@ function packageMultiplierFor(
   serviceType: WizardPayload["serviceType"],
   tier: WizardPayload["packageTier"],
   pricing: PricingConfigLite,
-  moduleSlug?: "MONTAGE" | "ENTSORGUNG",
+  moduleSlug?: "MONTAGE" | "ENTSORGUNG" | "SPECIAL",
 ) {
   if (moduleSlug === "MONTAGE") {
     if (tier === "STANDARD") return pricing.montageStandardMultiplier ?? 0.98;
@@ -128,6 +129,11 @@ function packageMultiplierFor(
     if (tier === "STANDARD") return pricing.entsorgungStandardMultiplier ?? 0.96;
     if (tier === "PREMIUM") return pricing.entsorgungPremiumMultiplier ?? 1.1;
     return pricing.entsorgungPlusMultiplier ?? 1;
+  }
+  if (moduleSlug === "SPECIAL") {
+    if (tier === "STANDARD") return pricing.montageStandardMultiplier ?? 0.98;
+    if (tier === "PREMIUM") return pricing.montagePremiumMultiplier ?? 1.12;
+    return pricing.montagePlusMultiplier ?? 1;
   }
 
   const map: Record<WizardPayload["serviceType"], Record<WizardPayload["packageTier"], number>> =
@@ -388,6 +394,8 @@ export function estimateOrder(
       ? Math.max(0, pricing.montageMinimumOrderCents ?? 0)
       : moduleSlug === "ENTSORGUNG"
         ? Math.max(0, pricing.entsorgungMinimumOrderCents ?? 0)
+        : moduleSlug === "SPECIAL"
+          ? Math.max(0, pricing.montageMinimumOrderCents ?? 0)
         : 0;
 
   const totalAfterDiscount = Math.max(0, totalAfterPackage - discountCents);

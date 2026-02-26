@@ -33,7 +33,12 @@ export default async function AdminOrdersPage({
     deletedAt: showDeleted ? { not: null } : null,
   };
   if (status) where.status = status;
-  if (context === "MONTAGE" || context === "ENTSORGUNG" || context === "STANDARD") {
+  if (
+    context === "MONTAGE" ||
+    context === "ENTSORGUNG" ||
+    context === "STANDARD" ||
+    context === "SPECIAL"
+  ) {
     where.wizardData = {
       path: ["bookingContext"],
       equals: context,
@@ -63,6 +68,9 @@ export default async function AdminOrdersPage({
           requestedDateTo: true,
           preferredTimeWindow: true,
           wizardData: true,
+          _count: {
+            select: { serviceItems: true },
+          },
         },
       });
   } catch (error) {
@@ -109,6 +117,7 @@ export default async function AdminOrdersPage({
                 <option value="STANDARD">Standard</option>
                 <option value="MONTAGE">Montage</option>
                 <option value="ENTSORGUNG">Entsorgung</option>
+                <option value="SPECIAL">Spezialservice</option>
               </Select>
               <Select
                 name="sort"
@@ -206,6 +215,11 @@ export default async function AdminOrdersPage({
                     typeof o.wizardData.offerContext.appliedDiscountPercent === "number" ? (
                       <span className="ml-2 rounded-full border border-emerald-300 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-extrabold text-emerald-100">
                         Rabatt: {o.wizardData.offerContext.appliedDiscountPercent}%
+                      </span>
+                    ) : null}
+                    {o._count?.serviceItems ? (
+                      <span className="ml-2 rounded-full border border-violet-300 bg-violet-500/20 px-2 py-0.5 text-[10px] font-extrabold text-violet-100">
+                        Services: {o._count.serviceItems}
                       </span>
                     ) : null}
                   </td>

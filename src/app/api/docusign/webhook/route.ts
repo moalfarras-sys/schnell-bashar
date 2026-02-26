@@ -5,6 +5,7 @@ import { getSupabaseAdmin, STORAGE_BUCKETS } from "@/lib/supabase";
 import { getEnvelopesApi, getDocuSignAccountId } from "@/lib/docusign";
 import { sendSignedContractEmail } from "@/server/email/send-signed-contract-email";
 import { createInvoiceFromContract } from "@/server/accounting/create-invoice-from-contract";
+import { isInternalOnlySigning } from "@/server/signing/signing-mode";
 
 function verifyHmac(secret: string, rawBody: Buffer, signatureHeader: string): boolean {
   const computed = createHmac("sha256", secret).update(rawBody).digest("base64");
@@ -15,6 +16,13 @@ function verifyHmac(secret: string, rawBody: Buffer, signatureHeader: string): b
 }
 
 export async function POST(req: NextRequest) {
+  if (await isInternalOnlySigning()) {
+    return NextResponse.json(
+      { ok: false, disabled: true, reason: "DocuSign is disabled (INTERNAL_ONLY)." },
+      { status: 503 },
+    );
+  }
+
   const rawBody = Buffer.from(await req.arrayBuffer());
 
   const webhookSecret = process.env.DOCUSIGN_WEBHOOK_SECRET;

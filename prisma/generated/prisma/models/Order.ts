@@ -417,6 +417,7 @@ export type OrderWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   lines?: Prisma.OrderLineListRelationFilter
+  serviceItems?: Prisma.OrderServiceItemListRelationFilter
   uploads?: Prisma.OrderUploadListRelationFilter
   offer?: Prisma.XOR<Prisma.OfferNullableScalarRelationFilter, Prisma.OfferWhereInput> | null
   invoices?: Prisma.InvoiceListRelationFilter
@@ -452,6 +453,7 @@ export type OrderOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   lines?: Prisma.OrderLineOrderByRelationAggregateInput
+  serviceItems?: Prisma.OrderServiceItemOrderByRelationAggregateInput
   uploads?: Prisma.OrderUploadOrderByRelationAggregateInput
   offer?: Prisma.OfferOrderByWithRelationInput
   invoices?: Prisma.InvoiceOrderByRelationAggregateInput
@@ -490,6 +492,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   lines?: Prisma.OrderLineListRelationFilter
+  serviceItems?: Prisma.OrderServiceItemListRelationFilter
   uploads?: Prisma.OrderUploadListRelationFilter
   offer?: Prisma.XOR<Prisma.OfferNullableScalarRelationFilter, Prisma.OfferWhereInput> | null
   invoices?: Prisma.InvoiceListRelationFilter
@@ -595,6 +598,7 @@ export type OrderCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineCreateNestedManyWithoutOrderInput
+  serviceItems?: Prisma.OrderServiceItemCreateNestedManyWithoutOrderInput
   uploads?: Prisma.OrderUploadCreateNestedManyWithoutOrderInput
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
@@ -630,6 +634,7 @@ export type OrderUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineUncheckedCreateNestedManyWithoutOrderInput
+  serviceItems?: Prisma.OrderServiceItemUncheckedCreateNestedManyWithoutOrderInput
   uploads?: Prisma.OrderUploadUncheckedCreateNestedManyWithoutOrderInput
   offer?: Prisma.OfferUncheckedCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
@@ -665,6 +670,7 @@ export type OrderUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUpdateManyWithoutOrderNestedInput
+  serviceItems?: Prisma.OrderServiceItemUpdateManyWithoutOrderNestedInput
   uploads?: Prisma.OrderUploadUpdateManyWithoutOrderNestedInput
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
@@ -700,6 +706,7 @@ export type OrderUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUncheckedUpdateManyWithoutOrderNestedInput
+  serviceItems?: Prisma.OrderServiceItemUncheckedUpdateManyWithoutOrderNestedInput
   uploads?: Prisma.OrderUploadUncheckedUpdateManyWithoutOrderNestedInput
   offer?: Prisma.OfferUncheckedUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
@@ -945,6 +952,20 @@ export type NullableFloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type OrderCreateNestedOneWithoutServiceItemsInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutServiceItemsInput, Prisma.OrderUncheckedCreateWithoutServiceItemsInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutServiceItemsInput
+  connect?: Prisma.OrderWhereUniqueInput
+}
+
+export type OrderUpdateOneRequiredWithoutServiceItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutServiceItemsInput, Prisma.OrderUncheckedCreateWithoutServiceItemsInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutServiceItemsInput
+  upsert?: Prisma.OrderUpsertWithoutServiceItemsInput
+  connect?: Prisma.OrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutServiceItemsInput, Prisma.OrderUpdateWithoutServiceItemsInput>, Prisma.OrderUncheckedUpdateWithoutServiceItemsInput>
+}
+
 export type OrderCreateNestedOneWithoutLinesInput = {
   create?: Prisma.XOR<Prisma.OrderCreateWithoutLinesInput, Prisma.OrderUncheckedCreateWithoutLinesInput>
   connectOrCreate?: Prisma.OrderCreateOrConnectWithoutLinesInput
@@ -1005,6 +1026,162 @@ export type OrderUpdateOneWithoutInvoicesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutInvoicesInput, Prisma.OrderUpdateWithoutInvoicesInput>, Prisma.OrderUncheckedUpdateWithoutInvoicesInput>
 }
 
+export type OrderCreateWithoutServiceItemsInput = {
+  id?: string
+  publicId: string
+  orderNo?: string | null
+  serviceType: $Enums.ServiceType
+  speed: $Enums.SpeedType
+  status?: $Enums.OrderStatus
+  customerName: string
+  customerPhone: string
+  customerEmail: string
+  contactPreference: $Enums.ContactPreference
+  note?: string | null
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
+  volumeM3: number
+  laborHours: number
+  distanceKm?: number | null
+  priceMinCents: number
+  priceMaxCents: number
+  wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.OrderLineCreateNestedManyWithoutOrderInput
+  uploads?: Prisma.OrderUploadCreateNestedManyWithoutOrderInput
+  offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
+}
+
+export type OrderUncheckedCreateWithoutServiceItemsInput = {
+  id?: string
+  publicId: string
+  orderNo?: string | null
+  serviceType: $Enums.ServiceType
+  speed: $Enums.SpeedType
+  status?: $Enums.OrderStatus
+  customerName: string
+  customerPhone: string
+  customerEmail: string
+  contactPreference: $Enums.ContactPreference
+  note?: string | null
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
+  volumeM3: number
+  laborHours: number
+  distanceKm?: number | null
+  priceMinCents: number
+  priceMaxCents: number
+  wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.OrderLineUncheckedCreateNestedManyWithoutOrderInput
+  uploads?: Prisma.OrderUploadUncheckedCreateNestedManyWithoutOrderInput
+  offer?: Prisma.OfferUncheckedCreateNestedOneWithoutOrderInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
+}
+
+export type OrderCreateOrConnectWithoutServiceItemsInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutServiceItemsInput, Prisma.OrderUncheckedCreateWithoutServiceItemsInput>
+}
+
+export type OrderUpsertWithoutServiceItemsInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutServiceItemsInput, Prisma.OrderUncheckedUpdateWithoutServiceItemsInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutServiceItemsInput, Prisma.OrderUncheckedCreateWithoutServiceItemsInput>
+  where?: Prisma.OrderWhereInput
+}
+
+export type OrderUpdateToOneWithWhereWithoutServiceItemsInput = {
+  where?: Prisma.OrderWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutServiceItemsInput, Prisma.OrderUncheckedUpdateWithoutServiceItemsInput>
+}
+
+export type OrderUpdateWithoutServiceItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  publicId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
+  customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
+  laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  priceMinCents?: Prisma.IntFieldUpdateOperationsInput | number
+  priceMaxCents?: Prisma.IntFieldUpdateOperationsInput | number
+  wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.OrderLineUpdateManyWithoutOrderNestedInput
+  uploads?: Prisma.OrderUploadUpdateManyWithoutOrderNestedInput
+  offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutServiceItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  publicId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
+  customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
+  laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  priceMinCents?: Prisma.IntFieldUpdateOperationsInput | number
+  priceMaxCents?: Prisma.IntFieldUpdateOperationsInput | number
+  wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.OrderLineUncheckedUpdateManyWithoutOrderNestedInput
+  uploads?: Prisma.OrderUploadUncheckedUpdateManyWithoutOrderNestedInput
+  offer?: Prisma.OfferUncheckedUpdateOneWithoutOrderNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
+}
+
 export type OrderCreateWithoutLinesInput = {
   id?: string
   publicId: string
@@ -1034,6 +1211,7 @@ export type OrderCreateWithoutLinesInput = {
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  serviceItems?: Prisma.OrderServiceItemCreateNestedManyWithoutOrderInput
   uploads?: Prisma.OrderUploadCreateNestedManyWithoutOrderInput
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
@@ -1068,6 +1246,7 @@ export type OrderUncheckedCreateWithoutLinesInput = {
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  serviceItems?: Prisma.OrderServiceItemUncheckedCreateNestedManyWithoutOrderInput
   uploads?: Prisma.OrderUploadUncheckedCreateNestedManyWithoutOrderInput
   offer?: Prisma.OfferUncheckedCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
@@ -1118,6 +1297,7 @@ export type OrderUpdateWithoutLinesInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceItems?: Prisma.OrderServiceItemUpdateManyWithoutOrderNestedInput
   uploads?: Prisma.OrderUploadUpdateManyWithoutOrderNestedInput
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
@@ -1152,6 +1332,7 @@ export type OrderUncheckedUpdateWithoutLinesInput = {
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  serviceItems?: Prisma.OrderServiceItemUncheckedUpdateManyWithoutOrderNestedInput
   uploads?: Prisma.OrderUploadUncheckedUpdateManyWithoutOrderNestedInput
   offer?: Prisma.OfferUncheckedUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
@@ -1187,6 +1368,7 @@ export type OrderCreateWithoutUploadsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineCreateNestedManyWithoutOrderInput
+  serviceItems?: Prisma.OrderServiceItemCreateNestedManyWithoutOrderInput
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
 }
@@ -1221,6 +1403,7 @@ export type OrderUncheckedCreateWithoutUploadsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineUncheckedCreateNestedManyWithoutOrderInput
+  serviceItems?: Prisma.OrderServiceItemUncheckedCreateNestedManyWithoutOrderInput
   offer?: Prisma.OfferUncheckedCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
 }
@@ -1271,6 +1454,7 @@ export type OrderUpdateWithoutUploadsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUpdateManyWithoutOrderNestedInput
+  serviceItems?: Prisma.OrderServiceItemUpdateManyWithoutOrderNestedInput
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
 }
@@ -1305,6 +1489,7 @@ export type OrderUncheckedUpdateWithoutUploadsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUncheckedUpdateManyWithoutOrderNestedInput
+  serviceItems?: Prisma.OrderServiceItemUncheckedUpdateManyWithoutOrderNestedInput
   offer?: Prisma.OfferUncheckedUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
 }
@@ -1339,6 +1524,7 @@ export type OrderCreateWithoutOfferInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineCreateNestedManyWithoutOrderInput
+  serviceItems?: Prisma.OrderServiceItemCreateNestedManyWithoutOrderInput
   uploads?: Prisma.OrderUploadCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
 }
@@ -1373,6 +1559,7 @@ export type OrderUncheckedCreateWithoutOfferInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineUncheckedCreateNestedManyWithoutOrderInput
+  serviceItems?: Prisma.OrderServiceItemUncheckedCreateNestedManyWithoutOrderInput
   uploads?: Prisma.OrderUploadUncheckedCreateNestedManyWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
 }
@@ -1423,6 +1610,7 @@ export type OrderUpdateWithoutOfferInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUpdateManyWithoutOrderNestedInput
+  serviceItems?: Prisma.OrderServiceItemUpdateManyWithoutOrderNestedInput
   uploads?: Prisma.OrderUploadUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
 }
@@ -1457,6 +1645,7 @@ export type OrderUncheckedUpdateWithoutOfferInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUncheckedUpdateManyWithoutOrderNestedInput
+  serviceItems?: Prisma.OrderServiceItemUncheckedUpdateManyWithoutOrderNestedInput
   uploads?: Prisma.OrderUploadUncheckedUpdateManyWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
 }
@@ -1491,6 +1680,7 @@ export type OrderCreateWithoutInvoicesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineCreateNestedManyWithoutOrderInput
+  serviceItems?: Prisma.OrderServiceItemCreateNestedManyWithoutOrderInput
   uploads?: Prisma.OrderUploadCreateNestedManyWithoutOrderInput
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
 }
@@ -1525,6 +1715,7 @@ export type OrderUncheckedCreateWithoutInvoicesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.OrderLineUncheckedCreateNestedManyWithoutOrderInput
+  serviceItems?: Prisma.OrderServiceItemUncheckedCreateNestedManyWithoutOrderInput
   uploads?: Prisma.OrderUploadUncheckedCreateNestedManyWithoutOrderInput
   offer?: Prisma.OfferUncheckedCreateNestedOneWithoutOrderInput
 }
@@ -1575,6 +1766,7 @@ export type OrderUpdateWithoutInvoicesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUpdateManyWithoutOrderNestedInput
+  serviceItems?: Prisma.OrderServiceItemUpdateManyWithoutOrderNestedInput
   uploads?: Prisma.OrderUploadUpdateManyWithoutOrderNestedInput
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
 }
@@ -1609,6 +1801,7 @@ export type OrderUncheckedUpdateWithoutInvoicesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.OrderLineUncheckedUpdateManyWithoutOrderNestedInput
+  serviceItems?: Prisma.OrderServiceItemUncheckedUpdateManyWithoutOrderNestedInput
   uploads?: Prisma.OrderUploadUncheckedUpdateManyWithoutOrderNestedInput
   offer?: Prisma.OfferUncheckedUpdateOneWithoutOrderNestedInput
 }
@@ -1620,12 +1813,14 @@ export type OrderUncheckedUpdateWithoutInvoicesInput = {
 
 export type OrderCountOutputType = {
   lines: number
+  serviceItems: number
   uploads: number
   invoices: number
 }
 
 export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lines?: boolean | OrderCountOutputTypeCountLinesArgs
+  serviceItems?: boolean | OrderCountOutputTypeCountServiceItemsArgs
   uploads?: boolean | OrderCountOutputTypeCountUploadsArgs
   invoices?: boolean | OrderCountOutputTypeCountInvoicesArgs
 }
@@ -1645,6 +1840,13 @@ export type OrderCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
  */
 export type OrderCountOutputTypeCountLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.OrderLineWhereInput
+}
+
+/**
+ * OrderCountOutputType without action
+ */
+export type OrderCountOutputTypeCountServiceItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderServiceItemWhereInput
 }
 
 /**
@@ -1692,6 +1894,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   createdAt?: boolean
   updatedAt?: boolean
   lines?: boolean | Prisma.Order$linesArgs<ExtArgs>
+  serviceItems?: boolean | Prisma.Order$serviceItemsArgs<ExtArgs>
   uploads?: boolean | Prisma.Order$uploadsArgs<ExtArgs>
   offer?: boolean | Prisma.Order$offerArgs<ExtArgs>
   invoices?: boolean | Prisma.Order$invoicesArgs<ExtArgs>
@@ -1794,6 +1997,7 @@ export type OrderSelectScalar = {
 export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "publicId" | "orderNo" | "serviceType" | "speed" | "status" | "customerName" | "customerPhone" | "customerEmail" | "contactPreference" | "note" | "slotStart" | "slotEnd" | "requestedDateFrom" | "requestedDateTo" | "preferredTimeWindow" | "scheduledAt" | "volumeM3" | "laborHours" | "distanceKm" | "priceMinCents" | "priceMaxCents" | "wizardData" | "deletedAt" | "deletedBy" | "version" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lines?: boolean | Prisma.Order$linesArgs<ExtArgs>
+  serviceItems?: boolean | Prisma.Order$serviceItemsArgs<ExtArgs>
   uploads?: boolean | Prisma.Order$uploadsArgs<ExtArgs>
   offer?: boolean | Prisma.Order$offerArgs<ExtArgs>
   invoices?: boolean | Prisma.Order$invoicesArgs<ExtArgs>
@@ -1806,6 +2010,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name: "Order"
   objects: {
     lines: Prisma.$OrderLinePayload<ExtArgs>[]
+    serviceItems: Prisma.$OrderServiceItemPayload<ExtArgs>[]
     uploads: Prisma.$OrderUploadPayload<ExtArgs>[]
     offer: Prisma.$OfferPayload<ExtArgs> | null
     invoices: Prisma.$InvoicePayload<ExtArgs>[]
@@ -2234,6 +2439,7 @@ readonly fields: OrderFieldRefs;
 export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   lines<T extends Prisma.Order$linesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$linesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  serviceItems<T extends Prisma.Order$serviceItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$serviceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderServiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   uploads<T extends Prisma.Order$uploadsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$uploadsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderUploadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   offer<T extends Prisma.Order$offerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$offerArgs<ExtArgs>>): Prisma.Prisma__OfferClient<runtime.Types.Result.GetResult<Prisma.$OfferPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   invoices<T extends Prisma.Order$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2703,6 +2909,30 @@ export type Order$linesArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.OrderLineScalarFieldEnum | Prisma.OrderLineScalarFieldEnum[]
+}
+
+/**
+ * Order.serviceItems
+ */
+export type Order$serviceItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OrderServiceItem
+   */
+  select?: Prisma.OrderServiceItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OrderServiceItem
+   */
+  omit?: Prisma.OrderServiceItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderServiceItemInclude<ExtArgs> | null
+  where?: Prisma.OrderServiceItemWhereInput
+  orderBy?: Prisma.OrderServiceItemOrderByWithRelationInput | Prisma.OrderServiceItemOrderByWithRelationInput[]
+  cursor?: Prisma.OrderServiceItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderServiceItemScalarFieldEnum | Prisma.OrderServiceItemScalarFieldEnum[]
 }
 
 /**

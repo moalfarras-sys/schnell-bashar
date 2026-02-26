@@ -129,7 +129,7 @@ export function ResendSigningButton({ offerId }: ResendSigningButtonProps) {
       const data = (await res.json()) as {
         error?: string;
         message?: string;
-        provider?: "DOCUSIGN" | "INTERNAL";
+        provider?: "INTERNAL";
         fallbackActivated?: boolean;
       };
       if (!res.ok) {
@@ -291,7 +291,7 @@ export function OfferActionButtons({
         <a href={signingUrl} target="_blank" rel="noopener noreferrer">
           <Button variant="outline" size="sm" className="gap-1">
             <ExternalLink className="h-4 w-4" />
-            {signatureProvider === "INTERNAL" ? "Internen Signatur-Link öffnen" : "Signatur-Link öffnen"}
+            Signatur-Link öffnen
           </Button>
         </a>
       )}

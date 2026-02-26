@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+
 import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
-import { isDocuSignReady, resendDocuSignEnvelope } from "@/lib/docusign";
 import { prisma } from "@/server/db/prisma";
 import { sendSigningEmail } from "@/server/email/send-signing-email";
 import {
@@ -44,80 +44,31 @@ export async function POST(
 
   if (offer.contract.status !== "PENDING_SIGNATURE") {
     return NextResponse.json(
-      { error: "Vertrag ist nicht im Status 'Wartet auf Unterschrift'" },
+      { error: "Vertrag ist nicht im Status 'Wartet auf Unterschrift'." },
       { status: 400 },
     );
   }
 
   let signingUrl = offer.contract.signingUrl;
-  let provider = offer.contract.signatureProvider;
-  let fallbackActivated = false;
   const now = new Date();
-
-  if (
-    provider === "DOCUSIGN" &&
-    offer.contract.docusignEnvelopeId &&
-    isDocuSignReady()
-  ) {
-    try {
-      await resendDocuSignEnvelope(offer.contract.docusignEnvelopeId);
-      await prisma.contract.update({
-        where: { id: offer.contract.id },
-        data: {
-          docusignStatus: "sent",
-          sentForSigningAt: now,
-        },
-      });
-
-      const docusignEmail = await sendSigningEmail({
-        customerName: offer.customerName,
-        customerEmail: offer.customerEmail,
-        provider: "DOCUSIGN",
-        contractPdfUrl: offer.contract.contractPdfUrl,
-      });
-
-      if (!docusignEmail.success) {
-        return NextResponse.json(
-          {
-            error: docusignEmail.error || "Hinweis-E-Mail konnte nicht gesendet werden",
-            provider: "DOCUSIGN",
-            fallbackActivated: false,
-          },
-          { status: 500 },
-        );
-      }
-
-      return NextResponse.json({
-        success: true,
-        provider: "DOCUSIGN",
-        fallbackActivated: false,
-        message: "DocuSign-Erinnerung wurde erneut ausgelöst.",
-      });
-    } catch (error) {
-      console.warn(
-        "[resend-signing] DocuSign resend failed, switching to INTERNAL fallback:",
-        error instanceof Error ? error.message : error,
-      );
-    }
-  }
-
-  const internalTokenExpired =
+  const tokenExpired =
     !offer.contract.signatureTokenExpiresAt ||
     offer.contract.signatureTokenExpiresAt < now;
-  const needsInternalRefresh =
-    provider === "INTERNAL" &&
-    (!offer.contract.signingUrl || !offer.contract.signatureTokenHash || internalTokenExpired);
+  const needsRefresh =
+    !offer.contract.signingUrl ||
+    !offer.contract.signatureTokenHash ||
+    tokenExpired ||
+    offer.contract.signatureProvider !== "INTERNAL";
 
-  if (!signingUrl || needsInternalRefresh) {
+  if (needsRefresh) {
     const tokenPayload = issueFallbackSigningToken();
     signingUrl = buildFallbackSigningUrl(tokenPayload.token, offer.token);
-    fallbackActivated = true;
-    provider = "INTERNAL";
 
     await prisma.contract.update({
       where: { id: offer.contract.id },
       data: {
         signatureProvider: "INTERNAL",
+        docusignEnvelopeId: null,
         docusignStatus: "internal_pending",
         signingUrl,
         signatureTokenHash: tokenPayload.tokenHash,
@@ -128,37 +79,27 @@ export async function POST(
   }
 
   if (!signingUrl) {
-    return NextResponse.json(
-      { error: "Keine Signatur-URL vorhanden" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Keine Signatur-URL vorhanden." }, { status: 400 });
   }
 
   const result = await sendSigningEmail({
     customerName: offer.customerName,
     customerEmail: offer.customerEmail,
-    signingLink: signingUrl!,
-    provider,
+    signingLink: signingUrl,
+    provider: "INTERNAL",
     contractPdfUrl: offer.contract.contractPdfUrl,
   });
 
   if (!result.success) {
     return NextResponse.json(
-      {
-        error: result.error || "E-Mail konnte nicht gesendet werden",
-        provider,
-        fallbackActivated,
-      },
+      { error: result.error || "E-Mail konnte nicht gesendet werden.", provider: "INTERNAL" },
       { status: 500 },
     );
   }
 
   return NextResponse.json({
     success: true,
-    provider,
-    fallbackActivated,
-    message: fallbackActivated
-      ? "Signatur-Link erneut gesendet (internes Fallback aktiviert)."
-      : "Signatur-Link erneut gesendet.",
+    provider: "INTERNAL",
+    message: "Signatur-Link erneut gesendet.",
   });
 }

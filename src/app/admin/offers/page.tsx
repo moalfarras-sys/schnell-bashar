@@ -68,9 +68,7 @@ function getContractStatusBadge(status: string | null, provider: string | null) 
       return (
         <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800">
           <Clock className="h-3 w-3" />
-          {provider === "INTERNAL"
-            ? "Wartet auf Unterschrift (Intern)"
-            : "Wartet auf Unterschrift (DocuSign)"}
+          Wartet auf Unterschrift
         </span>
       );
     case "SIGNED":
@@ -286,9 +284,7 @@ export default async function AdminOffersPage({
                 {
                   label: "Vertrag gesendet",
                   date:
-                    offer.contract?.sentForSigningAt &&
-                    (offer.contract?.signingUrl ||
-                      offer.contract?.signatureProvider === "DOCUSIGN")
+                    offer.contract?.sentForSigningAt && offer.contract?.signingUrl
                       ? offer.contract.sentForSigningAt
                       : null,
                   color: "blue",

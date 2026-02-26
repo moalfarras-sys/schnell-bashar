@@ -139,7 +139,7 @@ export default async function PreisePage() {
               Richtpreis berechnen
             </Button>
           </a>
-          <Link href="/buchen?context=MOVING">
+          <Link href="/buchen?context=STANDARD">
             <Button size="lg" variant="outline">
               <Clock className="h-5 w-5" />
               Anfrage starten

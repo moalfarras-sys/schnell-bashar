@@ -24,7 +24,7 @@ type ServiceOptionRow = {
 type ServiceModuleRow = {
   id: string;
   version?: number;
-  slug: "MONTAGE" | "ENTSORGUNG";
+  slug: "MONTAGE" | "ENTSORGUNG" | "SPECIAL";
   nameDe: string;
   descriptionDe: string | null;
   active: boolean;
@@ -71,7 +71,7 @@ export function ServicesAdminClient(props: {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [newModuleSlug, setNewModuleSlug] = useState<"MONTAGE" | "ENTSORGUNG">("MONTAGE");
+  const [newModuleSlug, setNewModuleSlug] = useState<"MONTAGE" | "ENTSORGUNG" | "SPECIAL">("MONTAGE");
   const [newModuleName, setNewModuleName] = useState("Montage");
   const [newModuleDescription, setNewModuleDescription] = useState("");
   const [newModuleSort, setNewModuleSort] = useState(10);
@@ -251,11 +251,12 @@ export function ServicesAdminClient(props: {
         <form onSubmit={createOrUpdateModule} className="grid gap-3 md:grid-cols-4">
           <select
             value={newModuleSlug}
-            onChange={(e) => setNewModuleSlug(e.target.value as "MONTAGE" | "ENTSORGUNG")}
+            onChange={(e) => setNewModuleSlug(e.target.value as "MONTAGE" | "ENTSORGUNG" | "SPECIAL")}
             className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white"
           >
             <option value="MONTAGE">MONTAGE</option>
             <option value="ENTSORGUNG">ENTSORGUNG</option>
+            <option value="SPECIAL">SPECIAL</option>
           </select>
           <input
             value={newModuleName}

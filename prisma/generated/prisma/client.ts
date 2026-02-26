@@ -80,6 +80,11 @@ export type AvailabilityException = Prisma.AvailabilityExceptionModel
  */
 export type Order = Prisma.OrderModel
 /**
+ * Model OrderServiceItem
+ * 
+ */
+export type OrderServiceItem = Prisma.OrderServiceItemModel
+/**
  * Model OrderLine
  * 
  */

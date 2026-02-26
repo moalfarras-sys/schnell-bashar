@@ -60,7 +60,8 @@ export type ContactPreference = (typeof ContactPreference)[keyof typeof ContactP
 
 export const ServiceModuleSlug = {
   MONTAGE: 'MONTAGE',
-  ENTSORGUNG: 'ENTSORGUNG'
+  ENTSORGUNG: 'ENTSORGUNG',
+  SPECIAL: 'SPECIAL'
 } as const
 
 export type ServiceModuleSlug = (typeof ServiceModuleSlug)[keyof typeof ServiceModuleSlug]
@@ -82,6 +83,16 @@ export const PromoDiscountType = {
 } as const
 
 export type PromoDiscountType = (typeof PromoDiscountType)[keyof typeof PromoDiscountType]
+
+
+export const OrderServiceKind = {
+  UMZUG: 'UMZUG',
+  MONTAGE: 'MONTAGE',
+  ENTSORGUNG: 'ENTSORGUNG',
+  SPECIAL: 'SPECIAL'
+} as const
+
+export type OrderServiceKind = (typeof OrderServiceKind)[keyof typeof OrderServiceKind]
 
 
 export const OfferStatus = {

@@ -24,7 +24,7 @@ function eur(cents: number) {
 }
 
 type WizardLike = {
-  bookingContext?: "STANDARD" | "MONTAGE" | "ENTSORGUNG";
+  bookingContext?: "STANDARD" | "MONTAGE" | "ENTSORGUNG" | "SPECIAL";
   packageTier?: "STANDARD" | "PLUS" | "PREMIUM";
   offerContext?: {
     offerCode?: string;
@@ -53,6 +53,7 @@ export default async function AdminOrderDetailPage({
       where: { publicId },
       include: {
         lines: { include: { catalogItem: true } },
+        serviceItems: { orderBy: { sortOrder: "asc" } },
         uploads: true,
         offer: { include: { contract: true } },
       },
@@ -321,6 +322,31 @@ export default async function AdminOrderDetailPage({
         </div>
       </div>
 
+      {order.serviceItems?.length ? (
+        <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
+          <div className="text-sm font-extrabold text-white">Service-Cart</div>
+          <ul className="mt-3 grid gap-2 text-sm text-slate-200">
+            {order.serviceItems.map((item: any) => (
+              <li
+                key={item.id}
+                className="flex items-center justify-between gap-3 rounded-xl border border-slate-700 bg-slate-900/40 px-3 py-2"
+              >
+                <div>
+                  <div className="font-bold">{item.titleDe}</div>
+                  <div className="text-xs text-slate-300">
+                    {item.kind}
+                    {item.serviceOptionCode ? ` · ${item.serviceOptionCode}` : ""}
+                  </div>
+                </div>
+                <div className="text-xs font-semibold text-slate-300">
+                  {item.qty} {item.unit}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       {order.uploads.length ? (
         <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
           <div className="text-sm font-extrabold text-white">Hochgeladene Dateien</div>
@@ -335,7 +361,7 @@ export default async function AdminOrderDetailPage({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    ffnen
+                    Öffnen
                   </a>
                 ) : (
                   <span className="text-xs text-slate-300">{u.filePath}</span>

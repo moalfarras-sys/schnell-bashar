@@ -3,8 +3,9 @@ import { z } from "zod";
 export const serviceTypeSchema = z.enum(["MOVING", "DISPOSAL", "BOTH"]);
 export const speedTypeSchema = z.enum(["ECONOMY", "STANDARD", "EXPRESS"]);
 export const contactPreferenceSchema = z.enum(["PHONE", "WHATSAPP", "EMAIL"]);
-export const bookingContextSchema = z.enum(["STANDARD", "MONTAGE", "ENTSORGUNG"]);
+export const bookingContextSchema = z.enum(["STANDARD", "MONTAGE", "ENTSORGUNG", "SPECIAL"]);
 export const packageTierSchema = z.enum(["STANDARD", "PLUS", "PREMIUM"]);
+export const serviceCartKindSchema = z.enum(["UMZUG", "MONTAGE", "ENTSORGUNG", "SPECIAL"]);
 
 export const addonKeySchema = z.enum([
   "PACKING",
@@ -50,6 +51,14 @@ export const serviceSelectionSchema = z.object({
   code: z.string().trim().min(2).max(80),
   qty: z.number().int().min(1).max(50).default(1),
   meta: z.record(z.string(), z.any()).optional(),
+});
+
+export const serviceCartItemSchema = z.object({
+  kind: serviceCartKindSchema,
+  moduleSlug: z.enum(["MONTAGE", "ENTSORGUNG", "SPECIAL"]).optional(),
+  titleDe: z.string().trim().min(2).max(120).optional(),
+  qty: z.number().int().min(1).max(50).default(1),
+  details: z.record(z.string(), z.any()).optional(),
 });
 
 export const timingSchema = z
@@ -105,8 +114,19 @@ export const customerSchema = z.object({
 });
 
 export const wizardPayloadSchema = z.object({
+  payloadVersion: z.number().int().min(1).max(10).default(2),
   bookingContext: bookingContextSchema.default("STANDARD"),
   packageTier: packageTierSchema.default("PLUS"),
+  serviceCart: z.array(serviceCartItemSchema).default([]),
+  serviceDetailsByKind: z
+    .record(
+      serviceCartKindSchema,
+      z.object({
+        note: z.string().max(500).optional(),
+        meta: z.record(z.string(), z.any()).optional(),
+      }),
+    )
+    .optional(),
   selectedServiceOptions: z.array(serviceSelectionSchema).default([]),
   offerContext: z
     .object({

@@ -64,7 +64,7 @@ type ServiceOptionConfig = {
 
 type ServiceModuleConfig = {
   id: string;
-  slug: "MONTAGE" | "ENTSORGUNG";
+  slug: "MONTAGE" | "ENTSORGUNG" | "SPECIAL";
   nameDe: string;
   descriptionDe: string | null;
   sortOrder: number;
@@ -74,7 +74,7 @@ type ServiceModuleConfig = {
 type PromoRuleConfig = {
   id: string;
   code: string;
-  moduleSlug: "MONTAGE" | "ENTSORGUNG" | null;
+  moduleSlug: "MONTAGE" | "ENTSORGUNG" | "SPECIAL" | null;
   serviceTypeScope: WizardPayload["serviceType"] | null;
   discountType: "PERCENT" | "FLAT_CENTS";
   discountValue: number;
@@ -84,7 +84,7 @@ type PromoRuleConfig = {
   validTo: string | null;
 };
 
-type BookingVariant = "default" | "montage" | "entsorgung";
+type BookingVariant = "default" | "montage" | "entsorgung" | "special";
 
 type RoutePricingState = {
   distanceKm: number;
@@ -230,9 +230,16 @@ export function BookingWizard(props: {
   const searchParams = useSearchParams();
   const variant = props.variant ?? "default";
   const lockedServiceType: WizardPayload["serviceType"] | undefined =
-    variant === "montage" ? "MOVING" : variant === "entsorgung" ? "DISPOSAL" : undefined;
+    variant === "montage" || variant === "special"
+      ? "MOVING"
+      : variant === "entsorgung"
+        ? "DISPOSAL"
+        : undefined;
   const forcedAddons = useMemo<WizardPayload["addons"]>(
-    () => (variant === "montage" ? ["DISMANTLE_ASSEMBLE"] : []),
+    () =>
+      variant === "montage" || variant === "special"
+        ? (["DISMANTLE_ASSEMBLE"] as WizardPayload["addons"])
+        : [],
     [variant],
   );
   const hideServiceStep = variant !== "default";
@@ -241,7 +248,9 @@ export function BookingWizard(props: {
       ? "MONTAGE"
       : variant === "entsorgung"
         ? "ENTSORGUNG"
-        : "STANDARD";
+        : variant === "special"
+          ? "SPECIAL"
+          : "STANDARD";
   const storageKey = `ssu_wizard_v2_${variant}`;
 
   const [serviceType, setServiceType] = useState<WizardPayload["serviceType"]>(
@@ -330,6 +339,8 @@ export function BookingWizard(props: {
       ? ("MONTAGE" as const)
       : variant === "entsorgung"
         ? ("ENTSORGUNG" as const)
+        : variant === "special"
+          ? ("SPECIAL" as const)
         : null;
 
   const activeModuleOptions = useMemo(() => {
@@ -363,12 +374,84 @@ export function BookingWizard(props: {
     return list;
   }, [activeModuleOptions, activeModuleSlug, props.modules]);
 
+  const serviceOptionModuleByCode = useMemo(() => {
+    const map = new Map<string, "MONTAGE" | "ENTSORGUNG" | "SPECIAL">();
+    for (const svcModule of props.modules) {
+      for (const option of svcModule.options) {
+        map.set(option.code, svcModule.slug);
+      }
+    }
+    return map;
+  }, [props.modules]);
+
+  const serviceCart = useMemo<WizardPayload["serviceCart"]>(() => {
+    const kinds = new Map<string, WizardPayload["serviceCart"][number]>();
+
+    if (serviceType === "MOVING" || serviceType === "BOTH") {
+      kinds.set("UMZUG", { kind: "UMZUG", qty: 1, titleDe: "Umzug" });
+    }
+    if (serviceType === "DISPOSAL" || serviceType === "BOTH") {
+      kinds.set("ENTSORGUNG", {
+        kind: "ENTSORGUNG",
+        moduleSlug: "ENTSORGUNG",
+        qty: 1,
+        titleDe: "Entsorgung",
+      });
+    }
+    if (bookingContext === "MONTAGE") {
+      kinds.set("MONTAGE", {
+        kind: "MONTAGE",
+        moduleSlug: "MONTAGE",
+        qty: 1,
+        titleDe: "Montage",
+      });
+    }
+    if (bookingContext === "SPECIAL") {
+      kinds.set("SPECIAL", {
+        kind: "SPECIAL",
+        moduleSlug: "SPECIAL",
+        qty: 1,
+        titleDe: "Spezialservice",
+      });
+    }
+
+    for (const [code, qty] of Object.entries(selectedServiceOptions)) {
+      if (qty <= 0) continue;
+      const moduleSlug = serviceOptionModuleByCode.get(code);
+      if (!moduleSlug) continue;
+      if (moduleSlug === "MONTAGE") {
+        kinds.set("MONTAGE", {
+          kind: "MONTAGE",
+          moduleSlug: "MONTAGE",
+          qty: 1,
+          titleDe: "Montage",
+        });
+      } else if (moduleSlug === "SPECIAL") {
+        kinds.set("SPECIAL", {
+          kind: "SPECIAL",
+          moduleSlug: "SPECIAL",
+          qty: 1,
+          titleDe: "Spezialservice",
+        });
+      }
+    }
+
+    return [...kinds.values()];
+  }, [bookingContext, selectedServiceOptions, serviceOptionModuleByCode, serviceType]);
+
   const promoRuleMatch = useMemo(() => {
     const code = offerCode.trim().toUpperCase();
     if (!code) return null;
 
     const now = Date.now();
-    const moduleSlug = bookingContext === "MONTAGE" ? "MONTAGE" : bookingContext === "ENTSORGUNG" ? "ENTSORGUNG" : null;
+    const moduleSlug =
+      bookingContext === "MONTAGE"
+        ? "MONTAGE"
+        : bookingContext === "SPECIAL"
+          ? "SPECIAL"
+          : bookingContext === "ENTSORGUNG"
+            ? "ENTSORGUNG"
+            : null;
 
     return (
       props.promoRules.find((rule) => {
@@ -515,19 +598,21 @@ export function BookingWizard(props: {
 
   const estimate = useMemo(() => {
     const payloadForEstimate: WizardPayload = {
+      payloadVersion: 2,
       bookingContext,
       packageTier,
       offerContext,
+      serviceCart,
       selectedServiceOptions: Object.entries(selectedServiceOptions)
         .filter(([, qty]) => qty > 0)
         .map(([code, qty]) => ({ code, qty })),
       serviceType,
       addons,
-      pickupAddress: bookingContext === "MONTAGE" ? pickupAddress : effectivePickup,
-      startAddress: bookingContext === "MONTAGE" ? undefined : startAddress,
-      destinationAddress: bookingContext === "MONTAGE" ? undefined : destinationAddress,
+      pickupAddress: bookingContext === "MONTAGE" || bookingContext === "SPECIAL" ? pickupAddress : effectivePickup,
+      startAddress: bookingContext === "MONTAGE" || bookingContext === "SPECIAL" ? undefined : startAddress,
+      destinationAddress: bookingContext === "MONTAGE" || bookingContext === "SPECIAL" ? undefined : destinationAddress,
       accessPickup:
-        bookingContext === "MONTAGE"
+        bookingContext === "MONTAGE" || bookingContext === "SPECIAL"
           ? pickupAddress
             ? accessPickup
             : undefined
@@ -535,9 +620,9 @@ export function BookingWizard(props: {
             ? accessPickup
             : undefined,
       accessStart:
-        bookingContext === "MONTAGE" ? undefined : startAddress ? accessStart : undefined,
+        bookingContext === "MONTAGE" || bookingContext === "SPECIAL" ? undefined : startAddress ? accessStart : undefined,
       accessDestination:
-        bookingContext === "MONTAGE"
+        bookingContext === "MONTAGE" || bookingContext === "SPECIAL"
           ? undefined
           : destinationAddress
             ? accessDestination
@@ -586,6 +671,7 @@ export function BookingWizard(props: {
     bookingContext,
     packageTier,
     offerContext,
+    serviceCart,
     selectedServiceOptions,
     serviceType,
     addons,
@@ -648,14 +734,20 @@ export function BookingWizard(props: {
       case "service":
         return true;
       case "location":
-        if (bookingContext === "MONTAGE") return !!pickupAddress;
+        if (bookingContext === "MONTAGE" || bookingContext === "SPECIAL") return !!pickupAddress;
         if (serviceType === "MOVING") return !!startAddress && !!destinationAddress;
         if (serviceType === "DISPOSAL") return !!pickupAddress;
         return !!startAddress && !!destinationAddress; // BOTH
       case "items":
         if (variant !== "default") return Object.values(selectedServiceOptions).some((qty) => qty > 0);
-        if (serviceType === "DISPOSAL") return sumQty(itemsDisposal) > 0 || disposalExtraM3 > 0;
-        return sumQty(itemsMove) > 0;
+        if (serviceType === "DISPOSAL") {
+          return (
+            sumQty(itemsDisposal) > 0 ||
+            disposalExtraM3 > 0 ||
+            Object.values(selectedServiceOptions).some((qty) => qty > 0)
+          );
+        }
+        return sumQty(itemsMove) > 0 || Object.values(selectedServiceOptions).some((qty) => qty > 0);
       case "disposal":
         return forbiddenConfirmed;
       case "package":
@@ -694,46 +786,48 @@ export function BookingWizard(props: {
     setSubmitError(null);
     try {
       const payload: WizardPayload = {
+        payloadVersion: 2,
         bookingContext,
         packageTier,
         offerContext,
+        serviceCart,
         selectedServiceOptions: Object.entries(selectedServiceOptions)
           .filter(([, qty]) => qty > 0)
           .map(([code, qty]) => ({ code, qty })),
         serviceType,
         addons,
         pickupAddress:
-          bookingContext === "MONTAGE"
+          bookingContext === "MONTAGE" || bookingContext === "SPECIAL"
             ? pickupAddress
             : serviceType === "DISPOSAL"
               ? pickupAddress
               : effectivePickup,
         startAddress:
-          bookingContext === "MONTAGE"
+          bookingContext === "MONTAGE" || bookingContext === "SPECIAL"
             ? undefined
             : serviceType === "MOVING" || serviceType === "BOTH"
               ? startAddress
               : undefined,
         destinationAddress:
-          bookingContext === "MONTAGE"
+          bookingContext === "MONTAGE" || bookingContext === "SPECIAL"
             ? undefined
             : serviceType === "MOVING" || serviceType === "BOTH"
               ? destinationAddress
               : undefined,
         accessPickup:
-          bookingContext === "MONTAGE"
+          bookingContext === "MONTAGE" || bookingContext === "SPECIAL"
             ? accessPickup
             : serviceType === "DISPOSAL" || serviceType === "BOTH"
             ? (serviceType === "BOTH" && samePickupAsStart ? accessStart : accessPickup)
             : undefined,
         accessStart:
-          bookingContext === "MONTAGE"
+          bookingContext === "MONTAGE" || bookingContext === "SPECIAL"
             ? undefined
             : serviceType === "MOVING" || serviceType === "BOTH"
               ? accessStart
               : undefined,
         accessDestination:
-          bookingContext === "MONTAGE"
+          bookingContext === "MONTAGE" || bookingContext === "SPECIAL"
             ? undefined
             : serviceType === "MOVING" || serviceType === "BOTH"
               ? accessDestination
@@ -790,6 +884,7 @@ export function BookingWizard(props: {
   useEffect(() => {
     const data = {
       serviceType,
+      serviceCart,
       packageTier,
       offerCode,
       addons,
@@ -820,6 +915,7 @@ export function BookingWizard(props: {
   }, [
     storageKey,
     serviceType,
+    serviceCart,
     packageTier,
     offerCode,
     addons,
@@ -951,10 +1047,14 @@ export function BookingWizard(props: {
                 <StepItems
                   serviceType={serviceType}
                   catalog={props.catalog}
+                  modules={props.modules}
+                  bookingContext={bookingContext}
                   itemsMove={itemsMove}
                   setItemsMove={setItemsMove}
                   itemsDisposal={itemsDisposal}
                   setItemsDisposal={setItemsDisposal}
+                  selectedServiceOptions={selectedServiceOptions}
+                  setSelectedServiceOptions={setSelectedServiceOptions}
                 />
               ) : (
                 <StepServiceOptions
@@ -1043,7 +1143,7 @@ export function BookingWizard(props: {
                     : undefined
                 }
                 accessPickup={
-                  bookingContext === "MONTAGE"
+                  bookingContext === "MONTAGE" || bookingContext === "SPECIAL"
                     ? accessPickup
                     : serviceType === "DISPOSAL" || serviceType === "BOTH"
                     ? serviceType === "BOTH" && samePickupAsStart
@@ -1416,7 +1516,7 @@ function StepLocation(props: {
   setAccessPickup: (v: Access) => void;
 }) {
   const [showExtraAccess, setShowExtraAccess] = useState(false);
-  const isMontage = props.bookingContext === "MONTAGE";
+  const isMontage = props.bookingContext === "MONTAGE" || props.bookingContext === "SPECIAL";
 
   return (
     <div className="grid gap-8">
@@ -1653,14 +1753,22 @@ function AccessCard(props: { title: string; value: Access; onChange: (v: Access)
 function StepItems(props: {
   serviceType: WizardPayload["serviceType"];
   catalog: CatalogItem[];
+  modules: ServiceModuleConfig[];
+  bookingContext: WizardPayload["bookingContext"];
   itemsMove: Record<string, number>;
   setItemsMove: (v: Record<string, number>) => void;
   itemsDisposal: Record<string, number>;
   setItemsDisposal: (v: Record<string, number>) => void;
+  selectedServiceOptions: Record<string, number>;
+  setSelectedServiceOptions: (v: Record<string, number>) => void;
 }) {
   const showMove = props.serviceType === "MOVING" || props.serviceType === "BOTH";
   const target = showMove ? props.itemsMove : props.itemsDisposal;
   const setTarget = showMove ? props.setItemsMove : props.setItemsDisposal;
+  const extraModules =
+    props.bookingContext === "STANDARD"
+      ? props.modules.filter((module) => module.slug !== "ENTSORGUNG")
+      : [];
 
   return (
     <div>
@@ -1679,6 +1787,23 @@ function StepItems(props: {
           />
         ))}
       </div>
+
+      {extraModules.length > 0 ? (
+        <div className="mt-8 grid gap-4">
+          <div className="text-sm font-extrabold text-slate-900 dark:text-white">
+            Zusätzliche Leistungen (Montage / Spezial)
+          </div>
+          {extraModules.map((module) => (
+            <StepServiceOptions
+              key={module.id}
+              title={module.nameDe}
+              options={module.options}
+              selected={props.selectedServiceOptions}
+              setSelected={props.setSelectedServiceOptions}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -2520,6 +2645,7 @@ function SummaryServiceOptions(props: {
     </div>
   );
 }
+
 
 
 

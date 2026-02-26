@@ -19,6 +19,7 @@ type SettingsModel = {
   whatsappMetaAccessToken: string;
   whatsappMetaVerifyToken: string;
   whatsappMetaDefaultTemplate: string;
+  signingMode: "INTERNAL_ONLY" | "HYBRID";
 };
 
 export function SettingsClient(props: { initialSettings: SettingsModel }) {
@@ -121,6 +122,17 @@ export function SettingsClient(props: { initialSettings: SettingsModel }) {
             />
             WhatsApp-Link nach Absenden anzeigen
           </label>
+          <div className="sm:col-span-2">
+            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-400">Signatur-Modus</label>
+            <select
+              value={form.signingMode}
+              onChange={(e) => patch("signingMode", e.target.value as SettingsModel["signingMode"])}
+              className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white"
+            >
+              <option value="INTERNAL_ONLY">Internal only (empfohlen)</option>
+              <option value="HYBRID">Hybrid (Internal + DocuSign)</option>
+            </select>
+          </div>
         </div>
       </section>
 

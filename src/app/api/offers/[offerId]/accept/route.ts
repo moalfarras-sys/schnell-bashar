@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { isDocuSignReady } from "@/lib/docusign";
 import { STORAGE_BUCKETS, getSupabaseAdmin } from "@/lib/supabase";
 import { prisma } from "@/server/db/prisma";
 import { sendSigningEmail } from "@/server/email/send-signing-email";
@@ -16,9 +15,16 @@ import {
   orderDisplayNo,
 } from "@/server/ids/document-number";
 
-function isSafeModeExternalIo() {
-  const raw = String(process.env.SAFE_MODE_EXTERNAL_IO ?? "").trim().toLowerCase();
-  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+function ensureInternalSigning(offerToken: string, now: Date) {
+  const tokenPayload = issueFallbackSigningToken();
+  const signingUrl = buildFallbackSigningUrl(tokenPayload.token, offerToken);
+  const tokenExpiresAt = getFallbackSigningExpiry(now);
+
+  return {
+    signingUrl,
+    signatureTokenHash: tokenPayload.tokenHash,
+    signatureTokenExpiresAt: tokenExpiresAt,
+  };
 }
 
 export async function POST(
@@ -42,95 +48,26 @@ export async function POST(
       return NextResponse.json({ error: "Angebot abgelaufen" }, { status: 400 });
     }
 
-    const safeModeExternalIo = isSafeModeExternalIo();
-    const docusignReady = !safeModeExternalIo && isDocuSignReady();
     const orderNo = offer.order ? orderDisplayNo(offer.order) : offer.id;
     const offerNo = offer.offerNo || deriveOfferNoFromOrderNo(orderNo);
     const contractNo = deriveContractNoFromOrderNo(orderNo);
 
     if (offer.status === "ACCEPTED") {
-      const existingContract = await prisma.contract.findUnique({
-        where: { offerId },
-      });
-
+      const existingContract = await prisma.contract.findUnique({ where: { offerId } });
       if (!existingContract) {
         return NextResponse.json({ error: "Vertrag nicht gefunden" }, { status: 404 });
       }
 
-      if (
-        existingContract.signatureProvider === "DOCUSIGN" &&
-        existingContract.docusignEnvelopeId
-      ) {
-        return NextResponse.json({
-          success: true,
-          alreadyAccepted: true,
-          signingUrl: null,
-          provider: "DOCUSIGN",
-          message:
-            "Der Vertrag wurde bereits an DocuSign übermittelt. Bitte prüfen Sie Ihr E-Mail-Postfach auf die DocuSign-Nachricht.",
-        });
-      }
+      const tokenExpired =
+        !existingContract.signatureTokenExpiresAt ||
+        existingContract.signatureTokenExpiresAt < now;
+      const needsRefresh =
+        !existingContract.signingUrl ||
+        !existingContract.signatureTokenHash ||
+        tokenExpired ||
+        existingContract.signatureProvider !== "INTERNAL";
 
-      if (existingContract.signatureProvider !== "INTERNAL" && existingContract.signingUrl) {
-        return NextResponse.json({
-          success: true,
-          alreadyAccepted: true,
-          signingUrl: existingContract.signingUrl,
-          provider: existingContract.signatureProvider,
-        });
-      }
-
-      if (
-        existingContract.signatureProvider === "INTERNAL" ||
-        !docusignReady ||
-        !existingContract.signingUrl
-      ) {
-        const hasExpiredToken =
-          !existingContract.signatureTokenExpiresAt ||
-          existingContract.signatureTokenExpiresAt < now;
-        const needsInternalRefresh =
-          !existingContract.signingUrl ||
-          !existingContract.signatureTokenHash ||
-          hasExpiredToken;
-
-        if (needsInternalRefresh) {
-          const tokenPayload = issueFallbackSigningToken();
-          const signingUrl = buildFallbackSigningUrl(tokenPayload.token, offer.token);
-          const tokenExpiresAt = getFallbackSigningExpiry(now);
-
-          const patchedContract = await prisma.contract.update({
-            where: { id: existingContract.id },
-            data: {
-              signatureProvider: "INTERNAL",
-              docusignStatus: "internal_pending",
-              signingUrl,
-              signatureTokenHash: tokenPayload.tokenHash,
-              signatureTokenExpiresAt: tokenExpiresAt,
-              sentForSigningAt: existingContract.sentForSigningAt ?? now,
-            },
-          });
-
-          const emailResult = await sendSigningEmail({
-            customerName: offer.customerName,
-            customerEmail: offer.customerEmail,
-            signingLink: signingUrl,
-            provider: "INTERNAL",
-            contractPdfUrl: patchedContract.contractPdfUrl,
-          });
-
-          console.info(`[signing] provider=INTERNAL link_created=true email_sent=${emailResult.success}`);
-
-          return NextResponse.json({
-            success: true,
-            alreadyAccepted: true,
-            signingUrl,
-            provider: "INTERNAL",
-            warning: emailResult.success
-              ? undefined
-              : "Signatur-Link wurde erstellt, aber die E-Mail konnte nicht zugestellt werden.",
-          });
-        }
-
+      if (!needsRefresh) {
         return NextResponse.json({
           success: true,
           alreadyAccepted: true,
@@ -139,13 +76,37 @@ export async function POST(
         });
       }
 
-      return NextResponse.json(
-        {
-          error:
-            "Angebot ist bereits angenommen, aber derzeit ist kein gültiger Signaturpfad verfügbar.",
+      const refreshed = ensureInternalSigning(offer.token, now);
+      const updated = await prisma.contract.update({
+        where: { id: existingContract.id },
+        data: {
+          signatureProvider: "INTERNAL",
+          docusignEnvelopeId: null,
+          docusignStatus: "internal_pending",
+          signingUrl: refreshed.signingUrl,
+          signatureTokenHash: refreshed.signatureTokenHash,
+          signatureTokenExpiresAt: refreshed.signatureTokenExpiresAt,
+          sentForSigningAt: existingContract.sentForSigningAt ?? now,
         },
-        { status: 409 },
-      );
+      });
+
+      const emailResult = await sendSigningEmail({
+        customerName: offer.customerName,
+        customerEmail: offer.customerEmail,
+        signingLink: refreshed.signingUrl,
+        provider: "INTERNAL",
+        contractPdfUrl: updated.contractPdfUrl,
+      });
+
+      return NextResponse.json({
+        success: true,
+        alreadyAccepted: true,
+        signingUrl: refreshed.signingUrl,
+        provider: "INTERNAL",
+        warning: emailResult.success
+          ? undefined
+          : "Signatur-Link wurde erstellt, aber die E-Mail konnte nicht zugestellt werden.",
+      });
     }
 
     await prisma.offer.update({
@@ -200,162 +161,40 @@ export async function POST(
       console.warn("[accept] Supabase storage unavailable:", err instanceof Error ? err.message : err);
     }
 
-    if (!docusignReady) {
-      const tokenPayload = issueFallbackSigningToken();
-      const signingUrl = buildFallbackSigningUrl(tokenPayload.token, offer.token);
-      const tokenExpiresAt = getFallbackSigningExpiry(now);
+    const signing = ensureInternalSigning(offer.token, now);
 
-      const contractDataBase = {
+    const contract = await prisma.contract.create({
+      data: {
         offerId: offer.id,
-        status: "PENDING_SIGNATURE" as const,
-        signatureProvider: "INTERNAL" as const,
+        contractNo,
+        status: "PENDING_SIGNATURE",
+        signatureProvider: "INTERNAL",
         docusignEnvelopeId: null,
         docusignStatus: "internal_pending",
         contractPdfUrl,
-        signingUrl,
-        signatureTokenHash: tokenPayload.tokenHash,
-        signatureTokenExpiresAt: tokenExpiresAt,
+        signingUrl: signing.signingUrl,
+        signatureTokenHash: signing.signatureTokenHash,
+        signatureTokenExpiresAt: signing.signatureTokenExpiresAt,
         sentForSigningAt: now,
-      };
-      const contract = await prisma.contract.create({
-        data: {
-          ...contractDataBase,
-          contractNo,
-        },
-      });
-
-      const emailResult = await sendSigningEmail({
-        customerName: offer.customerName,
-        customerEmail: offer.customerEmail,
-        signingLink: signingUrl,
-        provider: "INTERNAL",
-        contractPdfUrl,
-      });
-
-      console.info(`[signing] provider=INTERNAL link_created=true email_sent=${emailResult.success}`);
-
-      return NextResponse.json({
-        success: true,
-        contractId: contract.id,
-        signingUrl,
-        provider: "INTERNAL",
-        warning: emailResult.success
-          ? undefined
-          : "Vertrag wurde erstellt, aber der Signatur-Link konnte nicht per E-Mail zugestellt werden.",
-      });
-    }
-
-    const { getDocuSignAccountId, getEnvelopesApi } = await import("@/lib/docusign");
-    const docusign = (await import("docusign-esign")).default;
-
-    const envelopesApi = await getEnvelopesApi();
-    const accountId = getDocuSignAccountId();
-
-    const envelopeDefinition = new docusign.EnvelopeDefinition();
-    envelopeDefinition.emailSubject = "Umzugsvertrag - Schnell Sicher Umzug";
-    envelopeDefinition.status = "sent";
-
-    const document = new docusign.Document();
-    document.documentBase64 = contractPdfBuffer.toString("base64");
-    document.name = `Umzugsvertrag-${contractNo}.pdf`;
-    document.fileExtension = "pdf";
-    document.documentId = "1";
-    envelopeDefinition.documents = [document];
-
-    const signer = new docusign.Signer();
-    signer.email = offer.customerEmail;
-    signer.name = offer.customerName;
-    signer.recipientId = "1";
-    signer.routingOrder = "1";
-
-    const signHere = new docusign.SignHere();
-    signHere.documentId = "1";
-    signHere.pageNumber = "1";
-    signHere.recipientId = "1";
-    signHere.tabLabel = "SignHereTab";
-    signHere.xPosition = "100";
-    signHere.yPosition = "700";
-
-    const signHereTabs = new docusign.Tabs();
-    signHereTabs.signHereTabs = [signHere];
-    signer.tabs = signHereTabs;
-
-    const recipients = new docusign.Recipients();
-    recipients.signers = [signer];
-    envelopeDefinition.recipients = recipients;
-
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    const eventNotification = new docusign.EventNotification();
-    eventNotification.url = `${baseUrl}/api/docusign/webhook`;
-    eventNotification.loggingEnabled = "true";
-    eventNotification.requireAcknowledgment = "true";
-    eventNotification.useSoapInterface = "false";
-    eventNotification.includeCertificateWithSoap = "false";
-    eventNotification.signMessageWithX509Cert = "false";
-    eventNotification.includeDocuments = "true";
-    eventNotification.includeEnvelopeVoidReason = "true";
-    eventNotification.includeTimeZone = "true";
-    eventNotification.includeSenderAccountAsCustomField = "true";
-    eventNotification.includeDocumentFields = "true";
-    eventNotification.includeCertificateOfCompletion = "true";
-
-    const envelopeEvent = new docusign.EnvelopeEvent();
-    envelopeEvent.envelopeEventStatusCode = "completed";
-    eventNotification.envelopeEvents = [envelopeEvent];
-    envelopeDefinition.eventNotification = eventNotification;
-
-    const results = await envelopesApi.createEnvelope(accountId, {
-      envelopeDefinition,
-    });
-
-    const envelopeId = results.envelopeId!;
-
-    const contractDataBase = {
-      offerId: offer.id,
-      status: "PENDING_SIGNATURE" as const,
-      signatureProvider: "DOCUSIGN" as const,
-      docusignEnvelopeId: envelopeId,
-      docusignStatus: "sent",
-      contractPdfUrl,
-      signingUrl: null,
-      sentForSigningAt: now,
-    };
-    const contract = await prisma.contract.create({
-      data: {
-        ...contractDataBase,
-        contractNo,
       },
     });
 
-    const signingEmailResult = await sendSigningEmail({
+    const emailResult = await sendSigningEmail({
       customerName: offer.customerName,
       customerEmail: offer.customerEmail,
-      provider: "DOCUSIGN",
+      signingLink: signing.signingUrl,
+      provider: "INTERNAL",
       contractPdfUrl,
     });
-
-    console.info(
-      `[signing] provider=DOCUSIGN remote=true envelope_sent=true email_sent=${signingEmailResult.success}`,
-    );
-
-    if (!signingEmailResult.success) {
-      return NextResponse.json({
-        success: true,
-        contractId: contract.id,
-        signingUrl: null,
-        provider: "DOCUSIGN",
-        warning:
-          "DocuSign wurde gestartet, aber unsere Hinweis-E-Mail konnte nicht zugestellt werden. Bitte prüfen Sie Ihr Postfach auf die DocuSign-Nachricht oder senden Sie aus dem Admin-Bereich erneut.",
-      });
-    }
 
     return NextResponse.json({
       success: true,
       contractId: contract.id,
-      signingUrl: null,
-      provider: "DOCUSIGN",
-      message:
-        "Der Signaturprozess wurde via DocuSign gestartet. Bitte prüfen Sie Ihr E-Mail-Postfach auf die DocuSign-Nachricht.",
+      signingUrl: signing.signingUrl,
+      provider: "INTERNAL",
+      warning: emailResult.success
+        ? undefined
+        : "Vertrag wurde erstellt, aber der Signatur-Link konnte nicht per E-Mail zugestellt werden.",
     });
   } catch (error) {
     console.error("[accept] Error:", error);

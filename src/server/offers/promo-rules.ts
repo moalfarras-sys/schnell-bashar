@@ -3,7 +3,7 @@ import type { WizardPayload } from "@/lib/wizard-schema";
 export type PromoRuleLike = {
   id?: string;
   code: string;
-  moduleSlug: "MONTAGE" | "ENTSORGUNG" | null;
+  moduleSlug: "MONTAGE" | "ENTSORGUNG" | "SPECIAL" | null;
   serviceTypeScope: WizardPayload["serviceType"] | null;
   discountType: "PERCENT" | "FLAT_CENTS";
   discountValue: number;
@@ -21,6 +21,7 @@ export function normalizePromoCode(input?: string | null) {
 export function bookingContextToModuleSlug(context?: WizardPayload["bookingContext"]) {
   if (context === "MONTAGE") return "MONTAGE" as const;
   if (context === "ENTSORGUNG") return "ENTSORGUNG" as const;
+  if (context === "SPECIAL") return "SPECIAL" as const;
   return null;
 }
 

@@ -44,6 +44,7 @@ enum ContactPreference {
 enum ServiceModuleSlug {
   MONTAGE
   ENTSORGUNG
+  SPECIAL
 }
 
 enum ServiceOptionPricingType {
@@ -247,15 +248,45 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  lines    OrderLine[]
-  uploads  OrderUpload[]
-  offer    Offer?
-  invoices Invoice[]
+  lines        OrderLine[]
+  serviceItems OrderServiceItem[]
+  uploads      OrderUpload[]
+  offer        Offer?
+  invoices     Invoice[]
 
   @@index([slotStart])
   @@index([requestedDateFrom])
   @@index([scheduledAt])
   @@index([status])
+}
+
+enum OrderServiceKind {
+  UMZUG
+  MONTAGE
+  ENTSORGUNG
+  SPECIAL
+}
+
+model OrderServiceItem {
+  id String @id @default(cuid())
+
+  orderId String
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  kind              OrderServiceKind
+  moduleId          String?
+  serviceOptionCode String?
+  titleDe           String
+  detailsJson       Json?
+  qty               Int      @default(1)
+  unit              String   @default("Pauschale")
+  unitPriceCents    Int      @default(0)
+  lineTotalCents    Int      @default(0)
+  sortOrder         Int      @default(0)
+  createdAt         DateTime @default(now())
+
+  @@index([orderId, sortOrder])
+  @@index([kind])
 }
 
 model OrderLine {

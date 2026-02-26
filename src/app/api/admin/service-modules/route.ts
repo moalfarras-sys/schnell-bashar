@@ -7,7 +7,7 @@ import { adminCookieName, verifyAdminToken } from "@/server/auth/admin-session";
 import { hasPermission } from "@/server/auth/admin-permissions";
 
 const createSchema = z.object({
-  slug: z.enum(["MONTAGE", "ENTSORGUNG"]),
+  slug: z.enum(["MONTAGE", "ENTSORGUNG", "SPECIAL"]),
   nameDe: z.string().trim().min(2).max(100),
   descriptionDe: z.string().trim().max(500).optional().nullable(),
   sortOrder: z.number().int().min(0).max(9999).default(0),

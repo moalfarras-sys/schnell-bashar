@@ -6,6 +6,7 @@ import fs from "node:fs/promises";
 import { nanoid } from "nanoid";
 import { addDays, format, parseISO } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
+import type { Prisma } from "../../../../prisma/generated/prisma/client";
 
 import { prisma } from "@/server/db/prisma";
 import { wizardPayloadSchema, type WizardPayload } from "@/lib/wizard-schema";
@@ -43,6 +44,7 @@ function eur(cents: number) {
 function bookingContextLabel(context: WizardPayload["bookingContext"]) {
   if (context === "MONTAGE") return "Montage";
   if (context === "ENTSORGUNG") return "Entsorgung";
+  if (context === "SPECIAL") return "Spezialservice";
   return "Standard";
 }
 
@@ -50,6 +52,91 @@ function toOfferServiceType(serviceType: WizardPayload["serviceType"]) {
   if (serviceType === "DISPOSAL") return "ENTSORGUNG";
   if (serviceType === "BOTH") return "KOMBI";
   return "UMZUG";
+}
+
+type CartKind = WizardPayload["serviceCart"][number]["kind"];
+
+const cartKindLabel: Record<CartKind, string> = {
+  UMZUG: "Umzug",
+  MONTAGE: "Montage",
+  ENTSORGUNG: "Entsorgung",
+  SPECIAL: "Spezialservice",
+};
+
+function normalizeServiceCart(payload: WizardPayload): WizardPayload["serviceCart"] {
+  const fromPayload = (payload.serviceCart ?? []).filter(Boolean);
+  if (fromPayload.length > 0) {
+    const dedupe = new Map<string, WizardPayload["serviceCart"][number]>();
+    for (const item of fromPayload) {
+      const key = `${item.kind}:${item.moduleSlug ?? "-"}`;
+      if (!dedupe.has(key)) dedupe.set(key, item);
+    }
+    return [...dedupe.values()];
+  }
+
+  const inferred: WizardPayload["serviceCart"] = [];
+  if (payload.serviceType === "MOVING" || payload.serviceType === "BOTH") {
+    inferred.push({ kind: "UMZUG", qty: 1, titleDe: cartKindLabel.UMZUG });
+  }
+  if (payload.serviceType === "DISPOSAL" || payload.serviceType === "BOTH") {
+    inferred.push({
+      kind: "ENTSORGUNG",
+      moduleSlug: "ENTSORGUNG",
+      qty: 1,
+      titleDe: cartKindLabel.ENTSORGUNG,
+    });
+  }
+  if (payload.bookingContext === "MONTAGE") {
+    inferred.push({
+      kind: "MONTAGE",
+      moduleSlug: "MONTAGE",
+      qty: 1,
+      titleDe: cartKindLabel.MONTAGE,
+    });
+  }
+  if (payload.bookingContext === "SPECIAL") {
+    inferred.push({
+      kind: "SPECIAL",
+      moduleSlug: "SPECIAL",
+      qty: 1,
+      titleDe: cartKindLabel.SPECIAL,
+    });
+  }
+
+  if (inferred.length === 0) {
+    inferred.push({ kind: "UMZUG", qty: 1, titleDe: cartKindLabel.UMZUG });
+  }
+
+  return inferred;
+}
+
+function deriveLegacyShapeFromCart(
+  cart: WizardPayload["serviceCart"],
+): Pick<WizardPayload, "serviceType" | "bookingContext"> {
+  const hasMoving = cart.some((item) => item.kind === "UMZUG");
+  const hasDisposal = cart.some((item) => item.kind === "ENTSORGUNG");
+  const hasMontage = cart.some((item) => item.kind === "MONTAGE");
+  const hasSpecial = cart.some((item) => item.kind === "SPECIAL");
+
+  const serviceType: WizardPayload["serviceType"] = hasMoving && hasDisposal
+    ? "BOTH"
+    : hasDisposal
+      ? "DISPOSAL"
+      : "MOVING";
+
+  let bookingContext: WizardPayload["bookingContext"] = "STANDARD";
+  if (!hasMoving && !hasDisposal && hasSpecial) bookingContext = "SPECIAL";
+  else if (!hasMoving && !hasDisposal && hasMontage) bookingContext = "MONTAGE";
+  else if (!hasMoving && hasDisposal && !hasMontage && !hasSpecial) bookingContext = "ENTSORGUNG";
+
+  return { serviceType, bookingContext };
+}
+
+function propsModuleIdForSlug(
+  slug: "MONTAGE" | "ENTSORGUNG" | "SPECIAL",
+  options: Array<{ moduleId: string; module: { slug: "MONTAGE" | "ENTSORGUNG" | "SPECIAL" } }>,
+) {
+  return options.find((option) => option.module.slug === slug)?.moduleId ?? null;
 }
 
 const addonLabels: Record<WizardPayload["addons"][number], string> = {
@@ -105,11 +192,20 @@ export async function POST(req: Request) {
     );
   }
 
-  const payload: WizardPayload = parsed.data;
+  const parsedPayload: WizardPayload = parsed.data;
+  const serviceCart = normalizeServiceCart(parsedPayload);
+  const legacyShape = deriveLegacyShapeFromCart(serviceCart);
+  const payload: WizardPayload = {
+    ...parsedPayload,
+    payloadVersion: 2,
+    serviceCart,
+    serviceType: legacyShape.serviceType,
+    bookingContext: legacyShape.bookingContext,
+  };
 
   // Normalize required addresses based on service type
   if (payload.serviceType === "MOVING") {
-    if (payload.bookingContext === "MONTAGE") {
+    if (payload.bookingContext === "MONTAGE" || payload.bookingContext === "SPECIAL") {
       if (!payload.pickupAddress) {
         return NextResponse.json(
           { error: "Einsatzadresse ist für Montage erforderlich." },
@@ -239,7 +335,9 @@ export async function POST(req: Request) {
       ? "MONTAGE"
       : payload.bookingContext === "ENTSORGUNG"
         ? "ENTSORGUNG"
-        : null;
+        : payload.bookingContext === "SPECIAL"
+          ? "SPECIAL"
+          : null;
 
   const allowedServiceCodes = new Set(
     serviceOptionsData
@@ -497,6 +595,56 @@ export async function POST(req: Request) {
     lineVolumeM3: row.lineVolumeM3,
   }));
 
+  const serviceOptionByCode = new Map(serviceOptionsData.map((option) => [option.code, option]));
+
+  const orderServiceItemCreates: Prisma.OrderServiceItemCreateWithoutOrderInput[] = [
+    ...payload.serviceCart.map((item, index) => ({
+      kind: item.kind,
+      moduleId:
+        item.moduleSlug != null
+          ? (propsModuleIdForSlug(item.moduleSlug, serviceOptionsData) ?? null)
+          : null,
+      serviceOptionCode: null as string | null,
+      titleDe: item.titleDe?.trim() || cartKindLabel[item.kind],
+      detailsJson: item.details
+        ? (item.details as Prisma.InputJsonValue)
+        : undefined,
+      qty: Math.max(1, Math.min(50, item.qty || 1)),
+      unit: "Leistung",
+      unitPriceCents: 0,
+      lineTotalCents: 0,
+      sortOrder: index,
+    })),
+    ...normalizedSelectedServiceOptions.map((item, index) => {
+      const option = serviceOptionByCode.get(item.code);
+      const qty = Math.max(1, Math.min(50, item.qty || 1));
+      const unitPriceCents = option?.defaultPriceCents ?? 0;
+      const lineTotalCents = unitPriceCents * qty;
+      const kind: CartKind =
+        option?.module.slug === "MONTAGE"
+          ? "MONTAGE"
+          : option?.module.slug === "ENTSORGUNG"
+            ? "ENTSORGUNG"
+            : option?.module.slug === "SPECIAL"
+              ? "SPECIAL"
+              : "UMZUG";
+      return {
+        kind,
+        moduleId: option?.moduleId ?? null,
+        serviceOptionCode: item.code,
+        titleDe: option?.nameDe || item.code,
+        detailsJson: item.meta
+          ? (item.meta as Prisma.InputJsonValue)
+          : undefined,
+        qty,
+        unit: option?.requiresQuantity ? "Stück" : "Pauschale",
+        unitPriceCents,
+        lineTotalCents,
+        sortOrder: payload.serviceCart.length + index,
+      };
+    }),
+  ];
+
   const persistedPayload: WizardPayload = {
     ...normalizedPayload,
     offerContext: normalizedOfferCode
@@ -541,6 +689,9 @@ export async function POST(req: Request) {
     lines: {
       create: [...moveLineCreates, ...disposalLineCreates],
     },
+    serviceItems: {
+      create: orderServiceItemCreates,
+    },
     uploads: savedUploads.length
       ? {
           create: savedUploads.map((u) => ({
@@ -553,14 +704,14 @@ export async function POST(req: Request) {
       : undefined,
   };
 
-  const serviceLabel =
-    payload.serviceType === "MOVING"
-      ? "Umzug"
-      : payload.serviceType === "DISPOSAL"
-        ? "Entsorgung"
-        : "Umzug + Entsorgung";
+  const serviceLabel = payload.serviceCart.map((item) => cartKindLabel[item.kind]).join(" + ");
+  const baseServiceLines = payload.serviceCart.map((item) => ({
+    name: item.titleDe?.trim() || cartKindLabel[item.kind],
+    quantity: Math.max(1, Math.min(50, item.qty || 1)),
+    unit: "Leistung",
+  }));
   const selectedServiceLines = normalizedSelectedServiceOptions.map((item) => {
-    const option = serviceOptionsData.find((row) => row.code === item.code);
+    const option = serviceOptionByCode.get(item.code);
     return {
       name: option?.nameDe || item.code,
       quantity: item.qty,
@@ -568,8 +719,8 @@ export async function POST(req: Request) {
     };
   });
   const services =
-    selectedServiceLines.length > 0
-      ? selectedServiceLines
+    baseServiceLines.length + selectedServiceLines.length > 0
+      ? [...baseServiceLines, ...selectedServiceLines]
       : [
           {
             name: serviceLabel,
@@ -778,6 +929,7 @@ export async function POST(req: Request) {
       })()
     : null;
   const pdfToken = await signPdfAccessToken(order.publicId);
+  const packageTier = payload.packageTier ?? "PLUS";
 
   return NextResponse.json({
     ok: true,
@@ -792,6 +944,17 @@ export async function POST(req: Request) {
     trackingUrl: `/anfrage/${order.publicId}`,
     pdfToken,
     price: `${eur(estimate.priceMinCents)} – ${eur(estimate.priceMaxCents)}`,
+    pricingSummary: {
+      minCents: estimate.priceMinCents,
+      maxCents: estimate.priceMaxCents,
+      subtotalCents: estimate.breakdown.subtotalCents,
+      totalCents: estimate.breakdown.totalCents,
+      vatCents,
+      grossCents,
+      packageTier,
+      serviceCount: payload.serviceCart.length,
+    },
+    serviceCart: payload.serviceCart,
     whatsappUrl: waUrl,
   });
 }

@@ -25,6 +25,8 @@ export default async function BookingPage({
       ? ("montage" as const)
       : requestedContext === "ENTSORGUNG"
         ? ("entsorgung" as const)
+        : requestedContext === "SPECIAL"
+          ? ("special" as const)
         : ("default" as const);
 
   let config: Awaited<ReturnType<typeof loadBookingConfig>> = null;
@@ -43,7 +45,9 @@ export default async function BookingPage({
   return (
     <BookingWizard
       variant={variant}
-      initialServiceType={variant === "entsorgung" ? "DISPOSAL" : initialServiceType}
+      initialServiceType={
+        variant === "entsorgung" ? "DISPOSAL" : variant === "special" ? "MOVING" : initialServiceType
+      }
       catalog={config.catalog}
       pricing={config.pricing}
       modules={config.modules}

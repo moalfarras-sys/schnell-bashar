@@ -23,6 +23,7 @@ const settingsSchema = z.object({
   whatsappMetaAccessToken: z.string().trim().max(500),
   whatsappMetaVerifyToken: z.string().trim().max(180),
   whatsappMetaDefaultTemplate: z.string().trim().min(2).max(80),
+  signingMode: z.enum(["INTERNAL_ONLY", "HYBRID"]).default("INTERNAL_ONLY"),
 });
 
 export async function GET() {

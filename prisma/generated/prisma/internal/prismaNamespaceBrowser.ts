@@ -59,6 +59,7 @@ export const ModelName = {
   AvailabilityRule: 'AvailabilityRule',
   AvailabilityException: 'AvailabilityException',
   Order: 'Order',
+  OrderServiceItem: 'OrderServiceItem',
   OrderLine: 'OrderLine',
   OrderUpload: 'OrderUpload',
   WhatsAppConversation: 'WhatsAppConversation',
@@ -287,6 +288,25 @@ export const OrderScalarFieldEnum = {
 } as const
 
 export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+export const OrderServiceItemScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  kind: 'kind',
+  moduleId: 'moduleId',
+  serviceOptionCode: 'serviceOptionCode',
+  titleDe: 'titleDe',
+  detailsJson: 'detailsJson',
+  qty: 'qty',
+  unit: 'unit',
+  unitPriceCents: 'unitPriceCents',
+  lineTotalCents: 'lineTotalCents',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type OrderServiceItemScalarFieldEnum = (typeof OrderServiceItemScalarFieldEnum)[keyof typeof OrderServiceItemScalarFieldEnum]
 
 
 export const OrderLineScalarFieldEnum = {

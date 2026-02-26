@@ -15,7 +15,7 @@ export async function sendSigningEmail(
     customerName,
     customerEmail,
     signingLink = null,
-    provider = "DOCUSIGN",
+    provider = "INTERNAL",
     contractPdfUrl = null,
   } = params;
 

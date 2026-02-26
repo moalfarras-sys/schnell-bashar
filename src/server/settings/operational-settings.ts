@@ -16,6 +16,7 @@ export type OperationalSettings = {
   whatsappMetaAccessToken: string;
   whatsappMetaVerifyToken: string;
   whatsappMetaDefaultTemplate: string;
+  signingMode: "INTERNAL_ONLY" | "HYBRID";
 };
 
 const SETTINGS_KEYS = {
@@ -35,6 +36,7 @@ const SETTINGS_KEYS = {
   whatsappMetaAccessToken: "config.whatsapp.meta.access_token",
   whatsappMetaVerifyToken: "config.whatsapp.meta.verify_token",
   whatsappMetaDefaultTemplate: "config.whatsapp.meta.default_template",
+  signingMode: "config.signing.mode",
 } as const;
 
 const DEFAULT_SETTINGS: OperationalSettings = {
@@ -54,6 +56,7 @@ const DEFAULT_SETTINGS: OperationalSettings = {
   whatsappMetaAccessToken: "",
   whatsappMetaVerifyToken: "",
   whatsappMetaDefaultTemplate: "schnell_sicher_status_update",
+  signingMode: "INTERNAL_ONLY",
 };
 
 function toBool(value: string | null | undefined, fallback: boolean) {
@@ -74,6 +77,14 @@ function toInt(value: string | null | undefined, fallback: number) {
   const n = Number(value);
   if (!Number.isFinite(n)) return fallback;
   return Math.max(0, Math.round(n));
+}
+
+function toSigningMode(value: string | null | undefined): "INTERNAL_ONLY" | "HYBRID" {
+  const normalized = String(value ?? "")
+    .trim()
+    .toUpperCase();
+  if (normalized === "HYBRID") return "HYBRID";
+  return "INTERNAL_ONLY";
 }
 
 export async function loadOperationalSettings(): Promise<OperationalSettings> {
@@ -139,6 +150,9 @@ export async function loadOperationalSettings(): Promise<OperationalSettings> {
     whatsappMetaDefaultTemplate:
       map.get(SETTINGS_KEYS.whatsappMetaDefaultTemplate)?.trim() ||
       DEFAULT_SETTINGS.whatsappMetaDefaultTemplate,
+    signingMode: toSigningMode(
+      map.get(SETTINGS_KEYS.signingMode) ?? process.env.SIGNING_MODE,
+    ),
   };
 }
 
@@ -184,6 +198,10 @@ export async function saveOperationalSettings(
     whatsappMetaDefaultTemplate:
       incoming.whatsappMetaDefaultTemplate?.trim() ||
       DEFAULT_SETTINGS.whatsappMetaDefaultTemplate,
+    signingMode:
+      incoming.signingMode === "HYBRID"
+        ? "HYBRID"
+        : DEFAULT_SETTINGS.signingMode,
   };
 
   await Promise.all([
@@ -326,6 +344,15 @@ export async function saveOperationalSettings(
         type: "config",
         key: SETTINGS_KEYS.whatsappMetaDefaultTemplate,
         value: merged.whatsappMetaDefaultTemplate,
+      },
+    }),
+    prisma.contentSlot.upsert({
+      where: { key: SETTINGS_KEYS.signingMode },
+      update: { type: "config", value: merged.signingMode },
+      create: {
+        type: "config",
+        key: SETTINGS_KEYS.signingMode,
+        value: merged.signingMode,
       },
     }),
   ]);

@@ -392,6 +392,7 @@ export const ModelName = {
   AvailabilityRule: 'AvailabilityRule',
   AvailabilityException: 'AvailabilityException',
   Order: 'Order',
+  OrderServiceItem: 'OrderServiceItem',
   OrderLine: 'OrderLine',
   OrderUpload: 'OrderUpload',
   WhatsAppConversation: 'WhatsAppConversation',
@@ -428,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "catalogItem" | "pricingConfig" | "serviceModule" | "serviceOption" | "promoRule" | "availabilityRule" | "availabilityException" | "order" | "orderLine" | "orderUpload" | "whatsAppConversation" | "offer" | "contract" | "routeDistanceCache" | "documentSequence" | "mediaAsset" | "mediaAssetVariant" | "contentSlot" | "slotRegistry" | "jobPosting" | "invoice" | "payment" | "adminUser" | "role" | "permission" | "userRole" | "rolePermission" | "auditLog" | "contentRevision"
+    modelProps: "catalogItem" | "pricingConfig" | "serviceModule" | "serviceOption" | "promoRule" | "availabilityRule" | "availabilityException" | "order" | "orderServiceItem" | "orderLine" | "orderUpload" | "whatsAppConversation" | "offer" | "contract" | "routeDistanceCache" | "documentSequence" | "mediaAsset" | "mediaAssetVariant" | "contentSlot" | "slotRegistry" | "jobPosting" | "invoice" | "payment" | "adminUser" | "role" | "permission" | "userRole" | "rolePermission" | "auditLog" | "contentRevision"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1021,6 +1022,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.OrderCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.OrderCountAggregateOutputType> | number
+        }
+      }
+    }
+    OrderServiceItem: {
+      payload: Prisma.$OrderServiceItemPayload<ExtArgs>
+      fields: Prisma.OrderServiceItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OrderServiceItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderServiceItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OrderServiceItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderServiceItemPayload>
+        }
+        findFirst: {
+          args: Prisma.OrderServiceItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderServiceItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OrderServiceItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderServiceItemPayload>
+        }
+        findMany: {
+          args: Prisma.OrderServiceItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderServiceItemPayload>[]
+        }
+        create: {
+          args: Prisma.OrderServiceItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderServiceItemPayload>
+        }
+        createMany: {
+          args: Prisma.OrderServiceItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OrderServiceItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderServiceItemPayload>[]
+        }
+        delete: {
+          args: Prisma.OrderServiceItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderServiceItemPayload>
+        }
+        update: {
+          args: Prisma.OrderServiceItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderServiceItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.OrderServiceItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OrderServiceItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OrderServiceItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderServiceItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.OrderServiceItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderServiceItemPayload>
+        }
+        aggregate: {
+          args: Prisma.OrderServiceItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOrderServiceItem>
+        }
+        groupBy: {
+          args: Prisma.OrderServiceItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrderServiceItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OrderServiceItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrderServiceItemCountAggregateOutputType> | number
         }
       }
     }
@@ -2808,6 +2883,25 @@ export const OrderScalarFieldEnum = {
 export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
+export const OrderServiceItemScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  kind: 'kind',
+  moduleId: 'moduleId',
+  serviceOptionCode: 'serviceOptionCode',
+  titleDe: 'titleDe',
+  detailsJson: 'detailsJson',
+  qty: 'qty',
+  unit: 'unit',
+  unitPriceCents: 'unitPriceCents',
+  lineTotalCents: 'lineTotalCents',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type OrderServiceItemScalarFieldEnum = (typeof OrderServiceItemScalarFieldEnum)[keyof typeof OrderServiceItemScalarFieldEnum]
+
+
 export const OrderLineScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
@@ -3410,6 +3504,20 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'OrderServiceKind'
+ */
+export type EnumOrderServiceKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderServiceKind'>
+    
+
+
+/**
+ * Reference to a field of type 'OrderServiceKind[]'
+ */
+export type ListEnumOrderServiceKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderServiceKind[]'>
+    
+
+
+/**
  * Reference to a field of type 'OfferStatus'
  */
 export type EnumOfferStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OfferStatus'>
@@ -3609,6 +3717,7 @@ export type GlobalOmitConfig = {
   availabilityRule?: Prisma.AvailabilityRuleOmit
   availabilityException?: Prisma.AvailabilityExceptionOmit
   order?: Prisma.OrderOmit
+  orderServiceItem?: Prisma.OrderServiceItemOmit
   orderLine?: Prisma.OrderLineOmit
   orderUpload?: Prisma.OrderUploadOmit
   whatsAppConversation?: Prisma.WhatsAppConversationOmit
