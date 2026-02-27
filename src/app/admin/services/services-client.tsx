@@ -261,7 +261,7 @@ export function ServicesAdminClient(props: {
           <input
             value={newModuleName}
             onChange={(e) => setNewModuleName(e.target.value)}
-            placeholder="Name (DE)"
+            placeholder="Name (Deutsch)"
             className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white"
           />
           <input
@@ -334,7 +334,7 @@ export function ServicesAdminClient(props: {
             ))}
           </select>
           <select name="serviceTypeScope" className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white">
-            <option value="">Alle ServiceTypes</option>
+            <option value="">Alle Leistungsarten</option>
             <option value="MOVING">MOVING</option>
             <option value="DISPOSAL">DISPOSAL</option>
             <option value="BOTH">BOTH</option>
@@ -343,9 +343,9 @@ export function ServicesAdminClient(props: {
             <option value="PERCENT">PERCENT</option>
             <option value="FLAT_CENTS">FLAT_CENTS</option>
           </select>
-          <input name="discountValue" type="number" min={1} placeholder="Discount Value" className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white" />
-          <input name="minOrderCents" type="number" min={0} placeholder="Min Order (Cent)" className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white" />
-          <input name="maxDiscountCents" type="number" min={0} placeholder="Max Discount (Cent)" className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white" />
+          <input name="discountValue" type="number" min={1} placeholder="Rabattwert" className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white" />
+          <input name="minOrderCents" type="number" min={0} placeholder="Mindestbestellwert (Cent)" className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white" />
+          <input name="maxDiscountCents" type="number" min={0} placeholder="Maximalrabatt (Cent)" className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white" />
           <button type="submit" className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500">
             Regel anlegen
           </button>
@@ -438,8 +438,8 @@ function CreateServiceOptionForm(props: {
         e.currentTarget.reset();
       }}
     >
-      <input name="code" placeholder="CODE" className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white" />
-      <input name="nameDe" placeholder="Service Name" className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white" />
+      <input name="code" placeholder="Kürzel" className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white" />
+      <input name="nameDe" placeholder="Service-Name" className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white" />
       <select name="pricingType" className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white">
         <option value="FLAT">FLAT</option>
         <option value="PER_UNIT">PER_UNIT</option>
@@ -451,7 +451,7 @@ function CreateServiceOptionForm(props: {
       <button type="submit" className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white hover:bg-blue-500">+ Service</button>
       <input name="descriptionDe" placeholder="Beschreibung" className="md:col-span-2 rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white" />
       <input name="defaultVolumeM3" type="number" min={0} step="0.1" placeholder="Volumen m3" className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white" />
-      <input name="sortOrder" type="number" min={0} placeholder="Sort" className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white" />
+      <input name="sortOrder" type="number" min={0} placeholder="Sortierung" className="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-xs text-white" />
       <label className="flex items-center gap-2 text-xs text-slate-300"><input name="requiresQuantity" type="checkbox" defaultChecked />Menge</label>
       <label className="flex items-center gap-2 text-xs text-slate-300"><input name="requiresPhoto" type="checkbox" />Foto</label>
       <label className="flex items-center gap-2 text-xs text-slate-300"><input name="isHeavy" type="checkbox" />Schwer</label>

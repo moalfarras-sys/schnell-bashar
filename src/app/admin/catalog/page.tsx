@@ -47,7 +47,7 @@ export default async function AdminCatalogPage() {
         <div className="text-sm font-extrabold text-white">Neuer Artikel</div>
         <form action={createCatalogItemAction} className="mt-4 grid gap-3 md:grid-cols-6">
           <div className="md:col-span-2">
-            <div className="text-xs font-bold text-slate-200">Name (DE)</div>
+            <div className="text-xs font-bold text-slate-200">Name (Deutsch)</div>
             <Input name="nameDe" placeholder="z.B. Sofa (2-Sitzer)" required className="border-2 border-slate-600 bg-slate-700 text-white placeholder:text-slate-400" />
           </div>
           <div>

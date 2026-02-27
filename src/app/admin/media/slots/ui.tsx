@@ -115,7 +115,7 @@ export function ImageSlotsManagerClient({
   return (
     <div className="grid gap-6">
       <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
-        <h1 className="text-2xl font-extrabold text-white">Image Slots Manager</h1>
+        <h1 className="text-2xl font-extrabold text-white">Bild-Slot-Verwaltung</h1>
         <p className="mt-1 text-sm text-slate-300">Alle entdeckten Bild-Slots gruppiert nach Quell-Datei.</p>
       </div>
 
@@ -132,7 +132,7 @@ export function ImageSlotsManagerClient({
           onClick={syncSlots}
           disabled={syncing}
         >
-          {syncing ? "Sync..." : "Scan & Sync"}
+          {syncing ? "Synchronisieren..." : "Scannen & synchronisieren"}
         </button>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -176,8 +176,8 @@ export function ImageSlotsManagerClient({
                     <div className="grid gap-3">
                       <div className="text-xs text-slate-300">
                         <div className="font-bold text-slate-100">{item.registry.key}</div>
-                        <div className="mt-1 break-all">Default: {item.registry.defaultPath}</div>
-                        <div className="mt-1">Usage: {item.registry.usageType}</div>
+                        <div className="mt-1 break-all">Standard: {item.registry.defaultPath}</div>
+                        <div className="mt-1">Verwendung: {item.registry.usageType}</div>
                       </div>
 
                       <div className="grid gap-2 md:grid-cols-3">

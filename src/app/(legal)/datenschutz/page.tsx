@@ -1,4 +1,4 @@
-import { Container } from "@/components/container";
+﻿import { Container } from "@/components/container";
 
 export const metadata = {
   title: "Datenschutz",
@@ -32,7 +32,7 @@ export default function DatenschutzPage() {
       <h2>2. Erhebung und Speicherung personenbezogener Daten</h2>
       <p>
         Wir erheben und speichern personenbezogene Daten (z. B. Name, Telefonnummer, E-Mail-Adresse,
-        Anschrift) nur, wenn Sie uns diese freiwillig ü?ber Formulare auf unserer Website oder per
+        Anschrift) nur, wenn Sie uns diese freiwillig über Formulare auf unserer Website oder per
         E-Mail mitteilen.
       </p>
       <p>Die erhobenen Daten werden ausschließlich zur Bearbeitung Ihrer Anfrage verwendet.</p>
@@ -91,4 +91,3 @@ export default function DatenschutzPage() {
     </Container>
   );
 }
-

@@ -1,4 +1,4 @@
-import { Container } from "@/components/container";
+﻿import { Container } from "@/components/container";
 
 export const metadata = {
   title: "Impressum",
@@ -32,11 +32,10 @@ export default function ImpressumPage() {
 
       <h2>Haftungshinweis</h2>
       <p>
-        Trotz sorgfältiger inhaltlicher Kontrolle ü?bernehmen wir keine Haftung für die Inhalte
+        Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte
         externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber
         verantwortlich.
       </p>
     </Container>
   );
 }
-

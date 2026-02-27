@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { FormEvent, useMemo, useState } from "react";
 import { Loader2, MailCheck } from "lucide-react";
@@ -57,7 +57,7 @@ export function ContactForm() {
 
       setStatus({
         type: "success",
-        message: "Vielen Dank. Ihre Anfrage wurde gesendet, wir melden uns schnellstm?glich.",
+        message: "Vielen Dank. Ihre Anfrage wurde gesendet, wir melden uns schnellstmöglich.",
       });
       setName("");
       setEmail("");
@@ -97,7 +97,7 @@ export function ContactForm() {
           <div className="text-xs font-semibold text-slate-800">Leistung</div>
           <Select value={serviceType} onChange={(e) => setServiceType(e.target.value)}>
             <option value="Umzug">Umzug</option>
-            <option value="Entsorgung">Entsorgung / Sperrmll</option>
+            <option value="Entsorgung">Entsorgung / Sperrmüll</option>
             <option value="Montage">Montage</option>
             <option value="Umzug + Entsorgung">Umzug + Entsorgung</option>
           </Select>
@@ -121,7 +121,7 @@ export function ContactForm() {
           required
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Teilen Sie uns Ihre Anfrage mit, wir melden uns schnellstm?glich."
+          placeholder="Teilen Sie uns Ihre Anfrage mit, wir melden uns schnellstmöglich."
         />
       </div>
 
@@ -147,4 +147,3 @@ export function ContactForm() {
     </form>
   );
 }
-

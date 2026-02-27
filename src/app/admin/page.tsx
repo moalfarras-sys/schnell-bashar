@@ -252,7 +252,7 @@ export default async function AdminDashboard() {
             <Button variant="outline-light">Abholkalender</Button>
           </Link>
           <Link href="/admin/media/slots">
-            <Button variant="outline-light">Image Slots</Button>
+            <Button variant="outline-light">Bild-Slots</Button>
           </Link>
         </div>
       </div>

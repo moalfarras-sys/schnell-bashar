@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -34,18 +34,18 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin", label: "Übersicht", icon: LayoutDashboard },
   { href: "/admin/orders", label: "Aufträge", icon: ClipboardList },
   { href: "/admin/offers", label: "Angebote & Verträge", icon: FileText },
   { href: "/admin/offers/new", label: "Neues Angebot", icon: PlusCircle },
   { href: "/admin/contracts/manual", label: "Neuer Vertrag (manuell)", icon: PlusCircle },
   { href: "/admin/catalog", label: "Katalog", icon: Package },
-  { href: "/admin/services", label: "Services & Promos", icon: Wrench },
+  { href: "/admin/services", label: "Services & Promo-Regeln", icon: Wrench },
   { href: "/admin/pricing", label: "Preise", icon: Tag },
   { href: "/admin/availability", label: "Zeitfenster", icon: Calendar },
   { href: "/admin/calendar", label: "Abholkalender", icon: Calendar },
   { href: "/admin/media", label: "Mediathek", icon: ImageIcon },
-  { href: "/admin/media/slots", label: "Image Slots", icon: LayoutTemplate },
+  { href: "/admin/media/slots", label: "Bild-Slots", icon: LayoutTemplate },
   { href: "/admin/content", label: "Inhalte", icon: Type },
   { href: "/admin/settings", label: "Einstellungen", icon: Settings },
   { href: "/admin/jobs", label: "Stellenangebote", icon: Briefcase },
