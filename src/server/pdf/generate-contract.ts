@@ -77,12 +77,19 @@ const FOOTER_H = 32;
 const SAFE_BOTTOM = H - M - FOOTER_H - 10;
 
 export async function generateContractPDF(data: ContractData): Promise<Buffer> {
-  const slotImages = await getImageSlots([
-    { key: "img.pdf.brand.logo", fallbackSrc: "/media/brand/hero-logo.jpeg" },
-    { key: "img.pdf.contract.stamp", fallbackSrc: "/media/brand/company-stamp-clean.png" },
-  ]);
-  const slotLogoPath = publicSrcToAbsolute(slotImages["img.pdf.brand.logo"]?.src || "");
-  const slotStampPath = publicSrcToAbsolute(slotImages["img.pdf.contract.stamp"]?.src || "");
+  let slotLogoPath: string | null = null;
+  let slotStampPath: string | null = null;
+  try {
+    const slotImages = await getImageSlots([
+      { key: "img.pdf.brand.logo", fallbackSrc: "/media/brand/hero-logo.jpeg" },
+      { key: "img.pdf.contract.stamp", fallbackSrc: "/media/brand/company-stamp-clean.png" },
+    ]);
+    slotLogoPath = publicSrcToAbsolute(slotImages["img.pdf.brand.logo"]?.src || "");
+    slotStampPath = publicSrcToAbsolute(slotImages["img.pdf.contract.stamp"]?.src || "");
+  } catch {
+    slotLogoPath = null;
+    slotStampPath = null;
+  }
 
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
@@ -205,25 +212,23 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     doc.text("Auftraggeber", LEFT + colW + 24, y, { width: colW });
     y += 10;
 
-    doc.font("Helvetica-Bold").fontSize(9.5).fillColor(DARK);
-    doc.text("Schnell Sicher Umzug", LEFT, y, { width: colW });
-    doc.text(data.customerName, LEFT + colW + 24, y, { width: colW });
-    y += 13;
-
-    doc.font("Helvetica").fontSize(9).fillColor(BODY);
-    doc.text("Anzengruber Stra\u00DFe 9, 12043 Berlin", LEFT, y, { width: colW });
-    if (data.customerAddress) {
-      doc.text(data.customerAddress, LEFT + colW + 24, y, { width: colW });
+    const rowGap = 6;
+    function twoColumnRow(leftText: string, rightText: string, bold = false) {
+      doc.font(bold ? "Helvetica-Bold" : "Helvetica").fontSize(bold ? 9.5 : 9).fillColor(bold ? DARK : BODY);
+      const safeLeft = sanitizePdfText(leftText);
+      const safeRight = sanitizePdfText(rightText);
+      doc.text(safeLeft, LEFT, y, { width: colW, lineGap: 1.2 });
+      doc.text(safeRight, LEFT + colW + 24, y, { width: colW, lineGap: 1.2 });
+      const leftHeight = doc.heightOfString(safeLeft || " ", { width: colW, lineGap: 1.2 });
+      const rightHeight = doc.heightOfString(safeRight || " ", { width: colW, lineGap: 1.2 });
+      y += Math.max(leftHeight, rightHeight, 14) + rowGap;
     }
-    y += 12;
 
-    doc.text("Tel.: +49 172 9573681", LEFT, y, { width: colW });
-    doc.text(`Tel.: ${data.customerPhone}`, LEFT + colW + 24, y, { width: colW });
-    y += 12;
-
-    doc.text("kontakt@schnellsicherumzug.de", LEFT, y, { width: colW });
-    doc.text(data.customerEmail, LEFT + colW + 24, y, { width: colW });
-    y += 20;
+    twoColumnRow("Schnell Sicher Umzug", data.customerName, true);
+    twoColumnRow("Anzengruber Stra\u00DFe 9, 12043 Berlin", data.customerAddress || " ");
+    twoColumnRow("Tel.: +49 172 9573681", `Tel.: ${data.customerPhone}`);
+    twoColumnRow("kontakt@schnellsicherumzug.de", data.customerEmail);
+    y += 10;
 
     //  § 1 Vertragsgegenstand 
     sectionTitle("\u00A7 1 Vertragsgegenstand");
@@ -269,11 +274,27 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     const col1W = Math.floor(tblW * 0.55);
     const col2W = Math.floor(tblW * 0.15);
     const col3W = tblW - col1W - col2W;
-    const rowH = 18;
+    const minRowH = 18;
     const headerH = 22;
     const padH = 8;
 
-    ensureSpace(headerH + data.services.length * rowH + 100);
+    const serviceRows = data.services.map((service) => {
+      const nameHeight = doc.heightOfString(sanitizePdfText(service.name), {
+        width: col1W - padH * 2,
+        lineGap: 1.2,
+      });
+      const unitHeight = doc.heightOfString(sanitizePdfText(service.unit || "Pauschal"), {
+        width: col3W - padH * 2,
+        lineGap: 1.2,
+      });
+      return {
+        service,
+        rowHeight: Math.max(minRowH, Math.ceil(Math.max(nameHeight, unitHeight) + 10)),
+      };
+    });
+
+    const tableRowsHeight = serviceRows.reduce((sum, row) => sum + row.rowHeight, 0);
+    ensureSpace(headerH + tableRowsHeight + 100);
 
     doc.save();
     doc.rect(tblX, y, tblW, headerH).fill(TABLE_HEADER);
@@ -285,19 +306,28 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     doc.text("Einheit", tblX + col1W + col2W + padH, y + 6, { width: col3W - padH * 2 });
     y += headerH;
 
-    data.services.forEach((s, i) => {
+    serviceRows.forEach((row, i) => {
       const isEven = i % 2 === 0;
       if (isEven) {
         doc.save();
-        doc.rect(tblX, y, tblW, rowH).fill(ACCENT_LIGHT);
+        doc.rect(tblX, y, tblW, row.rowHeight).fill(ACCENT_LIGHT);
         doc.restore();
       }
 
       doc.font("Helvetica").fontSize(9).fillColor(DARK);
-      doc.text(s.name, tblX + padH, y + 4, { width: col1W - padH * 2 });
-      doc.text(s.quantity ? String(s.quantity) : "\u2013", tblX + col1W, y + 4, { width: col2W, align: "center" });
-      doc.text(s.unit || "Pauschal", tblX + col1W + col2W + padH, y + 4, { width: col3W - padH * 2 });
-      y += rowH;
+      doc.text(sanitizePdfText(row.service.name), tblX + padH, y + 4, {
+        width: col1W - padH * 2,
+        lineGap: 1.2,
+      });
+      doc.text(row.service.quantity ? String(row.service.quantity) : "\u2013", tblX + col1W, y + 4, {
+        width: col2W,
+        align: "center",
+      });
+      doc.text(sanitizePdfText(row.service.unit || "Pauschal"), tblX + col1W + col2W + padH, y + 4, {
+        width: col3W - padH * 2,
+        lineGap: 1.2,
+      });
+      y += row.rowHeight;
     });
 
     doc.strokeColor(BORDER).lineWidth(0.5).moveTo(tblX, y).lineTo(tblX + tblW, y).stroke();
@@ -352,8 +382,9 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
       doc.text("Besondere Hinweise:", LEFT, y, { width: CW });
       y += 14;
       doc.font("Helvetica").fontSize(9).fillColor(BODY);
-      doc.text(data.notes, LEFT + 8, y, { width: CW - 16, align: "justify" });
-      y += doc.heightOfString(data.notes, { width: CW - 16 }) + 12;
+      const notesText = sanitizePdfText(data.notes);
+      doc.text(notesText, LEFT + 8, y, { width: CW - 16, align: "justify", lineGap: 1.5 });
+      y += doc.heightOfString(notesText, { width: CW - 16, lineGap: 1.5 }) + 12;
     }
 
     //  § 3 Pflichten 
@@ -420,7 +451,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     sectionTitle("\u00A7 6 Schlussbestimmungen");
     const schluss =
       "Es gilt das Recht der Bundesrepublik Deutschland. Gerichtsstand ist Berlin. " +
-      "\u00C4?nderungen und Erg\u00E4nzungen dieses Vertrages bed\u00FCrfen der Schriftform.";
+      "\u00C4nderungen und Erg\u00E4nzungen dieses Vertrages bed\u00FCrfen der Schriftform.";
     doc.text(schluss, LEFT, y, { width: CW, align: "justify" });
     y += doc.heightOfString(schluss, { width: CW }) + 20;
 
@@ -533,7 +564,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     agbSection(2, "Leistungserbringung", [
       "Der Umfang der zu erbringenden Leistungen ergibt sich aus dem jeweiligen Angebot bzw. Vertrag. " +
         "Der Auftragnehmer ist berechtigt, zur Erf\u00FCllung des Auftrags qualifizierte Subunternehmer einzusetzen.",
-      "Termin\u00E4?nderungen aufgrund h\u00F6herer Gewalt, Witterungsbedingungen oder beh\u00F6rdlicher Anordnungen berechtigen " +
+      "Termin\u00E4nderungen aufgrund h\u00F6herer Gewalt, Witterungsbedingungen oder beh\u00F6rdlicher Anordnungen berechtigen " +
         "nicht zur Minderung der vereinbarten Verg\u00FCtung.",
     ]);
 
@@ -588,7 +619,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
         "Bestimmung tritt eine wirksame Regelung, die dem wirtschaftlichen Zweck am n\u00E4chsten kommt.",
       "Es gilt das Recht der Bundesrepublik Deutschland. Gerichtsstand f\u00FCr alle Streitigkeiten aus " +
         "oder im Zusammenhang mit diesem Vertrag ist Berlin.",
-      "\u00C4?nderungen und Erg\u00E4nzungen dieses Vertrages sowie dieser AGB bed\u00FCrfen der Schriftform. " +
+      "\u00C4nderungen und Erg\u00E4nzungen dieses Vertrages sowie dieser AGB bed\u00FCrfen der Schriftform. " +
         "M\u00FCndliche Nebenabreden bestehen nicht.",
     ]);
 

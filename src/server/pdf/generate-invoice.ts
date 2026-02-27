@@ -65,11 +65,16 @@ const FOOTER_H = 52;
 const SAFE_BOTTOM = H - M - FOOTER_H - 10;
 
 export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
-  const logoSlot = await getImageSlot({
-    key: "img.pdf.brand.logo",
-    fallbackSrc: "/media/brand/hero-logo.jpeg",
-  });
-  const slotLogoPath = publicSrcToAbsolute(logoSlot.src);
+  let slotLogoPath: string | null = null;
+  try {
+    const logoSlot = await getImageSlot({
+      key: "img.pdf.brand.logo",
+      fallbackSrc: "/media/brand/hero-logo.jpeg",
+    });
+    slotLogoPath = publicSrcToAbsolute(logoSlot.src);
+  } catch {
+    slotLogoPath = null;
+  }
 
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
@@ -107,12 +112,17 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     }
 
     function labelValue(label: string, value: string, x: number, w: number) {
+      const cleanLabel = sanitizePdfText(label);
+      const cleanValue = sanitizePdfText(value);
+      const lineGap = 1.3;
       doc.font("Helvetica").fontSize(7).fillColor(MUTED);
-      doc.text(label, x, y, { width: w });
-      y += 8;
+      doc.text(cleanLabel, x, y, { width: w, lineGap });
+      const labelHeight = doc.heightOfString(cleanLabel || " ", { width: w, lineGap });
+      y += labelHeight + 3;
       doc.font("Helvetica").fontSize(9).fillColor(DARK);
-      doc.text(value, x, y, { width: w });
-      y += 12;
+      doc.text(cleanValue, x, y, { width: w, lineGap });
+      const valueHeight = doc.heightOfString(cleanValue || " ", { width: w, lineGap });
+      y += valueHeight + 4;
     }
 
     const LOGO_W = 150;
@@ -194,8 +204,9 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     if (data.description) {
       sectionHeading("Beschreibung");
       doc.font("Helvetica").fontSize(9).fillColor(BODY);
-      doc.text(data.description, LEFT, y, { width: CW });
-      y += doc.heightOfString(data.description, { width: CW }) + 8;
+      const descriptionText = sanitizePdfText(data.description);
+      doc.text(descriptionText, LEFT, y, { width: CW, lineGap: 1.5 });
+      y += doc.heightOfString(descriptionText, { width: CW, lineGap: 1.5 }) + 8;
     }
 
     const items = data.lineItems ?? [];
@@ -205,18 +216,22 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
 
       const hasPrice = items.some((s) => s.priceCents !== undefined);
       items.forEach((s, i) => {
-        ensureSpace(16);
         const qty = s.quantity ? `  \u00B7  ${s.quantity} ${s.unit || "St\u00FCck"}` : "";
         const priceStr =
           hasPrice && s.priceCents !== undefined ? `   ${eur(s.priceCents)}` : "";
+        const rowText = sanitizePdfText(`${i + 1}.  ${s.name}${qty}`);
+        const textWidth = CW - 4 - (hasPrice ? 90 : 0);
+        const rowHeight = Math.max(14, doc.heightOfString(rowText, { width: textWidth, lineGap: 1.2 }) + 2);
+        ensureSpace(rowHeight + 2);
         doc.font("Helvetica").fontSize(9).fillColor(BODY);
-        doc.text(`${i + 1}.  ${s.name}${qty}`, LEFT + 4, y, {
-          width: CW - 4 - (hasPrice ? 90 : 0),
+        doc.text(rowText, LEFT + 4, y, {
+          width: textWidth,
+          lineGap: 1.2,
         });
         if (priceStr) {
           doc.text(priceStr, LEFT + 4, y, { width: CW - 4, align: "right" });
         }
-        y += 14;
+        y += rowHeight;
       });
       y += 6;
     }

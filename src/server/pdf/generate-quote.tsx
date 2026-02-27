@@ -44,11 +44,16 @@ const FOOTER_H = 52;
 const SAFE_BOTTOM = H - M - FOOTER_H - 10;
 
 export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
-  const logoSlot = await getImageSlot({
-    key: "img.pdf.brand.logo",
-    fallbackSrc: "/media/brand/hero-logo.jpeg",
-  });
-  const slotLogoPath = publicSrcToAbsolute(logoSlot.src);
+  let slotLogoPath: string | null = null;
+  try {
+    const logoSlot = await getImageSlot({
+      key: "img.pdf.brand.logo",
+      fallbackSrc: "/media/brand/hero-logo.jpeg",
+    });
+    slotLogoPath = publicSrcToAbsolute(logoSlot.src);
+  } catch {
+    slotLogoPath = null;
+  }
 
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
@@ -86,12 +91,17 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
     }
 
     function labelValue(label: string, value: string, x: number, w: number) {
+      const cleanLabel = sanitizePdfText(label);
+      const cleanValue = sanitizePdfText(value);
+      const lineGap = 1.3;
       doc.font("Helvetica").fontSize(7.5).fillColor(MUTED);
-      doc.text(label, x, y, { width: w });
-      y += 9;
+      doc.text(cleanLabel, x, y, { width: w, lineGap });
+      const labelHeight = doc.heightOfString(cleanLabel || " ", { width: w, lineGap });
+      y += labelHeight + 3;
       doc.font("Helvetica").fontSize(9.5).fillColor(DARK);
-      doc.text(value, x, y, { width: w });
-      y += 14;
+      doc.text(cleanValue, x, y, { width: w, lineGap });
+      const valueHeight = doc.heightOfString(cleanValue || " ", { width: w, lineGap });
+      y += valueHeight + 5;
     }
 
     // HEADER
@@ -187,8 +197,11 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
 
       doc.font("Helvetica").fontSize(9.5).fillColor(BODY);
       input.lines.forEach((line, i) => {
-        doc.text(`${i + 1}.  ${line.label}  ·  ${line.qty} Stück`, LEFT + 4, y, { width: CW - 4 });
-        y += 16;
+        const rowText = sanitizePdfText(`${i + 1}.  ${line.label}  ·  ${line.qty} Stück`);
+        const rowHeight = Math.max(16, doc.heightOfString(rowText, { width: CW - 4, lineGap: 1.2 }) + 2);
+        ensureSpace(rowHeight + 2);
+        doc.text(rowText, LEFT + 4, y, { width: CW - 4, lineGap: 1.2 });
+        y += rowHeight;
       });
       y += 10;
     }
