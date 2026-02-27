@@ -6,13 +6,8 @@ import type { QuoteDraft, QuoteResult } from "@/domain/quote/types";
 import {
   quoteContextToServiceCart,
   quoteDraftToWizardPayload,
+  quoteSpeedToPackageTier,
 } from "@/server/quotes/map-quote-to-wizard";
-
-type PricingMultipliers = {
-  economyMultiplier: number;
-  standardMultiplier: number;
-  expressMultiplier: number;
-};
 
 type PackageBreakdown = {
   tier: "ECONOMY" | "STANDARD" | "EXPRESS";
@@ -31,29 +26,22 @@ const serviceKindLabel: Record<"UMZUG" | "MONTAGE" | "ENTSORGUNG" | "SPECIAL", s
 };
 
 function packageSet(
-  subtotalCents: number,
+  rows: Array<{ tier: PackageBreakdown["tier"]; netCents: number }>,
   uncertaintyPercent: number,
-  multipliers: PricingMultipliers,
 ): PackageBreakdown[] {
-  const rows: Array<{ tier: PackageBreakdown["tier"]; multiplier: number }> = [
-    { tier: "ECONOMY", multiplier: multipliers.economyMultiplier },
-    { tier: "STANDARD", multiplier: multipliers.standardMultiplier },
-    { tier: "EXPRESS", multiplier: multipliers.expressMultiplier },
-  ];
-
-  return rows.map(({ tier, multiplier }) => {
-    const netCents = Math.max(0, Math.round(subtotalCents * multiplier));
-    const spread = Math.max(0, Math.round(netCents * (uncertaintyPercent / 100)));
-    const minCents = Math.max(0, netCents - spread);
-    const maxCents = netCents + spread;
-    const vatCents = Math.round(netCents * 0.19);
+  return rows.map(({ tier, netCents }) => {
+    const normalizedNet = Math.max(0, Math.round(netCents));
+    const spread = Math.max(0, Math.round(normalizedNet * (uncertaintyPercent / 100)));
+    const minCents = Math.max(0, normalizedNet - spread);
+    const maxCents = normalizedNet + spread;
+    const vatCents = Math.round(normalizedNet * 0.19);
     return {
       tier,
       minCents,
       maxCents,
-      netCents,
+      netCents: normalizedNet,
       vatCents,
-      grossCents: netCents + vatCents,
+      grossCents: normalizedNet + vatCents,
     };
   });
 }
@@ -110,61 +98,78 @@ export async function calculateQuote(
     distanceSource = route.source;
   }
 
-  const estimate = estimateOrder(
-    wizardPayload,
-    {
-      catalog: [],
-      pricing: {
-        currency: pricing.currency,
-        movingBaseFeeCents: pricing.movingBaseFeeCents,
-        disposalBaseFeeCents: pricing.disposalBaseFeeCents,
-        hourlyRateCents: pricing.hourlyRateCents,
-        perM3MovingCents: pricing.perM3MovingCents,
-        perM3DisposalCents: pricing.perM3DisposalCents,
-        perKmCents: pricing.perKmCents,
-        heavyItemSurchargeCents: pricing.heavyItemSurchargeCents,
-        stairsSurchargePerFloorCents: pricing.stairsSurchargePerFloorCents,
-        carryDistanceSurchargePer25mCents: pricing.carryDistanceSurchargePer25mCents,
-        parkingSurchargeMediumCents: pricing.parkingSurchargeMediumCents,
-        parkingSurchargeHardCents: pricing.parkingSurchargeHardCents,
-        elevatorDiscountSmallCents: pricing.elevatorDiscountSmallCents,
-        elevatorDiscountLargeCents: pricing.elevatorDiscountLargeCents,
-        uncertaintyPercent: pricing.uncertaintyPercent,
-        economyMultiplier: pricing.economyMultiplier,
-        standardMultiplier: pricing.standardMultiplier,
-        expressMultiplier: pricing.expressMultiplier,
-        montageBaseFeeCents: pricing.montageBaseFeeCents,
-        entsorgungBaseFeeCents: pricing.entsorgungBaseFeeCents,
-        montageStandardMultiplier: pricing.montageStandardMultiplier,
-        montagePlusMultiplier: pricing.montagePlusMultiplier,
-        montagePremiumMultiplier: pricing.montagePremiumMultiplier,
-        entsorgungStandardMultiplier: pricing.entsorgungStandardMultiplier,
-        entsorgungPlusMultiplier: pricing.entsorgungPlusMultiplier,
-        entsorgungPremiumMultiplier: pricing.entsorgungPremiumMultiplier,
-        montageMinimumOrderCents: pricing.montageMinimumOrderCents,
-        entsorgungMinimumOrderCents: pricing.entsorgungMinimumOrderCents,
-      },
-      serviceOptions: serviceOptionsDb.map((option) => ({
-        code: option.code,
-        moduleSlug: option.module.slug,
-        pricingType: option.pricingType,
-        defaultPriceCents: option.defaultPriceCents,
-        defaultLaborMinutes: option.defaultLaborMinutes,
-        isHeavy: option.isHeavy,
-        requiresQuantity: option.requiresQuantity,
-      })),
+  const estimateInput = {
+    catalog: [] as Array<{ id: string; nameDe: string; categoryKey: string; defaultVolumeM3: number; laborMinutesPerUnit: number; isHeavy: boolean }>,
+    pricing: {
+      currency: pricing.currency,
+      movingBaseFeeCents: pricing.movingBaseFeeCents,
+      disposalBaseFeeCents: pricing.disposalBaseFeeCents,
+      hourlyRateCents: pricing.hourlyRateCents,
+      perM3MovingCents: pricing.perM3MovingCents,
+      perM3DisposalCents: pricing.perM3DisposalCents,
+      perKmCents: pricing.perKmCents,
+      heavyItemSurchargeCents: pricing.heavyItemSurchargeCents,
+      stairsSurchargePerFloorCents: pricing.stairsSurchargePerFloorCents,
+      carryDistanceSurchargePer25mCents: pricing.carryDistanceSurchargePer25mCents,
+      parkingSurchargeMediumCents: pricing.parkingSurchargeMediumCents,
+      parkingSurchargeHardCents: pricing.parkingSurchargeHardCents,
+      elevatorDiscountSmallCents: pricing.elevatorDiscountSmallCents,
+      elevatorDiscountLargeCents: pricing.elevatorDiscountLargeCents,
+      uncertaintyPercent: pricing.uncertaintyPercent,
+      economyMultiplier: pricing.economyMultiplier,
+      standardMultiplier: pricing.standardMultiplier,
+      expressMultiplier: pricing.expressMultiplier,
+      montageBaseFeeCents: pricing.montageBaseFeeCents,
+      entsorgungBaseFeeCents: pricing.entsorgungBaseFeeCents,
+      montageStandardMultiplier: pricing.montageStandardMultiplier,
+      montagePlusMultiplier: pricing.montagePlusMultiplier,
+      montagePremiumMultiplier: pricing.montagePremiumMultiplier,
+      entsorgungStandardMultiplier: pricing.entsorgungStandardMultiplier,
+      entsorgungPlusMultiplier: pricing.entsorgungPlusMultiplier,
+      entsorgungPremiumMultiplier: pricing.entsorgungPremiumMultiplier,
+      montageMinimumOrderCents: pricing.montageMinimumOrderCents,
+      entsorgungMinimumOrderCents: pricing.entsorgungMinimumOrderCents,
     },
-    {
-      distanceKm,
-      distanceSource,
-    },
-  );
+    serviceOptions: serviceOptionsDb.map((option) => ({
+      code: option.code,
+      moduleSlug: option.module.slug,
+      pricingType: option.pricingType,
+      defaultPriceCents: option.defaultPriceCents,
+      defaultLaborMinutes: option.defaultLaborMinutes,
+      isHeavy: option.isHeavy,
+      requiresQuantity: option.requiresQuantity,
+    })),
+  };
 
-  const packages = packageSet(estimate.breakdown.totalCents, pricing.uncertaintyPercent, {
-    economyMultiplier: pricing.economyMultiplier,
-    standardMultiplier: pricing.standardMultiplier,
-    expressMultiplier: pricing.expressMultiplier,
-  });
+  const estimateOptions = {
+    distanceKm,
+    distanceSource,
+  };
+
+  const estimateBySpeed = new Map<
+    "ECONOMY" | "STANDARD" | "EXPRESS",
+    ReturnType<typeof estimateOrder>
+  >();
+  for (const speed of ["ECONOMY", "STANDARD", "EXPRESS"] as const) {
+    const payloadForSpeed = {
+      ...wizardPayload,
+      packageTier: quoteSpeedToPackageTier(speed),
+      timing: {
+        ...wizardPayload.timing,
+        speed,
+      },
+    };
+    estimateBySpeed.set(speed, estimateOrder(payloadForSpeed, estimateInput, estimateOptions));
+  }
+
+  const selectedEstimate = estimateBySpeed.get(parsed.packageSpeed) ?? estimateBySpeed.get("STANDARD")!;
+  const packages = packageSet(
+    (["ECONOMY", "STANDARD", "EXPRESS"] as const).map((tier) => ({
+      tier,
+      netCents: estimateBySpeed.get(tier)?.breakdown.totalCents ?? 0,
+    })),
+    pricing.uncertaintyPercent,
+  );
   const selected =
     packages.find((pkg) => pkg.tier === parsed.packageSpeed) ??
     packages.find((pkg) => pkg.tier === "STANDARD")!;
@@ -220,16 +225,16 @@ export async function calculateQuote(
   const result: QuoteResult = {
     distanceKm,
     distanceSource,
-    driveCostCents: estimate.breakdown.driveChargeCents ?? 0,
-    subtotalCents: estimate.breakdown.subtotalCents,
-    totalCents: estimate.breakdown.totalCents,
+    driveCostCents: selectedEstimate.breakdown.driveChargeCents ?? 0,
+    subtotalCents: selectedEstimate.breakdown.subtotalCents,
+    totalCents: selectedEstimate.breakdown.totalCents,
     priceMinCents: selected.minCents,
     priceMaxCents: selected.maxCents,
     netCents: selected.netCents,
     vatCents: selected.vatCents,
     grossCents: selected.grossCents,
     packages,
-    laborHours: estimate.laborHours,
+    laborHours: selectedEstimate.laborHours,
     packageSpeed: parsed.packageSpeed,
     computedAt: new Date().toISOString(),
     serviceCart: cart,

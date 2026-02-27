@@ -95,6 +95,13 @@ const serviceLabels: Record<ServiceKind, string> = {
   SPECIAL: "Spezialservice",
 };
 
+const roomVolumePresets = [
+  { key: "studio", label: "Studio", volumeM3: 12 },
+  { key: "2zimmer", label: "2 Zimmer", volumeM3: 24 },
+  { key: "3zimmer", label: "3 Zimmer", volumeM3: 38 },
+  { key: "haus", label: "Haus", volumeM3: 58 },
+] as const;
+
 function eur(cents: number) {
   return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(cents / 100);
 }
@@ -398,6 +405,24 @@ export function PriceCalculator({
           onChange={(e) => setVolumeM3(Math.max(1, Math.min(200, Number(e.target.value) || 1)))}
           placeholder="Volumen (m³)"
         />
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {roomVolumePresets.map((preset) => (
+          <button
+            key={preset.key}
+            type="button"
+            onClick={() => setVolumeM3(preset.volumeM3)}
+            className={`rounded-xl border px-3 py-2 text-sm font-bold transition ${
+              volumeM3 === preset.volumeM3
+                ? "border-cyan-400/70 bg-cyan-500/15 text-cyan-700 dark:text-cyan-200"
+                : "border-slate-300 bg-white/60 text-slate-700 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-200"
+            }`}
+          >
+            {preset.label}
+            <div className="text-[11px] font-semibold opacity-80">{preset.volumeM3} m³</div>
+          </button>
+        ))}
       </div>
 
       <div className={`mt-4 grid gap-3 ${hasMoving ? "sm:grid-cols-2" : ""}`}>
