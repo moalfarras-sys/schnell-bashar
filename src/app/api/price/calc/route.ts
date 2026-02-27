@@ -30,7 +30,10 @@ export async function POST(req: Request) {
   const draft = mapCalcInputToQuoteDraft(parsed.data);
 
   try {
-    const { result } = await calculateQuote(draft, { allowDistanceFallback: false });
+    const { result } = await calculateQuote(draft, {
+      allowDistanceFallback: false,
+      promoCode: parsed.data.promoCode,
+    });
     return NextResponse.json({
       serviceCart: result.serviceCart,
       servicesBreakdown: result.servicesBreakdown,
@@ -81,4 +84,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: message }, { status });
   }
 }
-

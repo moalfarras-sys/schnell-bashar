@@ -34,6 +34,7 @@ export type ScheduleState = {
 
 export type BookingDraft = {
   quoteId?: string;
+  promoCode?: string;
   service: BookingService;
   from?: AddressOption;
   to?: AddressOption;

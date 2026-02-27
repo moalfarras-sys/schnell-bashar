@@ -1,9 +1,10 @@
 import { prisma } from "@/server/db/prisma";
-import type { PricingConfigLite, ServiceOptionLite } from "@/server/calc/estimate";
+import type { PricingConfigLite, PromoRuleLite, ServiceOptionLite } from "@/server/calc/estimate";
 
 type RuntimePricingConfig = {
   pricing: PricingConfigLite;
   serviceOptions: ServiceOptionLite[];
+  promoRules: PromoRuleLite[];
   leadDays: {
     economy: number;
     standard: number;
@@ -92,7 +93,7 @@ function mapPricing(pricing: {
 }
 
 async function resolveMarkerVersion() {
-  const [pricingMarker, optionMarker] = await Promise.all([
+  const [pricingMarker, optionMarker, promoMarker] = await Promise.all([
     prisma.pricingConfig.findFirst({
       where: { active: true, deletedAt: null },
       orderBy: { updatedAt: "desc" },
@@ -110,17 +111,21 @@ async function resolveMarkerVersion() {
       },
       _max: { updatedAt: true },
     }),
+    prisma.promoRule.aggregate({
+      where: { active: true, deletedAt: null },
+      _max: { updatedAt: true },
+    }),
   ]);
 
   if (!pricingMarker) {
     throw new Error("Die Preiskonfiguration ist aktuell nicht verfügbar.");
   }
 
-  return `${pricingMarker.id}:${pricingMarker.updatedAt.toISOString()}:${optionMarker._max.updatedAt?.toISOString() ?? "none"}`;
+  return `${pricingMarker.id}:${pricingMarker.updatedAt.toISOString()}:${optionMarker._max.updatedAt?.toISOString() ?? "none"}:${promoMarker._max.updatedAt?.toISOString() ?? "none"}`;
 }
 
 async function fetchFreshRuntimeConfig(version: string): Promise<RuntimePricingConfig> {
-  const [pricing, serviceOptionsDb] = await Promise.all([
+  const [pricing, serviceOptionsDb, promoRulesDb] = await Promise.all([
     prisma.pricingConfig.findFirst({
       where: { active: true, deletedAt: null },
       orderBy: { updatedAt: "desc" },
@@ -138,6 +143,11 @@ async function fetchFreshRuntimeConfig(version: string): Promise<RuntimePricingC
       include: { module: { select: { slug: true } } },
       orderBy: [{ sortOrder: "asc" }, { nameDe: "asc" }],
     }),
+    prisma.promoRule.findMany({
+      where: { active: true, deletedAt: null },
+      include: { module: { select: { slug: true } } },
+      orderBy: { updatedAt: "desc" },
+    }),
   ]);
 
   if (!pricing) {
@@ -153,10 +163,24 @@ async function fetchFreshRuntimeConfig(version: string): Promise<RuntimePricingC
     isHeavy: option.isHeavy,
     requiresQuantity: option.requiresQuantity,
   }));
+  const promoRules: PromoRuleLite[] = promoRulesDb.map((rule) => ({
+    id: rule.id,
+    code: rule.code,
+    moduleSlug: rule.module?.slug ?? null,
+    serviceTypeScope: rule.serviceTypeScope,
+    discountType: rule.discountType,
+    discountValue: rule.discountValue,
+    minOrderCents: rule.minOrderCents,
+    maxDiscountCents: rule.maxDiscountCents,
+    validFrom: rule.validFrom,
+    validTo: rule.validTo,
+    active: rule.active,
+  }));
 
   return {
     pricing: mapPricing(pricing),
     serviceOptions,
+    promoRules,
     leadDays: {
       economy: pricing.economyLeadDays,
       standard: pricing.standardLeadDays,

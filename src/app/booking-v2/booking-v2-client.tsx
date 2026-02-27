@@ -67,6 +67,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
             ? "COMBO"
             : "MOVING",
     quoteId: initialQuoteId || undefined,
+    promoCode: "",
     volumeM3: 24,
     floors: 0,
     hasElevator: false,
@@ -298,6 +299,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
             needNoParkingZone: draft.extras.noParkingZone,
             addons,
             selectedServiceOptions: draft.selectedServiceOptions,
+            promoCode: draft.promoCode?.trim() || undefined,
             fromAddressObject: draft.from,
             toAddressObject: draft.to,
             fromAddress,
@@ -337,6 +339,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
     draft.extras.noParkingZone,
     draft.extras.disposalBags,
     draft.selectedServiceOptions,
+    draft.promoCode,
     draft.schedule.speed,
   ]);
 
@@ -448,6 +451,11 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
           contactPreference: "PHONE" as const,
           note: draft.contact.note.trim(),
         },
+        offerContext: draft.promoCode?.trim()
+          ? {
+              offerCode: draft.promoCode.trim().toUpperCase(),
+            }
+          : undefined,
       };
 
       const form = new FormData();
@@ -563,6 +571,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
                   {step === 3 ? (
                     <ExtrasSection
                       value={draft.extras}
+                      promoCode={draft.promoCode}
                       onChange={(extras) =>
                         setDraft((prev) => {
                           const nextFloors = extras.stairs
@@ -574,6 +583,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
                           return { ...prev, extras, floors: nextFloors, hasElevator: nextElevator };
                         })
                       }
+                      onPromoCodeChange={(promoCode) => setDraft((prev) => ({ ...prev, promoCode }))}
                     />
                   ) : null}
 

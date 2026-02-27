@@ -8,6 +8,7 @@ import {
   quoteSpeedToPackageTier,
 } from "@/server/quotes/map-quote-to-wizard";
 import { getRuntimePricingConfig } from "@/server/pricing/runtime-config";
+import { normalizePromoCode, resolvePromoRule } from "@/server/offers/promo-rules";
 
 type PackageBreakdown = {
   tier: "ECONOMY" | "STANDARD" | "EXPRESS";
@@ -48,7 +49,7 @@ function packageSet(
 
 export async function calculateQuote(
   input: QuoteDraft,
-  options?: { allowDistanceFallback?: boolean },
+  options?: { allowDistanceFallback?: boolean; promoCode?: string | null },
 ): Promise<{
   draft: QuoteDraft;
   result: QuoteResult;
@@ -96,6 +97,7 @@ export async function calculateQuote(
   };
 
   const estimateOptions = { distanceKm, distanceSource };
+  const normalizedPromoCode = normalizePromoCode(options?.promoCode);
 
   const estimateBySpeed = new Map<"ECONOMY" | "STANDARD" | "EXPRESS", ReturnType<typeof estimateOrder>>();
   for (const speed of ["ECONOMY", "STANDARD", "EXPRESS"] as const) {
@@ -107,7 +109,37 @@ export async function calculateQuote(
         speed,
       },
     };
-    estimateBySpeed.set(speed, estimateOrder(payloadForSpeed, estimateInput, estimateOptions));
+    const initialEstimate = estimateOrder(payloadForSpeed, estimateInput, estimateOptions);
+    if (!normalizedPromoCode) {
+      estimateBySpeed.set(speed, initialEstimate);
+      continue;
+    }
+
+    const promoRule = resolvePromoRule(runtimeConfig.promoRules, {
+      code: normalizedPromoCode,
+      bookingContext: payloadForSpeed.bookingContext,
+      serviceType: payloadForSpeed.serviceType,
+      totalCents: initialEstimate.breakdown.totalCents,
+    });
+
+    estimateBySpeed.set(
+      speed,
+      estimateOrder(payloadForSpeed, estimateInput, {
+        ...estimateOptions,
+        promoRule: promoRule
+          ? {
+              id: promoRule.id,
+              code: promoRule.code,
+              moduleSlug: promoRule.moduleSlug,
+              serviceTypeScope: promoRule.serviceTypeScope,
+              discountType: promoRule.discountType,
+              discountValue: promoRule.discountValue,
+              minOrderCents: promoRule.minOrderCents,
+              maxDiscountCents: promoRule.maxDiscountCents,
+            }
+          : null,
+      }),
+    );
   }
 
   const selectedEstimate = estimateBySpeed.get(parsed.packageSpeed) ?? estimateBySpeed.get("STANDARD")!;

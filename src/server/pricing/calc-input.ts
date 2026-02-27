@@ -33,6 +33,7 @@ export const calcInputSchema = z.object({
       }),
     )
     .default([]),
+  promoCode: z.string().trim().min(3).max(40).optional(),
   addons: z.array(addonSchema).default([]),
   extras: z
     .object({

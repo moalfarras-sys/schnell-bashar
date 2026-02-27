@@ -42,7 +42,12 @@ const extraCatalog = [
   },
 ];
 
-export function ExtrasSection(props: { value: ExtrasState; onChange: (next: ExtrasState) => void }) {
+export function ExtrasSection(props: {
+  value: ExtrasState;
+  promoCode?: string;
+  onChange: (next: ExtrasState) => void;
+  onPromoCodeChange: (next: string) => void;
+}) {
   return (
     <section className="space-y-3">
       <div>
@@ -84,6 +89,19 @@ export function ExtrasSection(props: { value: ExtrasState; onChange: (next: Extr
             </label>
           );
         })}
+      </div>
+      <div className="rounded-2xl border border-slate-300/70 bg-white/60 p-3 dark:border-slate-700 dark:bg-slate-900/50">
+        <label className="text-sm font-bold text-slate-900 dark:text-white">Rabattcode</label>
+        <input
+          type="text"
+          value={props.promoCode ?? ""}
+          onChange={(e) => props.onPromoCodeChange(e.target.value.toUpperCase())}
+          placeholder="z. B. SOMMER10"
+          className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition focus:border-cyan-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+        />
+        <p className="mt-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+          Der Code wird sofort in der Live-Kalkulation geprüft und berücksichtigt.
+        </p>
       </div>
     </section>
   );
