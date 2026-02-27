@@ -55,6 +55,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
   });
   const [quoteBanner, setQuoteBanner] = useState<string | null>(null);
   const [quoteHydrated, setQuoteHydrated] = useState(false);
+  const [lastQuoteSyncSignature, setLastQuoteSyncSignature] = useState<string | null>(null);
 
   const [draft, setDraft] = useState<BookingDraft>(() => ({
     service:
@@ -110,6 +111,32 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
     return null;
   }, [contactErrors, draft.from, draft.service, draft.to, step]);
 
+  const quotePatchPayload = useMemo(
+    () => ({
+      draft: {
+        serviceContext:
+          draft.service === "DISPOSAL"
+            ? "ENTSORGUNG"
+            : draft.service === "ASSEMBLY"
+              ? "MONTAGE"
+              : draft.service === "COMBO"
+                ? "COMBO"
+                : "MOVING",
+        packageSpeed: draft.extras.express ? "EXPRESS" : draft.schedule.speed,
+        volumeM3: draft.volumeM3,
+        floors: draft.extras.stairs ? 2 : 0,
+        hasElevator: false,
+        needNoParkingZone: draft.extras.noParkingZone,
+        fromAddress: draft.from,
+        toAddress: draft.to,
+        extras: draft.extras,
+        selectedServiceOptions: [],
+      },
+    }),
+    [draft],
+  );
+  const quotePatchSignature = useMemo(() => JSON.stringify(quotePatchPayload), [quotePatchPayload]);
+
   const goStep = (next: number) => {
     setStep(next);
     topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -148,6 +175,18 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
               toAddress?: BookingDraft["to"];
               extras: BookingDraft["extras"];
             };
+            result?: {
+              packageSpeed: "ECONOMY" | "STANDARD" | "EXPRESS";
+              packages: PriceCalcResponse["packages"];
+              serviceCart: PriceCalcResponse["serviceCart"];
+              servicesBreakdown?: PriceCalcResponse["servicesBreakdown"];
+              laborHours?: number;
+              distanceKm?: number;
+              distanceSource?: "approx" | "ors" | "cache" | "fallback";
+              driveCostCents?: number;
+              subtotalCents?: number;
+              totalCents?: number;
+            };
           };
         };
         if (!json.snapshot || cancelled) return;
@@ -171,6 +210,32 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
             speed: json.snapshot!.draft.packageSpeed ?? prev.schedule.speed,
           },
         }));
+        const result = json.snapshot?.result;
+        if (result?.packages?.length) {
+          const totals =
+            result.packages.find((pkg) => pkg.tier === result.packageSpeed) ??
+            result.packages.find((pkg) => pkg.tier === "STANDARD") ??
+            result.packages[0];
+          setCalcState({
+            loading: false,
+            error: null,
+            data: {
+              serviceCart: result.serviceCart,
+              packages: result.packages,
+              totals,
+              servicesBreakdown: result.servicesBreakdown,
+              breakdown: {
+                laborHours: result.laborHours,
+                distanceKm: result.distanceKm,
+                distanceSource: result.distanceSource,
+                driveChargeCents: result.driveCostCents,
+                subtotalCents: result.subtotalCents,
+                totalCents: result.totalCents,
+              },
+            },
+          });
+        }
+        setLastQuoteSyncSignature(quotePatchSignature);
         setQuoteBanner("Angebot übernommen");
       } catch {
         // best effort
@@ -181,7 +246,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
     return () => {
       cancelled = true;
     };
-  }, [initialQuoteId]);
+  }, [initialQuoteId, quotePatchSignature]);
 
   useEffect(() => {
     if (!quoteHydrated) return;
@@ -260,18 +325,10 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
 
   useEffect(() => {
     if (!draft.quoteId || !quoteHydrated) return;
+    if (quotePatchSignature === lastQuoteSyncSignature) return;
     const id = setTimeout(async () => {
       const quoteId = draft.quoteId;
       if (!quoteId) return;
-      const serviceContextMap: Record<
-        BookingDraft["service"],
-        "MOVING" | "MONTAGE" | "ENTSORGUNG" | "SPEZIALSERVICE" | "COMBO"
-      > = {
-        MOVING: "MOVING",
-        DISPOSAL: "ENTSORGUNG",
-        ASSEMBLY: "MONTAGE",
-        COMBO: "COMBO",
-      };
       const needsRoute = draft.service === "MOVING" || draft.service === "COMBO";
       const requiresSingleAddress = draft.service === "DISPOSAL" || draft.service === "ASSEMBLY";
       const hasFrom = hasCompleteAddress(draft.from);
@@ -283,37 +340,13 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
       await fetch(`/api/quotes/${encodeURIComponent(quoteId)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          draft: {
-            serviceContext: serviceContextMap[draft.service],
-            packageSpeed: draft.extras.express ? "EXPRESS" : draft.schedule.speed,
-            volumeM3: draft.volumeM3,
-            floors: draft.extras.stairs ? 2 : 0,
-            hasElevator: false,
-            needNoParkingZone: draft.extras.noParkingZone,
-            fromAddress: draft.from,
-            toAddress: draft.to,
-            extras: draft.extras,
-            selectedServiceOptions: [],
-          },
-        }),
+        body: quotePatchSignature,
       });
+      setLastQuoteSyncSignature(quotePatchSignature);
     }, 450);
 
     return () => clearTimeout(id);
-  }, [
-    draft.quoteId,
-    quoteHydrated,
-    draft.service,
-    draft.extras.express,
-    draft.schedule.speed,
-    draft.volumeM3,
-    draft.extras.stairs,
-    draft.extras.noParkingZone,
-    draft.extras,
-    draft.from,
-    draft.to,
-  ]);
+  }, [draft.quoteId, quoteHydrated, quotePatchSignature, lastQuoteSyncSignature, draft.service, draft.from, draft.to]);
 
   async function submitBooking() {
     if (stepError || submitting) return;

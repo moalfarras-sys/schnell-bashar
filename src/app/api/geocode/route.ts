@@ -25,19 +25,22 @@ export async function GET(req: Request) {
   url.searchParams.set("accept-language", "de");
   url.searchParams.set("q", q);
 
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "SchnellSicherUmzug/1.0 (kontakt@schnellsicherumzug.de)",
-    },
-    // Avoid caching user searches at the edge.
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    return NextResponse.json({ error: "Adresssuche fehlgeschlagen" }, { status: 502 });
+  let data: any[] = [];
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "SchnellSicherUmzug/1.0 (kontakt@schnellsicherumzug.de)",
+      },
+      // Avoid caching user searches at the edge.
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      return NextResponse.json({ results: [] });
+    }
+    data = (await res.json()) as any[];
+  } catch {
+    return NextResponse.json({ results: [] });
   }
-
-  const data = (await res.json()) as any[];
 
   const results = data
     .map((x) => {
