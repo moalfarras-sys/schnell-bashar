@@ -299,8 +299,18 @@ export function estimateOrder(
   if (Number.isFinite(options?.distanceKm)) {
     distanceKm = round2(Number(options?.distanceKm));
     distanceSource = options?.distanceSource || "fallback";
-  } else if (payload.startAddress && payload.destinationAddress) {
-    const direct = haversineKm(payload.startAddress, payload.destinationAddress);
+  } else if (
+    payload.startAddress?.lat !== undefined &&
+    payload.startAddress?.lon !== undefined &&
+    payload.destinationAddress?.lat !== undefined &&
+    payload.destinationAddress?.lon !== undefined
+  ) {
+    const startPoint = { lat: payload.startAddress.lat, lon: payload.startAddress.lon };
+    const destinationPoint = {
+      lat: payload.destinationAddress.lat,
+      lon: payload.destinationAddress.lon,
+    };
+    const direct = haversineKm(startPoint, destinationPoint);
     distanceKm = round2(Math.max(3, direct * 1.25));
     distanceSource = "approx";
   }
