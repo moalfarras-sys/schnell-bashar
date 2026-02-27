@@ -76,6 +76,14 @@ type QuoteSnapshotResponse = {
   };
 };
 
+type QuoteApiErrorResponse = {
+  quoteId?: string;
+  error?: string;
+  details?: {
+    fieldErrors?: Record<string, string[] | undefined>;
+  };
+};
+
 const serviceLabels: Record<ServiceKind, string> = {
   UMZUG: "Umzug",
   MONTAGE: "Montage",
@@ -195,6 +203,7 @@ export function PriceCalculator({
     let cancel = false;
     const timer = window.setTimeout(async () => {
       try {
+        const handoffTargetAddress = hasMoving ? toAddress.trim() : fromAddress.trim();
         setLoading(true);
         const res = await fetch("/api/price/calc", {
           method: "POST",
@@ -212,7 +221,7 @@ export function PriceCalculator({
               qty,
             })),
             fromAddress: fromAddress.trim() || undefined,
-            toAddress: toAddress.trim() || undefined,
+            toAddress: handoffTargetAddress || undefined,
           }),
         });
 
@@ -239,6 +248,7 @@ export function PriceCalculator({
   }, [
     serviceType,
     serviceCart,
+    hasMoving,
     speed,
     volumeM3,
     floors,
@@ -485,6 +495,10 @@ export function PriceCalculator({
               setCalcError("Bitte Start- und Zieladresse ergänzen.");
               return;
             }
+            if (!hasMoving && !fromAddress.trim()) {
+              setCalcError("Bitte geben Sie die Einsatzadresse vollständig ein.");
+              return;
+            }
             setHandoffLoading(true);
             setCalcError(null);
 
@@ -509,14 +523,16 @@ export function PriceCalculator({
               };
               const serviceContext =
                 serviceType === "KOMBI" ? "COMBO" : (contextMap[context] ?? "MOVING");
-              const fromPostalCode = fromAddress.match(/\b\d{5}\b/)?.[0];
-              const toPostalCode = toAddress.match(/\b\d{5}\b/)?.[0];
+              const normalizedFromAddress = fromAddress.trim();
+              const normalizedToAddress = hasMoving ? toAddress.trim() : normalizedFromAddress;
+              const fromPostalCode = normalizedFromAddress.match(/\b\d{5}\b/)?.[0];
+              const toPostalCode = normalizedToAddress.match(/\b\d{5}\b/)?.[0];
               if ((serviceContext === "MOVING" || serviceContext === "COMBO") && (!fromPostalCode || !toPostalCode)) {
                 throw new Error("Bitte geben Sie in beiden Adressen eine gültige PLZ an.");
               }
               if (
                 (serviceContext === "MONTAGE" || serviceContext === "ENTSORGUNG" || serviceContext === "SPEZIALSERVICE") &&
-                toAddress.trim() &&
+                normalizedToAddress &&
                 !toPostalCode
               ) {
                 throw new Error("Bitte geben Sie in der Einsatzadresse eine gültige PLZ an.");
@@ -533,20 +549,20 @@ export function PriceCalculator({
                     floors,
                     hasElevator,
                     needNoParkingZone,
-                    fromAddress: fromAddress.trim()
+                    fromAddress: normalizedFromAddress
                       ? {
-                          displayName: fromAddress.trim(),
+                          displayName: normalizedFromAddress,
                           postalCode: fromPostalCode || "",
                           city: "Berlin",
-                          street: fromAddress.trim(),
+                          street: normalizedFromAddress,
                         }
                       : undefined,
-                    toAddress: toAddress.trim()
+                    toAddress: normalizedToAddress
                       ? {
-                          displayName: toAddress.trim(),
+                          displayName: normalizedToAddress,
                           postalCode: toPostalCode || "",
                           city: "Berlin",
-                          street: toAddress.trim(),
+                          street: normalizedToAddress,
                         }
                       : undefined,
                     selectedServiceOptions: Object.entries(selectedServiceOptions)
@@ -562,9 +578,16 @@ export function PriceCalculator({
                   },
                 }),
               });
-              const quoteJson = (await quoteRes.json()) as { quoteId?: string; error?: string };
+              const quoteJson = (await quoteRes.json()) as QuoteApiErrorResponse;
               if (!quoteRes.ok || !quoteJson.quoteId) {
-                throw new Error(quoteJson.error || "Angebot konnte nicht übernommen werden.");
+                const fromAddressError = quoteJson.details?.fieldErrors?.fromAddress?.[0];
+                const toAddressError = quoteJson.details?.fieldErrors?.toAddress?.[0];
+                throw new Error(
+                  fromAddressError ||
+                    toAddressError ||
+                    quoteJson.error ||
+                    "Angebot konnte nicht übernommen werden.",
+                );
               }
               params.set("quoteId", quoteJson.quoteId);
               router.push(`/booking?${params.toString()}`);

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { QuoteDraftSchema } from "@/domain/quote/schema";
@@ -20,8 +20,16 @@ export async function POST(req: Request) {
 
   const parsed = createSchema.safeParse(body);
   if (!parsed.success) {
+    const flattened = parsed.error.flatten();
+    const firstFieldError = Object.values(flattened.fieldErrors)
+      .flat()
+      .find((msg): msg is string => typeof msg === "string" && msg.length > 0);
+
     return NextResponse.json(
-      { error: "Ungültige Eingabedaten", details: parsed.error.flatten() },
+      {
+        error: firstFieldError || "Ungültige Eingabedaten",
+        details: flattened,
+      },
       { status: 400 },
     );
   }
