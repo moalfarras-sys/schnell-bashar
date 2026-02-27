@@ -38,8 +38,13 @@ export async function POST(req: Request) {
     const snapshot = await createQuote(parsed.data.draft);
     return NextResponse.json({ quoteId: snapshot.quoteId, snapshot }, { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Quote konnte nicht erstellt werden.";
-    const status = /nicht verfügbar|Distanz/.test(message) ? 503 : 500;
+    const isValidationError = error instanceof z.ZodError;
+    const message = isValidationError
+      ? (error.issues.find((issue) => issue.message)?.message ?? "Ungültige Eingabedaten")
+      : error instanceof Error
+        ? error.message
+        : "Angebot konnte nicht erstellt werden.";
+    const status = isValidationError ? 400 : /nicht verfügbar|Distanz/.test(message) ? 503 : 500;
     return NextResponse.json({ error: message }, { status });
   }
 }

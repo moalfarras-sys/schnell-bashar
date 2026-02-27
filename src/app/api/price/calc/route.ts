@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import type { QuoteDraft } from "@/domain/quote/types";
@@ -101,8 +101,13 @@ export async function POST(req: Request) {
 
   const parsed = inputSchema.safeParse(body);
   if (!parsed.success) {
+    const flattened = parsed.error.flatten();
+    const firstFieldError = Object.values(flattened.fieldErrors)
+      .flat()
+      .find((msg): msg is string => typeof msg === "string" && msg.length > 0);
+
     return NextResponse.json(
-      { error: "Ungültige Eingabedaten", details: parsed.error.flatten() },
+      { error: firstFieldError || "Ungültige Eingabedaten", details: flattened },
       { status: 400 },
     );
   }
@@ -154,8 +159,13 @@ export async function POST(req: Request) {
       },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Preisberechnung fehlgeschlagen.";
-    const status = /nicht verfügbar|Distanz/.test(message) ? 503 : 500;
+    const isValidationError = error instanceof z.ZodError;
+    const message = isValidationError
+      ? (error.issues.find((issue) => issue.message)?.message ?? "Ungültige Eingabedaten")
+      : error instanceof Error
+        ? error.message
+        : "Preisberechnung fehlgeschlagen.";
+    const status = isValidationError ? 400 : /nicht verfügbar|Distanz/.test(message) ? 503 : 500;
     return NextResponse.json({ error: message }, { status });
   }
 }
