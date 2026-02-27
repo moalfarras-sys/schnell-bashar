@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx scripts/dev-db-check.ts && next dev --webpack",
     "dev:no-db-check": "next dev --webpack",
-    "build": "npm run prisma:generate && npm run images:check && npm run images:forbidden && npm run text:scan-mojibake && npm run text:scan-transliteration && next build --webpack",
+    "build": "npm run prisma:generate && npm run images:check && npm run images:forbidden && npm run text:scan-mojibake && npm run text:scan-transliteration && next build --webpack && npm run standalone:sync",
     "start": "node .next/standalone/server.js",
     "lint": "eslint . --ignore-pattern test-results --ignore-pattern playwright-report",
     "db:up": "docker compose up -d db",
@@ -24,6 +24,7 @@
     "ors:diag": "tsx scripts/ors-diagnostics.ts",
     "docusign:diag": "tsx scripts/docusign-diagnostic.ts",
     "prisma:generate": "prisma generate",
+    "standalone:sync": "node scripts/sync-standalone-assets.mjs",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
