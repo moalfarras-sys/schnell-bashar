@@ -7,8 +7,8 @@ export type AddressOption = {
   state?: string;
   street?: string;
   houseNumber?: string;
-  lat: number;
-  lon: number;
+  lat?: number;
+  lon?: number;
 };
 
 export type ExtrasState = {

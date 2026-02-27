@@ -4,6 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Calculator, CalendarDays } from "lucide-react";
 
+import {
+  AddressAutocompleteInput,
+  type AddressAutocompleteOption,
+} from "@/components/address/address-autocomplete-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatNumberDE } from "@/lib/format-number";
@@ -127,6 +131,25 @@ function contextFromServices(services: ServiceKind[]) {
   return "STANDARD";
 }
 
+function extractPostalCode(text: string) {
+  return text.match(/\b\d{5}\b/)?.[0] ?? "";
+}
+
+function toAddressPayload(value: string, selected?: AddressAutocompleteOption) {
+  const displayName = value.trim();
+  if (!displayName) return undefined;
+  return {
+    displayName,
+    postalCode: selected?.postalCode || extractPostalCode(displayName),
+    city: selected?.city || "Berlin",
+    state: selected?.state,
+    street: selected?.street || displayName,
+    houseNumber: selected?.houseNumber,
+    lat: selected?.lat,
+    lon: selected?.lon,
+  };
+}
+
 export function PriceCalculator({
   montageOptions = [],
   externalVolumeM3,
@@ -160,6 +183,8 @@ export function PriceCalculator({
   const [needNoParkingZone, setNeedNoParkingZone] = useState(false);
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
+  const [fromAddressOption, setFromAddressOption] = useState<AddressAutocompleteOption | undefined>(undefined);
+  const [toAddressOption, setToAddressOption] = useState<AddressAutocompleteOption | undefined>(undefined);
   const [selectedServiceOptions, setSelectedServiceOptions] = useState<Record<string, number>>(
     () => parseOptions(sp.get("options")),
   );
@@ -222,6 +247,8 @@ export function PriceCalculator({
             })),
             fromAddress: fromAddress.trim() || undefined,
             toAddress: handoffTargetAddress || undefined,
+            fromAddressObject: toAddressPayload(fromAddress, fromAddressOption),
+            toAddressObject: toAddressPayload(handoffTargetAddress, hasMoving ? toAddressOption : fromAddressOption),
           }),
         });
 
@@ -257,6 +284,8 @@ export function PriceCalculator({
     selectedServiceOptions,
     fromAddress,
     toAddress,
+    fromAddressOption,
+    toAddressOption,
   ]);
 
   const showRouteHint = hasMoving && (!fromAddress.trim() || !toAddress.trim());
@@ -288,6 +317,8 @@ export function PriceCalculator({
         setNeedNoParkingZone(draft.needNoParkingZone);
         setFromAddress(draft.fromAddress?.displayName ?? "");
         setToAddress(draft.toAddress?.displayName ?? "");
+        setFromAddressOption(undefined);
+        setToAddressOption(undefined);
         setSelectedServiceOptions(
           Object.fromEntries((draft.selectedServiceOptions ?? []).map((item) => [item.code, item.qty])),
         );
@@ -351,16 +382,30 @@ export function PriceCalculator({
       </div>
 
       <div className={`mt-4 grid gap-3 ${hasMoving ? "sm:grid-cols-2" : ""}`}>
-        <Input
-          placeholder={hasMoving ? "Von (PLZ + Straße)" : "Einsatzadresse (optional)"}
+        <AddressAutocompleteInput
           value={fromAddress}
-          onChange={(e) => setFromAddress(e.target.value)}
+          onValueChange={(value) => {
+            setFromAddress(value);
+            setFromAddressOption(undefined);
+          }}
+          onSelect={(next) => {
+            setFromAddress(next?.displayName ?? "");
+            setFromAddressOption(next);
+          }}
+          placeholder={hasMoving ? "Von (PLZ + Straße)" : "Einsatzadresse (PLZ + Straße)"}
         />
         {hasMoving ? (
-          <Input
-            placeholder="Nach (PLZ + Straße)"
+          <AddressAutocompleteInput
             value={toAddress}
-            onChange={(e) => setToAddress(e.target.value)}
+            onValueChange={(value) => {
+              setToAddress(value);
+              setToAddressOption(undefined);
+            }}
+            onSelect={(next) => {
+              setToAddress(next?.displayName ?? "");
+              setToAddressOption(next);
+            }}
+            placeholder="Nach (PLZ + Straße)"
           />
         ) : null}
       </div>
@@ -525,8 +570,13 @@ export function PriceCalculator({
                 serviceType === "KOMBI" ? "COMBO" : (contextMap[context] ?? "MOVING");
               const normalizedFromAddress = fromAddress.trim();
               const normalizedToAddress = hasMoving ? toAddress.trim() : normalizedFromAddress;
-              const fromPostalCode = normalizedFromAddress.match(/\b\d{5}\b/)?.[0];
-              const toPostalCode = normalizedToAddress.match(/\b\d{5}\b/)?.[0];
+              const fromAddressPayload = toAddressPayload(normalizedFromAddress, fromAddressOption);
+              const toAddressPayloadValue = toAddressPayload(
+                normalizedToAddress,
+                hasMoving ? toAddressOption : fromAddressOption,
+              );
+              const fromPostalCode = fromAddressPayload?.postalCode || "";
+              const toPostalCode = toAddressPayloadValue?.postalCode || "";
               if ((serviceContext === "MOVING" || serviceContext === "COMBO") && (!fromPostalCode || !toPostalCode)) {
                 throw new Error("Bitte geben Sie in beiden Adressen eine gültige PLZ an.");
               }
@@ -549,22 +599,8 @@ export function PriceCalculator({
                     floors,
                     hasElevator,
                     needNoParkingZone,
-                    fromAddress: normalizedFromAddress
-                      ? {
-                          displayName: normalizedFromAddress,
-                          postalCode: fromPostalCode || "",
-                          city: "Berlin",
-                          street: normalizedFromAddress,
-                        }
-                      : undefined,
-                    toAddress: normalizedToAddress
-                      ? {
-                          displayName: normalizedToAddress,
-                          postalCode: toPostalCode || "",
-                          city: "Berlin",
-                          street: normalizedToAddress,
-                        }
-                      : undefined,
+                    fromAddress: fromAddressPayload,
+                    toAddress: toAddressPayloadValue,
                     selectedServiceOptions: Object.entries(selectedServiceOptions)
                       .filter(([, qty]) => qty > 0)
                       .map(([code, qty]) => ({ code, qty })),
