@@ -1,21 +1,46 @@
-﻿import Link from "next/link";
+﻿import type { Metadata, Viewport } from "next";
+import Link from "next/link";
 
 import { logoutAction } from "@/app/admin/actions";
 import { Container } from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { AdminNav } from "@/components/admin/admin-nav";
+import { AdminPwaRegister } from "@/components/admin/admin-pwa-register";
 import { prisma } from "@/server/db/prisma";
+
+export const metadata: Metadata = {
+  title: "Admin",
+  manifest: "/admin/manifest.webmanifest",
+  icons: {
+    apple: "/admin/pwa-icon-192.png",
+    icon: [
+      { url: "/admin/pwa-icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/admin/pwa-icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "SSU Admin",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0b1f44",
+};
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   let newOrderCount = 0;
   try {
     newOrderCount = await prisma.order.count({ where: { status: "NEW" } });
   } catch {
-    /* DB unavailable — nav still renders */
+    /* DB unavailable - nav still renders */
   }
 
   return (
     <div className="luxury-bg min-h-screen text-slate-900 dark:text-slate-100">
+      <AdminPwaRegister />
+
       <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] bg-[color:var(--surface-elevated)]/90 backdrop-blur-xl">
         <Container className="flex min-h-16 flex-wrap items-center justify-between gap-2 py-2">
           <div className="flex min-w-0 items-center gap-3">

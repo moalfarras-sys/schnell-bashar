@@ -7,6 +7,15 @@ import { hasPermission, requiredPermissionForPath } from "@/server/auth/admin-pe
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Allow public admin PWA assets and login page
+  if (
+    pathname === "/admin/manifest.webmanifest" ||
+    pathname === "/admin/sw.js" ||
+    pathname.startsWith("/admin/pwa-icon-")
+  ) {
+    return NextResponse.next();
+  }
+
   // Allow login page
   if (pathname.startsWith("/admin/login")) return NextResponse.next();
 
