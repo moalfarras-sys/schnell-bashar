@@ -58,6 +58,12 @@ type ResolvedPoint = {
   postalCode: string | null;
 };
 
+type GeocodeResultItem = {
+  lat: number;
+  lon: number;
+  postalCode: string | null;
+};
+
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
 }
@@ -132,6 +138,54 @@ async function fetchNominatim(
   }>;
 }
 
+async function fetchORSGeocode(
+  query: string,
+  options?: { strictGermany?: boolean },
+): Promise<GeocodeResultItem[]> {
+  const apiKey = process.env.ORS_API_KEY;
+  if (!apiKey) return [];
+
+  const url = new URL(`${ORS_BASE_URL}/geocode/search`);
+  url.searchParams.set("api_key", apiKey);
+  url.searchParams.set("text", query);
+  url.searchParams.set("size", "3");
+  if (options?.strictGermany !== false) {
+    url.searchParams.set("boundary.country", "DE");
+  }
+
+  const response = await fetch(url, {
+    headers: {
+      "User-Agent": "SchnellSicherUmzug/1.0 (kontakt@schnellsicherumzug.de)",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const payload = (await response.json()) as {
+    features?: Array<{
+      geometry?: { coordinates?: [number, number] };
+      properties?: { postalcode?: string };
+    }>;
+  };
+
+  return (payload.features ?? [])
+    .map((feature) => {
+      const coords = feature.geometry?.coordinates;
+      const lon = Array.isArray(coords) ? Number(coords[0]) : NaN;
+      const lat = Array.isArray(coords) ? Number(coords[1]) : NaN;
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+      return {
+        lat,
+        lon,
+        postalCode: normalizePostalCode(feature.properties?.postalcode),
+      };
+    })
+    .filter((item): item is GeocodeResultItem => item !== null);
+}
+
 function normalizeAddressQuery(query: string): string {
   return query
     .replace(/ß/g, "ss")
@@ -175,7 +229,12 @@ async function geocodeTextAddress(text: string): Promise<ResolvedPoint> {
     | null = null;
 
   for (const candidate of candidates) {
-    const strict = await fetchNominatim(candidate.query, { strictGermany: true });
+    const strictFromOrs = await fetchORSGeocode(candidate.query, { strictGermany: true });
+    const strictFromNominatim = await fetchNominatim(candidate.query, { strictGermany: true }).catch(() => []);
+    const strict = strictFromOrs[0]
+      ? [{ lat: String(strictFromOrs[0].lat), lon: String(strictFromOrs[0].lon), address: { postcode: strictFromOrs[0].postalCode ?? undefined } }]
+      : strictFromNominatim;
+
     if (strict[0]) {
       const strictPostal = normalizePostalCode(strict[0].address?.postcode);
       if (requestedPostal && strictPostal && strictPostal !== requestedPostal) {
@@ -189,7 +248,11 @@ async function geocodeTextAddress(text: string): Promise<ResolvedPoint> {
     }
 
     if (candidate.allowRelaxed) {
-      const relaxed = await fetchNominatim(candidate.query, { strictGermany: false });
+      const relaxedFromOrs = await fetchORSGeocode(candidate.query, { strictGermany: false });
+      const relaxedFromNominatim = await fetchNominatim(candidate.query, { strictGermany: false }).catch(() => []);
+      const relaxed = relaxedFromOrs[0]
+        ? [{ lat: String(relaxedFromOrs[0].lat), lon: String(relaxedFromOrs[0].lon), address: { postcode: relaxedFromOrs[0].postalCode ?? undefined } }]
+        : relaxedFromNominatim;
       if (relaxed[0]) {
         const relaxedPostal = normalizePostalCode(relaxed[0].address?.postcode);
         if (requestedPostal && relaxedPostal && relaxedPostal !== requestedPostal) {
