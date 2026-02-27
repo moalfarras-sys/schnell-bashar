@@ -44,8 +44,8 @@ services:
       cp -r .next/static .next/standalone/.next/static &&
       cp -r public .next/standalone/public &&
       node .next/standalone/server.js"
-    ports:
-      - "${WEB_PORT:-3002}:3000"
+    expose:
+      - "3000"
 
 volumes:
   db_data:
