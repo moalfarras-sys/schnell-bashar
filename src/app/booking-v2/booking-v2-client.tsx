@@ -398,6 +398,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
         bookingContext,
         packageTier: toWizardPackageTier(speed),
         serviceCart,
+        volumeM3: draft.volumeM3,
         selectedServiceOptions: [],
         serviceType,
         addons,

@@ -138,6 +138,7 @@ export const wizardPayloadSchema = z.object({
     })
     .optional(),
   serviceType: serviceTypeSchema,
+  volumeM3: z.number().min(1).max(200).optional(),
   addons: z.array(addonKeySchema).default([]),
 
   // Locations

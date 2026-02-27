@@ -272,10 +272,13 @@ export function estimateOrder(
   }, 0);
 
   const moveVolume = calcVolume(itemsMove);
+  const payloadVolume = Number.isFinite(payload.volumeM3) ? Math.max(0, Number(payload.volumeM3)) : 0;
+  const effectiveMoveVolume =
+    moveVolume > 0 && payload.serviceType !== "DISPOSAL" ? moveVolume : payloadVolume;
   const disposalBaseVolume = calcVolume(itemsDisposal);
   const disposalExtra = payload.disposal?.volumeExtraM3 ?? 0;
   const disposalVolume = disposalBaseVolume + disposalExtra;
-  const totalVolume = moveVolume + disposalVolume;
+  const totalVolume = effectiveMoveVolume + disposalVolume;
 
   const heavyCount =
     calcHeavyCount(itemsMove) + calcHeavyCount(itemsDisposal) + serviceOptionHeavyCount;
@@ -332,7 +335,7 @@ export function estimateOrder(
     subtotalCents += isMontage
       ? pricing.montageBaseFeeCents ?? pricing.movingBaseFeeCents
       : pricing.movingBaseFeeCents;
-    subtotalCents += Math.round(moveVolume * pricing.perM3MovingCents);
+    subtotalCents += Math.round(effectiveMoveVolume * pricing.perM3MovingCents);
     subtotalCents += driveChargeCents;
   }
   if (payload.serviceType === "DISPOSAL" || payload.serviceType === "BOTH") {
@@ -437,7 +440,7 @@ export function estimateOrder(
     distanceSource,
     driveChargeCents,
     breakdown: {
-      moveVolumeM3: round2(moveVolume),
+      moveVolumeM3: round2(effectiveMoveVolume),
       disposalVolumeM3: round2(disposalVolume),
       totalVolumeM3: round2(totalVolume),
       heavyItemCount: heavyCount,

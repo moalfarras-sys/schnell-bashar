@@ -79,6 +79,7 @@ export function quoteDraftToWizardPayload(draft: QuoteDraft): WizardPayload {
     packageTier: quoteSpeedToPackageTier(draft.packageSpeed),
     serviceCart,
     serviceType,
+    volumeM3: draft.volumeM3,
     addons,
     selectedServiceOptions: draft.selectedServiceOptions,
     pickupAddress:
