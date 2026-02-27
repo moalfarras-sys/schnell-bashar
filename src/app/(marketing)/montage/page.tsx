@@ -124,7 +124,7 @@ export default async function MontagePage() {
                   Richtpreis berechnen
                 </Button>
               </Link>
-              <Link href="/booking-v2?context=MONTAGE" className="w-full sm:w-auto">
+              <Link href="/booking?context=MONTAGE" className="w-full sm:w-auto">
                 <Button size="lg" variant="outline" className="w-full gap-2 border-white/50 bg-white/10 text-white hover:bg-white/20 sm:w-auto">
                   <CalendarDays className="h-5 w-5" />
                   Termin wählen
@@ -231,7 +231,7 @@ export default async function MontagePage() {
           </Reveal>
 
           <Reveal className="mt-10 text-center">
-            <Link href="/booking-v2?context=MONTAGE">
+            <Link href="/booking?context=MONTAGE">
               <Button size="lg" className="gap-2">
                 <Wrench className="h-5 w-5" />
                 Jetzt Montage anfragen
@@ -276,7 +276,7 @@ export default async function MontagePage() {
           </Reveal>
 
           <Reveal className="mt-12 text-center">
-            <Link href="/booking-v2?context=MONTAGE">
+            <Link href="/booking?context=MONTAGE">
               <Button size="lg" className="gap-2">
                 Jetzt Montage anfragen
                 <CheckCircle2 className="h-5 w-5" />
@@ -290,6 +290,7 @@ export default async function MontagePage() {
     </>
   );
 }
+
 
 
 

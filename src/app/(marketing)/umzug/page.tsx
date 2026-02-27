@@ -111,7 +111,7 @@ export default async function UmzugPage() {
                   Richtpreis berechnen
                 </Button>
               </Link>
-              <Link href="/booking-v2?context=MOVING" className="w-full sm:w-auto">
+              <Link href="/booking?context=MOVING" className="w-full sm:w-auto">
                 <Button size="lg" variant="outline" className="w-full gap-2 border-white/50 bg-white/10 text-white hover:bg-white/20 sm:w-auto">
                   <CalendarDays className="h-5 w-5" />
                   Termin wählen
@@ -226,7 +226,7 @@ export default async function UmzugPage() {
           </Reveal>
 
           <Reveal className="mt-12 text-center">
-            <Link href="/booking-v2?context=MOVING">
+            <Link href="/booking?context=MOVING">
               <Button size="lg" className="gap-2">
                 Jetzt Angebot anfordern
                 <CheckCircle2 className="h-5 w-5" />
@@ -240,6 +240,7 @@ export default async function UmzugPage() {
     </>
   );
 }
+
 
 
 

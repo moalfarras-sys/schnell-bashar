@@ -295,7 +295,7 @@ sudo certbot --nginx -d deine-domain.de
 ```bash
 # 1) Basis
 curl -I https://deine-domain.de/
-curl -I https://deine-domain.de/booking-v2
+curl -I https://deine-domain.de/booking
 curl -I https://deine-domain.de/admin/login
 
 # 2) Slot API (Beispiel)
@@ -304,7 +304,7 @@ curl "https://deine-domain.de/api/slots?speed=STANDARD&from=2026-03-10&to=2026-0
 
 Manuell im Browser pruefen:
 
-1. `/booking-v2`: Service wählen -> Angaben vervollständigen -> Anfrage senden.
+1. `/booking`: Service wählen -> Angaben vervollständigen -> Anfrage senden.
 2. `/admin/orders`: neuer Auftrag sichtbar.
 3. Auftrag oeffnen -> Status aendern.
 4. CSV Export ueber `/admin/orders/export`.
@@ -323,7 +323,8 @@ Falls noetig, letzte stabile Version aus Git auschecken und erneut `npm ci && np
 
 ## Wichtige Pfade
 
-- Buchung: `/booking-v2`
+- Buchung: `/booking`
 - Admin: `/admin/*`
 - API: `/api/orders`, `/api/slots`, `/api/geocode`
+
 

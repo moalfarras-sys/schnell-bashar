@@ -58,7 +58,7 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
           >
             Anfrage verfolgen
           </Link>
-          <Link href="/booking-v2?context=MOVING">
+          <Link href="/booking?context=MOVING">
             <Button size="sm">Jetzt buchen</Button>
           </Link>
         </div>
@@ -87,7 +87,7 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
               >
                 Anfrage verfolgen
               </Link>
-              <Link href="/booking-v2?context=MOVING" onClick={closeMobile}>
+              <Link href="/booking?context=MOVING" onClick={closeMobile}>
                 <Button className="mt-2 w-full">Jetzt buchen</Button>
               </Link>
             </div>
@@ -97,6 +97,7 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
     </header>
   );
 }
+
 
 
 

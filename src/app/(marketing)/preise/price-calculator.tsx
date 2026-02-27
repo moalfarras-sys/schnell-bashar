@@ -449,7 +449,7 @@ export function PriceCalculator({
               .join(",");
             if (options) params.set("options", options);
 
-            router.push(`/booking-v2?${params.toString()}`);
+            router.push(`/booking?${params.toString()}`);
           }}
           disabled={loading}
         >
@@ -466,5 +466,6 @@ export function PriceCalculator({
     </div>
   );
 }
+
 
 

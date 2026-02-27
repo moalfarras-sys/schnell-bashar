@@ -68,13 +68,13 @@ export function SiteFooter() {
         <div className="text-sm">
           <div className="font-bold text-slate-900 dark:text-white">Online-Dienste</div>
           <div className="mt-3 grid gap-2.5 text-slate-600 dark:text-slate-400">
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/booking-v2?context=MOVING">
+            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/booking?context=MOVING">
               Umzug buchen
             </Link>
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/booking-v2?context=MONTAGE">
+            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/booking?context=MONTAGE">
               Montage buchen
             </Link>
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/booking-v2?context=ENTSORGUNG">
+            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/booking?context=ENTSORGUNG">
               Entsorgung buchen
             </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/anfrage">
@@ -137,4 +137,5 @@ export function SiteFooter() {
     </footer>
   );
 }
+
 

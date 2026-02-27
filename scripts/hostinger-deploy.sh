@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
 
 APP_NAME="schnell-sicher-umzug"
@@ -31,7 +31,7 @@ docker compose exec -T web npm run accounting:backfill:invoices || true
 
 echo "==> Smoke checks"
 wget -S --spider "https://${DOMAIN}/"
-wget -S --spider "https://${DOMAIN}/booking-v2"
+wget -S --spider "https://${DOMAIN}/booking"
 wget -S --spider "https://${DOMAIN}/admin/login"
 wget -qO- "https://${DOMAIN}/api/availability/dates?from=2026-03-01&to=2026-03-05&speed=STANDARD&volumeM3=10" > /tmp/availability-dates.json
 wget -qO- "https://${DOMAIN}/api/availability/slots?date=2026-03-03&speed=STANDARD&volumeM3=10" > /tmp/availability-slots.json
@@ -46,3 +46,4 @@ fi
 echo "==> Booking APIs are live (demoMode=false)"
 
 echo "==> Deployment finished successfully"
+

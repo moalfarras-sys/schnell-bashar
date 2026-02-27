@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 
@@ -18,9 +18,9 @@ export function VolumeEstimatorSection(props: {
   return (
     <section className="space-y-3">
       <div>
-        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">3. Volumen-Schätzung</h2>
+        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">3. Volumenschätzung</h2>
         <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-          Wählen Sie einen Wohnungs-Typ oder passen Sie das Volumen manuell an.
+          Wählen Sie eine Wohnungsgröße oder passen Sie das Volumen manuell an.
         </p>
       </div>
 
@@ -53,6 +53,7 @@ export function VolumeEstimatorSection(props: {
           value={props.value}
           onChange={(e) => props.onValueChange(Number(e.target.value))}
           className="w-full accent-cyan-500"
+          aria-label="Volumen in Kubikmetern"
         />
         <motion.div
           key={props.value}
@@ -63,10 +64,9 @@ export function VolumeEstimatorSection(props: {
           {props.value} m³
         </motion.div>
         <div className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-          Das Volumen beeinflusst Preis, Teamgröße und geschätzte Dauer.
+          Das Volumen beeinflusst Preis, Teamgröße und die geschätzte Einsatzdauer.
         </div>
       </div>
     </section>
   );
 }
-

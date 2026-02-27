@@ -1,24 +1,54 @@
-"use client";
+﻿"use client";
 
 import { Building2, Info, PackagePlus, ParkingCircle, Rocket, Trash2 } from "lucide-react";
 
-import type { ExtrasState } from "@/app/booking-v2/lib/pricing";
+import type { ExtrasState } from "@/app/booking-v2/components/types";
 
 const extraCatalog = [
-  { key: "packing" as const, title: "Packservice", hint: "Sicheres Ein- und Auspacken durch das Team.", price: "+45 €", icon: PackagePlus },
-  { key: "stairs" as const, title: "Mehrere Treppen", hint: "Für Gebäude ohne oder mit kleinem Aufzug.", price: "+35 €", icon: Building2 },
-  { key: "express" as const, title: "Express-Termin", hint: "Priorisierte Terminvergabe mit kurzer Reaktionszeit.", price: "+70 €", icon: Rocket },
-  { key: "noParkingZone" as const, title: "Halteverbotszone", hint: "Organisation und Einplanung direkt im Auftrag.", price: "+55 €", icon: ParkingCircle },
-  { key: "disposalBags" as const, title: "Entsorgungs-Säcke", hint: "Zusätzliche Entsorgungslogistik bei Mischmaterial.", price: "+20 €", icon: Trash2 },
+  {
+    key: "packing" as const,
+    title: "Packservice",
+    hint: "Sicheres Ein- und Auspacken durch das Team.",
+    impact: "+25,00 €",
+    icon: PackagePlus,
+  },
+  {
+    key: "stairs" as const,
+    title: "Treppen ohne Aufzug",
+    hint: "Zusätzlicher Aufwand für Tragewege und Etagen.",
+    impact: "Aufwand höher",
+    icon: Building2,
+  },
+  {
+    key: "express" as const,
+    title: "Express-Priorität",
+    hint: "Schnellere Terminvergabe und priorisierte Planung.",
+    impact: "Schneller Termin",
+    icon: Rocket,
+  },
+  {
+    key: "noParkingZone" as const,
+    title: "Halteverbotszone",
+    hint: "Organisation und Einplanung direkt im Auftrag.",
+    impact: "Parkaufwand berücksichtigt",
+    icon: ParkingCircle,
+  },
+  {
+    key: "disposalBags" as const,
+    title: "Zusätzliche Entsorgung",
+    hint: "Zusatzaufwand für gemischte Entsorgungsmaterialien.",
+    impact: "+40,00 €",
+    icon: Trash2,
+  },
 ];
 
 export function ExtrasSection(props: { value: ExtrasState; onChange: (next: ExtrasState) => void }) {
   return (
     <section className="space-y-3">
       <div>
-        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">4. Extras</h2>
+        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">4. Zusatzoptionen</h2>
         <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-          Wählen Sie Zusatzoptionen. Jeder Punkt zeigt seinen Preis-Einfluss.
+          Aktivieren Sie nur relevante Optionen. Die Schätzung wird live angepasst.
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -44,7 +74,7 @@ export function ExtrasSection(props: { value: ExtrasState; onChange: (next: Extr
                 <div className="flex items-center gap-2">
                   <Icon className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />
                   <div className="truncate text-sm font-extrabold text-slate-900 dark:text-white">{item.title}</div>
-                  <span className="ml-auto text-xs font-bold text-cyan-700 dark:text-cyan-200">{item.price}</span>
+                  <span className="ml-auto text-xs font-bold text-cyan-700 dark:text-cyan-200">{item.impact}</span>
                 </div>
                 <div className="mt-1 flex items-start gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
                   <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
@@ -58,3 +88,5 @@ export function ExtrasSection(props: { value: ExtrasState; onChange: (next: Extr
     </section>
   );
 }
+
+

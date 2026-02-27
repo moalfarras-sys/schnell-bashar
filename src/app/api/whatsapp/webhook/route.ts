@@ -27,15 +27,15 @@ export async function POST(req: Request) {
   if (text === "1") {
     nextState = "service_selection";
     reply =
-      "Perfekt. Für Umzug starten Sie bitte hier: https://schnellsicherumzug.de/booking-v2?context=MOVING";
+      "Perfekt. Für Umzug starten Sie bitte hier: https://schnellsicherumzug.de/booking?context=MOVING";
   } else if (text === "2") {
     nextState = "service_selection";
     reply =
-      "Für Entsorgung starten Sie bitte hier: https://schnellsicherumzug.de/booking-v2?context=ENTSORGUNG";
+      "Für Entsorgung starten Sie bitte hier: https://schnellsicherumzug.de/booking?context=ENTSORGUNG";
   } else if (text === "3" || text.includes("link")) {
     nextState = "awaiting_booking";
     reply =
-      "Hier ist Ihr Buchungslink: https://schnellsicherumzug.de/booking-v2?context=MOVING";
+      "Hier ist Ihr Buchungslink: https://schnellsicherumzug.de/booking?context=MOVING";
   }
 
   inMemoryConversationState.set(phone, { state: nextState, updatedAt: Date.now() });
@@ -47,4 +47,5 @@ export async function POST(req: Request) {
     reply,
   });
 }
+
 

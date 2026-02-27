@@ -10,16 +10,16 @@ const routes = [
   "/montage",
   "/preise",
   "/kalender",
-  "/booking-v2?context=MOVING",
+  "/booking?context=MOVING",
   "/anfrage",
   "/galerie",
   "/faq",
   "/tipps",
   "/ueber-uns",
   "/kontakt",
-  "/booking-v2",
-  "/booking-v2?context=MONTAGE",
-  "/booking-v2?context=ENTSORGUNG",
+  "/booking",
+  "/booking?context=MONTAGE",
+  "/booking?context=ENTSORGUNG",
   "/agb",
   "/datenschutz",
   "/impressum",
@@ -43,6 +43,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...baseEntries, ...cityEntries];
 }
+
 
 
 

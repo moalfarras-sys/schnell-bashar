@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LocateFixed, MapPin } from "lucide-react";
 
@@ -63,6 +63,7 @@ function AddressInput(props: {
           onFocus={() => setOpen(true)}
           className="w-full rounded-xl border border-slate-300/80 bg-white/60 py-3 pl-9 pr-3 text-sm font-medium text-slate-900 outline-none transition focus:border-cyan-400 dark:border-slate-700 dark:bg-slate-900/55 dark:text-slate-100"
           placeholder="Straße, Hausnummer, PLZ, Ort"
+          aria-label={props.label}
         />
         <AnimatePresence>
           {open && (results.length > 0 || loading) ? (
@@ -72,7 +73,7 @@ function AddressInput(props: {
               exit={{ opacity: 0, y: 4 }}
               className="absolute z-20 mt-2 max-h-56 w-full overflow-auto rounded-xl border border-slate-300/80 bg-white/95 p-1.5 shadow-xl dark:border-slate-700 dark:bg-slate-900/95"
             >
-              {loading ? <div className="px-3 py-2 text-xs font-semibold text-slate-500">Suche läuft...</div> : null}
+              {loading ? <div className="px-3 py-2 text-xs font-semibold text-slate-500">Adressen werden geladen...</div> : null}
               {results.map((r) => (
                 <button
                   key={`${r.lat}-${r.lon}-${r.displayName}`}
@@ -95,57 +96,26 @@ function AddressInput(props: {
   );
 }
 
-function haversineKm(from: AddressOption, to: AddressOption) {
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-  const R = 6371;
-  const dLat = toRad(to.lat - from.lat);
-  const dLon = toRad(to.lon - from.lon);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(from.lat)) * Math.cos(toRad(to.lat)) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-const depot: AddressOption = {
-  displayName: "Betriebspunkt Berlin",
-  postalCode: "12043",
-  city: "Berlin",
-  lat: 52.48,
-  lon: 13.43,
-};
-
 export function SmartAddressSection(props: {
   service: BookingService;
   from?: AddressOption;
   to?: AddressOption;
   onFromChange: (next?: AddressOption) => void;
   onToChange: (next?: AddressOption) => void;
-  onDistanceChange: (km: number) => void;
+  distanceKm?: number;
+  distanceSource?: "approx" | "ors" | "cache" | "fallback";
+  loading?: boolean;
+  error?: string | null;
 }) {
   const [geoLoading, setGeoLoading] = useState(false);
-
-  const distanceKm = useMemo(() => {
-    if (props.service === "MOVING" || props.service === "COMBO") {
-      if (!props.from || !props.to) return 0;
-      return haversineKm(props.from, props.to);
-    }
-    const target = props.to ?? props.from;
-    if (!target) return 0;
-    return haversineKm(depot, target);
-  }, [props.from, props.service, props.to]);
-
-  useEffect(() => {
-    props.onDistanceChange(Number(distanceKm.toFixed(1)));
-  }, [distanceKm, props]);
-
   const needsTwoAddresses = props.service === "MOVING" || props.service === "COMBO";
 
   return (
     <section className="space-y-3">
       <div>
-        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">2. Intelligente Adresse</h2>
+        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">2. Adressen</h2>
         <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-          Adresse wird automatisch erkannt. Distanz wird live berechnet.
+          Start- und Zieladresse werden geocodiert. Die Distanz wird über die Routing-API berechnet.
         </p>
       </div>
 
@@ -176,7 +146,7 @@ export function SmartAddressSection(props: {
                 const candidate: AddressOption = {
                   displayName: `Aktueller Standort (${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)})`,
                   city: "Standort",
-                  postalCode: "",
+                  postalCode: "00000",
                   lat: position.coords.latitude,
                   lon: position.coords.longitude,
                 };
@@ -196,21 +166,33 @@ export function SmartAddressSection(props: {
           {geoLoading ? "Standort wird ermittelt..." : "Aktuellen Standort verwenden"}
         </button>
         <span className="rounded-xl border border-slate-300/70 bg-white/60 px-3 py-2 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
-          Distanz: {distanceKm > 0 ? `${distanceKm.toFixed(1)} km` : "wird nach Adresseingabe berechnet"}
+          Distanz: {props.distanceKm && props.distanceKm > 0 ? `${props.distanceKm.toFixed(1)} km` : "wird berechnet"}
+          {props.distanceSource ? ` · Quelle: ${props.distanceSource}` : ""}
         </span>
       </div>
 
+      {props.error ? (
+        <div className="rounded-xl border border-amber-300/80 bg-amber-100/70 px-3 py-2 text-xs font-semibold text-amber-900 dark:border-amber-400/50 dark:bg-amber-900/20 dark:text-amber-200">
+          {props.error}
+        </div>
+      ) : null}
+
       <div className={cn(styles.mapPreview, "p-4")}>
-        <div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-300">Kartenvorschau</div>
+        <div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-700 dark:text-slate-300">Routing-Status</div>
         <div className="mt-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-          {needsTwoAddresses
-            ? "Route zwischen Start- und Zieladresse."
-            : "Anfahrt vom Betriebspunkt zur Einsatzadresse."}
+          {props.loading
+            ? "Route wird berechnet..."
+            : needsTwoAddresses
+              ? "Route zwischen Start- und Zieladresse"
+              : "Anfahrt zum Einsatzort"}
         </div>
         <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
-          Die Karte wird beim finalen Auftrag mit exakter Route ergänzt.
+          Die exakte Distanz fließt in Preis und Zeitschätzung ein.
         </div>
       </div>
     </section>
   );
 }
+
+
+

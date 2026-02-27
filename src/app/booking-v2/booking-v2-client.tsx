@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 
 import { Container } from "@/components/container";
 import styles from "@/app/booking-v2/booking-v2.module.css";
@@ -10,18 +11,47 @@ import { ServiceSelection } from "@/app/booking-v2/components/service-selection"
 import { SmartAddressSection } from "@/app/booking-v2/components/smart-address";
 import { VolumeEstimatorSection } from "@/app/booking-v2/components/volume-estimator";
 import { ExtrasSection } from "@/app/booking-v2/components/extras-section";
-import { ContactSection, validateContact } from "@/app/booking-v2/components/contact-section";
+import { ContactSection, validateContactAndSchedule } from "@/app/booking-v2/components/contact-section";
 import { LivePriceEngineCard } from "@/app/booking-v2/components/live-price-engine";
 import { bookingSteps, StepNavigation } from "@/app/booking-v2/components/step-navigation";
-import { calculateBookingPrice } from "@/app/booking-v2/lib/pricing";
+import {
+  formatEuroFromCents,
+  toApiServiceType,
+  toBookingContext,
+  toServiceCart,
+  toWizardPackageTier,
+  toWizardServiceType,
+  type PriceCalcResponse,
+} from "@/app/booking-v2/lib/pricing";
 import type { BookingDraft } from "@/app/booking-v2/components/types";
 
+function toIsoAtHour(dateInput: string, hour: number) {
+  const date = new Date(`${dateInput}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return null;
+  date.setHours(hour, 0, 0, 0);
+  return date.toISOString();
+}
+
+function mapTimeWindowToHours(window: BookingDraft["schedule"]["timeWindow"]) {
+  if (window === "MORNING") return { from: 8, to: 12 };
+  if (window === "AFTERNOON") return { from: 13, to: 17 };
+  if (window === "EVENING") return { from: 17, to: 20 };
+  return { from: 9, to: 18 };
+}
+
 export function BookingV2Client(props: { initialContext?: string }) {
+  const router = useRouter();
   const initialContext = String(props.initialContext ?? "").toUpperCase();
   const topRef = useRef<HTMLDivElement>(null);
+
   const [step, setStep] = useState(0);
-  const [distanceKm, setDistanceKm] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [calcState, setCalcState] = useState<{ loading: boolean; error: string | null; data: PriceCalcResponse | null }>({
+    loading: false,
+    error: null,
+    data: null,
+  });
 
   const [draft, setDraft] = useState<BookingDraft>(() => ({
     service:
@@ -35,7 +65,7 @@ export function BookingV2Client(props: { initialContext?: string }) {
     volumeM3: 24,
     preset: "2zimmer",
     extras: {
-      packing: initialContext === "MONTAGE",
+      packing: false,
       stairs: false,
       express: false,
       noParkingZone: false,
@@ -45,21 +75,21 @@ export function BookingV2Client(props: { initialContext?: string }) {
       fullName: "",
       phone: "",
       email: "",
+      note: "",
+    },
+    schedule: {
+      desiredDate: "",
+      timeWindow: "FLEXIBLE",
+      speed: "STANDARD",
     },
   }));
 
-  const price = useMemo(
-    () =>
-      calculateBookingPrice({
-        service: draft.service,
-        distanceKm,
-        volumeM3: draft.volumeM3,
-        extras: draft.extras,
-      }),
-    [distanceKm, draft.extras, draft.service, draft.volumeM3],
+  const contactErrors = useMemo(
+    () => validateContactAndSchedule(draft.contact, draft.schedule),
+    [draft.contact, draft.schedule],
   );
 
-  const contactErrors = useMemo(() => validateContact(draft.contact), [draft.contact]);
+  const distanceKm = calcState.data?.breakdown?.distanceKm ?? 0;
 
   const stepError = useMemo(() => {
     if (step === 1) {
@@ -71,7 +101,7 @@ export function BookingV2Client(props: { initialContext?: string }) {
       }
     }
     if (step === 4 && Object.keys(contactErrors).length > 0) {
-      return "Bitte korrigieren Sie die Kontaktdaten.";
+      return "Bitte prüfen Sie die markierten Angaben.";
     }
     return null;
   }, [contactErrors, draft.from, draft.service, draft.to, step]);
@@ -88,16 +118,203 @@ export function BookingV2Client(props: { initialContext?: string }) {
 
   const prevStep = () => goStep(Math.max(step - 1, 0));
 
+  useEffect(() => {
+    const id = setTimeout(async () => {
+      const serviceCart = toServiceCart(draft.service);
+      const needsRoute = draft.service === "MOVING" || draft.service === "COMBO";
+      const fromAddress = needsRoute ? draft.from?.displayName : undefined;
+      const toAddress = needsRoute ? draft.to?.displayName : draft.to?.displayName;
+
+      const addons: Array<"PACKING" | "DISMANTLE_ASSEMBLE" | "OLD_KITCHEN_DISPOSAL" | "BASEMENT_ATTIC_CLEARING"> = [];
+      if (draft.extras.packing) addons.push("PACKING");
+      if (draft.extras.stairs) addons.push("DISMANTLE_ASSEMBLE");
+      if (draft.extras.disposalBags) addons.push("BASEMENT_ATTIC_CLEARING");
+
+      setCalcState((prev) => ({ ...prev, loading: true, error: null }));
+      try {
+        const res = await fetch("/api/price/calc", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            serviceType: toApiServiceType(draft.service),
+            serviceCart,
+            speed: draft.extras.express ? "EXPRESS" : draft.schedule.speed,
+            volumeM3: draft.volumeM3,
+            floors: draft.extras.stairs ? 2 : 0,
+            hasElevator: false,
+            needNoParkingZone: draft.extras.noParkingZone,
+            addons,
+            fromAddress,
+            toAddress,
+          }),
+        });
+
+        const json = (await res.json()) as PriceCalcResponse | { error?: string };
+        if (!res.ok) {
+          throw new Error(("error" in json && json.error) || "Preisberechnung fehlgeschlagen.");
+        }
+
+        setCalcState({ loading: false, error: null, data: json as PriceCalcResponse });
+      } catch (error) {
+        setCalcState((prev) => ({
+          ...prev,
+          loading: false,
+          error: error instanceof Error ? error.message : "Preisberechnung fehlgeschlagen.",
+        }));
+      }
+    }, 300);
+
+    return () => clearTimeout(id);
+  }, [
+    draft.service,
+    draft.from?.displayName,
+    draft.to?.displayName,
+    draft.volumeM3,
+    draft.extras.packing,
+    draft.extras.stairs,
+    draft.extras.express,
+    draft.extras.noParkingZone,
+    draft.extras.disposalBags,
+    draft.schedule.speed,
+  ]);
+
+  async function submitBooking() {
+    if (stepError || submitting) return;
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const speed = draft.extras.express ? "EXPRESS" : draft.schedule.speed;
+      const serviceType = toWizardServiceType(draft.service);
+      const bookingContext = toBookingContext(draft.service);
+      const serviceCart = toServiceCart(draft.service);
+      const hours = mapTimeWindowToHours(draft.schedule.timeWindow);
+      const requestedFrom = toIsoAtHour(draft.schedule.desiredDate, hours.from);
+      const requestedTo = toIsoAtHour(draft.schedule.desiredDate, hours.to);
+
+      if (!requestedFrom || !requestedTo) {
+        throw new Error("Bitte wählen Sie ein gültiges Wunschdatum.");
+      }
+
+      if ((draft.service === "MOVING" || draft.service === "COMBO") && (!draft.from || !draft.to)) {
+        throw new Error("Bitte geben Sie Start- und Zieladresse vollständig an.");
+      }
+
+      if ((draft.service === "DISPOSAL" || draft.service === "ASSEMBLY") && !draft.to) {
+        throw new Error("Bitte geben Sie die Einsatzadresse vollständig an.");
+      }
+
+      const addons: Array<"PACKING" | "DISMANTLE_ASSEMBLE" | "OLD_KITCHEN_DISPOSAL" | "BASEMENT_ATTIC_CLEARING"> = [];
+      if (draft.extras.packing) addons.push("PACKING");
+      if (draft.extras.stairs) addons.push("DISMANTLE_ASSEMBLE");
+      if (draft.extras.disposalBags) addons.push("BASEMENT_ATTIC_CLEARING");
+
+      const access = {
+        propertyType: "apartment" as const,
+        floor: draft.extras.stairs ? 2 : 0,
+        elevator: "none" as const,
+        stairs: draft.extras.stairs ? ("few" as const) : ("none" as const),
+        parking: draft.extras.noParkingZone ? ("hard" as const) : ("easy" as const),
+        needNoParkingZone: draft.extras.noParkingZone,
+        carryDistanceM: 0,
+      };
+
+      const payload = {
+        payloadVersion: 2,
+        bookingContext,
+        packageTier: toWizardPackageTier(speed),
+        serviceCart,
+        selectedServiceOptions: [],
+        serviceType,
+        addons,
+        pickupAddress: draft.service === "DISPOSAL" || draft.service === "ASSEMBLY" ? draft.to : undefined,
+        startAddress: draft.service === "MOVING" || draft.service === "COMBO" ? draft.from : undefined,
+        destinationAddress: draft.service === "MOVING" || draft.service === "COMBO" ? draft.to : undefined,
+        accessPickup: draft.service === "DISPOSAL" || draft.service === "ASSEMBLY" ? access : undefined,
+        accessStart: draft.service === "MOVING" || draft.service === "COMBO" ? access : undefined,
+        accessDestination: draft.service === "MOVING" || draft.service === "COMBO" ? access : undefined,
+        itemsMove: {},
+        itemsDisposal: {},
+        disposal:
+          draft.service === "DISPOSAL" || draft.service === "COMBO"
+            ? {
+                categories: ["mixed" as const],
+                volumeExtraM3: draft.extras.disposalBags ? 1 : 0,
+                forbiddenConfirmed: true,
+              }
+            : undefined,
+        timing: {
+          speed,
+          requestedFrom,
+          requestedTo,
+          preferredTimeWindow: draft.schedule.timeWindow,
+          jobDurationMinutes: Math.max(
+            60,
+            Math.round((calcState.data?.breakdown?.laborHours ?? 2) * 60),
+          ),
+        },
+        customer: {
+          name: draft.contact.fullName.trim(),
+          phone: draft.contact.phone.trim(),
+          email: draft.contact.email.trim(),
+          contactPreference: "PHONE" as const,
+          note: draft.contact.note.trim(),
+        },
+      };
+
+      const form = new FormData();
+      form.set("payload", JSON.stringify(payload));
+
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        body: form,
+      });
+
+      const json = (await res.json()) as
+        | {
+            ok?: boolean;
+            publicId?: string;
+            pdfToken?: string;
+            offer?: { token?: string; offerNo?: string };
+            error?: string;
+          }
+        | { error?: string };
+
+      if (!res.ok || !json || !("publicId" in json) || !json.publicId) {
+        throw new Error(("error" in json && json.error) || "Anfrage konnte nicht gesendet werden.");
+      }
+
+      const params = new URLSearchParams();
+      params.set("order", json.publicId);
+      if ("pdfToken" in json && json.pdfToken) params.set("token", json.pdfToken);
+      if ("offer" in json && json.offer?.token) params.set("offerToken", json.offer.token);
+      if ("offer" in json && json.offer?.offerNo) params.set("offerNo", json.offer.offerNo);
+
+      router.push(`/buchen/bestaetigt?${params.toString()}`);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Senden fehlgeschlagen.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const selectedRange = calcState.data?.totals
+    ? `${formatEuroFromCents(calcState.data.totals.minCents)} - ${formatEuroFromCents(calcState.data.totals.maxCents)}`
+    : "Preis wird berechnet";
+
   return (
-    <main className={styles.page}>
+    <section className={styles.page}>
       <Container className="relative z-10 py-10 sm:py-14">
         <div className="mx-auto max-w-6xl" ref={topRef}>
           <div className={`${styles.glass} rounded-3xl p-5 sm:p-7`}>
             <div className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-700 dark:text-cyan-200">Buchungsportal</div>
-            <h1 className="mt-1 text-3xl font-black text-slate-900 dark:text-white sm:text-5xl">Modernes Buchungssystem</h1>
+            <h1 className="mt-1 text-3xl font-black text-slate-900 dark:text-white sm:text-5xl">Jetzt buchen</h1>
             <p className="mt-2 max-w-3xl text-sm font-medium text-slate-600 dark:text-slate-300 sm:text-base">
-              Moderne Glas-Oberfläche, intelligente Schritte und Echtzeit-Kalkulation für Umzug, Entsorgung und Montage.
+              Integrierte Live-Kalkulation mit direktem Versand an unser Dispositionssystem.
             </p>
+            <div className="mt-2 rounded-xl border border-slate-300/70 bg-white/60 px-3 py-2 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-900/45 dark:text-slate-200">
+              Aktueller Bereich: {selectedRange}
+            </div>
             <div className="mt-5">
               <StepNavigation current={step} onChange={goStep} />
             </div>
@@ -125,7 +342,10 @@ export function BookingV2Client(props: { initialContext?: string }) {
                       to={draft.to}
                       onFromChange={(from) => setDraft((prev) => ({ ...prev, from }))}
                       onToChange={(to) => setDraft((prev) => ({ ...prev, to }))}
-                      onDistanceChange={setDistanceKm}
+                      distanceKm={distanceKm}
+                      distanceSource={calcState.data?.breakdown?.distanceSource}
+                      loading={calcState.loading}
+                      error={calcState.error}
                     />
                   ) : null}
 
@@ -145,8 +365,10 @@ export function BookingV2Client(props: { initialContext?: string }) {
                   {step === 4 ? (
                     <ContactSection
                       value={draft.contact}
+                      schedule={draft.schedule}
                       errors={contactErrors}
                       onChange={(contact) => setDraft((prev) => ({ ...prev, contact }))}
+                      onScheduleChange={(schedule) => setDraft((prev) => ({ ...prev, schedule }))}
                     />
                   ) : null}
 
@@ -160,13 +382,14 @@ export function BookingV2Client(props: { initialContext?: string }) {
                     </motion.div>
                   ) : null}
 
-                  {submitted ? (
-                    <div className="rounded-xl border border-emerald-300/70 bg-emerald-100/65 px-3 py-2 text-sm font-semibold text-emerald-900 dark:border-emerald-400/50 dark:bg-emerald-900/20 dark:text-emerald-200">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4" />
-                        Anfrage vorbereitet. Unser Team meldet sich mit der finalen Bestätigung.
-                      </div>
-                    </div>
+                  {submitError ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="rounded-xl border border-red-300/80 bg-red-100/70 px-3 py-2 text-sm font-semibold text-red-800 dark:border-red-400/50 dark:bg-red-900/20 dark:text-red-200"
+                    >
+                      {submitError}
+                    </motion.div>
                   ) : null}
                 </motion.div>
               </AnimatePresence>
@@ -175,7 +398,7 @@ export function BookingV2Client(props: { initialContext?: string }) {
                 <button
                   type="button"
                   onClick={prevStep}
-                  disabled={step === 0}
+                  disabled={step === 0 || submitting}
                   className={`${styles.glowButton} inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300/80 bg-white/60 px-4 py-2.5 text-sm font-bold text-slate-800 transition hover:border-cyan-300 disabled:opacity-45 dark:border-slate-700 dark:bg-slate-900/55 dark:text-slate-100`}
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -186,7 +409,8 @@ export function BookingV2Client(props: { initialContext?: string }) {
                   <button
                     type="button"
                     onClick={nextStep}
-                    className={`${styles.glowButton} inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-400/70 bg-cyan-500/15 px-4 py-2.5 text-sm font-bold text-cyan-800 transition hover:bg-cyan-500/25 dark:text-cyan-100`}
+                    disabled={submitting}
+                    className={`${styles.glowButton} inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-400/70 bg-cyan-500/15 px-4 py-2.5 text-sm font-bold text-cyan-800 transition hover:bg-cyan-500/25 disabled:opacity-50 dark:text-cyan-100`}
                   >
                     Weiter
                     <ArrowRight className="h-4 w-4" />
@@ -194,23 +418,30 @@ export function BookingV2Client(props: { initialContext?: string }) {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => {
-                      if (stepError) return;
-                      setSubmitted(true);
-                    }}
-                    className={`${styles.glowButton} inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-400/70 bg-emerald-500/15 px-4 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-500/25 dark:text-emerald-100`}
+                    onClick={submitBooking}
+                    disabled={!!stepError || submitting}
+                    className={`${styles.glowButton} inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-400/70 bg-emerald-500/15 px-4 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-500/25 disabled:opacity-50 dark:text-emerald-100`}
                   >
-                    Anfrage senden
-                    <CheckCircle2 className="h-4 w-4" />
+                    {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                    {submitting ? "Wird gesendet..." : "Anfrage senden"}
                   </button>
                 )}
               </div>
             </section>
 
-            <LivePriceEngineCard price={price} distanceKm={distanceKm} volumeM3={draft.volumeM3} />
+            <LivePriceEngineCard
+              calc={calcState.data}
+              loading={calcState.loading}
+              error={calcState.error}
+              distanceKm={distanceKm}
+              volumeM3={draft.volumeM3}
+            />
           </div>
         </div>
       </Container>
-    </main>
+    </section>
   );
 }
+
+
+

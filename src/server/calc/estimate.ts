@@ -80,6 +80,7 @@ export type EstimateBreakdown = {
   packageMultiplier: number;
   packageAdjustmentCents: number;
   serviceOptionsCents: number;
+  addonsCents: number;
   minimumOrderAppliedCents: number;
   discountCents: number;
   totalCents: number;
@@ -170,6 +171,13 @@ function speedMultiplier(speed: WizardPayload["timing"]["speed"], p: PricingConf
   }
 }
 
+const ADDON_SURCHARGES_CENTS: Record<WizardPayload["addons"][number], number> = {
+  PACKING: 2500,
+  DISMANTLE_ASSEMBLE: 3500,
+  OLD_KITCHEN_DISPOSAL: 6000,
+  BASEMENT_ATTIC_CLEARING: 4000,
+};
+
 function accessExtraMinutes(access?: WizardPayload["accessPickup"]) {
   if (!access) return 0;
 
@@ -215,6 +223,7 @@ export function estimateOrder(
   const itemsMove = payload.itemsMove ?? {};
   const itemsDisposal = payload.itemsDisposal ?? {};
   const selectedServiceOptions = payload.selectedServiceOptions ?? [];
+  const addons = payload.addons ?? [];
 
   const calcVolume = (items: Record<string, number>) => {
     let v = 0;
@@ -358,6 +367,8 @@ export function estimateOrder(
   }, 0);
 
   subtotalCents += serviceOptionsCents;
+  const addonsCents = addons.reduce((sum, addon) => sum + (ADDON_SURCHARGES_CENTS[addon] ?? 0), 0);
+  subtotalCents += addonsCents;
   subtotalCents = Math.max(0, subtotalCents);
 
   const speedMult = speedMultiplier(payload.timing.speed, pricing);
@@ -433,6 +444,7 @@ export function estimateOrder(
       packageMultiplier,
       packageAdjustmentCents,
       serviceOptionsCents,
+      addonsCents,
       minimumOrderAppliedCents,
       discountCents,
       totalCents,

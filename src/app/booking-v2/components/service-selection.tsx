@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { Boxes, Recycle, Truck, Wrench } from "lucide-react";
@@ -12,10 +12,30 @@ const services: Array<{
   description: string;
   icon: typeof Truck;
 }> = [
-  { key: "MOVING", title: "Umzug", description: "Für Wohnungs- und Firmenumzüge mit klarer Planung.", icon: Truck },
-  { key: "DISPOSAL", title: "Entsorgung", description: "Für Sperrmüll, Entrümpelung und Altmöbel-Abholung.", icon: Recycle },
-  { key: "ASSEMBLY", title: "Montage", description: "Für Möbelaufbau, Demontage und Geräteanschluss.", icon: Wrench },
-  { key: "COMBO", title: "Kombi-Service", description: "Umzug + Entsorgung + Montage als Komplettlösung.", icon: Boxes },
+  {
+    key: "MOVING",
+    title: "Umzug",
+    description: "Privat- und Firmenumzüge mit strukturierter Planung und klarer Preislogik.",
+    icon: Truck,
+  },
+  {
+    key: "DISPOSAL",
+    title: "Entsorgung",
+    description: "Sperrmüll, Entrümpelung und Abholung mit transparenter Aufwandsschätzung.",
+    icon: Recycle,
+  },
+  {
+    key: "ASSEMBLY",
+    title: "Montage",
+    description: "Möbelmontage, Demontage und Aufbauarbeiten vor Ort.",
+    icon: Wrench,
+  },
+  {
+    key: "COMBO",
+    title: "Kombi-Service",
+    description: "Umzug und Entsorgung in einem Einsatz für weniger Koordinationsaufwand.",
+    icon: Boxes,
+  },
 ];
 
 export function ServiceSelection(props: { value: BookingService; onChange: (next: BookingService) => void }) {
@@ -24,7 +44,7 @@ export function ServiceSelection(props: { value: BookingService; onChange: (next
       <div>
         <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">1. Serviceauswahl</h2>
         <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-          Wählen Sie den passenden Auftragstyp. Die Kalkulation passt sich sofort an.
+          Wählen Sie die passende Leistung. Die Berechnung wird sofort live aktualisiert.
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -59,4 +79,5 @@ export function ServiceSelection(props: { value: BookingService; onChange: (next
     </section>
   );
 }
+
 

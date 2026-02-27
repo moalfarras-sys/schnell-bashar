@@ -1,4 +1,4 @@
-import { permanentRedirect } from "next/navigation";
+﻿import { permanentRedirect } from "next/navigation";
 
 export default async function LegacyBuchenRedirect({
   searchParams,
@@ -15,6 +15,7 @@ export default async function LegacyBuchenRedirect({
     }
   }
   const suffix = query.toString();
-  permanentRedirect(suffix ? `/booking-v2?${suffix}` : "/booking-v2");
+  permanentRedirect(suffix ? `/booking?${suffix}` : "/booking");
 }
+
 

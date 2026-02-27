@@ -1,15 +1,21 @@
-import { BookingV2Client } from "@/app/booking-v2/booking-v2-client";
+﻿import { permanentRedirect } from "next/navigation";
 
-export const metadata = {
-  title: "Buchung | Schnell Sicher Umzug",
-  description: "Modernes Buchungssystem mit Echtzeit-Kalkulation, klaren Schritten und transparenter Preisübersicht.",
-};
-
-export default async function BookingV2Page({
+export default async function BookingV2LegacyRedirect({
   searchParams,
 }: {
-  searchParams?: Promise<{ context?: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = (await searchParams) ?? {};
-  return <BookingV2Client initialContext={String(sp.context ?? "")} />;
+  const query = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(sp)) {
+    if (Array.isArray(value)) {
+      for (const v of value) query.append(key, v);
+    } else if (typeof value === "string" && value.length > 0) {
+      query.set(key, value);
+    }
+  }
+
+  const suffix = query.toString();
+  permanentRedirect(suffix ? `/booking?${suffix}` : "/booking");
 }

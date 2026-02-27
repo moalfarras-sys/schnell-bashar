@@ -53,8 +53,8 @@ const services = [
 
 const tools = [
   { icon: Calculator, label: "Preisrechner", href: "/preise", desc: "Schnelle Orientierung" },
-  { icon: ClipboardList, label: "Anfrage starten", href: "/booking-v2", desc: "Direkt buchen" },
-  { icon: CalendarDays, label: "Termine", href: "/booking-v2?context=MOVING", desc: "Zeitfenster wählen" },
+  { icon: ClipboardList, label: "Anfrage starten", href: "/booking", desc: "Direkt buchen" },
+  { icon: CalendarDays, label: "Termine", href: "/booking?context=MOVING", desc: "Zeitfenster wählen" },
   { icon: Search, label: "Anfrage verfolgen", href: "/anfrage", desc: "Status prüfen" },
 ];
 
@@ -187,7 +187,7 @@ export default async function HomePage() {
               </p>
 
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                <Link href="/booking-v2?context=MOVING">
+                <Link href="/booking?context=MOVING">
                   <Button size="xl" className="gap-2">
                     Kostenloses Angebot erhalten
                     <ArrowRight className="h-4 w-4" />
@@ -399,7 +399,7 @@ export default async function HomePage() {
                 </div>
 
                 <div className="mt-8">
-                  <Link href="/booking-v2?context=MOVING">
+                  <Link href="/booking?context=MOVING">
                     <Button size="lg" className="gap-2">
                       Angebot anfordern
                       <ArrowRight className="h-4 w-4" />
@@ -522,7 +522,7 @@ export default async function HomePage() {
               {txt["text.home.cta.subtitle"]}
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link href="/booking-v2?context=MOVING">
+              <Link href="/booking?context=MOVING">
                 <Button size="lg" variant="primary" className="gap-2">
                   Angebot berechnen
                   <ArrowRight className="h-4 w-4" />
@@ -541,6 +541,7 @@ export default async function HomePage() {
     </>
   );
 }
+
 
 
 

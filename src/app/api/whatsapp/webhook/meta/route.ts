@@ -14,13 +14,13 @@ function normalizePhone(v: string) {
 function autoReplyForText(input: string) {
   const text = input.toLowerCase();
   if (text.includes("umzug") || text.trim() === "1") {
-    return "Perfekt. Hier starten Sie Ihre Umzugsanfrage: https://schnellsicherumzug.de/booking-v2?context=MOVING";
+    return "Perfekt. Hier starten Sie Ihre Umzugsanfrage: https://schnellsicherumzug.de/booking?context=MOVING";
   }
   if (text.includes("entsorgung") || text.includes("sperrm") || text.trim() === "2") {
-    return "Gerne. Für Entsorgung/Sperrmüll nutzen Sie bitte: https://schnellsicherumzug.de/booking-v2?context=ENTSORGUNG";
+    return "Gerne. Für Entsorgung/Sperrmüll nutzen Sie bitte: https://schnellsicherumzug.de/booking?context=ENTSORGUNG";
   }
   if (text.includes("montage") || text.trim() === "3") {
-    return "Sehr gut. Für Montageanfragen öffnen Sie: https://schnellsicherumzug.de/booking-v2?context=MONTAGE";
+    return "Sehr gut. Für Montageanfragen öffnen Sie: https://schnellsicherumzug.de/booking?context=MONTAGE";
   }
   if (text.includes("status") || text.includes("tracking")) {
     return "Ihren Status finden Sie hier: https://schnellsicherumzug.de/anfrage";
@@ -135,5 +135,6 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ ok: true });
 }
+
 
 

@@ -65,7 +65,7 @@ export default function TippsPage() {
       </section>
 
       <section className="mt-10 flex flex-col gap-3 sm:flex-row">
-        <Link href="/booking-v2?context=MOVING">
+        <Link href="/booking?context=MOVING">
           <Button className="gap-2">
             Jetzt Anfrage starten
             <ArrowRight className="h-4 w-4" />
@@ -78,5 +78,6 @@ export default function TippsPage() {
     </Container>
   );
 }
+
 
 

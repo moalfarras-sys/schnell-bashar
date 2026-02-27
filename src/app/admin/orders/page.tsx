@@ -22,9 +22,23 @@ function eur(cents: number) {
 export default async function AdminOrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; deleted?: string; sort?: string; context?: string }>;
+  searchParams: Promise<{
+    status?: string;
+    deleted?: string;
+    sort?: string;
+    context?: string;
+    from?: string;
+    to?: string;
+  }>;
 }) {
-  const { status: statusParam, deleted, sort: sortParam, context: contextParam } = await searchParams;
+  const {
+    status: statusParam,
+    deleted,
+    sort: sortParam,
+    context: contextParam,
+    from: fromParam,
+    to: toParam,
+  } = await searchParams;
   const status = (statusParam ?? "").toUpperCase();
   const context = (contextParam ?? "").toUpperCase();
   const sort = sortParam === "oldest" ? "oldest" : "newest";
@@ -42,6 +56,14 @@ export default async function AdminOrdersPage({
     where.wizardData = {
       path: ["bookingContext"],
       equals: context,
+    };
+  }
+  const fromDate = fromParam ? new Date(`${fromParam}T00:00:00`) : null;
+  const toDate = toParam ? new Date(`${toParam}T23:59:59.999`) : null;
+  if ((fromDate && !Number.isNaN(fromDate.getTime())) || (toDate && !Number.isNaN(toDate.getTime()))) {
+    where.createdAt = {
+      ...(fromDate && !Number.isNaN(fromDate.getTime()) ? { gte: fromDate } : {}),
+      ...(toDate && !Number.isNaN(toDate.getTime()) ? { lte: toDate } : {}),
     };
   }
 
@@ -127,6 +149,18 @@ export default async function AdminOrdersPage({
                 <option value="newest">Neueste zuerst</option>
                 <option value="oldest">Älteste zuerst</option>
               </Select>
+              <input
+                type="date"
+                name="from"
+                defaultValue={fromParam || ""}
+                className="h-10 rounded-md border-2 border-slate-600 bg-slate-700 px-2 text-sm font-semibold text-white"
+              />
+              <input
+                type="date"
+                name="to"
+                defaultValue={toParam || ""}
+                className="h-10 rounded-md border-2 border-slate-600 bg-slate-700 px-2 text-sm font-semibold text-white"
+              />
               {showDeleted ? <input type="hidden" name="deleted" value="1" /> : null}
               <Button size="sm" type="submit">
                 Filtern
