@@ -58,10 +58,6 @@ function packageSet(
   });
 }
 
-export async function calculateQuote(input: QuoteDraft): Promise<{
-  draft: QuoteDraft;
-  result: QuoteResult;
-}>;
 export async function calculateQuote(
   input: QuoteDraft,
   options?: { allowDistanceFallback?: boolean },
