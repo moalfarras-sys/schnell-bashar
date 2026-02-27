@@ -173,7 +173,13 @@ function toAddressPayload(value: string, selected?: AddressAutocompleteOption) {
 
 function hasCompleteAddressInput(value: string) {
   const normalized = value.trim();
-  return normalized.length >= 5 && /\b\d{5}\b/.test(normalized);
+  const cityMatch = normalized.match(/\b\d{5}\s+(.+)$/);
+  return (
+    normalized.length >= 8 &&
+    /\b\d{5}\b/.test(normalized) &&
+    !!cityMatch &&
+    cityMatch[1].trim().length >= 2
+  );
 }
 
 export function PriceCalculator({
