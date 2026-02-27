@@ -249,7 +249,6 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
             },
           });
         }
-        setLastQuoteSyncSignature(quotePatchSignature);
         setQuoteBanner("Angebot übernommen");
       } catch {
         // best effort
@@ -260,7 +259,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
     return () => {
       cancelled = true;
     };
-  }, [initialQuoteId, quotePatchSignature]);
+  }, [initialQuoteId]);
 
   useEffect(() => {
     if (!quoteHydrated) return;
