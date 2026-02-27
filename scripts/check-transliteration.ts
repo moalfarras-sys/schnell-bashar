@@ -43,6 +43,10 @@ const TRANSLITERATION_RULES: Array<{ needle: RegExp; replacement: string }> = [
   { needle: /\bnaechste\b/g, replacement: "nächste" },
 ];
 
+const ENGLISH_UI_RULES: Array<{ needle: RegExp; replacement: string }> = [
+  { needle: /\bAlt text\b/g, replacement: "Alternativtext" },
+];
+
 function walk(dir: string, out: string[]) {
   if (!fs.existsSync(dir)) return;
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -104,6 +108,18 @@ function main() {
           );
           break;
         }
+      }
+
+      for (const rule of ENGLISH_UI_RULES) {
+        rule.needle.lastIndex = 0;
+        const match = rule.needle.exec(literal);
+        if (!match) continue;
+        const absoluteIdx = literalStart + 1 + match.index;
+        const line = lineOf(content, absoluteIdx);
+        const rel = path.relative(ROOT, abs).replace(/\\/g, "/");
+        violations.push(
+          `${rel}:${line} [english-ui] "${match[0]}" -> "${rule.replacement}"`,
+        );
       }
     }
   }

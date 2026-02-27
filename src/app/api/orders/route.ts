@@ -41,6 +41,11 @@ function eur(cents: number) {
   );
 }
 
+function getBaseUrl() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.trim();
+  return baseUrl ? baseUrl.replace(/\/+$/, "") : null;
+}
+
 function bookingContextLabel(context: WizardPayload["bookingContext"]) {
   if (context === "MONTAGE") return "Montage";
   if (context === "ENTSORGUNG") return "Entsorgung";
@@ -319,14 +324,21 @@ export async function POST(req: Request) {
           text: payload.destinationAddress.displayName,
         },
         profile: "driving-car",
+        allowFallback: false,
       });
     } catch (error) {
-      console.error("[orders] distance lookup failed; continuing without route distance", {
+      console.error("[orders] strict-live distance lookup failed", {
         error: error instanceof Error ? error.message : String(error),
         from: payload.startAddress.displayName,
         to: payload.destinationAddress.displayName,
       });
-      routeDistance = undefined;
+      return NextResponse.json(
+        {
+          error:
+            "Die Distanz konnte nicht live berechnet werden. Bitte prüfen Sie Start- und Zieladresse.",
+        },
+        { status: 503 },
+      );
     }
   }
 
@@ -795,8 +807,18 @@ export async function POST(req: Request) {
     };
   });
 
+  const baseUrl = getBaseUrl();
+  if (!baseUrl) {
+    return NextResponse.json(
+      {
+        error:
+          "NEXT_PUBLIC_BASE_URL ist nicht konfiguriert. Bitte den technischen Support kontaktieren.",
+      },
+      { status: 503 },
+    );
+  }
   const offerUrl = `/offer/${offer.token}`;
-  const fullOfferUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}${offerUrl}`;
+  const fullOfferUrl = `${baseUrl}${offerUrl}`;
 
   try {
     const pdfBuffer = await generateOfferPDF({
@@ -867,7 +889,7 @@ export async function POST(req: Request) {
       offerId: offer.id,
       offerNo: offer.offerNo || offerNo,
       offerLink: fullOfferUrl,
-      agbLink: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/agb/pdf`,
+      agbLink: `${baseUrl}/api/agb/pdf`,
       validUntil,
       pdfBuffer,
       agbBuffer: agbBuffer || undefined,

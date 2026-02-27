@@ -1,12 +1,9 @@
-﻿import { NextResponse } from "next/server";
-import { z } from "zod";
-import { addDays, format, parseISO } from "date-fns";
+import { NextResponse } from "next/server";
+import { parseISO } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
+import { z } from "zod";
 
-import {
-  loadInquirySchedulingContext,
-  computeAvailableSlots,
-} from "@/server/availability/inquiry-scheduling";
+import { computeAvailableSlots, loadInquirySchedulingContext } from "@/server/availability/inquiry-scheduling";
 
 export const runtime = "nodejs";
 
@@ -21,22 +18,6 @@ const querySchema = z.object({
   volumeM3: z.coerce.number().min(0.1).max(500),
 });
 
-/** Generate demo dates when database is unavailable (Mon–Sat for next 60 days). */
-function getDemoAvailableDates(from: string, to: string): string[] {
-  const dates: string[] = [];
-  const start = parseISO(from);
-  const end = parseISO(to);
-  let d = new Date(start);
-  while (d <= end && dates.length < 120) {
-    const dow = d.getDay();
-    if (dow >= 1 && dow <= 6) {
-      dates.push(format(d, "yyyy-MM-dd"));
-    }
-    d = addDays(d, 1);
-  }
-  return dates;
-}
-
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -50,12 +31,12 @@ export async function GET(req: Request) {
     }
 
     const { from, to, speed, volumeM3 } = parsed.data;
-
     const fromDate = parseISO(from);
     const toDate = parseISO(to);
+
     if (fromDate > toDate) {
       return NextResponse.json(
-        { error: "from must be before or equal to to" },
+        { error: "Der Starttag muss vor oder gleich dem Endtag liegen." },
         { status: 400 },
       );
     }
@@ -63,7 +44,7 @@ export async function GET(req: Request) {
     const daysDiff = Math.floor((toDate.getTime() - fromDate.getTime()) / (24 * 60 * 60 * 1000));
     if (daysDiff > MAX_RANGE_DAYS) {
       return NextResponse.json(
-        { error: `Date range must not exceed ${MAX_RANGE_DAYS} days` },
+        { error: `Der Zeitraum darf maximal ${MAX_RANGE_DAYS} Tage umfassen.` },
         { status: 400 },
       );
     }
@@ -76,32 +57,24 @@ export async function GET(req: Request) {
     });
 
     if ("error" in loaded) {
-      console.warn("[GET /api/availability/dates] DB unavailable, using demo dates:", loaded.error);
-      const demoDates = getDemoAvailableDates(from, to);
-      return NextResponse.json({
-        availableDates: demoDates,
-        effectiveFrom: from,
-        to,
-        mode: "demo",
-        demoMode: true,
-        message:
-          "Live-Verfügbarkeit ist aktuell nicht erreichbar. Wir zeigen vorübergehend verfügbare Ersatztermine.",
-      });
+      return NextResponse.json(
+        {
+          error:
+            "Die Live-Verfügbarkeit ist aktuell nicht erreichbar. Bitte versuchen Sie es in wenigen Minuten erneut.",
+          details: loaded.error,
+        },
+        { status: 503 },
+      );
     }
 
-    const hasRules = loaded.context.rules.length > 0;
-    if (!hasRules) {
-      console.warn("[GET /api/availability/dates] No availability rules configured, using demo dates");
-      const demoDates = getDemoAvailableDates(from, to);
-      return NextResponse.json({
-        availableDates: demoDates,
-        effectiveFrom: loaded.context.effectiveFrom,
-        to: loaded.context.toISO,
-        mode: "demo",
-        demoMode: true,
-        message:
-          "Aktuell sind keine Live-Verfügbarkeitsregeln hinterlegt. Es werden Ersatztermine angezeigt.",
-      });
+    if (loaded.context.rules.length === 0) {
+      return NextResponse.json(
+        {
+          error:
+            "Es sind keine Verfügbarkeitsregeln hinterlegt. Bitte kontaktieren Sie den Support.",
+        },
+        { status: 503 },
+      );
     }
 
     if (loaded.context.effectiveFrom > loaded.context.toISO) {
@@ -109,46 +82,31 @@ export async function GET(req: Request) {
         availableDates: [],
         effectiveFrom: loaded.context.effectiveFrom,
         to: loaded.context.toISO,
+        mode: "live",
       });
     }
 
     const slots = computeAvailableSlots(loaded.context, 500);
     const dateSet = new Set<string>();
-    for (const s of slots) {
-      const iso = formatInTimeZone(s.start, TZ, "yyyy-MM-dd");
-      dateSet.add(iso);
-    }
-    let availableDates = Array.from(dateSet).sort();
-    if (availableDates.length === 0) {
-      availableDates = getDemoAvailableDates(from, to);
+    for (const slot of slots) {
+      dateSet.add(formatInTimeZone(slot.start, TZ, "yyyy-MM-dd"));
     }
 
     return NextResponse.json({
-      availableDates,
+      availableDates: Array.from(dateSet).sort(),
       effectiveFrom: loaded.context.effectiveFrom,
       to: loaded.context.toISO,
       mode: "live",
     });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error("[GET /api/availability/dates]", err);
-    const { from, to } = Object.fromEntries(new URL(req.url).searchParams.entries());
-    if (from && to && /^\d{4}-\d{2}-\d{2}$/.test(from) && /^\d{4}-\d{2}-\d{2}$/.test(to)) {
-      const demoDates = getDemoAvailableDates(from, to);
-      return NextResponse.json({
-        availableDates: demoDates,
-        effectiveFrom: from,
-        to,
-        mode: "demo",
-        demoMode: true,
-        message:
-          "Die Verfügbarkeit konnte nicht live geladen werden. Es werden Ersatztermine angezeigt.",
-      });
-    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[GET /api/availability/dates] strict-live failed", error);
     return NextResponse.json(
-      { error: "Availability check failed", details: message },
-      { status: 500 },
+      {
+        error: "Die Verfügbarkeit konnte nicht live geladen werden.",
+        details: message,
+      },
+      { status: 503 },
     );
   }
 }
-

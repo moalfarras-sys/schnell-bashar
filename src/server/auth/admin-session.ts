@@ -3,7 +3,10 @@ import { SignJWT, jwtVerify } from "jose";
 const COOKIE_NAME = "ssu_admin";
 
 function getSecret() {
-  const raw = process.env.SESSION_SECRET || "dev-secret-change-me";
+  const raw = process.env.SESSION_SECRET?.trim();
+  if (!raw) {
+    throw new Error("SESSION_SECRET is required. Set SESSION_SECRET in environment variables.");
+  }
   return new TextEncoder().encode(raw);
 }
 

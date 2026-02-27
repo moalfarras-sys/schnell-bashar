@@ -2,8 +2,14 @@
 import path from "node:path";
 
 const ROOT = process.cwd();
-const TARGET_DIRS = [path.join(ROOT, "src")];
-const EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".md", ".css"]);
+const TARGET_DIRS = [path.join(ROOT, "src"), path.join(ROOT, "prisma")];
+const TARGET_FILES = [
+  path.join(ROOT, "README.md"),
+  path.join(ROOT, "CHECKLIST.md"),
+  path.join(ROOT, ".env.example"),
+  path.join(ROOT, ".env.production.example"),
+];
+const EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".md", ".css", ".prisma", ".example"]);
 const SKIP_DIRS = new Set(["node_modules", ".next", ".git", "prisma", "generated"]);
 
 const BAD_PATTERNS: Array<{ name: string; re: RegExp }> = [
@@ -36,6 +42,9 @@ function lineOf(text: string, index: number) {
 function main() {
   const files: string[] = [];
   for (const dir of TARGET_DIRS) walk(dir, files);
+  for (const file of TARGET_FILES) {
+    if (fs.existsSync(file)) files.push(file);
+  }
 
   const violations: string[] = [];
   for (const abs of files) {

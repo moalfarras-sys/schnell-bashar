@@ -41,6 +41,7 @@ export type RouteDistanceInput = {
   from: PointInput;
   to: PointInput;
   profile?: string;
+  allowFallback?: boolean;
 };
 
 export type RouteDistanceResult = {
@@ -402,6 +403,9 @@ export async function resolveRouteDistance(input: RouteDistanceInput): Promise<R
   try {
     orsKm = await callORS(from, to, profile);
   } catch (error) {
+    if (!input.allowFallback) {
+      throw error;
+    }
     const straightKm = haversineDistanceKm(from, to);
     // Road distance fallback: apply a conservative multiplier over straight-line distance.
     const fallbackKm = round2(Math.max(1, straightKm * 1.25));

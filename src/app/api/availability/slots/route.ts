@@ -1,11 +1,8 @@
-﻿import { NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from "next/server";
 import { formatInTimeZone } from "date-fns-tz";
+import { z } from "zod";
 
-import {
-  loadInquirySchedulingContext,
-  computeAvailableSlots,
-} from "@/server/availability/inquiry-scheduling";
+import { computeAvailableSlots, loadInquirySchedulingContext } from "@/server/availability/inquiry-scheduling";
 
 export const runtime = "nodejs";
 
@@ -17,24 +14,6 @@ const querySchema = z.object({
   serviceType: z.enum(["UMZUG", "ENTSORGUNG", "KOMBI"]).optional(),
   volumeM3: z.coerce.number().min(0).max(500).transform((v) => Math.max(0.1, v || 1)),
 });
-
-/** Generate demo time slots (08:00–18:00, hourly). Same shape as production: { start, end, label }. */
-function getDemoSlots(dateStr: string): { start: string; end: string; label: string }[] {
-  const [y, m, d] = dateStr.split("-").map(Number);
-  const day = new Date(y, m - 1, d);
-  if (day.getDay() === 0) return [];
-  const slots: { start: string; end: string; label: string }[] = [];
-  for (let h = 8; h < 18; h++) {
-    const start = new Date(y, m - 1, d, h, 0, 0, 0);
-    const end = new Date(y, m - 1, d, h + 1, 0, 0, 0);
-    slots.push({
-      start: start.toISOString(),
-      end: end.toISOString(),
-      label: `${String(h).padStart(2, "0")}:00 – ${String(h + 1).padStart(2, "0")}:00`,
-    });
-  }
-  return slots;
-}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -58,66 +37,48 @@ export async function GET(req: Request) {
     });
 
     if ("error" in loaded) {
-      console.warn("[GET /api/availability/slots] DB unavailable, using demo slots:", loaded.error);
-      const demoSlots = getDemoSlots(date);
-      return NextResponse.json({
-        date,
-        durationMinutes: 90,
-        slots: demoSlots,
-        mode: "demo",
-        demoMode: true,
-        message:
-          "Live-Zeitfenster sind aktuell nicht erreichbar. Es werden vorübergehend Ersatz-Zeitfenster angezeigt.",
-      });
+      return NextResponse.json(
+        {
+          error:
+            "Die Live-Zeitfenster sind aktuell nicht erreichbar. Bitte versuchen Sie es erneut.",
+          details: loaded.error,
+        },
+        { status: 503 },
+      );
     }
 
-    const hasRules = loaded.context.rules.length > 0;
-    if (!hasRules) {
-      console.warn("[GET /api/availability/slots] No availability rules configured, using demo slots");
-      const demoSlots = getDemoSlots(date);
-      return NextResponse.json({
-        date,
-        durationMinutes: 90,
-        slots: demoSlots,
-        mode: "demo",
-        demoMode: true,
-        message:
-          "Für diesen Zeitraum sind keine Live-Zeitfenster hinterlegt. Es werden Ersatz-Zeitfenster angezeigt.",
-      });
+    if (loaded.context.rules.length === 0) {
+      return NextResponse.json(
+        {
+          error:
+            "Es sind keine Zeitfenster-Regeln hinterlegt. Bitte kontaktieren Sie den Support.",
+        },
+        { status: 503 },
+      );
     }
 
     const computed = computeAvailableSlots(loaded.context, 80);
-    const slotsWithLabels =
-      computed.length > 0
-        ? computed.map((s) => ({
-            start: s.start.toISOString(),
-            end: s.end.toISOString(),
-            label: formatInTimeZone(s.start, TZ, "HH:mm") + " – " + formatInTimeZone(s.end, TZ, "HH:mm"),
-          }))
-        : getDemoSlots(date);
-
-    if (computed.length === 0) {
-      console.warn("[GET /api/availability/slots] computed slots empty, using demo for date=", date);
-    }
+    const slots = computed.map((slot) => ({
+      start: slot.start.toISOString(),
+      end: slot.end.toISOString(),
+      label: `${formatInTimeZone(slot.start, TZ, "HH:mm")} – ${formatInTimeZone(slot.end, TZ, "HH:mm")}`,
+    }));
 
     return NextResponse.json({
       date,
       durationMinutes: loaded.context.durationMinutes ?? 90,
-      slots: slotsWithLabels,
+      slots,
       mode: "live",
     });
-  } catch (err) {
-    console.error("[GET /api/availability/slots]", err);
-    const demoSlots = getDemoSlots(date);
-    return NextResponse.json({
-      date,
-      durationMinutes: 90,
-      slots: demoSlots,
-      mode: "demo",
-      demoMode: true,
-      message:
-        "Die Zeitfenster konnten nicht live geladen werden. Es werden Ersatz-Zeitfenster angezeigt.",
-    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[GET /api/availability/slots] strict-live failed", error);
+    return NextResponse.json(
+      {
+        error: "Die Zeitfenster konnten nicht live geladen werden.",
+        details: message,
+      },
+      { status: 503 },
+    );
   }
 }
-

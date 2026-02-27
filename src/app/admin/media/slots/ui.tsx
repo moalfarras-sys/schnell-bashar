@@ -230,7 +230,7 @@ export function ImageSlotsManagerClient({
                           onBlur={(event) =>
                             patchSlot(item.registry.key, { alt: event.target.value.trim() || null })
                           }
-                          placeholder="Alt text"
+                          placeholder="Alternativtext"
                           className="rounded-lg border border-slate-600 bg-slate-800 px-2 py-2 text-xs text-slate-100"
                         />
                       </div>

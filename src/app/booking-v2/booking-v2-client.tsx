@@ -290,7 +290,7 @@ export function BookingV2Client(props: { initialContext?: string }) {
       if ("offer" in json && json.offer?.token) params.set("offerToken", json.offer.token);
       if ("offer" in json && json.offer?.offerNo) params.set("offerNo", json.offer.offerNo);
 
-      router.push(`/buchen/bestaetigt?${params.toString()}`);
+      router.push(`/buchung/bestaetigt?${params.toString()}`);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "Senden fehlgeschlagen.");
     } finally {

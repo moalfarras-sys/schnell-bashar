@@ -7,7 +7,7 @@ import { Container } from "@/components/container";
 const checklist = [
   { phase: "4 Wochen vorher", task: "Umzugstermin festlegen und Angebot einholen." },
   { phase: "2 Wochen vorher", task: "Kartons organisieren und nach Räumen sortieren." },
-  { phase: "1 Woche vorher", task: "Adressä?nderungen und Verträge aktualisieren." },
+  { phase: "1 Woche vorher", task: "Adressänderungen und Verträge aktualisieren." },
   { phase: "Umzugstag", task: "Wichtige Dokumente separat bereit halten." },
 ];
 

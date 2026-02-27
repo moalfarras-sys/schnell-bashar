@@ -64,45 +64,18 @@ type PackageBreakdown = {
   grossCents: number;
 };
 
+type PricingMultipliers = {
+  economyMultiplier: number;
+  standardMultiplier: number;
+  expressMultiplier: number;
+};
+
 const serviceKindLabel: Record<ServiceKind, string> = {
   UMZUG: "Umzug",
   MONTAGE: "Montage",
   ENTSORGUNG: "Entsorgung",
   SPECIAL: "Spezialservice",
 };
-
-function fallbackPricing() {
-  return {
-    currency: "EUR",
-    movingBaseFeeCents: 19000,
-    disposalBaseFeeCents: 14000,
-    hourlyRateCents: 5200,
-    perM3MovingCents: 3400,
-    perM3DisposalCents: 4800,
-    perKmCents: 250,
-    heavyItemSurchargeCents: 8000,
-    stairsSurchargePerFloorCents: 2500,
-    carryDistanceSurchargePer25mCents: 1900,
-    parkingSurchargeMediumCents: 4000,
-    parkingSurchargeHardCents: 12000,
-    elevatorDiscountSmallCents: 1200,
-    elevatorDiscountLargeCents: 2200,
-    uncertaintyPercent: 12,
-    economyMultiplier: 0.9,
-    standardMultiplier: 1,
-    expressMultiplier: 1.3,
-    montageBaseFeeCents: 14000,
-    entsorgungBaseFeeCents: 12000,
-    montageStandardMultiplier: 0.98,
-    montagePlusMultiplier: 1,
-    montagePremiumMultiplier: 1.12,
-    entsorgungStandardMultiplier: 0.98,
-    entsorgungPlusMultiplier: 1,
-    entsorgungPremiumMultiplier: 1.14,
-    montageMinimumOrderCents: 14000,
-    entsorgungMinimumOrderCents: 12000,
-  };
-}
 
 function speedToPackageTier(speed: Speed): WizardPayload["packageTier"] {
   if (speed === "ECONOMY") return "STANDARD";
@@ -157,12 +130,12 @@ function bookingContextFromCart(cart: ReturnType<typeof deriveServiceCart>): Wiz
 function packageSet(
   subtotalCents: number,
   uncertaintyPercent: number,
-  pricing: ReturnType<typeof fallbackPricing>,
+  multipliers: PricingMultipliers,
 ): PackageBreakdown[] {
   const rows: Array<{ tier: PackageBreakdown["tier"]; multiplier: number }> = [
-    { tier: "ECONOMY", multiplier: pricing.economyMultiplier },
-    { tier: "STANDARD", multiplier: pricing.standardMultiplier },
-    { tier: "EXPRESS", multiplier: pricing.expressMultiplier },
+    { tier: "ECONOMY", multiplier: multipliers.economyMultiplier },
+    { tier: "STANDARD", multiplier: multipliers.standardMultiplier },
+    { tier: "EXPRESS", multiplier: multipliers.expressMultiplier },
   ];
 
   return rows.map(({ tier, multiplier }) => {
@@ -206,42 +179,60 @@ export async function POST(req: Request) {
   const serviceType = serviceTypeFromCart(serviceCart);
   const bookingContext = bookingContextFromCart(serviceCart);
 
-  const pricingDb = await prisma.pricingConfig.findFirst({
-    where: { active: true },
-    orderBy: { updatedAt: "desc" },
-    select: {
-      currency: true,
-      movingBaseFeeCents: true,
-      disposalBaseFeeCents: true,
-      hourlyRateCents: true,
-      perM3MovingCents: true,
-      perM3DisposalCents: true,
-      perKmCents: true,
-      heavyItemSurchargeCents: true,
-      stairsSurchargePerFloorCents: true,
-      carryDistanceSurchargePer25mCents: true,
-      parkingSurchargeMediumCents: true,
-      parkingSurchargeHardCents: true,
-      elevatorDiscountSmallCents: true,
-      elevatorDiscountLargeCents: true,
-      uncertaintyPercent: true,
-      economyMultiplier: true,
-      standardMultiplier: true,
-      expressMultiplier: true,
-      montageBaseFeeCents: true,
-      entsorgungBaseFeeCents: true,
-      montageStandardMultiplier: true,
-      montagePlusMultiplier: true,
-      montagePremiumMultiplier: true,
-      entsorgungStandardMultiplier: true,
-      entsorgungPlusMultiplier: true,
-      entsorgungPremiumMultiplier: true,
-      montageMinimumOrderCents: true,
-      entsorgungMinimumOrderCents: true,
-    },
-  });
+  let pricingDb = null;
+  try {
+    pricingDb = await prisma.pricingConfig.findFirst({
+      where: { active: true },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        currency: true,
+        movingBaseFeeCents: true,
+        disposalBaseFeeCents: true,
+        hourlyRateCents: true,
+        perM3MovingCents: true,
+        perM3DisposalCents: true,
+        perKmCents: true,
+        heavyItemSurchargeCents: true,
+        stairsSurchargePerFloorCents: true,
+        carryDistanceSurchargePer25mCents: true,
+        parkingSurchargeMediumCents: true,
+        parkingSurchargeHardCents: true,
+        elevatorDiscountSmallCents: true,
+        elevatorDiscountLargeCents: true,
+        uncertaintyPercent: true,
+        economyMultiplier: true,
+        standardMultiplier: true,
+        expressMultiplier: true,
+        montageBaseFeeCents: true,
+        entsorgungBaseFeeCents: true,
+        montageStandardMultiplier: true,
+        montagePlusMultiplier: true,
+        montagePremiumMultiplier: true,
+        entsorgungStandardMultiplier: true,
+        entsorgungPlusMultiplier: true,
+        entsorgungPremiumMultiplier: true,
+        montageMinimumOrderCents: true,
+        entsorgungMinimumOrderCents: true,
+      },
+    });
+  } catch (error) {
+    console.error("[price/calc] pricing config unavailable", error);
+    return NextResponse.json(
+      { error: "Die Preisdaten konnten nicht live geladen werden." },
+      { status: 503 },
+    );
+  }
 
-  const pricing = pricingDb ?? fallbackPricing();
+  if (!pricingDb) {
+    return NextResponse.json(
+      {
+        error:
+          "Die Preiskonfiguration ist aktuell nicht verfügbar. Bitte versuchen Sie es in wenigen Minuten erneut.",
+      },
+      { status: 503 },
+    );
+  }
+  const pricing = pricingDb;
   const hasMoving = serviceCart.some((item) => item.kind === "UMZUG");
   const needsRoute = hasMoving && input.fromAddress && input.toAddress;
 
@@ -254,36 +245,51 @@ export async function POST(req: Request) {
         from: { text: input.fromAddress! },
         to: { text: input.toAddress! },
         profile: "driving-car",
+        allowFallback: false,
       });
       distanceKm = route.distanceKm;
       distanceSource = route.source;
     } catch (error) {
-      console.error("[price/calc] distance lookup failed; continue with estimate", {
+      console.error("[price/calc] strict-live distance lookup failed", {
         error: error instanceof Error ? error.message : String(error),
         fromAddress: input.fromAddress,
         toAddress: input.toAddress,
       });
-      distanceKm = undefined;
-      distanceSource = "approx";
+      return NextResponse.json(
+        {
+          error:
+            "Die Distanz konnte nicht live berechnet werden. Bitte prüfen Sie die Adressen oder versuchen Sie es erneut.",
+        },
+        { status: 503 },
+      );
     }
   }
 
-  const serviceOptionsDb = await prisma.serviceOption.findMany({
-    where: {
-      active: true,
-      deletedAt: null,
-      module: { active: true, deletedAt: null, slug: { in: ["MONTAGE", "ENTSORGUNG", "SPECIAL"] } },
-    },
-    select: {
-      code: true,
-      module: { select: { slug: true } },
-      pricingType: true,
-      defaultPriceCents: true,
-      defaultLaborMinutes: true,
-      isHeavy: true,
-      requiresQuantity: true,
-    },
-  });
+  let serviceOptionsDb = [];
+  try {
+    serviceOptionsDb = await prisma.serviceOption.findMany({
+      where: {
+        active: true,
+        deletedAt: null,
+        module: { active: true, deletedAt: null, slug: { in: ["MONTAGE", "ENTSORGUNG", "SPECIAL"] } },
+      },
+      select: {
+        code: true,
+        module: { select: { slug: true } },
+        pricingType: true,
+        defaultPriceCents: true,
+        defaultLaborMinutes: true,
+        isHeavy: true,
+        requiresQuantity: true,
+      },
+    });
+  } catch (error) {
+    console.error("[price/calc] service options unavailable", error);
+    return NextResponse.json(
+      { error: "Serviceoptionen konnten nicht live geladen werden." },
+      { status: 503 },
+    );
+  }
 
   const accessTemplate = {
     propertyType: "apartment" as const,
@@ -349,9 +355,9 @@ export async function POST(req: Request) {
       jobDurationMinutes: 120,
     },
     customer: {
-      name: "Kunde",
+      name: "Preisberechnung",
       phone: "+49",
-      email: "kunde@example.com",
+      email: "kontakt@schnellsicherumzug.de",
       contactPreference: "EMAIL",
       note: "",
     },
@@ -416,7 +422,6 @@ export async function POST(req: Request) {
         : "STANDARD";
 
   const packages = packageSet(estimate.breakdown.totalCents, pricing.uncertaintyPercent, {
-    ...fallbackPricing(),
     economyMultiplier: pricing.economyMultiplier,
     standardMultiplier: pricing.standardMultiplier,
     expressMultiplier: pricing.expressMultiplier,
