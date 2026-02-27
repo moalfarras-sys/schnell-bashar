@@ -21,8 +21,8 @@ export const addressSchema = z.object({
   state: z.string().optional(),
   street: z.string().optional(),
   houseNumber: z.string().optional(),
-  lat: z.number(),
-  lon: z.number(),
+  lat: z.number().optional(),
+  lon: z.number().optional(),
 });
 
 export const accessSchema = z.object({
