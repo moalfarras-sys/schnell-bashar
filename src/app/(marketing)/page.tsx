@@ -134,7 +134,7 @@ export default async function HomePage() {
   return (
     <>
       {/* Cinematic hero */}
-      <section className="relative overflow-hidden section-divider-glow min-h-[24rem] md:aspect-[16/9] md:min-h-[30rem]">
+      <section className="relative overflow-hidden section-divider-glow min-h-[24rem] md:min-h-[30rem]">
         <div className="absolute inset-0 z-0">
           <Image
             src={slotMap["img.home.hero.bg"]?.src || "/media/gallery/hero-home-light.webp"}
