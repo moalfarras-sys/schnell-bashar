@@ -88,6 +88,16 @@ export type Offer = Prisma.OfferModel
  */
 export type Contract = Prisma.ContractModel
 /**
+ * Model Quote
+ * 
+ */
+export type Quote = Prisma.QuoteModel
+/**
+ * Model QuoteEvent
+ * 
+ */
+export type QuoteEvent = Prisma.QuoteEventModel
+/**
  * Model RouteDistanceCache
  * 
  */

@@ -182,7 +182,16 @@ export default async function AdminOffersPage({
     offers = await prisma.offer.findMany({
       where,
       include: {
-        order: true,
+        order: {
+          include: {
+            quote: {
+              select: {
+                quoteId: true,
+                status: true,
+              },
+            },
+          },
+        },
         contract: true,
       },
       orderBy: { createdAt: sort === "oldest" ? "asc" : "desc" },
@@ -329,6 +338,12 @@ export default async function AdminOffersPage({
                             {displayOrderNo}
                           </div>
                         )}
+                        {offer.order?.quote?.quoteId ? (
+                          <div>
+                            <span className="font-semibold">Quote:</span>{" "}
+                            {offer.order.quote.quoteId} ({offer.order.quote.status})
+                          </div>
+                        ) : null}
                         {offer.contract && (
                           <div>
                             <span className="font-semibold">Vertrags-Nr.:</span>{" "}

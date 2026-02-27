@@ -65,6 +65,8 @@ export const ModelName = {
   WhatsAppConversation: 'WhatsAppConversation',
   Offer: 'Offer',
   Contract: 'Contract',
+  Quote: 'Quote',
+  QuoteEvent: 'QuoteEvent',
   RouteDistanceCache: 'RouteDistanceCache',
   DocumentSequence: 'DocumentSequence',
   MediaAsset: 'MediaAsset',
@@ -414,6 +416,7 @@ export const ContractScalarFieldEnum = {
   fallbackSignerUserAgent: 'fallbackSignerUserAgent',
   fallbackAgbAccepted: 'fallbackAgbAccepted',
   signatureImageUrl: 'signatureImageUrl',
+  signedPdfSha256: 'signedPdfSha256',
   sentForSigningAt: 'sentForSigningAt',
   signedAt: 'signedAt',
   createdAt: 'createdAt',
@@ -421,6 +424,40 @@ export const ContractScalarFieldEnum = {
 } as const
 
 export type ContractScalarFieldEnum = (typeof ContractScalarFieldEnum)[keyof typeof ContractScalarFieldEnum]
+
+
+export const QuoteScalarFieldEnum = {
+  id: 'id',
+  quoteId: 'quoteId',
+  status: 'status',
+  source: 'source',
+  serviceContext: 'serviceContext',
+  packageSpeed: 'packageSpeed',
+  draftJson: 'draftJson',
+  resultJson: 'resultJson',
+  distanceKm: 'distanceKm',
+  driveCostCents: 'driveCostCents',
+  subtotalCents: 'subtotalCents',
+  priceMinCents: 'priceMinCents',
+  priceMaxCents: 'priceMaxCents',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  orderId: 'orderId'
+} as const
+
+export type QuoteScalarFieldEnum = (typeof QuoteScalarFieldEnum)[keyof typeof QuoteScalarFieldEnum]
+
+
+export const QuoteEventScalarFieldEnum = {
+  id: 'id',
+  quoteRefId: 'quoteRefId',
+  eventType: 'eventType',
+  payloadJson: 'payloadJson',
+  createdAt: 'createdAt'
+} as const
+
+export type QuoteEventScalarFieldEnum = (typeof QuoteEventScalarFieldEnum)[keyof typeof QuoteEventScalarFieldEnum]
 
 
 export const RouteDistanceCacheScalarFieldEnum = {

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+﻿import { expect, test } from "@playwright/test";
 
 test.describe("Booking smoke", () => {
   test("shows booking page with integrated shell", async ({ page }) => {

@@ -90,6 +90,12 @@ export default async function AdminOrdersPage({
           requestedDateTo: true,
           preferredTimeWindow: true,
           wizardData: true,
+          quote: {
+            select: {
+              quoteId: true,
+              status: true,
+            },
+          },
           _count: {
             select: { serviceItems: true },
           },
@@ -196,6 +202,7 @@ export default async function AdminOrdersPage({
                 <th className="px-4 py-3">Leistung</th>
                 <th className="px-4 py-3">Kunde</th>
                 <th className="px-4 py-3">Preisrahmen</th>
+                <th className="px-4 py-3">Quote</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Aktion</th>
               </tr>
@@ -261,6 +268,20 @@ export default async function AdminOrdersPage({
                   <td className="px-4 py-3 font-semibold text-white">
                     {eur(o.priceMinCents)} – {eur(o.priceMaxCents)}
                   </td>
+                  <td className="px-4 py-3 text-xs font-semibold text-slate-200">
+                    {o.quote?.quoteId ? (
+                      <div className="space-y-1">
+                        <div className="rounded-full border border-emerald-300 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-extrabold text-emerald-100">
+                          {o.quote.quoteId}
+                        </div>
+                        <div className="text-[10px] uppercase tracking-wide text-slate-300">
+                          {o.quote.status}
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-slate-400">-</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">
                     <span className="rounded-full border-2 border-brand-400 bg-brand-600/30 px-2 py-1 text-xs font-extrabold text-brand-200">
                       {o.status}
@@ -298,7 +319,7 @@ export default async function AdminOrdersPage({
                 <tr>
                   <td
                     className="px-4 py-10 text-center text-sm font-semibold text-slate-300"
-                    colSpan={8}
+                    colSpan={9}
                   >
                     Keine Aufträge gefunden.
                   </td>

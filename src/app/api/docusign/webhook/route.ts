@@ -1,5 +1,5 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
-import { createHmac, timingSafeEqual } from "crypto";
+import { createHash, createHmac, timingSafeEqual } from "crypto";
 import { prisma } from "@/server/db/prisma";
 import { getSupabaseAdmin, STORAGE_BUCKETS } from "@/lib/supabase";
 import { getEnvelopesApi, getDocuSignAccountId } from "@/lib/docusign";
@@ -167,9 +167,17 @@ export async function POST(req: NextRequest) {
           docusignStatus: "completed",
           signedPdfUrl,
           auditTrailUrl,
+          signedPdfSha256: createHash("sha256").update(signedPdfBuffer).digest("hex"),
           signedAt: new Date(),
         },
       });
+
+      if (contract.offer.order?.id) {
+        await prisma.quote.updateMany({
+          where: { orderId: contract.offer.order.id },
+          data: { status: "CONFIRMED" },
+        });
+      }
 
       await sendSignedContractEmail({
         customerName: contract.offer.customerName,

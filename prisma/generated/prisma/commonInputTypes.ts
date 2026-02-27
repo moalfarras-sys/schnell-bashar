@@ -579,6 +579,57 @@ export type EnumSignatureProviderWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumSignatureProviderFilter<$PrismaModel>
 }
 
+export type EnumQuoteStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuoteStatus | Prisma.EnumQuoteStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.QuoteStatus[] | Prisma.ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuoteStatus[] | Prisma.ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuoteStatusFilter<$PrismaModel> | $Enums.QuoteStatus
+}
+
+export type EnumQuoteSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuoteSource | Prisma.EnumQuoteSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.QuoteSource[] | Prisma.ListEnumQuoteSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuoteSource[] | Prisma.ListEnumQuoteSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuoteSourceFilter<$PrismaModel> | $Enums.QuoteSource
+}
+
+export type EnumQuoteServiceContextFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuoteServiceContext | Prisma.EnumQuoteServiceContextFieldRefInput<$PrismaModel>
+  in?: $Enums.QuoteServiceContext[] | Prisma.ListEnumQuoteServiceContextFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuoteServiceContext[] | Prisma.ListEnumQuoteServiceContextFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuoteServiceContextFilter<$PrismaModel> | $Enums.QuoteServiceContext
+}
+
+export type EnumQuoteStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuoteStatus | Prisma.EnumQuoteStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.QuoteStatus[] | Prisma.ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuoteStatus[] | Prisma.ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuoteStatusWithAggregatesFilter<$PrismaModel> | $Enums.QuoteStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumQuoteStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumQuoteStatusFilter<$PrismaModel>
+}
+
+export type EnumQuoteSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuoteSource | Prisma.EnumQuoteSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.QuoteSource[] | Prisma.ListEnumQuoteSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuoteSource[] | Prisma.ListEnumQuoteSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuoteSourceWithAggregatesFilter<$PrismaModel> | $Enums.QuoteSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumQuoteSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumQuoteSourceFilter<$PrismaModel>
+}
+
+export type EnumQuoteServiceContextWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuoteServiceContext | Prisma.EnumQuoteServiceContextFieldRefInput<$PrismaModel>
+  in?: $Enums.QuoteServiceContext[] | Prisma.ListEnumQuoteServiceContextFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuoteServiceContext[] | Prisma.ListEnumQuoteServiceContextFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuoteServiceContextWithAggregatesFilter<$PrismaModel> | $Enums.QuoteServiceContext
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumQuoteServiceContextFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumQuoteServiceContextFilter<$PrismaModel>
+}
+
 export type EnumDocumentScopeFilter<$PrismaModel = never> = {
   equals?: $Enums.DocumentScope | Prisma.EnumDocumentScopeFieldRefInput<$PrismaModel>
   in?: $Enums.DocumentScope[] | Prisma.ListEnumDocumentScopeFieldRefInput<$PrismaModel>
@@ -1147,6 +1198,57 @@ export type NestedEnumSignatureProviderWithAggregatesFilter<$PrismaModel = never
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSignatureProviderFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSignatureProviderFilter<$PrismaModel>
+}
+
+export type NestedEnumQuoteStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuoteStatus | Prisma.EnumQuoteStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.QuoteStatus[] | Prisma.ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuoteStatus[] | Prisma.ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuoteStatusFilter<$PrismaModel> | $Enums.QuoteStatus
+}
+
+export type NestedEnumQuoteSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuoteSource | Prisma.EnumQuoteSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.QuoteSource[] | Prisma.ListEnumQuoteSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuoteSource[] | Prisma.ListEnumQuoteSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuoteSourceFilter<$PrismaModel> | $Enums.QuoteSource
+}
+
+export type NestedEnumQuoteServiceContextFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuoteServiceContext | Prisma.EnumQuoteServiceContextFieldRefInput<$PrismaModel>
+  in?: $Enums.QuoteServiceContext[] | Prisma.ListEnumQuoteServiceContextFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuoteServiceContext[] | Prisma.ListEnumQuoteServiceContextFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuoteServiceContextFilter<$PrismaModel> | $Enums.QuoteServiceContext
+}
+
+export type NestedEnumQuoteStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuoteStatus | Prisma.EnumQuoteStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.QuoteStatus[] | Prisma.ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuoteStatus[] | Prisma.ListEnumQuoteStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuoteStatusWithAggregatesFilter<$PrismaModel> | $Enums.QuoteStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumQuoteStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumQuoteStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumQuoteSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuoteSource | Prisma.EnumQuoteSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.QuoteSource[] | Prisma.ListEnumQuoteSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuoteSource[] | Prisma.ListEnumQuoteSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuoteSourceWithAggregatesFilter<$PrismaModel> | $Enums.QuoteSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumQuoteSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumQuoteSourceFilter<$PrismaModel>
+}
+
+export type NestedEnumQuoteServiceContextWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.QuoteServiceContext | Prisma.EnumQuoteServiceContextFieldRefInput<$PrismaModel>
+  in?: $Enums.QuoteServiceContext[] | Prisma.ListEnumQuoteServiceContextFieldRefInput<$PrismaModel>
+  notIn?: $Enums.QuoteServiceContext[] | Prisma.ListEnumQuoteServiceContextFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumQuoteServiceContextWithAggregatesFilter<$PrismaModel> | $Enums.QuoteServiceContext
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumQuoteServiceContextFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumQuoteServiceContextFilter<$PrismaModel>
 }
 
 export type NestedEnumDocumentScopeFilter<$PrismaModel = never> = {

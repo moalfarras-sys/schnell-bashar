@@ -252,6 +252,7 @@ model Order {
   serviceItems OrderServiceItem[]
   uploads      OrderUpload[]
   offer        Offer?
+  quote        Quote?
   invoices     Invoice[]
 
   @@index([slotStart])
@@ -337,6 +338,27 @@ enum ContractStatus {
   PENDING_SIGNATURE
   SIGNED
   CANCELLED
+}
+
+enum QuoteStatus {
+  QUOTE
+  PENDING_SIGNATURE
+  CONFIRMED
+  SCHEDULED
+  CANCELLED
+  EXPIRED
+}
+
+enum QuoteSource {
+  PREISE
+}
+
+enum QuoteServiceContext {
+  MOVING
+  MONTAGE
+  ENTSORGUNG
+  SPEZIALSERVICE
+  COMBO
 }
 
 enum SignatureProvider {
@@ -438,6 +460,7 @@ model Contract {
   fallbackSignerUserAgent String?
   fallbackAgbAccepted     Boolean   @default(false)
   signatureImageUrl       String?
+  signedPdfSha256         String?
   sentForSigningAt        DateTime?
   signedAt                DateTime?
 
@@ -448,6 +471,44 @@ model Contract {
 
   @@index([docusignEnvelopeId])
   @@index([status])
+}
+
+model Quote {
+  id             String              @id @default(cuid())
+  quoteId        String              @unique
+  status         QuoteStatus         @default(QUOTE)
+  source         QuoteSource         @default(PREISE)
+  serviceContext QuoteServiceContext
+  packageSpeed   SpeedType
+  draftJson      Json
+  resultJson     Json
+  distanceKm     Float?
+  driveCostCents Int?
+  subtotalCents  Int
+  priceMinCents  Int
+  priceMaxCents  Int
+  expiresAt      DateTime
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  orderId String? @unique
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  events QuoteEvent[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model QuoteEvent {
+  id          String   @id @default(cuid())
+  quoteRefId  String
+  quote       Quote    @relation(fields: [quoteRefId], references: [id], onDelete: Cascade)
+  eventType   String
+  payloadJson Json?
+  createdAt   DateTime @default(now())
+
+  @@index([quoteRefId, createdAt])
 }
 
 model RouteDistanceCache {

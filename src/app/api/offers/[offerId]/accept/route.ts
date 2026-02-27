@@ -179,6 +179,13 @@ export async function POST(
       },
     });
 
+    if (offer.orderId) {
+      await prisma.quote.updateMany({
+        where: { orderId: offer.orderId },
+        data: { status: "PENDING_SIGNATURE" },
+      });
+    }
+
     const emailResult = await sendSigningEmail({
       customerName: offer.customerName,
       customerEmail: offer.customerEmail,

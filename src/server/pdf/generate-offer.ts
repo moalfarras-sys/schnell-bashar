@@ -9,6 +9,7 @@ import { sanitizePdfText } from "@/server/pdf/layout";
 export interface OfferData {
   offerId: string;
   offerNo?: string;
+  quoteId?: string;
   orderNo?: string;
   offerDate: Date;
   validUntil: Date;
@@ -202,10 +203,14 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     y += 26;
 
     doc.font("Helvetica").fontSize(8.5).fillColor(MUTED);
-    doc.text(
-      `Nr. ${data.offerNo || data.offerId}${data.orderNo ? `  ·  Auftrag: ${data.orderNo}` : ""}  \u00B7  Datum: ${fmtDate(data.offerDate)}  \u00B7  G\u00FCltig bis: ${fmtDate(data.validUntil)}`,
-      LEFT, y, { width: CW, align: "center" },
-    );
+    const refs = [
+      `Nr. ${data.offerNo || data.offerId}`,
+      data.orderNo ? `Auftrag: ${data.orderNo}` : null,
+      data.quoteId ? `Quote: ${data.quoteId}` : null,
+      `Datum: ${fmtDate(data.offerDate)}`,
+      `G\u00FCltig bis: ${fmtDate(data.validUntil)}`,
+    ].filter(Boolean);
+    doc.text(refs.join("  \u00B7  "), LEFT, y, { width: CW, align: "center" });
     y += 16;
 
     // KUNDENANGABEN

@@ -8,7 +8,7 @@
     "dev:no-db-check": "next dev --webpack",
     "build": "npm run prisma:generate && npm run images:check && npm run images:forbidden && npm run text:scan-mojibake && npm run text:scan-transliteration && next build --webpack",
     "start": "node .next/standalone/server.js",
-    "lint": "eslint .",
+    "lint": "eslint . --ignore-pattern test-results --ignore-pattern playwright-report",
     "db:up": "docker compose up -d db",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f db",

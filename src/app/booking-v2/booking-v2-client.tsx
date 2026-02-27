@@ -39,9 +39,10 @@ function mapTimeWindowToHours(window: BookingDraft["schedule"]["timeWindow"]) {
   return { from: 9, to: 18 };
 }
 
-export function BookingV2Client(props: { initialContext?: string }) {
+export function BookingV2Client(props: { initialContext?: string; initialQuoteId?: string }) {
   const router = useRouter();
   const initialContext = String(props.initialContext ?? "").toUpperCase();
+  const initialQuoteId = String(props.initialQuoteId ?? "").trim();
   const topRef = useRef<HTMLDivElement>(null);
 
   const [step, setStep] = useState(0);
@@ -52,6 +53,8 @@ export function BookingV2Client(props: { initialContext?: string }) {
     error: null,
     data: null,
   });
+  const [quoteBanner, setQuoteBanner] = useState<string | null>(null);
+  const [quoteHydrated, setQuoteHydrated] = useState(false);
 
   const [draft, setDraft] = useState<BookingDraft>(() => ({
     service:
@@ -62,6 +65,7 @@ export function BookingV2Client(props: { initialContext?: string }) {
           : initialContext === "COMBO" || initialContext === "BOTH"
             ? "COMBO"
             : "MOVING",
+    quoteId: initialQuoteId || undefined,
     volumeM3: 24,
     preset: "2zimmer",
     extras: {
@@ -119,6 +123,65 @@ export function BookingV2Client(props: { initialContext?: string }) {
   const prevStep = () => goStep(Math.max(step - 1, 0));
 
   useEffect(() => {
+    if (!initialQuoteId) {
+      setQuoteHydrated(true);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/quotes/${encodeURIComponent(initialQuoteId)}`, {
+          cache: "no-store",
+        });
+        if (!res.ok) return;
+        const json = (await res.json()) as {
+          snapshot?: {
+            quoteId: string;
+            draft: {
+              serviceContext: "MOVING" | "MONTAGE" | "ENTSORGUNG" | "SPEZIALSERVICE" | "COMBO";
+              packageSpeed: "ECONOMY" | "STANDARD" | "EXPRESS";
+              volumeM3: number;
+              fromAddress?: BookingDraft["from"];
+              toAddress?: BookingDraft["to"];
+              extras: BookingDraft["extras"];
+            };
+          };
+        };
+        if (!json.snapshot || cancelled) return;
+        const mapService: Record<typeof json.snapshot.draft.serviceContext, BookingDraft["service"]> = {
+          MOVING: "MOVING",
+          MONTAGE: "ASSEMBLY",
+          ENTSORGUNG: "DISPOSAL",
+          SPEZIALSERVICE: "ASSEMBLY",
+          COMBO: "COMBO",
+        };
+        setDraft((prev) => ({
+          ...prev,
+          quoteId: json.snapshot!.quoteId,
+          service: mapService[json.snapshot!.draft.serviceContext] ?? prev.service,
+          volumeM3: json.snapshot!.draft.volumeM3 ?? prev.volumeM3,
+          from: json.snapshot!.draft.fromAddress ?? prev.from,
+          to: json.snapshot!.draft.toAddress ?? prev.to,
+          extras: json.snapshot!.draft.extras ?? prev.extras,
+          schedule: {
+            ...prev.schedule,
+            speed: json.snapshot!.draft.packageSpeed ?? prev.schedule.speed,
+          },
+        }));
+        setQuoteBanner("Angebot übernommen");
+      } catch {
+        // best effort
+      } finally {
+        if (!cancelled) setQuoteHydrated(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [initialQuoteId]);
+
+  useEffect(() => {
+    if (!quoteHydrated) return;
     const id = setTimeout(async () => {
       const serviceCart = toServiceCart(draft.service);
       const needsRoute = draft.service === "MOVING" || draft.service === "COMBO";
@@ -144,6 +207,8 @@ export function BookingV2Client(props: { initialContext?: string }) {
             hasElevator: false,
             needNoParkingZone: draft.extras.noParkingZone,
             addons,
+            fromAddressObject: draft.from,
+            toAddressObject: draft.to,
             fromAddress,
             toAddress,
           }),
@@ -166,7 +231,10 @@ export function BookingV2Client(props: { initialContext?: string }) {
 
     return () => clearTimeout(id);
   }, [
+    quoteHydrated,
     draft.service,
+    draft.from,
+    draft.to,
     draft.from?.displayName,
     draft.to?.displayName,
     draft.volumeM3,
@@ -176,6 +244,55 @@ export function BookingV2Client(props: { initialContext?: string }) {
     draft.extras.noParkingZone,
     draft.extras.disposalBags,
     draft.schedule.speed,
+  ]);
+
+  useEffect(() => {
+    if (!draft.quoteId || !quoteHydrated) return;
+    const id = setTimeout(async () => {
+      const quoteId = draft.quoteId;
+      if (!quoteId) return;
+      const serviceContextMap: Record<
+        BookingDraft["service"],
+        "MOVING" | "MONTAGE" | "ENTSORGUNG" | "SPEZIALSERVICE" | "COMBO"
+      > = {
+        MOVING: "MOVING",
+        DISPOSAL: "ENTSORGUNG",
+        ASSEMBLY: "MONTAGE",
+        COMBO: "COMBO",
+      };
+      await fetch(`/api/quotes/${encodeURIComponent(quoteId)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          draft: {
+            serviceContext: serviceContextMap[draft.service],
+            packageSpeed: draft.extras.express ? "EXPRESS" : draft.schedule.speed,
+            volumeM3: draft.volumeM3,
+            floors: draft.extras.stairs ? 2 : 0,
+            hasElevator: false,
+            needNoParkingZone: draft.extras.noParkingZone,
+            fromAddress: draft.from,
+            toAddress: draft.to,
+            extras: draft.extras,
+            selectedServiceOptions: [],
+          },
+        }),
+      });
+    }, 450);
+
+    return () => clearTimeout(id);
+  }, [
+    draft.quoteId,
+    quoteHydrated,
+    draft.service,
+    draft.extras.express,
+    draft.schedule.speed,
+    draft.volumeM3,
+    draft.extras.stairs,
+    draft.extras.noParkingZone,
+    draft.extras,
+    draft.from,
+    draft.to,
   ]);
 
   async function submitBooking() {
@@ -264,6 +381,7 @@ export function BookingV2Client(props: { initialContext?: string }) {
 
       const form = new FormData();
       form.set("payload", JSON.stringify(payload));
+      if (draft.quoteId) form.set("quoteId", draft.quoteId);
 
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -314,6 +432,19 @@ export function BookingV2Client(props: { initialContext?: string }) {
             </p>
             <div className="mt-2 rounded-xl border border-slate-300/70 bg-white/60 px-3 py-2 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-900/45 dark:text-slate-200">
               Aktueller Bereich: {selectedRange}
+            </div>
+            {quoteBanner ? (
+              <div className="mt-2 rounded-xl border border-emerald-300/80 bg-emerald-100/70 px-3 py-2 text-sm font-semibold text-emerald-800 dark:border-emerald-500/40 dark:bg-emerald-900/20 dark:text-emerald-200">
+                {quoteBanner}
+              </div>
+            ) : null}
+            <div className="mt-2">
+              <a
+                href={draft.quoteId ? `/preise?quoteId=${encodeURIComponent(draft.quoteId)}` : "/preise"}
+                className="text-sm font-semibold text-cyan-700 underline underline-offset-2 dark:text-cyan-300"
+              >
+                Zurück zum Preisrechner
+              </a>
             </div>
             <div className="mt-5">
               <StepNavigation current={step} onChange={goStep} />

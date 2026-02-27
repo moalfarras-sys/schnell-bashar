@@ -114,6 +114,36 @@ export const ContractStatus = {
 export type ContractStatus = (typeof ContractStatus)[keyof typeof ContractStatus]
 
 
+export const QuoteStatus = {
+  QUOTE: 'QUOTE',
+  PENDING_SIGNATURE: 'PENDING_SIGNATURE',
+  CONFIRMED: 'CONFIRMED',
+  SCHEDULED: 'SCHEDULED',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED'
+} as const
+
+export type QuoteStatus = (typeof QuoteStatus)[keyof typeof QuoteStatus]
+
+
+export const QuoteSource = {
+  PREISE: 'PREISE'
+} as const
+
+export type QuoteSource = (typeof QuoteSource)[keyof typeof QuoteSource]
+
+
+export const QuoteServiceContext = {
+  MOVING: 'MOVING',
+  MONTAGE: 'MONTAGE',
+  ENTSORGUNG: 'ENTSORGUNG',
+  SPEZIALSERVICE: 'SPEZIALSERVICE',
+  COMBO: 'COMBO'
+} as const
+
+export type QuoteServiceContext = (typeof QuoteServiceContext)[keyof typeof QuoteServiceContext]
+
+
 export const SignatureProvider = {
   DOCUSIGN: 'DOCUSIGN',
   INTERNAL: 'INTERNAL'

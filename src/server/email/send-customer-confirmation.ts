@@ -36,6 +36,7 @@ export async function sendCustomerConfirmationEmail(args: {
   priceMaxCents: number;
   totalVolumeM3: number;
   itemRows: EmailItemRow[];
+  quoteId?: string | null;
   offerNo?: string;
   offerLink?: string;
   supportPhone: string;
@@ -77,6 +78,7 @@ export async function sendCustomerConfirmationEmail(args: {
     `Hier sind Ihre Angaben im Überblick:`,
     "",
     `Auftrags-ID: ${args.publicId}`,
+    args.quoteId ? `Quote-ID: ${args.quoteId}` : "",
     `Leistung: ${serviceLabel}`,
     `Priorität: ${speedLabel}`,
     `Wunschtermin: ${timingLabel}`,
@@ -122,6 +124,7 @@ export async function sendCustomerConfirmationEmail(args: {
               <td style="padding: 6px 0; color: #64748b;">Auftrags-ID</td>
               <td style="padding: 6px 0; text-align: right; font-weight: 700; color: #1e293b;">${args.publicId}</td>
             </tr>
+            ${args.quoteId ? `<tr><td style="padding: 6px 0; color: #64748b;">Quote-ID</td><td style="padding: 6px 0; text-align: right; font-weight: 600; color: #1e293b;">${args.quoteId}</td></tr>` : ""}
             <tr>
               <td style="padding: 6px 0; color: #64748b;">Leistung</td>
               <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #1e293b;">${serviceLabel}</td>

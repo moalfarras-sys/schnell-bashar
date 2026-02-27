@@ -57,6 +57,7 @@ export async function sendOrderEmail(args: {
   preferredTimeWindow: "MORNING" | "AFTERNOON" | "EVENING" | "FLEXIBLE";
   uploadNames: string[];
   itemRows: EmailItemRow[];
+  quoteId?: string | null;
   offerNo?: string;
   offerLink?: string;
 }) {
@@ -77,6 +78,7 @@ export async function sendOrderEmail(args: {
 
   const lines: string[] = [];
   lines.push(`Auftrags-ID: ${args.publicId}`);
+  if (args.quoteId) lines.push(`Quote-ID: ${args.quoteId}`);
   lines.push(`Leistung: ${args.payload.serviceType}`);
   lines.push(`Priorität: ${args.payload.timing.speed}`);
   lines.push(`Wunschtermin: ${timingLabel}`);
@@ -132,6 +134,7 @@ export async function sendOrderEmail(args: {
   const html = `
     <div style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;">
       <h2>Neue Anfrage: ${args.publicId}</h2>
+      ${args.quoteId ? `<p><b>Quote-ID:</b> ${args.quoteId}</p>` : ""}
       <p><b>Leistung:</b> ${args.payload.serviceType} &nbsp; <b>Priorität:</b> ${args.payload.timing.speed}</p>
       <p><b>Wunschtermin:</b> ${timingLabel}<br/><b>Status:</b> Termin angefragt (REQUESTED)</p>
       ${args.offerNo ? `<p><b>Angebotsnummer:</b> ${args.offerNo}</p>` : ""}

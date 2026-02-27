@@ -33,6 +33,7 @@ const OFFER_VALIDITY_DAYS = parseInt(process.env.OFFER_VALIDITY_DAYS || "7", 10)
 
 const formSchema = z.object({
   payload: z.string().min(2),
+  quoteId: z.string().trim().min(10).max(80).optional(),
 });
 
 function eur(cents: number) {
@@ -177,10 +178,14 @@ export async function POST(req: Request) {
     );
   }
 
-  const raw = formSchema.safeParse({ payload: formData.get("payload") });
+  const raw = formSchema.safeParse({
+    payload: formData.get("payload"),
+    quoteId: formData.get("quoteId"),
+  });
   if (!raw.success) {
     return NextResponse.json({ error: "Ungültige Formulardaten" }, { status: 400 });
   }
+  const quoteId = raw.data.quoteId?.trim() || null;
 
   let payloadJson: unknown;
   try {
@@ -198,6 +203,18 @@ export async function POST(req: Request) {
   }
 
   const parsedPayload: WizardPayload = parsed.data;
+  if (quoteId) {
+    const quote = await prisma.quote.findUnique({
+      where: { quoteId },
+      select: { quoteId: true, expiresAt: true, status: true },
+    });
+    if (!quote) {
+      return NextResponse.json({ error: "Angebot wurde nicht gefunden." }, { status: 404 });
+    }
+    if (quote.expiresAt < new Date() || quote.status === "EXPIRED") {
+      return NextResponse.json({ error: "Angebot ist abgelaufen." }, { status: 410 });
+    }
+  }
   const serviceCart = normalizeServiceCart(parsedPayload);
   const legacyShape = deriveLegacyShapeFromCart(serviceCart);
   const payload: WizardPayload = {
@@ -801,6 +818,24 @@ export async function POST(req: Request) {
       select: { id: true, token: true, offerNo: true },
     });
 
+    if (quoteId) {
+      await tx.quote.update({
+        where: { quoteId },
+        data: {
+          status: "CONFIRMED",
+          orderId: createdOrder.id,
+          events: {
+            create: {
+              eventType: "booking_submitted",
+              payloadJson: {
+                orderPublicId: createdOrder.publicId,
+              },
+            },
+          },
+        },
+      });
+    }
+
     return {
       order: createdOrder,
       offer: createdOffer,
@@ -824,6 +859,7 @@ export async function POST(req: Request) {
     const pdfBuffer = await generateOfferPDF({
       offerId: offer.id,
       offerNo: offer.offerNo || offerNo,
+      quoteId: quoteId || undefined,
       orderNo,
       offerDate: now,
       validUntil,
@@ -902,6 +938,7 @@ export async function POST(req: Request) {
     try {
       await sendOrderEmail({
         publicId: order.publicId,
+        quoteId,
         payload,
         estimate,
         requestedDateFrom,
@@ -921,6 +958,7 @@ export async function POST(req: Request) {
     try {
       await sendCustomerConfirmationEmail({
         publicId: order.publicId,
+        quoteId,
         customerEmail: payload.customer.email,
         customerName: payload.customer.name,
         serviceType: payload.serviceType,
@@ -958,6 +996,7 @@ export async function POST(req: Request) {
   return NextResponse.json({
     ok: true,
     publicId: order.publicId,
+    quoteId,
     orderStatus: "REQUESTED",
     offer: {
       id: offer.id,

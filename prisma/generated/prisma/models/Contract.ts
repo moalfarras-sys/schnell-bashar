@@ -58,6 +58,7 @@ export type ContractMinAggregateOutputType = {
   fallbackSignerUserAgent: string | null
   fallbackAgbAccepted: boolean | null
   signatureImageUrl: string | null
+  signedPdfSha256: string | null
   sentForSigningAt: Date | null
   signedAt: Date | null
   createdAt: Date | null
@@ -88,6 +89,7 @@ export type ContractMaxAggregateOutputType = {
   fallbackSignerUserAgent: string | null
   fallbackAgbAccepted: boolean | null
   signatureImageUrl: string | null
+  signedPdfSha256: string | null
   sentForSigningAt: Date | null
   signedAt: Date | null
   createdAt: Date | null
@@ -119,6 +121,7 @@ export type ContractCountAggregateOutputType = {
   fallbackSignerUserAgent: number
   fallbackAgbAccepted: number
   signatureImageUrl: number
+  signedPdfSha256: number
   sentForSigningAt: number
   signedAt: number
   createdAt: number
@@ -159,6 +162,7 @@ export type ContractMinAggregateInputType = {
   fallbackSignerUserAgent?: true
   fallbackAgbAccepted?: true
   signatureImageUrl?: true
+  signedPdfSha256?: true
   sentForSigningAt?: true
   signedAt?: true
   createdAt?: true
@@ -189,6 +193,7 @@ export type ContractMaxAggregateInputType = {
   fallbackSignerUserAgent?: true
   fallbackAgbAccepted?: true
   signatureImageUrl?: true
+  signedPdfSha256?: true
   sentForSigningAt?: true
   signedAt?: true
   createdAt?: true
@@ -220,6 +225,7 @@ export type ContractCountAggregateInputType = {
   fallbackSignerUserAgent?: true
   fallbackAgbAccepted?: true
   signatureImageUrl?: true
+  signedPdfSha256?: true
   sentForSigningAt?: true
   signedAt?: true
   createdAt?: true
@@ -338,6 +344,7 @@ export type ContractGroupByOutputType = {
   fallbackSignerUserAgent: string | null
   fallbackAgbAccepted: boolean
   signatureImageUrl: string | null
+  signedPdfSha256: string | null
   sentForSigningAt: Date | null
   signedAt: Date | null
   createdAt: Date
@@ -392,6 +399,7 @@ export type ContractWhereInput = {
   fallbackSignerUserAgent?: Prisma.StringNullableFilter<"Contract"> | string | null
   fallbackAgbAccepted?: Prisma.BoolFilter<"Contract"> | boolean
   signatureImageUrl?: Prisma.StringNullableFilter<"Contract"> | string | null
+  signedPdfSha256?: Prisma.StringNullableFilter<"Contract"> | string | null
   sentForSigningAt?: Prisma.DateTimeNullableFilter<"Contract"> | Date | string | null
   signedAt?: Prisma.DateTimeNullableFilter<"Contract"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Contract"> | Date | string
@@ -425,6 +433,7 @@ export type ContractOrderByWithRelationInput = {
   fallbackSignerUserAgent?: Prisma.SortOrderInput | Prisma.SortOrder
   fallbackAgbAccepted?: Prisma.SortOrder
   signatureImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  signedPdfSha256?: Prisma.SortOrderInput | Prisma.SortOrder
   sentForSigningAt?: Prisma.SortOrderInput | Prisma.SortOrder
   signedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -461,6 +470,7 @@ export type ContractWhereUniqueInput = Prisma.AtLeast<{
   fallbackSignerUserAgent?: Prisma.StringNullableFilter<"Contract"> | string | null
   fallbackAgbAccepted?: Prisma.BoolFilter<"Contract"> | boolean
   signatureImageUrl?: Prisma.StringNullableFilter<"Contract"> | string | null
+  signedPdfSha256?: Prisma.StringNullableFilter<"Contract"> | string | null
   sentForSigningAt?: Prisma.DateTimeNullableFilter<"Contract"> | Date | string | null
   signedAt?: Prisma.DateTimeNullableFilter<"Contract"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Contract"> | Date | string
@@ -494,6 +504,7 @@ export type ContractOrderByWithAggregationInput = {
   fallbackSignerUserAgent?: Prisma.SortOrderInput | Prisma.SortOrder
   fallbackAgbAccepted?: Prisma.SortOrder
   signatureImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  signedPdfSha256?: Prisma.SortOrderInput | Prisma.SortOrder
   sentForSigningAt?: Prisma.SortOrderInput | Prisma.SortOrder
   signedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -533,6 +544,7 @@ export type ContractScalarWhereWithAggregatesInput = {
   fallbackSignerUserAgent?: Prisma.StringNullableWithAggregatesFilter<"Contract"> | string | null
   fallbackAgbAccepted?: Prisma.BoolWithAggregatesFilter<"Contract"> | boolean
   signatureImageUrl?: Prisma.StringNullableWithAggregatesFilter<"Contract"> | string | null
+  signedPdfSha256?: Prisma.StringNullableWithAggregatesFilter<"Contract"> | string | null
   sentForSigningAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Contract"> | Date | string | null
   signedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Contract"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Contract"> | Date | string
@@ -563,6 +575,7 @@ export type ContractCreateInput = {
   fallbackSignerUserAgent?: string | null
   fallbackAgbAccepted?: boolean
   signatureImageUrl?: string | null
+  signedPdfSha256?: string | null
   sentForSigningAt?: Date | string | null
   signedAt?: Date | string | null
   createdAt?: Date | string
@@ -596,6 +609,7 @@ export type ContractUncheckedCreateInput = {
   fallbackSignerUserAgent?: string | null
   fallbackAgbAccepted?: boolean
   signatureImageUrl?: string | null
+  signedPdfSha256?: string | null
   sentForSigningAt?: Date | string | null
   signedAt?: Date | string | null
   createdAt?: Date | string
@@ -627,6 +641,7 @@ export type ContractUpdateInput = {
   fallbackSignerUserAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fallbackAgbAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  signedPdfSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sentForSigningAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -660,6 +675,7 @@ export type ContractUncheckedUpdateInput = {
   fallbackSignerUserAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fallbackAgbAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  signedPdfSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sentForSigningAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -692,6 +708,7 @@ export type ContractCreateManyInput = {
   fallbackSignerUserAgent?: string | null
   fallbackAgbAccepted?: boolean
   signatureImageUrl?: string | null
+  signedPdfSha256?: string | null
   sentForSigningAt?: Date | string | null
   signedAt?: Date | string | null
   createdAt?: Date | string
@@ -722,6 +739,7 @@ export type ContractUpdateManyMutationInput = {
   fallbackSignerUserAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fallbackAgbAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  signedPdfSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sentForSigningAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -753,6 +771,7 @@ export type ContractUncheckedUpdateManyInput = {
   fallbackSignerUserAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fallbackAgbAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  signedPdfSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sentForSigningAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -789,6 +808,7 @@ export type ContractCountOrderByAggregateInput = {
   fallbackSignerUserAgent?: Prisma.SortOrder
   fallbackAgbAccepted?: Prisma.SortOrder
   signatureImageUrl?: Prisma.SortOrder
+  signedPdfSha256?: Prisma.SortOrder
   sentForSigningAt?: Prisma.SortOrder
   signedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -823,6 +843,7 @@ export type ContractMaxOrderByAggregateInput = {
   fallbackSignerUserAgent?: Prisma.SortOrder
   fallbackAgbAccepted?: Prisma.SortOrder
   signatureImageUrl?: Prisma.SortOrder
+  signedPdfSha256?: Prisma.SortOrder
   sentForSigningAt?: Prisma.SortOrder
   signedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -853,6 +874,7 @@ export type ContractMinOrderByAggregateInput = {
   fallbackSignerUserAgent?: Prisma.SortOrder
   fallbackAgbAccepted?: Prisma.SortOrder
   signatureImageUrl?: Prisma.SortOrder
+  signedPdfSha256?: Prisma.SortOrder
   sentForSigningAt?: Prisma.SortOrder
   signedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -943,6 +965,7 @@ export type ContractCreateWithoutOfferInput = {
   fallbackSignerUserAgent?: string | null
   fallbackAgbAccepted?: boolean
   signatureImageUrl?: string | null
+  signedPdfSha256?: string | null
   sentForSigningAt?: Date | string | null
   signedAt?: Date | string | null
   createdAt?: Date | string
@@ -974,6 +997,7 @@ export type ContractUncheckedCreateWithoutOfferInput = {
   fallbackSignerUserAgent?: string | null
   fallbackAgbAccepted?: boolean
   signatureImageUrl?: string | null
+  signedPdfSha256?: string | null
   sentForSigningAt?: Date | string | null
   signedAt?: Date | string | null
   createdAt?: Date | string
@@ -1021,6 +1045,7 @@ export type ContractUpdateWithoutOfferInput = {
   fallbackSignerUserAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fallbackAgbAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  signedPdfSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sentForSigningAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1052,6 +1077,7 @@ export type ContractUncheckedUpdateWithoutOfferInput = {
   fallbackSignerUserAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fallbackAgbAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  signedPdfSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sentForSigningAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1083,6 +1109,7 @@ export type ContractCreateWithoutInvoicesInput = {
   fallbackSignerUserAgent?: string | null
   fallbackAgbAccepted?: boolean
   signatureImageUrl?: string | null
+  signedPdfSha256?: string | null
   sentForSigningAt?: Date | string | null
   signedAt?: Date | string | null
   createdAt?: Date | string
@@ -1115,6 +1142,7 @@ export type ContractUncheckedCreateWithoutInvoicesInput = {
   fallbackSignerUserAgent?: string | null
   fallbackAgbAccepted?: boolean
   signatureImageUrl?: string | null
+  signedPdfSha256?: string | null
   sentForSigningAt?: Date | string | null
   signedAt?: Date | string | null
   createdAt?: Date | string
@@ -1161,6 +1189,7 @@ export type ContractUpdateWithoutInvoicesInput = {
   fallbackSignerUserAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fallbackAgbAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  signedPdfSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sentForSigningAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1193,6 +1222,7 @@ export type ContractUncheckedUpdateWithoutInvoicesInput = {
   fallbackSignerUserAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fallbackAgbAccepted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   signatureImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  signedPdfSha256?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sentForSigningAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1255,6 +1285,7 @@ export type ContractSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   fallbackSignerUserAgent?: boolean
   fallbackAgbAccepted?: boolean
   signatureImageUrl?: boolean
+  signedPdfSha256?: boolean
   sentForSigningAt?: boolean
   signedAt?: boolean
   createdAt?: boolean
@@ -1289,6 +1320,7 @@ export type ContractSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   fallbackSignerUserAgent?: boolean
   fallbackAgbAccepted?: boolean
   signatureImageUrl?: boolean
+  signedPdfSha256?: boolean
   sentForSigningAt?: boolean
   signedAt?: boolean
   createdAt?: boolean
@@ -1321,6 +1353,7 @@ export type ContractSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   fallbackSignerUserAgent?: boolean
   fallbackAgbAccepted?: boolean
   signatureImageUrl?: boolean
+  signedPdfSha256?: boolean
   sentForSigningAt?: boolean
   signedAt?: boolean
   createdAt?: boolean
@@ -1353,13 +1386,14 @@ export type ContractSelectScalar = {
   fallbackSignerUserAgent?: boolean
   fallbackAgbAccepted?: boolean
   signatureImageUrl?: boolean
+  signedPdfSha256?: boolean
   sentForSigningAt?: boolean
   signedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ContractOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "offerId" | "contractNo" | "isManual" | "manualPayload" | "status" | "signatureProvider" | "deletedAt" | "deletedBy" | "version" | "docusignEnvelopeId" | "docusignStatus" | "contractPdfUrl" | "signedPdfUrl" | "auditTrailUrl" | "signingUrl" | "signatureTokenHash" | "signatureTokenExpiresAt" | "fallbackSignedName" | "fallbackSignedAt" | "fallbackSignerIp" | "fallbackSignerUserAgent" | "fallbackAgbAccepted" | "signatureImageUrl" | "sentForSigningAt" | "signedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["contract"]>
+export type ContractOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "offerId" | "contractNo" | "isManual" | "manualPayload" | "status" | "signatureProvider" | "deletedAt" | "deletedBy" | "version" | "docusignEnvelopeId" | "docusignStatus" | "contractPdfUrl" | "signedPdfUrl" | "auditTrailUrl" | "signingUrl" | "signatureTokenHash" | "signatureTokenExpiresAt" | "fallbackSignedName" | "fallbackSignedAt" | "fallbackSignerIp" | "fallbackSignerUserAgent" | "fallbackAgbAccepted" | "signatureImageUrl" | "signedPdfSha256" | "sentForSigningAt" | "signedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["contract"]>
 export type ContractInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   offer?: boolean | Prisma.OfferDefaultArgs<ExtArgs>
   invoices?: boolean | Prisma.Contract$invoicesArgs<ExtArgs>
@@ -1403,6 +1437,7 @@ export type $ContractPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     fallbackSignerUserAgent: string | null
     fallbackAgbAccepted: boolean
     signatureImageUrl: string | null
+    signedPdfSha256: string | null
     sentForSigningAt: Date | null
     signedAt: Date | null
     createdAt: Date
@@ -1856,6 +1891,7 @@ export interface ContractFieldRefs {
   readonly fallbackSignerUserAgent: Prisma.FieldRef<"Contract", 'String'>
   readonly fallbackAgbAccepted: Prisma.FieldRef<"Contract", 'Boolean'>
   readonly signatureImageUrl: Prisma.FieldRef<"Contract", 'String'>
+  readonly signedPdfSha256: Prisma.FieldRef<"Contract", 'String'>
   readonly sentForSigningAt: Prisma.FieldRef<"Contract", 'DateTime'>
   readonly signedAt: Prisma.FieldRef<"Contract", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Contract", 'DateTime'>

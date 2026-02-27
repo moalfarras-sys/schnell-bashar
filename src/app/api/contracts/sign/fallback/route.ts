@@ -1,4 +1,5 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createHash } from "node:crypto";
 
 import path from "path";
 import { mkdirSync, writeFileSync } from "fs";
@@ -77,6 +78,7 @@ export async function POST(req: NextRequest) {
             grossCents: true,
             order: {
               select: {
+                id: true,
                 orderNo: true,
                 publicId: true,
               },
@@ -128,6 +130,14 @@ export async function POST(req: NextRequest) {
         signatureTokenExpiresAt: null,
       },
     });
+    if (contract.offer.order?.id) {
+      await prisma.quote.updateMany({
+        where: { orderId: contract.offer.order.id },
+        data: {
+          status: "CONFIRMED",
+        },
+      });
+    }
 
     let signedPdfUrl: string | null = null;
     let signedPdfStorage: "remote" | "local" | "none" = "none";
@@ -227,6 +237,7 @@ export async function POST(req: NextRequest) {
         where: { id: contract.id },
         data: {
           signedPdfUrl,
+          signedPdfSha256: createHash("sha256").update(signedPdfBuffer).digest("hex"),
         },
       });
 

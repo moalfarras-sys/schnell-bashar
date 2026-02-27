@@ -9,10 +9,15 @@ export const metadata = {
 export default async function BookingPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ context?: string }>;
+  searchParams?: Promise<{ context?: string; quoteId?: string }>;
 }) {
   const sp = (await searchParams) ?? {};
-  return <BookingV2Client initialContext={String(sp.context ?? "")} />;
+  return (
+    <BookingV2Client
+      initialContext={String(sp.context ?? "")}
+      initialQuoteId={String(sp.quoteId ?? "")}
+    />
+  );
 }
 
 

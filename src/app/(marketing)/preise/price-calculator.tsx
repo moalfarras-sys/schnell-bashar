@@ -52,14 +52,36 @@ type ApiResponse = {
   breakdown: Record<string, unknown>;
 };
 
+type QuoteSnapshotResponse = {
+  snapshot: {
+    quoteId: string;
+    draft: {
+      serviceContext: "MOVING" | "MONTAGE" | "ENTSORGUNG" | "SPEZIALSERVICE" | "COMBO";
+      packageSpeed: SpeedType;
+      volumeM3: number;
+      floors: number;
+      hasElevator: boolean;
+      needNoParkingZone: boolean;
+      fromAddress?: { displayName: string };
+      toAddress?: { displayName: string };
+      selectedServiceOptions: Array<{ code: string; qty: number }>;
+      extras: {
+        packing: boolean;
+        stairs: boolean;
+        express: boolean;
+        noParkingZone: boolean;
+        disposalBags: boolean;
+      };
+    };
+  };
+};
+
 const serviceLabels: Record<ServiceKind, string> = {
   UMZUG: "Umzug",
   MONTAGE: "Montage",
   ENTSORGUNG: "Entsorgung",
   SPECIAL: "Spezialservice",
 };
-
-const INQUIRY_STORAGE_KEY = "ssu_inquiry";
 
 function eur(cents: number) {
   return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(cents / 100);
@@ -137,6 +159,7 @@ export function PriceCalculator({
   const [calcError, setCalcError] = useState<string | null>(null);
   const [server, setServer] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [handoffLoading, setHandoffLoading] = useState(false);
 
   const hasMoving = selectedServices.includes("UMZUG");
   const hasMontageLike = selectedServices.includes("MONTAGE") || selectedServices.includes("SPECIAL");
@@ -227,6 +250,46 @@ export function PriceCalculator({
   ]);
 
   const showRouteHint = hasMoving && (!fromAddress.trim() || !toAddress.trim());
+
+  useEffect(() => {
+    const quoteId = sp.get("quoteId");
+    if (!quoteId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/quotes/${encodeURIComponent(quoteId)}`, { cache: "no-store" });
+        if (!res.ok) return;
+        const json = (await res.json()) as QuoteSnapshotResponse;
+        const draft = json.snapshot?.draft;
+        if (!draft || cancelled) return;
+
+        const contextServices: Record<QuoteSnapshotResponse["snapshot"]["draft"]["serviceContext"], ServiceKind[]> = {
+          MOVING: ["UMZUG"],
+          MONTAGE: ["MONTAGE"],
+          ENTSORGUNG: ["ENTSORGUNG"],
+          SPEZIALSERVICE: ["SPECIAL"],
+          COMBO: ["UMZUG", "ENTSORGUNG"],
+        };
+        setSelectedServices(contextServices[draft.serviceContext] ?? ["UMZUG"]);
+        setSpeed(draft.packageSpeed);
+        setVolumeM3(draft.volumeM3);
+        setFloors(draft.floors);
+        setHasElevator(draft.hasElevator);
+        setNeedNoParkingZone(draft.needNoParkingZone);
+        setFromAddress(draft.fromAddress?.displayName ?? "");
+        setToAddress(draft.toAddress?.displayName ?? "");
+        setSelectedServiceOptions(
+          Object.fromEntries((draft.selectedServiceOptions ?? []).map((item) => [item.code, item.qty])),
+        );
+      } catch {
+        // Intentionally silent: quote restore is best-effort on calculator page.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [sp]);
 
   return (
     <div className="rounded-3xl border-2 border-slate-300 bg-[color:var(--surface-elevated)] p-6 shadow-lg sm:p-8 dark:border-slate-700 dark:bg-slate-900/80">
@@ -417,25 +480,13 @@ export function PriceCalculator({
         <Button
           size="lg"
           className="flex-1 gap-2"
-          onClick={() => {
+          onClick={async () => {
             if (hasMoving && (!fromAddress.trim() || !toAddress.trim())) {
               setCalcError("Bitte Start- und Zieladresse ergänzen.");
               return;
             }
-
-            sessionStorage.setItem(
-              INQUIRY_STORAGE_KEY,
-              JSON.stringify({
-                serviceType,
-                serviceCart,
-                speed,
-                volumeM3,
-                fromAddress,
-                toAddress,
-                selectedServiceOptions,
-                estimate: server,
-              }),
-            );
+            setHandoffLoading(true);
+            setCalcError(null);
 
             const params = new URLSearchParams();
             params.set("speed", speed);
@@ -448,13 +499,85 @@ export function PriceCalculator({
               .map(([code, qty]) => `${code}:${qty}`)
               .join(",");
             if (options) params.set("options", options);
+            try {
+              const context = contextFromServices(selectedServices);
+              const contextMap: Record<string, "MOVING" | "MONTAGE" | "ENTSORGUNG" | "SPEZIALSERVICE" | "COMBO"> = {
+                STANDARD: "MOVING",
+                MONTAGE: "MONTAGE",
+                ENTSORGUNG: "ENTSORGUNG",
+                SPECIAL: "SPEZIALSERVICE",
+              };
+              const serviceContext =
+                serviceType === "KOMBI" ? "COMBO" : (contextMap[context] ?? "MOVING");
+              const fromPostalCode = fromAddress.match(/\b\d{5}\b/)?.[0];
+              const toPostalCode = toAddress.match(/\b\d{5}\b/)?.[0];
+              if ((serviceContext === "MOVING" || serviceContext === "COMBO") && (!fromPostalCode || !toPostalCode)) {
+                throw new Error("Bitte geben Sie in beiden Adressen eine gültige PLZ an.");
+              }
+              if (
+                (serviceContext === "MONTAGE" || serviceContext === "ENTSORGUNG" || serviceContext === "SPEZIALSERVICE") &&
+                toAddress.trim() &&
+                !toPostalCode
+              ) {
+                throw new Error("Bitte geben Sie in der Einsatzadresse eine gültige PLZ an.");
+              }
 
-            router.push(`/booking?${params.toString()}`);
+              const quoteRes = await fetch("/api/quotes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  draft: {
+                    serviceContext,
+                    packageSpeed: speed,
+                    volumeM3,
+                    floors,
+                    hasElevator,
+                    needNoParkingZone,
+                    fromAddress: fromAddress.trim()
+                      ? {
+                          displayName: fromAddress.trim(),
+                          postalCode: fromPostalCode || "",
+                          city: "Berlin",
+                          street: fromAddress.trim(),
+                        }
+                      : undefined,
+                    toAddress: toAddress.trim()
+                      ? {
+                          displayName: toAddress.trim(),
+                          postalCode: toPostalCode || "",
+                          city: "Berlin",
+                          street: toAddress.trim(),
+                        }
+                      : undefined,
+                    selectedServiceOptions: Object.entries(selectedServiceOptions)
+                      .filter(([, qty]) => qty > 0)
+                      .map(([code, qty]) => ({ code, qty })),
+                    extras: {
+                      packing: false,
+                      stairs: floors > 0 && !hasElevator,
+                      express: speed === "EXPRESS",
+                      noParkingZone: needNoParkingZone,
+                      disposalBags: false,
+                    },
+                  },
+                }),
+              });
+              const quoteJson = (await quoteRes.json()) as { quoteId?: string; error?: string };
+              if (!quoteRes.ok || !quoteJson.quoteId) {
+                throw new Error(quoteJson.error || "Angebot konnte nicht übernommen werden.");
+              }
+              params.set("quoteId", quoteJson.quoteId);
+              router.push(`/booking?${params.toString()}`);
+            } catch (error) {
+              setCalcError(error instanceof Error ? error.message : "Angebot konnte nicht übernommen werden.");
+            } finally {
+              setHandoffLoading(false);
+            }
           }}
-          disabled={loading}
+          disabled={loading || handoffLoading}
         >
           <CalendarDays className="h-5 w-5" />
-          Jetzt buchen
+          {handoffLoading ? "Angebot wird übernommen..." : "Jetzt buchen"}
           <ArrowRight className="h-4 w-4" />
         </Button>
         <a href="tel:+491729573681" className="w-full sm:w-auto">

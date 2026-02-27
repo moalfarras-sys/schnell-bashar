@@ -33,6 +33,7 @@ export type ScheduleState = {
 };
 
 export type BookingDraft = {
+  quoteId?: string;
   service: BookingService;
   from?: AddressOption;
   to?: AddressOption;
