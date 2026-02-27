@@ -1,10 +1,6 @@
-const CACHE_NAME = "ssu-admin-v1";
-const CORE_ASSETS = ["/admin/", "/admin/login", "/admin/manifest.webmanifest"];
+const CACHE_NAME = "ssu-admin-v2";
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS)).catch(() => Promise.resolve()),
-  );
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 
@@ -17,25 +13,5 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-self.addEventListener("fetch", (event) => {
-  const { request } = event;
-  if (request.method !== "GET") return;
-
-  const url = new URL(request.url);
-  if (!url.pathname.startsWith("/admin")) return;
-
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)).catch(() => {});
-          return response;
-        })
-        .catch(() => caches.match("/admin/login"));
-    }),
-  );
-});
-
+// Intentionally no fetch caching strategy here.
+// Admin pages are always fetched from network to prevent stale chunk/version mismatch after deploy.
