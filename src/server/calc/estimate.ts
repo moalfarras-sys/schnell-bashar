@@ -387,12 +387,21 @@ export function estimateOrder(
   }, 0);
 
   subtotalCents += serviceOptionsCents;
+  const missingAddonConfigs: string[] = [];
   const addonsCents = addons.reduce((sum, addon) => {
     const optionCode = ADDON_OPTION_CODE[addon];
     const option = byServiceCode.get(optionCode);
-    if (!option) return sum;
+    if (!option) {
+      missingAddonConfigs.push(addon);
+      return sum;
+    }
     return sum + Math.max(0, option.defaultPriceCents);
   }, 0);
+  if (missingAddonConfigs.length > 0) {
+    throw new Error(
+      `Preisregel für Zusatzleistungen fehlt: ${missingAddonConfigs.join(", ")}. Bitte in Admin > Services & Promo-Regeln hinterlegen.`,
+    );
+  }
   subtotalCents += addonsCents;
   subtotalCents = Math.max(0, subtotalCents);
 
