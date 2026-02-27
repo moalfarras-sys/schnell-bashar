@@ -143,7 +143,7 @@ export function SmartAddressSection(props: {
   return (
     <section className="space-y-3">
       <div>
-        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">2. Smart-Adresse</h2>
+        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">2. Intelligente Adresse</h2>
         <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
           Adresse wird automatisch erkannt. Distanz wird live berechnet.
         </p>
@@ -214,4 +214,3 @@ export function SmartAddressSection(props: {
     </section>
   );
 }
-

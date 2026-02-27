@@ -58,16 +58,16 @@ const steps = [
 ];
 
 const services = [
-  { icon: Refrigerator, name: "Elektrogerät entsorgen", price: "ab 59 â‚¬ / Stück", desc: "Kühlschrank, Waschmaschine, Trockner", tag: "Beliebt" },
-  { icon: Package, name: "Sperrmüll-Paket Klein", price: "ab 99 â‚¬", desc: "Bis 1 m³ - einzelne Möbelstücke" },
-  { icon: Package, name: "Sperrmüll-Paket Mittel", price: "ab 199 â‚¬", desc: "1-3 m³ - nach einem Zimmerumbau" },
-  { icon: Sofa, name: "Einzelmöbel Abholung", price: "ab 39 â‚¬ / Stück", desc: "Sofa, Schrank, Tisch, Matratze" },
-  { icon: Warehouse, name: "Kellerentrümpelung", price: "ab 299 â‚¬", desc: "Komplette Räumung des Kellers" },
-  { icon: Home, name: "Dachbodenentrümpelung", price: "ab 249 â‚¬", desc: "Räumung des gesamten Dachbodens" },
-  { icon: Home, name: "Wohnungsauflösung", price: "ab 15 â‚¬ / m³", desc: "Teilweise oder komplette Auflösung" },
-  { icon: TreePine, name: "Gartenentsorgung", price: "ab 149 â‚¬", desc: "Grünschnitt, Gartenmöbel, Abfälle" },
-  { icon: Building2, name: "Büroauflösung", price: "ab 25 â‚¬ / m³", desc: "Büromöbel, Technik, Akten" },
-  { icon: Home, name: "Komplette Haushaltsauflösung", price: "ab 19 â‚¬ / m³", desc: "Vollständige Auflösung inkl. Besenreinigung" },
+  { icon: Refrigerator, name: "Elektrogerät entsorgen", price: "ab 59 € / Stück", desc: "Kühlschrank, Waschmaschine, Trockner", tag: "Beliebt" },
+  { icon: Package, name: "Sperrmüll-Paket Klein", price: "ab 99 €", desc: "Bis 1 m³ - einzelne Möbelstücke" },
+  { icon: Package, name: "Sperrmüll-Paket Mittel", price: "ab 199 €", desc: "1-3 m³ - nach einem Zimmerumbau" },
+  { icon: Sofa, name: "Einzelmöbel Abholung", price: "ab 39 € / Stück", desc: "Sofa, Schrank, Tisch, Matratze" },
+  { icon: Warehouse, name: "Kellerentrümpelung", price: "ab 299 €", desc: "Komplette Räumung des Kellers" },
+  { icon: Home, name: "Dachbodenentrümpelung", price: "ab 249 €", desc: "Räumung des gesamten Dachbodens" },
+  { icon: Home, name: "Wohnungsauflösung", price: "ab 15 € / m³", desc: "Teilweise oder komplette Auflösung" },
+  { icon: TreePine, name: "Gartenentsorgung", price: "ab 149 €", desc: "Grünschnitt, Gartenmöbel, Abfälle" },
+  { icon: Building2, name: "Büroauflösung", price: "ab 25 € / m³", desc: "Büromöbel, Technik, Akten" },
+  { icon: Home, name: "Komplette Haushaltsauflösung", price: "ab 19 € / m³", desc: "Vollständige Auflösung inkl. Besenreinigung" },
 ];
 
 const trustItems = [

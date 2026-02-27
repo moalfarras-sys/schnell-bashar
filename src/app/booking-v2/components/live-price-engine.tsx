@@ -46,7 +46,7 @@ export function LivePriceEngineCard(props: { price: PriceOutput; distanceKm: num
     <aside className={`${styles.stickyCard} ${styles.glass} rounded-3xl p-6`}>
       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-cyan-700 dark:text-cyan-200">
         <Wallet className="h-3.5 w-3.5" />
-        Live-Preisengine
+        Echtzeit-Preismotor
       </div>
       <motion.div key={props.price.totalPrice} initial={{ opacity: 0.7, y: 4 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-4xl font-black text-slate-900 dark:text-white">
         <AnimatedCurrency value={props.price.totalPrice} />
@@ -77,12 +77,12 @@ export function LivePriceEngineCard(props: { price: PriceOutput; distanceKm: num
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900/45">
           <Gauge className="h-4 w-4 text-cyan-700 dark:text-cyan-300" />
-          <span className="font-semibold text-slate-700 dark:text-slate-200">Service-Tier:</span>
+          <span className="font-semibold text-slate-700 dark:text-slate-200">Leistungsstufe:</span>
           <span className="ml-auto font-bold text-slate-900 dark:text-white">{props.price.tier}</span>
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900/45">
           <Sparkles className="h-4 w-4 text-cyan-700 dark:text-cyan-300" />
-          <span className="font-semibold text-slate-700 dark:text-slate-200">Live-Daten:</span>
+          <span className="font-semibold text-slate-700 dark:text-slate-200">Echtzeitdaten:</span>
           <span className="ml-auto font-bold text-slate-900 dark:text-white">{props.distanceKm.toFixed(1)} km · {props.volumeM3} m³</span>
         </div>
       </div>

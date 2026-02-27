@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+﻿import { test, expect } from "@playwright/test";
 
 const storageKey = "ssu_wizard_v2_default";
 
@@ -81,14 +81,14 @@ async function seedWizardAddresses(page: import("@playwright/test").Page) {
 
 test.describe("Booking wizard smoke", () => {
   test("shows step-1 validation when required addresses are missing", async ({ page }) => {
-    await page.goto("/buchen");
+    await page.goto("/booking-v2");
     await page.getByRole("button", { name: "Weiter" }).click();
     await expect(page.getByText("Bitte prüfen Sie die markierten Angaben:")).toBeVisible();
   });
 
   test("details step includes package and offer code controls", async ({ page }) => {
     await seedWizardAddresses(page);
-    await page.goto("/buchen");
+    await page.goto("/booking-v2");
 
     await page.getByRole("button", { name: "Weiter" }).click();
     await expect(page.getByText("Paket wählen")).toBeVisible();
@@ -102,7 +102,7 @@ test.describe("Booking wizard smoke", () => {
 
   test("finish step blocks submission and highlights invalid contact fields", async ({ page }) => {
     await seedWizardAddresses(page);
-    await page.goto("/buchen");
+    await page.goto("/booking-v2");
 
     await page.getByRole("button", { name: "Weiter" }).click();
     await page.getByRole("button", { name: "Weiter" }).click();
@@ -116,7 +116,7 @@ test.describe("Booking wizard smoke", () => {
   test("mobile layout keeps sticky bottom actions visible", async ({ browser }) => {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const page = await context.newPage();
-    await page.goto("/buchen");
+    await page.goto("/booking-v2");
 
     await expect(page.getByRole("button", { name: "Weiter" }).last()).toBeVisible();
     await expect(page.getByRole("button", { name: "Zurück" }).last()).toBeVisible();

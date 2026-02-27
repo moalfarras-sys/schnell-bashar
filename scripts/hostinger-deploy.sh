@@ -31,7 +31,7 @@ docker compose exec -T web npm run accounting:backfill:invoices || true
 
 echo "==> Smoke checks"
 wget -S --spider "https://${DOMAIN}/"
-wget -S --spider "https://${DOMAIN}/buchen"
+wget -S --spider "https://${DOMAIN}/booking-v2"
 wget -S --spider "https://${DOMAIN}/admin/login"
 wget -qO- "https://${DOMAIN}/api/availability/dates?from=2026-03-01&to=2026-03-05&speed=STANDARD&volumeM3=10" > /tmp/availability-dates.json
 wget -qO- "https://${DOMAIN}/api/availability/slots?date=2026-03-03&speed=STANDARD&volumeM3=10" > /tmp/availability-slots.json

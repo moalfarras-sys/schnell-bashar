@@ -2,7 +2,7 @@ import { BookingV2Client } from "@/app/booking-v2/booking-v2-client";
 
 export const metadata = {
   title: "Buchung | Schnell Sicher Umzug",
-  description: "Modernes Buchungssystem mit Live-Kalkulation, klaren Schritten und transparenter Preisübersicht.",
+  description: "Modernes Buchungssystem mit Echtzeit-Kalkulation, klaren Schritten und transparenter Preisübersicht.",
 };
 
 export default async function BookingV2Page({

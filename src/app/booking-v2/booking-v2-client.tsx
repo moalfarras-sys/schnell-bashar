@@ -96,7 +96,7 @@ export function BookingV2Client(props: { initialContext?: string }) {
             <div className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-700 dark:text-cyan-200">Buchungsportal</div>
             <h1 className="mt-1 text-3xl font-black text-slate-900 dark:text-white sm:text-5xl">Modernes Buchungssystem</h1>
             <p className="mt-2 max-w-3xl text-sm font-medium text-slate-600 dark:text-slate-300 sm:text-base">
-              Moderne Glas-Oberfläche, intelligente Schritte und Live-Kalkulation in Echtzeit für Umzug, Entsorgung und Montage.
+              Moderne Glas-Oberfläche, intelligente Schritte und Echtzeit-Kalkulation für Umzug, Entsorgung und Montage.
             </p>
             <div className="mt-5">
               <StepNavigation current={step} onChange={goStep} />

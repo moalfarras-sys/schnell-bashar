@@ -326,7 +326,7 @@ export function PriceCalculator({
                 <div>
                   <div className="text-sm font-bold">{opt.nameDe}</div>
                   <div className="text-xs text-slate-500 dark:text-slate-400">
-                    ab {Math.max(1, Math.round(opt.defaultPriceCents / 100))} â‚¬
+                    ab {Math.max(1, Math.round(opt.defaultPriceCents / 100))} €
                   </div>
                 </div>
                 {opt.requiresQuantity ? (

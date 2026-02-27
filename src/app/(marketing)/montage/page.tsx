@@ -56,17 +56,17 @@ const steps = [
 ];
 
 const services = [
-  { icon: CookingPot, name: "Küchenmontage komplett", price: "ab 299 â‚¬", tag: "Beliebt" },
-  { icon: Package, name: "Küchenmontage einfach (IKEA)", price: "ab 149 â‚¬" },
-  { icon: WashingMachine, name: "Waschmaschine anschließen", price: "ab 69 â‚¬" },
-  { icon: Refrigerator, name: "Kühlschrank aufstellen", price: "ab 49 â‚¬" },
-  { icon: Wrench, name: "Geschirrspüler anschließen", price: "ab 79 â‚¬" },
-  { icon: CookingPot, name: "Herd / Backofen anschließen", price: "ab 89 â‚¬" },
-  { icon: Package, name: "Kleiderschrank aufbauen", price: "ab 89 â‚¬" },
-  { icon: Package, name: "Bett aufbauen", price: "ab 69 â‚¬" },
-  { icon: Package, name: "Regal aufbauen", price: "ab 39 â‚¬" },
-  { icon: Monitor, name: "TV-Wandhalterung montieren", price: "ab 59 â‚¬" },
-  { icon: Wrench, name: "Sonstige Montagearbeiten", price: "ab 65 â‚¬ / Std." },
+  { icon: CookingPot, name: "Küchenmontage komplett", price: "ab 299 €", tag: "Beliebt" },
+  { icon: Package, name: "Küchenmontage einfach (IKEA)", price: "ab 149 €" },
+  { icon: WashingMachine, name: "Waschmaschine anschließen", price: "ab 69 €" },
+  { icon: Refrigerator, name: "Kühlschrank aufstellen", price: "ab 49 €" },
+  { icon: Wrench, name: "Geschirrspüler anschließen", price: "ab 79 €" },
+  { icon: CookingPot, name: "Herd / Backofen anschließen", price: "ab 89 €" },
+  { icon: Package, name: "Kleiderschrank aufbauen", price: "ab 89 €" },
+  { icon: Package, name: "Bett aufbauen", price: "ab 69 €" },
+  { icon: Package, name: "Regal aufbauen", price: "ab 39 €" },
+  { icon: Monitor, name: "TV-Wandhalterung montieren", price: "ab 59 €" },
+  { icon: Wrench, name: "Sonstige Montagearbeiten", price: "ab 65 € / Std." },
 ];
 
 const trustItems = [
