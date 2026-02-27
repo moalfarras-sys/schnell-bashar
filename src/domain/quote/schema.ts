@@ -86,12 +86,21 @@ export const QuoteDraftSchema = z
     selectedServiceOptions: z.array(QuoteServiceOptionSchema).default([]),
   })
   .superRefine((value, ctx) => {
-    if ((value.serviceContext === "MOVING" || value.serviceContext === "COMBO") && (!value.fromAddress || !value.toAddress)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Für Umzug/Kombi werden Start- und Zieladresse benötigt.",
-        path: ["fromAddress"],
-      });
+    if (value.serviceContext === "MOVING" || value.serviceContext === "COMBO") {
+      if (!value.fromAddress) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Bitte geben Sie eine Startadresse an.",
+          path: ["fromAddress"],
+        });
+      }
+      if (!value.toAddress) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Bitte geben Sie eine Zieladresse an.",
+          path: ["toAddress"],
+        });
+      }
     }
     if (
       (value.serviceContext === "MONTAGE" ||
