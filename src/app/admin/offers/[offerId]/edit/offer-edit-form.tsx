@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { Loader2 } from "lucide-react";
 import { Container } from "@/components/container";
+import { AddressAutocompleteInput } from "@/components/address/address-autocomplete-input";
 import { Button } from "@/components/ui/button";
 
 interface OfferData {
@@ -189,11 +190,12 @@ export function OfferEditForm({ offer }: { offer: OfferData }) {
               </div>
               <div>
                 <label className={labelCls}>Adresse</label>
-                <input
-                  type="text"
+                <AddressAutocompleteInput
                   value={customerAddress}
-                  onChange={(e) => setCustomerAddress(e.target.value)}
-                  className={inputCls}
+                  onValueChange={setCustomerAddress}
+                  onSelect={(next) => setCustomerAddress(next?.displayName ?? "")}
+                  inputClassName={inputCls}
+                  placeholder="Straße, Hausnummer, PLZ, Ort"
                 />
               </div>
             </div>

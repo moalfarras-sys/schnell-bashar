@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Plus, Trash2 } from "lucide-react";
+import { AddressAutocompleteInput } from "@/components/address/address-autocomplete-input";
 import { Button } from "@/components/ui/button";
 
 function formatEuro(cents: number): string {
@@ -203,11 +204,12 @@ export function NewInvoiceForm() {
           </div>
           <div>
             <label className={labelCls}>Adresse</label>
-            <input
-              type="text"
+            <AddressAutocompleteInput
               value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className={inputCls}
+              onValueChange={setAddress}
+              onSelect={(next) => setAddress(next?.displayName ?? "")}
+              inputClassName={inputCls}
+              placeholder="Straße, Hausnummer, PLZ, Ort"
             />
           </div>
         </div>

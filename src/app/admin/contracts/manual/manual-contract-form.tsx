@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Container } from "@/components/container";
+import { AddressAutocompleteInput } from "@/components/address/address-autocomplete-input";
 import { Button } from "@/components/ui/button";
 
 function euroToCents(euro: string): number {
@@ -132,7 +133,13 @@ export function ManualContractForm() {
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs font-bold text-slate-600">Adresse</label>
-            <input className={inputCls} value={customerAddress} onChange={(e) => setCustomerAddress(e.target.value)} />
+            <AddressAutocompleteInput
+              value={customerAddress}
+              onValueChange={setCustomerAddress}
+              onSelect={(next) => setCustomerAddress(next?.displayName ?? "")}
+              inputClassName={inputCls}
+              placeholder="Straße, Hausnummer, PLZ, Ort"
+            />
           </div>
           <div>
             <label className="mb-1 block text-xs font-bold text-slate-600">Termin</label>
@@ -140,11 +147,23 @@ export function ManualContractForm() {
           </div>
           <div>
             <label className="mb-1 block text-xs font-bold text-slate-600">Von</label>
-            <input className={inputCls} value={moveFrom} onChange={(e) => setMoveFrom(e.target.value)} />
+            <AddressAutocompleteInput
+              value={moveFrom}
+              onValueChange={setMoveFrom}
+              onSelect={(next) => setMoveFrom(next?.displayName ?? "")}
+              inputClassName={inputCls}
+              placeholder="Startadresse"
+            />
           </div>
           <div>
             <label className="mb-1 block text-xs font-bold text-slate-600">Nach</label>
-            <input className={inputCls} value={moveTo} onChange={(e) => setMoveTo(e.target.value)} />
+            <AddressAutocompleteInput
+              value={moveTo}
+              onValueChange={setMoveTo}
+              onSelect={(next) => setMoveTo(next?.displayName ?? "")}
+              inputClassName={inputCls}
+              placeholder="Zieladresse"
+            />
           </div>
         </div>
 
