@@ -23,6 +23,10 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "SSU Admin",
   },
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "default",
+  },
 };
 
 export const viewport: Viewport = {
