@@ -133,7 +133,7 @@ export async function POST(req: Request) {
   };
 
   try {
-    const { result } = await calculateQuote(draft);
+    const { result } = await calculateQuote(draft, { allowDistanceFallback: true });
     return NextResponse.json({
       serviceCart: result.serviceCart,
       servicesBreakdown: result.servicesBreakdown,

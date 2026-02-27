@@ -61,6 +61,13 @@ function packageSet(
 export async function calculateQuote(input: QuoteDraft): Promise<{
   draft: QuoteDraft;
   result: QuoteResult;
+}>;
+export async function calculateQuote(
+  input: QuoteDraft,
+  options?: { allowDistanceFallback?: boolean },
+): Promise<{
+  draft: QuoteDraft;
+  result: QuoteResult;
 }> {
   const parsed = QuoteDraftSchema.parse(input);
   const wizardPayload = quoteDraftToWizardPayload(parsed);
@@ -101,7 +108,7 @@ export async function calculateQuote(input: QuoteDraft): Promise<{
         text: parsed.toAddress.displayName,
       },
       profile: "driving-car",
-      allowFallback: false,
+      allowFallback: options?.allowDistanceFallback ?? false,
     });
     distanceKm = route.distanceKm;
     distanceSource = route.source;
