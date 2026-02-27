@@ -38,6 +38,8 @@ export type BookingDraft = {
   from?: AddressOption;
   to?: AddressOption;
   volumeM3: number;
+  floors: number;
+  hasElevator: boolean;
   preset: "studio" | "2zimmer" | "3zimmer" | "haus";
   extras: ExtrasState;
   contact: ContactState;

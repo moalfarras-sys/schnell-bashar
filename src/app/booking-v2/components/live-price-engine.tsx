@@ -52,7 +52,7 @@ export function LivePriceEngineCard(props: {
     const b = props.calc?.breakdown;
     return [
       { label: "Zwischensumme", value: b?.subtotalCents ?? 0 },
-      { label: "Serviceoptionen", value: b?.serviceOptionsCents ?? 0 },
+      { label: "Serviceoptionen", value: (b?.serviceOptionsCents ?? 0) + (b?.addonsCents ?? 0) },
       { label: "Fahrtkosten", value: b?.driveChargeCents ?? 0 },
       { label: "Rabatt", value: -(b?.discountCents ?? 0) },
     ];

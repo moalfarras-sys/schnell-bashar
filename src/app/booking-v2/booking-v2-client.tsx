@@ -68,6 +68,8 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
             : "MOVING",
     quoteId: initialQuoteId || undefined,
     volumeM3: 24,
+    floors: 0,
+    hasElevator: false,
     preset: "2zimmer",
     extras: {
       packing: false,
@@ -124,8 +126,8 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
                 : "MOVING",
         packageSpeed: draft.extras.express ? "EXPRESS" : draft.schedule.speed,
         volumeM3: draft.volumeM3,
-        floors: draft.extras.stairs ? 2 : 0,
-        hasElevator: false,
+        floors: draft.floors,
+        hasElevator: draft.hasElevator,
         needNoParkingZone: draft.extras.noParkingZone,
         fromAddress: draft.from,
         toAddress: draft.to,
@@ -175,6 +177,8 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
               serviceContext: "MOVING" | "MONTAGE" | "ENTSORGUNG" | "SPEZIALSERVICE" | "COMBO";
               packageSpeed: "ECONOMY" | "STANDARD" | "EXPRESS";
               volumeM3: number;
+              floors: number;
+              hasElevator: boolean;
               fromAddress?: BookingDraft["from"];
               toAddress?: BookingDraft["to"];
               extras: BookingDraft["extras"];
@@ -206,6 +210,8 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
           quoteId: json.snapshot!.quoteId,
           service: mapService[json.snapshot!.draft.serviceContext] ?? prev.service,
           volumeM3: json.snapshot!.draft.volumeM3 ?? prev.volumeM3,
+          floors: json.snapshot!.draft.floors ?? prev.floors,
+          hasElevator: json.snapshot!.draft.hasElevator ?? prev.hasElevator,
           from: json.snapshot!.draft.fromAddress ?? prev.from,
           to: json.snapshot!.draft.toAddress ?? prev.to,
           extras: json.snapshot!.draft.extras ?? prev.extras,
@@ -284,8 +290,8 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
             serviceCart,
             speed: draft.extras.express ? "EXPRESS" : draft.schedule.speed,
             volumeM3: draft.volumeM3,
-            floors: draft.extras.stairs ? 2 : 0,
-            hasElevator: false,
+            floors: draft.floors,
+            hasElevator: draft.hasElevator,
             needNoParkingZone: draft.extras.noParkingZone,
             addons,
             fromAddressObject: draft.from,
@@ -319,6 +325,8 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
     draft.from?.displayName,
     draft.to?.displayName,
     draft.volumeM3,
+    draft.floors,
+    draft.hasElevator,
     draft.extras.packing,
     draft.extras.stairs,
     draft.extras.express,
@@ -385,8 +393,8 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
 
       const access = {
         propertyType: "apartment" as const,
-        floor: draft.extras.stairs ? 2 : 0,
-        elevator: "none" as const,
+        floor: draft.floors,
+        elevator: draft.hasElevator ? ("small" as const) : ("none" as const),
         stairs: draft.extras.stairs ? ("few" as const) : ("none" as const),
         parking: draft.extras.noParkingZone ? ("hard" as const) : ("easy" as const),
         needNoParkingZone: draft.extras.noParkingZone,
@@ -548,7 +556,20 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
                   ) : null}
 
                   {step === 3 ? (
-                    <ExtrasSection value={draft.extras} onChange={(extras) => setDraft((prev) => ({ ...prev, extras }))} />
+                    <ExtrasSection
+                      value={draft.extras}
+                      onChange={(extras) =>
+                        setDraft((prev) => {
+                          const nextFloors = extras.stairs
+                            ? prev.floors > 0
+                              ? prev.floors
+                              : 2
+                            : 0;
+                          const nextElevator = extras.stairs ? false : prev.hasElevator;
+                          return { ...prev, extras, floors: nextFloors, hasElevator: nextElevator };
+                        })
+                      }
+                    />
                   ) : null}
 
                   {step === 4 ? (

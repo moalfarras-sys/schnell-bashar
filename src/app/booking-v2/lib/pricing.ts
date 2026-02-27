@@ -35,6 +35,7 @@ export type PriceCalcResponse = {
     driveChargeCents?: number;
     subtotalCents?: number;
     serviceOptionsCents?: number;
+    addonsCents?: number;
     minimumOrderAppliedCents?: number;
     discountCents?: number;
     totalCents?: number;

@@ -239,6 +239,18 @@ export async function calculateQuote(
     computedAt: new Date().toISOString(),
     serviceCart: cart,
     servicesBreakdown,
+    breakdown: {
+      laborHours: selectedEstimate.breakdown.laborHours,
+      distanceKm: selectedEstimate.breakdown.distanceKm,
+      distanceSource: selectedEstimate.breakdown.distanceSource,
+      driveChargeCents: selectedEstimate.breakdown.driveChargeCents,
+      subtotalCents: selectedEstimate.breakdown.subtotalCents,
+      serviceOptionsCents: selectedEstimate.breakdown.serviceOptionsCents,
+      addonsCents: selectedEstimate.breakdown.addonsCents,
+      minimumOrderAppliedCents: selectedEstimate.breakdown.minimumOrderAppliedCents,
+      discountCents: selectedEstimate.breakdown.discountCents,
+      totalCents: selectedEstimate.breakdown.totalCents,
+    },
   };
 
   return {

@@ -161,4 +161,18 @@ export const QuoteResultSchema = z.object({
       }),
     )
     .default([]),
+  breakdown: z
+    .object({
+      laborHours: z.number().min(0).optional(),
+      distanceKm: z.number().min(0).optional(),
+      distanceSource: z.enum(["approx", "ors", "cache", "fallback"]).optional(),
+      driveChargeCents: z.number().int().min(0).optional(),
+      subtotalCents: z.number().int().min(0).optional(),
+      serviceOptionsCents: z.number().int().min(0).optional(),
+      addonsCents: z.number().int().min(0).optional(),
+      minimumOrderAppliedCents: z.number().int().min(0).optional(),
+      discountCents: z.number().int().min(0).optional(),
+      totalCents: z.number().int().min(0).optional(),
+    })
+    .optional(),
 });
