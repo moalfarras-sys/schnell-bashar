@@ -83,11 +83,14 @@ function toAddressObject(
   if (!rawText?.trim()) return undefined;
   const value = rawText.trim();
   const plz = value.match(/\b\d{5}\b/)?.[0] ?? "";
+  const cityMatch = value.match(/\b\d{5}\s+([^,]+)$/);
+  const city = cityMatch?.[1]?.trim() || value.split(",").pop()?.trim() || "Berlin";
+  const street = value.split(",")[0]?.trim() || value;
   return {
     displayName: value,
     postalCode: plz,
-    city: "Unbekannt",
-    street: value,
+    city,
+    street,
   };
 }
 
@@ -160,12 +163,22 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     const isValidationError = error instanceof z.ZodError;
-    const message = isValidationError
+    let message = isValidationError
       ? (error.issues.find((issue) => issue.message)?.message ?? "Ungültige Eingabedaten")
       : error instanceof Error
         ? error.message
         : "Preisberechnung fehlgeschlagen.";
-    const status = isValidationError ? 400 : /nicht verfügbar|Distanz/.test(message) ? 503 : 500;
+    if (/address not found/i.test(message)) {
+      message =
+        "Adresse konnte nicht eindeutig gefunden werden. Bitte prüfen Sie PLZ/Straße oder wählen Sie einen Vorschlag aus.";
+    }
+    const status = isValidationError
+      ? 400
+      : /nicht verfügbar|Distanz/i.test(message)
+        ? 503
+        : /Adresse konnte nicht eindeutig gefunden/i.test(message)
+          ? 400
+          : 500;
     return NextResponse.json({ error: message }, { status });
   }
 }

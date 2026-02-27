@@ -142,15 +142,29 @@ function extractPostalCode(text: string) {
   return text.match(/\b\d{5}\b/)?.[0] ?? "";
 }
 
+function parseCityFromAddress(text: string) {
+  const normalized = text.trim();
+  const cityMatch = normalized.match(/\b\d{5}\s+([^,]+)$/);
+  if (cityMatch?.[1]) return cityMatch[1].trim();
+  const parts = normalized.split(",");
+  return parts.length > 1 ? parts[parts.length - 1].trim() : "";
+}
+
+function parseStreetFromAddress(text: string) {
+  const normalized = text.trim();
+  const parts = normalized.split(",");
+  return (parts[0] || normalized).trim();
+}
+
 function toAddressPayload(value: string, selected?: AddressAutocompleteOption) {
   const displayName = value.trim();
   if (!displayName) return undefined;
   return {
     displayName,
     postalCode: selected?.postalCode || extractPostalCode(displayName),
-    city: selected?.city || "Berlin",
+    city: selected?.city || parseCityFromAddress(displayName) || "Berlin",
     state: selected?.state,
-    street: selected?.street || displayName,
+    street: selected?.street || parseStreetFromAddress(displayName),
     houseNumber: selected?.houseNumber,
     lat: selected?.lat,
     lon: selected?.lon,
