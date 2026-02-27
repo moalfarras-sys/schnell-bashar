@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import {
   Building2,
@@ -58,16 +58,16 @@ const steps = [
 ];
 
 const services = [
-  { icon: Refrigerator, name: "Elektrogerät entsorgen", price: "ab 59 € / Stück", desc: "Kühlschrank, Waschmaschine, Trockner", tag: "Beliebt" },
-  { icon: Package, name: "Sperrmüll-Paket Klein", price: "ab 99 €", desc: "Bis 1 m³ - einzelne Möbelstücke" },
-  { icon: Package, name: "Sperrmüll-Paket Mittel", price: "ab 199 €", desc: "1-3 m³ - nach einem Zimmerumbau" },
-  { icon: Sofa, name: "Einzelmöbel Abholung", price: "ab 39 € / Stück", desc: "Sofa, Schrank, Tisch, Matratze" },
-  { icon: Warehouse, name: "Kellerentrümpelung", price: "ab 299 €", desc: "Komplette Räumung des Kellers" },
-  { icon: Home, name: "Dachbodenentrümpelung", price: "ab 249 €", desc: "Räumung des gesamten Dachbodens" },
-  { icon: Home, name: "Wohnungsauflösung", price: "ab 15 € / m³", desc: "Teilweise oder komplette Auflösung" },
-  { icon: TreePine, name: "Gartenentsorgung", price: "ab 149 €", desc: "Grünschnitt, Gartenmöbel, Abfälle" },
-  { icon: Building2, name: "Büroauflösung", price: "ab 25 € / m³", desc: "Büromöbel, Technik, Akten" },
-  { icon: Home, name: "Komplette Haushaltsauflösung", price: "ab 19 € / m³", desc: "Vollständige Auflösung inkl. Besenreinigung" },
+  { icon: Refrigerator, name: "Elektrogerät entsorgen", price: "ab 59 â‚¬ / Stück", desc: "Kühlschrank, Waschmaschine, Trockner", tag: "Beliebt" },
+  { icon: Package, name: "Sperrmüll-Paket Klein", price: "ab 99 â‚¬", desc: "Bis 1 m³ - einzelne Möbelstücke" },
+  { icon: Package, name: "Sperrmüll-Paket Mittel", price: "ab 199 â‚¬", desc: "1-3 m³ - nach einem Zimmerumbau" },
+  { icon: Sofa, name: "Einzelmöbel Abholung", price: "ab 39 â‚¬ / Stück", desc: "Sofa, Schrank, Tisch, Matratze" },
+  { icon: Warehouse, name: "Kellerentrümpelung", price: "ab 299 â‚¬", desc: "Komplette Räumung des Kellers" },
+  { icon: Home, name: "Dachbodenentrümpelung", price: "ab 249 â‚¬", desc: "Räumung des gesamten Dachbodens" },
+  { icon: Home, name: "Wohnungsauflösung", price: "ab 15 â‚¬ / m³", desc: "Teilweise oder komplette Auflösung" },
+  { icon: TreePine, name: "Gartenentsorgung", price: "ab 149 â‚¬", desc: "Grünschnitt, Gartenmöbel, Abfälle" },
+  { icon: Building2, name: "Büroauflösung", price: "ab 25 â‚¬ / m³", desc: "Büromöbel, Technik, Akten" },
+  { icon: Home, name: "Komplette Haushaltsauflösung", price: "ab 19 â‚¬ / m³", desc: "Vollständige Auflösung inkl. Besenreinigung" },
 ];
 
 const trustItems = [
@@ -125,7 +125,7 @@ export default async function EntsorgungPage() {
                   Richtpreis berechnen
                 </Button>
               </Link>
-              <Link href="/buchen?context=ENTSORGUNG" className="w-full sm:w-auto">
+              <Link href="/booking-v2?context=ENTSORGUNG" className="w-full sm:w-auto">
                 <Button size="lg" variant="outline" className="w-full gap-2 border-white/50 bg-white/10 text-white hover:bg-white/20 sm:w-auto">
                   <CalendarDays className="h-5 w-5" />
                   Termin wählen
@@ -194,9 +194,9 @@ export default async function EntsorgungPage() {
                 Wichtig - bitte beachten
               </h3>
               <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-300">
-                <li>• Keine gefährlichen Stoffe, Chemikalien, Batterien, Reifen oder Sondermüll.</li>
-                <li>• Wenn möglich: Trennen Sie Materialarten (Holz, Metall, Elektro).</li>
-                <li>• Fotos unterstützen eine präzisere Schätzung (optional).</li>
+                <li>&bull; Keine gefährlichen Stoffe, Chemikalien, Batterien, Reifen oder Sondermüll.</li>
+                <li>&bull; Wenn möglich: Trennen Sie Materialarten (Holz, Metall, Elektro).</li>
+                <li>&bull; Fotos unterstützen eine präzisere Schätzung (optional).</li>
               </ul>
             </div>
           </Reveal>
@@ -247,7 +247,7 @@ export default async function EntsorgungPage() {
           </Reveal>
 
           <Reveal className="mt-10 text-center">
-            <Link href="/buchen?context=ENTSORGUNG">
+            <Link href="/booking-v2?context=ENTSORGUNG">
               <Button size="lg" className="gap-2">
                 <Recycle className="h-5 w-5" />
                 Jetzt Abholung anfragen
@@ -292,7 +292,7 @@ export default async function EntsorgungPage() {
           </Reveal>
 
           <Reveal className="mt-12 text-center">
-            <Link href="/buchen?context=ENTSORGUNG">
+            <Link href="/booking-v2?context=ENTSORGUNG">
               <Button size="lg" className="gap-2">
                 Jetzt Abholung anfragen
                 <CheckCircle2 className="h-5 w-5" />
@@ -306,6 +306,8 @@ export default async function EntsorgungPage() {
     </>
   );
 }
+
+
 
 
 

@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ArrowRight, Recycle, Truck, Wrench } from "lucide-react";
 
 import { Container } from "@/components/container";
@@ -65,7 +65,7 @@ export default function TippsPage() {
       </section>
 
       <section className="mt-10 flex flex-col gap-3 sm:flex-row">
-        <Link href="/buchen?context=MOVING">
+        <Link href="/booking-v2?context=MOVING">
           <Button className="gap-2">
             Jetzt Anfrage starten
             <ArrowRight className="h-4 w-4" />
@@ -78,3 +78,5 @@ export default function TippsPage() {
     </Container>
   );
 }
+
+

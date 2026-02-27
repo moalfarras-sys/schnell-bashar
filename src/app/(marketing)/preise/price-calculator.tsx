@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -326,7 +326,7 @@ export function PriceCalculator({
                 <div>
                   <div className="text-sm font-bold">{opt.nameDe}</div>
                   <div className="text-xs text-slate-500 dark:text-slate-400">
-                    ab {Math.max(1, Math.round(opt.defaultPriceCents / 100))} €
+                    ab {Math.max(1, Math.round(opt.defaultPriceCents / 100))} â‚¬
                   </div>
                 </div>
                 {opt.requiresQuantity ? (
@@ -405,7 +405,7 @@ export function PriceCalculator({
                 {pkg.tier}
               </div>
               <div className="mt-1 truncate text-sm font-extrabold text-slate-900 dark:text-white">
-                {eur(pkg.minCents)} – {eur(pkg.maxCents)}
+                {eur(pkg.minCents)} - {eur(pkg.maxCents)}
               </div>
               <div className="truncate text-xs text-slate-500 dark:text-slate-400">inkl. MwSt.</div>
             </div>
@@ -449,7 +449,7 @@ export function PriceCalculator({
               .join(",");
             if (options) params.set("options", options);
 
-            router.push(`/buchen?${params.toString()}`);
+            router.push(`/booking-v2?${params.toString()}`);
           }}
           disabled={loading}
         >
@@ -466,3 +466,5 @@ export function PriceCalculator({
     </div>
   );
 }
+
+

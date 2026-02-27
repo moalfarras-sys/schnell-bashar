@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import {
   CalendarDays,
@@ -41,17 +41,17 @@ const benefits = [
   {
     icon: Clock,
     title: "Flexible Terminplanung",
-    desc: "Kurzfristig oder geplant – wir finden gemeinsam den passenden Termin.",
+    desc: "Kurzfristig oder geplant - wir finden gemeinsam den passenden Termin.",
   },
   {
     icon: MapPin,
     title: "Deutschlandweit",
-    desc: "Berlin, Hamburg, München und in ganz Deutschland – wir sind für Sie da.",
+    desc: "Berlin, Hamburg, München und in ganz Deutschland - wir sind für Sie da.",
   },
 ];
 
 const steps = [
-  { num: 1, title: "Anfrage senden", desc: "Online oder per Telefon – beschreiben Sie Ihren Umzug." },
+  { num: 1, title: "Anfrage senden", desc: "Online oder per Telefon - beschreiben Sie Ihren Umzug." },
   { num: 2, title: "Angebot prüfen", desc: "Wir kalkulieren transparent und melden uns schnell." },
   { num: 3, title: "Termin durchführen", desc: "Unser Team kommt pünktlich und arbeitet zuverlässig." },
 ];
@@ -102,7 +102,7 @@ export default async function UmzugPage() {
             </h1>
             <p className="mt-4 max-w-2xl text-base text-slate-200">
               Stressfrei umziehen mit erfahrenen Profis. Wir kümmern uns um Planung, Transport
-              und sichere Durchführung – von der ersten Anfrage bis zur Übergabe.
+              und sichere Durchführung - von der ersten Anfrage bis zur Übergabe.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/preise?service=UMZUG" className="w-full sm:w-auto">
@@ -111,7 +111,7 @@ export default async function UmzugPage() {
                   Richtpreis berechnen
                 </Button>
               </Link>
-              <Link href="/buchen?context=MOVING" className="w-full sm:w-auto">
+              <Link href="/booking-v2?context=MOVING" className="w-full sm:w-auto">
                 <Button size="lg" variant="outline" className="w-full gap-2 border-white/50 bg-white/10 text-white hover:bg-white/20 sm:w-auto">
                   <CalendarDays className="h-5 w-5" />
                   Termin wählen
@@ -226,7 +226,7 @@ export default async function UmzugPage() {
           </Reveal>
 
           <Reveal className="mt-12 text-center">
-            <Link href="/buchen?context=MOVING">
+            <Link href="/booking-v2?context=MOVING">
               <Button size="lg" className="gap-2">
                 Jetzt Angebot anfordern
                 <CheckCircle2 className="h-5 w-5" />
@@ -240,4 +240,6 @@ export default async function UmzugPage() {
     </>
   );
 }
+
+
 

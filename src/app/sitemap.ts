@@ -1,4 +1,4 @@
-import type { MetadataRoute } from "next";
+﻿import type { MetadataRoute } from "next";
 import { cities } from "@/data/cities";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellsicherumzug.de";
@@ -10,16 +10,16 @@ const routes = [
   "/montage",
   "/preise",
   "/kalender",
-  "/buchen?context=MOVING",
+  "/booking-v2?context=MOVING",
   "/anfrage",
   "/galerie",
   "/faq",
   "/tipps",
   "/ueber-uns",
   "/kontakt",
-  "/buchen",
-  "/buchen?context=MONTAGE",
-  "/buchen?context=ENTSORGUNG",
+  "/booking-v2",
+  "/booking-v2?context=MONTAGE",
+  "/booking-v2?context=ENTSORGUNG",
   "/agb",
   "/datenschutz",
   "/impressum",
@@ -43,5 +43,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...baseEntries, ...cityEntries];
 }
+
 
 

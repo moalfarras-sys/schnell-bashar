@@ -1,0 +1,100 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.28), transparent 34%),
+    radial-gradient(circle at 88% 8%, rgba(99, 102, 241, 0.24), transparent 36%),
+    var(--surface-base);
+}
+
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(circle at center, black, transparent 85%);
+}
+
+.glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(241, 245, 249, 0.56));
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+:global(.dark) .glass {
+  background: linear-gradient(135deg, rgba(6, 18, 46, 0.84), rgba(9, 27, 65, 0.66));
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 14px 46px rgba(2, 8, 23, 0.52), inset 0 1px 0 rgba(125, 211, 252, 0.16);
+}
+
+.glowButton {
+  position: relative;
+  overflow: hidden;
+}
+
+.glowButton::after {
+  content: "";
+  position: absolute;
+  inset: -120%;
+  background: radial-gradient(circle, rgba(125, 211, 252, 0.4) 0%, transparent 58%);
+  transition: transform 320ms ease;
+  transform: translateX(-40%);
+  pointer-events: none;
+}
+
+.glowButton:hover::after {
+  transform: translateX(40%);
+}
+
+.inputWrap {
+  position: relative;
+}
+
+.floatingLabel {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.82rem;
+  color: rgba(71, 85, 105, 0.9);
+  font-weight: 600;
+  pointer-events: none;
+  transition: all 160ms ease;
+  background: transparent;
+}
+
+:global(.dark) .floatingLabel {
+  color: rgba(203, 213, 225, 0.88);
+}
+
+.floatingLabelActive {
+  top: 0;
+  transform: translateY(-50%);
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(248, 250, 252, 0.92);
+  font-size: 0.7rem;
+}
+
+:global(.dark) .floatingLabelActive {
+  background: rgba(15, 23, 42, 0.88);
+}
+
+.mapPreview {
+  min-height: 160px;
+  border: 1px dashed rgba(125, 211, 252, 0.6);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(56, 189, 248, 0.1), transparent 40%),
+    repeating-linear-gradient(45deg, rgba(148, 163, 184, 0.12) 0px, rgba(148, 163, 184, 0.12) 2px, transparent 2px, transparent 8px);
+}
+
+.stickyCard {
+  position: sticky;
+  top: 100px;
+}

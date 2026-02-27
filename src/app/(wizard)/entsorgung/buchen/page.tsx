@@ -4,5 +4,5 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function DisposalBookingEntryPage() {
-  permanentRedirect("/buchen?context=ENTSORGUNG");
+  permanentRedirect("/booking-v2?context=ENTSORGUNG");
 }

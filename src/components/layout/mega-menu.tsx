@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
@@ -55,7 +55,7 @@ const menuSections: MenuSection[] = [
         title: "Online buchen",
         links: [
           { label: "Angebot berechnen", href: "/preise", desc: "Richtpreis sofort erhalten", icon: BadgeEuro },
-          { label: "Termin & Kalender", href: "/buchen?context=MOVING", desc: "Zeitfenster wählen", icon: CalendarDays },
+          { label: "Termin & Kalender", href: "/booking-v2?context=MOVING", desc: "Zeitfenster wählen", icon: CalendarDays },
           { label: "Anfrage verfolgen", href: "/anfrage", desc: "Status prüfen", icon: Search },
         ],
       },
@@ -238,5 +238,7 @@ export function MegaMenuMobile({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
+
+
 
 

@@ -139,7 +139,7 @@ export default async function PreisePage() {
               Richtpreis berechnen
             </Button>
           </a>
-          <Link href="/buchen?context=STANDARD">
+          <Link href="/booking-v2?context=STANDARD">
             <Button size="lg" variant="outline">
               <Clock className="h-5 w-5" />
               Anfrage starten
@@ -195,7 +195,7 @@ export default async function PreisePage() {
                 Transparente Orientierung für Küchen-, Geräte- und Möbelmontage.
               </p>
             </div>
-            <Link href="/buchen?context=MONTAGE">
+            <Link href="/booking-v2?context=MONTAGE">
               <Button>Jetzt Montage anfragen</Button>
             </Link>
           </div>
@@ -260,3 +260,4 @@ export default async function PreisePage() {
     </Container>
   );
 }
+

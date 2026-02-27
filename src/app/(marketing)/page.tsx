@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -27,7 +27,7 @@ import { getImageSlots, getTextSlots } from "@/server/content/slots";
 const services = [
   {
     title: "Umzug",
-    desc: "Stressfrei umziehen mit erfahrenen Profis — sicher verpackt und pünktlich geliefert.",
+    desc: "Stressfrei umziehen mit erfahrenen Profis - sicher verpackt und pünktlich geliefert.",
     icon: Truck,
     href: "/umzug",
     slotKey: "img.home.services.umzug",
@@ -53,8 +53,8 @@ const services = [
 
 const tools = [
   { icon: Calculator, label: "Preisrechner", href: "/preise", desc: "Schnelle Orientierung" },
-  { icon: ClipboardList, label: "Anfrage starten", href: "/buchen", desc: "Direkt buchen" },
-  { icon: CalendarDays, label: "Termine", href: "/buchen?context=MOVING", desc: "Zeitfenster wählen" },
+  { icon: ClipboardList, label: "Anfrage starten", href: "/booking-v2", desc: "Direkt buchen" },
+  { icon: CalendarDays, label: "Termine", href: "/booking-v2?context=MOVING", desc: "Zeitfenster wählen" },
   { icon: Search, label: "Anfrage verfolgen", href: "/anfrage", desc: "Status prüfen" },
 ];
 
@@ -97,9 +97,9 @@ const galleryImages = [
 export default async function HomePage() {
   const txt = await getTextSlots([
     { key: "text.home.hero.headline", fallback: "Stressfrei umziehen mit erfahrenen Profis." },
-    { key: "text.home.hero.subtitle", fallback: "Umzug, Entsorgung und Montage — strukturiert, zuverlässig und deutschlandweit. Ihr Premium-Umzugsservice mit modernem Buchungssystem." },
+    { key: "text.home.hero.subtitle", fallback: "Umzug, Entsorgung und Montage - strukturiert, zuverlässig und deutschlandweit. Ihr Premium-Umzugsservice mit modernem Buchungssystem." },
     { key: "text.home.cta.headline", fallback: "Bereit für Ihr Angebot?" },
-    { key: "text.home.cta.subtitle", fallback: "Ein Anruf genügt — oder nutzen Sie unser Online-Buchungsformular für Umzug und Entsorgung." },
+    { key: "text.home.cta.subtitle", fallback: "Ein Anruf genügt - oder nutzen Sie unser Online-Buchungsformular für Umzug und Entsorgung." },
     { key: "text.home.testimonial.1.name", fallback: "Familie K." },
     { key: "text.home.testimonial.1.text", fallback: "Sehr freundlich, pünktlich und gut organisiert. Der Umzug lief stressfrei und sauber." },
     { key: "text.home.testimonial.2.name", fallback: "Büroservice M." },
@@ -164,7 +164,7 @@ export default async function HomePage() {
             <div className="fade-in-up hero-panel-light rounded-3xl px-5 py-8 sm:px-8 sm:py-10 dark:hero-panel-dark">
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-300/55 bg-white/76 px-4 py-1.5 text-xs font-bold text-sky-900 shadow-[0_0_0_0.5px_rgba(255,255,255,0.6),0_8px_20px_rgba(15,23,42,0.1)] backdrop-blur-md dark:border-cyan-300/35 dark:bg-slate-950/52 dark:text-cyan-100 dark:shadow-[0_0_0_0.5px_rgba(6,18,38,0.5),0_8px_24px_rgba(6,18,38,0.45),inset_0_1px_0_rgba(125,211,252,0.2)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Deutschlandweit verfügbar — 24/7
+                Deutschlandweit verfügbar - 24/7
               </div>
 
               <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-950 drop-shadow-[0_10px_26px_rgba(255,255,255,0.45)] sm:text-5xl lg:text-6xl xl:text-7xl dark:text-white dark:drop-shadow-[0_10px_32px_rgba(8,23,48,0.72)]">
@@ -187,7 +187,7 @@ export default async function HomePage() {
               </p>
 
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                <Link href="/buchen?context=MOVING">
+                <Link href="/booking-v2?context=MOVING">
                   <Button size="xl" className="gap-2">
                     Kostenloses Angebot erhalten
                     <ArrowRight className="h-4 w-4" />
@@ -230,7 +230,7 @@ export default async function HomePage() {
                 Unsere Leistungen
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
-                Zuverlässige Umzüge, fachgerechte Entsorgung und professionelle Montage —
+                Zuverlässige Umzüge, fachgerechte Entsorgung und professionelle Montage -
                 alles aus einer Hand.
               </p>
             </div>
@@ -376,7 +376,7 @@ export default async function HomePage() {
                   Warum Schnell Sicher Umzug?
                 </h2>
                 <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                  Wir kümmern uns persönlich um Ihren Umzug — zuverlässig, pünktlich und mit
+                  Wir kümmern uns persönlich um Ihren Umzug - zuverlässig, pünktlich und mit
                   viel Erfahrung. Transparente Preise und professionelle Abwicklung.
                 </p>
 
@@ -399,7 +399,7 @@ export default async function HomePage() {
                 </div>
 
                 <div className="mt-8">
-                  <Link href="/buchen?context=MOVING">
+                  <Link href="/booking-v2?context=MOVING">
                     <Button size="lg" className="gap-2">
                       Angebot anfordern
                       <ArrowRight className="h-4 w-4" />
@@ -483,7 +483,7 @@ export default async function HomePage() {
                     </div>
                     <div>
                       <div className="text-sm font-bold text-slate-900 dark:text-white">{t.name}</div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">{t.service} — {t.location}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">{t.service} - {t.location}</div>
                     </div>
                   </div>
                 </div>
@@ -522,7 +522,7 @@ export default async function HomePage() {
               {txt["text.home.cta.subtitle"]}
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link href="/buchen?context=MOVING">
+              <Link href="/booking-v2?context=MOVING">
                 <Button size="lg" variant="primary" className="gap-2">
                   Angebot berechnen
                   <ArrowRight className="h-4 w-4" />
@@ -541,6 +541,9 @@ export default async function HomePage() {
     </>
   );
 }
+
+
+
 
 
 

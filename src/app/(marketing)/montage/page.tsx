@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import {
   CalendarDays,
@@ -56,17 +56,17 @@ const steps = [
 ];
 
 const services = [
-  { icon: CookingPot, name: "Küchenmontage komplett", price: "ab 299 €", tag: "Beliebt" },
-  { icon: Package, name: "Küchenmontage einfach (IKEA)", price: "ab 149 €" },
-  { icon: WashingMachine, name: "Waschmaschine anschließen", price: "ab 69 €" },
-  { icon: Refrigerator, name: "Kühlschrank aufstellen", price: "ab 49 €" },
-  { icon: Wrench, name: "Geschirrspüler anschließen", price: "ab 79 €" },
-  { icon: CookingPot, name: "Herd / Backofen anschließen", price: "ab 89 €" },
-  { icon: Package, name: "Kleiderschrank aufbauen", price: "ab 89 €" },
-  { icon: Package, name: "Bett aufbauen", price: "ab 69 €" },
-  { icon: Package, name: "Regal aufbauen", price: "ab 39 €" },
-  { icon: Monitor, name: "TV-Wandhalterung montieren", price: "ab 59 €" },
-  { icon: Wrench, name: "Sonstige Montagearbeiten", price: "ab 65 € / Std." },
+  { icon: CookingPot, name: "Küchenmontage komplett", price: "ab 299 â‚¬", tag: "Beliebt" },
+  { icon: Package, name: "Küchenmontage einfach (IKEA)", price: "ab 149 â‚¬" },
+  { icon: WashingMachine, name: "Waschmaschine anschließen", price: "ab 69 â‚¬" },
+  { icon: Refrigerator, name: "Kühlschrank aufstellen", price: "ab 49 â‚¬" },
+  { icon: Wrench, name: "Geschirrspüler anschließen", price: "ab 79 â‚¬" },
+  { icon: CookingPot, name: "Herd / Backofen anschließen", price: "ab 89 â‚¬" },
+  { icon: Package, name: "Kleiderschrank aufbauen", price: "ab 89 â‚¬" },
+  { icon: Package, name: "Bett aufbauen", price: "ab 69 â‚¬" },
+  { icon: Package, name: "Regal aufbauen", price: "ab 39 â‚¬" },
+  { icon: Monitor, name: "TV-Wandhalterung montieren", price: "ab 59 â‚¬" },
+  { icon: Wrench, name: "Sonstige Montagearbeiten", price: "ab 65 â‚¬ / Std." },
 ];
 
 const trustItems = [
@@ -124,7 +124,7 @@ export default async function MontagePage() {
                   Richtpreis berechnen
                 </Button>
               </Link>
-              <Link href="/buchen?context=MONTAGE" className="w-full sm:w-auto">
+              <Link href="/booking-v2?context=MONTAGE" className="w-full sm:w-auto">
                 <Button size="lg" variant="outline" className="w-full gap-2 border-white/50 bg-white/10 text-white hover:bg-white/20 sm:w-auto">
                   <CalendarDays className="h-5 w-5" />
                   Termin wählen
@@ -231,7 +231,7 @@ export default async function MontagePage() {
           </Reveal>
 
           <Reveal className="mt-10 text-center">
-            <Link href="/buchen?context=MONTAGE">
+            <Link href="/booking-v2?context=MONTAGE">
               <Button size="lg" className="gap-2">
                 <Wrench className="h-5 w-5" />
                 Jetzt Montage anfragen
@@ -276,7 +276,7 @@ export default async function MontagePage() {
           </Reveal>
 
           <Reveal className="mt-12 text-center">
-            <Link href="/buchen?context=MONTAGE">
+            <Link href="/booking-v2?context=MONTAGE">
               <Button size="lg" className="gap-2">
                 Jetzt Montage anfragen
                 <CheckCircle2 className="h-5 w-5" />
@@ -290,6 +290,8 @@ export default async function MontagePage() {
     </>
   );
 }
+
+
 
 
 
