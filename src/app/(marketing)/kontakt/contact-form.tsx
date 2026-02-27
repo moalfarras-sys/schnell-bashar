@@ -76,11 +76,11 @@ export function ContactForm() {
     <form onSubmit={onSubmit} className="grid gap-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <div className="text-xs font-semibold text-slate-800">Name *</div>
+          <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">Name *</div>
           <Input required value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div>
-          <div className="text-xs font-semibold text-slate-800">E-Mail *</div>
+          <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">E-Mail *</div>
           <Input
             required
             type="email"
@@ -90,11 +90,11 @@ export function ContactForm() {
           />
         </div>
         <div>
-          <div className="text-xs font-semibold text-slate-800">Telefon (optional)</div>
+          <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">Telefon (optional)</div>
           <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+49 ..." />
         </div>
         <div>
-          <div className="text-xs font-semibold text-slate-800">Leistung</div>
+          <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">Leistung</div>
           <Select value={serviceType} onChange={(e) => setServiceType(e.target.value)}>
             <option value="Umzug">Umzug</option>
             <option value="Entsorgung">Entsorgung / Sperrmüll</option>
@@ -103,7 +103,7 @@ export function ContactForm() {
           </Select>
         </div>
         <div className="sm:col-span-2">
-          <div className="text-xs font-semibold text-slate-800">Anzahl der Kubikmeter (optional)</div>
+          <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">Anzahl der Kubikmeter (optional)</div>
           <Input
             type="number"
             min={0}
@@ -116,7 +116,7 @@ export function ContactForm() {
       </div>
 
       <div>
-        <div className="text-xs font-semibold text-slate-800">Nachricht *</div>
+        <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">Nachricht *</div>
         <Textarea
           required
           value={message}

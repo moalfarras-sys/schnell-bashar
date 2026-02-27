@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 
@@ -15,27 +15,30 @@ export default async function KontaktPage() {
   const banner = await getImageSlot({
     key: "img.kontakt.banner",
     fallbackSrc: "/media/gallery/keys-box.jpeg",
-    fallbackAlt: "Kontakt & Planung",
+    fallbackAlt: "Kontakt und Planung",
   });
 
   return (
     <Container className="py-14">
       <div className="max-w-3xl">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
+        <div className="inline-flex rounded-full border border-cyan-300/70 bg-cyan-50/80 px-3 py-1 text-xs font-bold text-cyan-800 dark:border-cyan-500/40 dark:bg-cyan-950/30 dark:text-cyan-200">
+          Kontakt und Beratung
+        </div>
+        <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
           Kontakt aufnehmen
         </h1>
-        <p className="mt-4 text-base text-slate-800 dark:text-slate-200">
-          Teilen Sie uns Ihre Anfrage mit, und wir melden uns schnellstmöglich. Wir helfen Ihnen
-          schnell und sicher weiter.
+        <p className="mt-4 text-base font-medium leading-7 text-slate-700 dark:text-slate-200">
+          Teilen Sie uns Ihre Anfrage mit, und wir melden uns schnellstmöglich.
+          Sie erhalten eine klare Rückmeldung zu Preis, Ablauf und Terminoptionen.
         </p>
       </div>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="premium-surface-emphasis rounded-3xl p-6 sm:p-8">
-          <div className="text-lg font-extrabold text-slate-950 dark:text-white">Anfrage schicken</div>
-          <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-            Für eine direkte Online-Buchung nutzen Sie unser Buchungsformular. Für allgemeine
-            Fragen und Rückrufe können Sie dieses Kontaktformular verwenden.
+          <div className="text-lg font-extrabold text-slate-950 dark:text-white">Anfrage senden</div>
+          <p className="mt-2 text-sm font-semibold leading-6 text-slate-700 dark:text-slate-300">
+            Für eine direkte Online-Buchung nutzen Sie bitte unser Buchungsformular.
+            Für allgemeine Fragen, Rückrufe oder Sonderfälle verwenden Sie dieses Kontaktformular.
           </p>
           <div className="mt-5">
             <ContactForm />
@@ -80,7 +83,7 @@ export default async function KontaktPage() {
       <div className="premium-surface-emphasis relative mt-12 aspect-[16/6] overflow-hidden rounded-3xl">
         <Image
           src={banner.src}
-          alt={banner.alt || "Kontakt & Planung"}
+          alt={banner.alt || "Kontakt und Planung"}
           fill
           className="object-cover"
           sizes="(max-width: 1024px) 100vw, 75vw"
@@ -99,7 +102,7 @@ function Info(props: {
   return (
     <div className="premium-surface-emphasis premium-elevate rounded-3xl p-6">
       <div className="flex items-start gap-3">
-        <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-100 text-brand-700 shadow-sm">
+        <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-100 text-brand-700 shadow-sm dark:bg-brand-900/40 dark:text-brand-200">
           <Icon className="h-5 w-5" />
         </div>
         <div>
@@ -120,4 +123,3 @@ function Info(props: {
     </div>
   );
 }
-
