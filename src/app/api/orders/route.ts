@@ -855,6 +855,7 @@ export async function POST(req: Request) {
   const offerUrl = `/offer/${offer.token}`;
   const fullOfferUrl = `${baseUrl}${offerUrl}`;
 
+  let offerEmailResult: { success: boolean; error?: string } = { success: false };
   try {
     const pdfBuffer = await generateOfferPDF({
       offerId: offer.id,
@@ -919,7 +920,7 @@ export async function POST(req: Request) {
       console.warn("[orders] Supabase storage unavailable:", uploadErr);
     }
 
-    await sendOfferEmail({
+    offerEmailResult = await sendOfferEmail({
       customerName: payload.customer.name,
       customerEmail: payload.customer.email,
       offerId: offer.id,
@@ -954,7 +955,10 @@ export async function POST(req: Request) {
     }
   }
 
-  if (operationalSettings.customerConfirmationEmailEnabled) {
+  // Send only one customer email by default:
+  // primary = offer email (with offer PDF + AGB). Fallback confirmation is only used
+  // if the primary offer email failed.
+  if (operationalSettings.customerConfirmationEmailEnabled && !offerEmailResult.success) {
     try {
       await sendCustomerConfirmationEmail({
         publicId: order.publicId,
