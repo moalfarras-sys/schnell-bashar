@@ -17,6 +17,8 @@ import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
 import { Container } from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { InvoiceFilterBar } from "./invoice-filter";
+import { RetryInvoicesButton } from "./retry-invoices-button";
+import { listInvoices } from "@/server/accounting/list-invoices";
 
 function formatEuro(cents: number): string {
   return new Intl.NumberFormat("de-DE", {
@@ -90,27 +92,6 @@ export default async function InvoicesListPage({
   const page = Math.max(1, Number(params.page ?? "1") || 1);
   const pageSize = Math.min(100, Math.max(10, Number(params.pageSize ?? "20") || 20));
 
-  const andFilters: Record<string, unknown>[] = [];
-  if (params.status && params.status !== "all") {
-    if (params.status === "overdue") {
-      andFilters.push({ OR: [{ status: "UNPAID" }, { status: "PARTIAL" }] });
-      andFilters.push({ dueAt: { lt: new Date() } });
-    } else {
-      andFilters.push({ status: params.status.toUpperCase() });
-    }
-  }
-  if (params.search?.trim()) {
-    const query = params.search.trim();
-    andFilters.push({
-      OR: [
-        { customerName: { contains: query, mode: "insensitive" } },
-        { customerEmail: { contains: query, mode: "insensitive" } },
-        { invoiceNo: { contains: query, mode: "insensitive" } },
-      ],
-    });
-  }
-  const where: Record<string, unknown> = andFilters.length > 0 ? { AND: andFilters } : {};
-
   let dbWarning: string | null = null;
   let invoices: Awaited<ReturnType<typeof prisma.invoice.findMany>> = [];
   let totalCount = 0;
@@ -119,30 +100,13 @@ export default async function InvoicesListPage({
   let paidCount = 0;
   let overdueCount = 0;
   try {
-    const [rows, count, unpaid, partial, paid, overdue] = await prisma.$transaction([
-      prisma.invoice.findMany({
-        where,
-        include: { payments: true },
-        orderBy: { createdAt: "desc" },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-      }),
-      prisma.invoice.count({ where }),
-      prisma.invoice.count({ where: { AND: [...andFilters, { status: "UNPAID" }] } }),
-      prisma.invoice.count({ where: { AND: [...andFilters, { status: "PARTIAL" }] } }),
-      prisma.invoice.count({ where: { AND: [...andFilters, { status: "PAID" }] } }),
-      prisma.invoice.count({
-        where: {
-          AND: [...andFilters, { OR: [{ status: "UNPAID" }, { status: "PARTIAL" }] }, { dueAt: { lt: new Date() } }],
-        },
-      }),
-    ]);
-    invoices = rows;
-    totalCount = count;
-    unpaidCount = unpaid;
-    partialCount = partial;
-    paidCount = paid;
-    overdueCount = overdue;
+    const result = await listInvoices({ status: params.status, search: params.search, page, pageSize }, prisma);
+    invoices = result.invoices;
+    totalCount = result.totalCount;
+    unpaidCount = result.unpaidCount;
+    partialCount = result.partialCount;
+    paidCount = result.paidCount;
+    overdueCount = result.overdueCount;
   } catch (error) {
     console.error("[admin/accounting/invoices] failed to load invoices", error);
     dbWarning =
@@ -218,8 +182,9 @@ export default async function InvoicesListPage({
         <InvoiceFilterBar />
 
         {dbWarning ? (
-          <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            {dbWarning}
+          <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <span>{dbWarning}</span>
+            <RetryInvoicesButton />
           </div>
         ) : null}
 
@@ -234,12 +199,11 @@ export default async function InvoicesListPage({
             invoices.map((inv) => {
               const outstanding = inv.grossCents - inv.paidCents;
               return (
-                <Link
+                <div
                   key={inv.id}
-                  href={`/admin/accounting/invoices/${inv.id}`}
                   className="flex flex-col gap-3 rounded-xl border-2 border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <div className="flex-1">
+                  <Link href={`/admin/accounting/invoices/${inv.id}`} className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-sm font-bold text-slate-900">{inv.invoiceNo || inv.id.slice(0, 8)}</span>
                       {statusBadge(inv.status, inv.dueAt)}
@@ -249,27 +213,23 @@ export default async function InvoicesListPage({
                       <span>Erstellt: {format(inv.issuedAt, "dd.MM.yyyy", { locale: de })}</span>
                       <span>Fällig: {format(inv.dueAt, "dd.MM.yyyy", { locale: de })}</span>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-6">
+                  </Link>
+
+                  <div className="flex items-center gap-3">
                     <div className="text-right">
                       <div className="text-lg font-bold text-slate-900">{formatEuro(inv.grossCents)}</div>
                       {outstanding > 0 && outstanding < inv.grossCents && (
                         <div className="text-xs text-red-600">Offen: {formatEuro(outstanding)}</div>
                       )}
                     </div>
-                    <a
-                      href={`/api/admin/invoices/${inv.id}/pdf`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    <a href={`/api/admin/invoices/${inv.id}/pdf`} target="_blank" rel="noopener noreferrer">
                       <Button variant="outline" size="sm" className="gap-1">
                         <Download className="h-3.5 w-3.5" />
                         PDF
                       </Button>
                     </a>
                   </div>
-                </Link>
+                </div>
               );
             })
           )}

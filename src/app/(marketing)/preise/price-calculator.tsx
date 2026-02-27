@@ -182,6 +182,11 @@ function hasCompleteAddressInput(value: string) {
   );
 }
 
+function hasUsableAddress(value: string, option?: AddressAutocompleteOption) {
+  if (option?.postalCode && /^\d{5}$/.test(option.postalCode)) return true;
+  return hasCompleteAddressInput(value);
+}
+
 export function PriceCalculator({
   montageOptions = [],
   externalVolumeM3,
@@ -262,13 +267,15 @@ export function PriceCalculator({
       const normalizedFrom = fromAddress.trim();
       const normalizedTo = toAddress.trim();
       const canCalcMoving = hasMoving
-        ? hasCompleteAddressInput(normalizedFrom) && hasCompleteAddressInput(normalizedTo)
+        ? hasUsableAddress(normalizedFrom, fromAddressOption) &&
+          hasUsableAddress(normalizedTo, toAddressOption)
         : true;
-      const canCalcSingle = hasMoving ? true : hasCompleteAddressInput(normalizedFrom);
+      const canCalcSingle = hasMoving ? true : hasUsableAddress(normalizedFrom, fromAddressOption);
       if (!canCalcMoving || !canCalcSingle) {
         if (!cancel) {
           setLoading(false);
           setCalcError(null);
+          setServer(null);
         }
         return;
       }

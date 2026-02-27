@@ -150,7 +150,11 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
   const prevStep = () => goStep(Math.max(step - 1, 0));
 
   const hasCompleteAddress = (address?: BookingDraft["from"]) =>
-    Boolean(address?.displayName?.trim() && /\b\d{5}\b/.test(address.displayName));
+    Boolean(
+      address &&
+        ((address.postalCode && /^\d{5}$/.test(address.postalCode)) ||
+          (address.displayName?.trim() && /\b\d{5}\b/.test(address.displayName))),
+    );
 
   useEffect(() => {
     if (!initialQuoteId) {
@@ -258,7 +262,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
       const hasTo = hasCompleteAddress(draft.to);
 
       if ((needsRoute && (!hasFrom || !hasTo)) || (requiresSingleAddress && !hasTo)) {
-        setCalcState((prev) => ({ ...prev, loading: false, error: null }));
+        setCalcState({ loading: false, error: null, data: null });
         return;
       }
 
