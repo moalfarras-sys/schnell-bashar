@@ -8,6 +8,7 @@ import {
   TrendingUp,
   ArrowRight,
   PlusCircle,
+  Files,
 } from "lucide-react";
 import { prisma } from "@/server/db/prisma";
 import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
@@ -109,6 +110,18 @@ export default async function AccountingDashboardPage() {
             <p className="mt-2 text-slate-600">Umsatz, Rechnungen und Zahlungen im Überblick</p>
           </div>
           <div className="flex gap-3">
+            <Link href="/admin/accounting/expenses">
+              <Button variant="outline" size="sm" className="gap-2">
+                <Wallet className="h-4 w-4" />
+                Ausgaben
+              </Button>
+            </Link>
+            <Link href="/admin/accounting/quarterly-report">
+              <Button variant="outline" size="sm" className="gap-2">
+                <Files className="h-4 w-4" />
+                Quartalsbericht
+              </Button>
+            </Link>
             <Link href="/admin/accounting/invoices/new">
               <Button size="sm" className="gap-2">
                 <PlusCircle className="h-4 w-4" />

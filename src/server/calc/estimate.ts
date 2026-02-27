@@ -97,6 +97,13 @@ export type EstimateResult = {
   distanceKm?: number;
   distanceSource?: "approx" | "ors" | "cache" | "fallback";
   driveChargeCents: number;
+  lineItems: Array<{
+    code: string;
+    label: string;
+    amountCents: number;
+    quantity?: number;
+    unit?: string;
+  }>;
   breakdown: EstimateBreakdown;
 };
 
@@ -171,11 +178,11 @@ function speedMultiplier(speed: WizardPayload["timing"]["speed"], p: PricingConf
   }
 }
 
-const ADDON_SURCHARGES_CENTS: Record<WizardPayload["addons"][number], number> = {
-  PACKING: 2500,
-  DISMANTLE_ASSEMBLE: 3500,
-  OLD_KITCHEN_DISPOSAL: 6000,
-  BASEMENT_ATTIC_CLEARING: 4000,
+const ADDON_OPTION_CODE: Record<WizardPayload["addons"][number], string> = {
+  PACKING: "PACKING",
+  DISMANTLE_ASSEMBLE: "DISMANTLE_ASSEMBLE",
+  OLD_KITCHEN_DISPOSAL: "OLD_KITCHEN_DISPOSAL",
+  BASEMENT_ATTIC_CLEARING: "BASEMENT_ATTIC_CLEARING",
 };
 
 function accessExtraMinutes(access?: WizardPayload["accessPickup"]) {
@@ -380,7 +387,12 @@ export function estimateOrder(
   }, 0);
 
   subtotalCents += serviceOptionsCents;
-  const addonsCents = addons.reduce((sum, addon) => sum + (ADDON_SURCHARGES_CENTS[addon] ?? 0), 0);
+  const addonsCents = addons.reduce((sum, addon) => {
+    const optionCode = ADDON_OPTION_CODE[addon];
+    const option = byServiceCode.get(optionCode);
+    if (!option) return sum;
+    return sum + Math.max(0, option.defaultPriceCents);
+  }, 0);
   subtotalCents += addonsCents;
   subtotalCents = Math.max(0, subtotalCents);
 
@@ -430,6 +442,50 @@ export function estimateOrder(
   const priceMinCents = Math.max(0, Math.round(totalCents * (1 - u)));
   const priceMaxCents = Math.max(priceMinCents, Math.round(totalCents * (1 + u)));
 
+  const lineItems: EstimateResult["lineItems"] = [
+    {
+      code: "SUBTOTAL",
+      label: "Zwischensumme Leistungen",
+      amountCents: subtotalCents,
+    },
+  ];
+
+  if (driveChargeCents > 0) {
+    lineItems.push({
+      code: "TRAVEL",
+      label: "Fahrtkosten",
+      amountCents: driveChargeCents,
+    });
+  }
+  if (serviceOptionsCents > 0) {
+    lineItems.push({
+      code: "SERVICE_OPTIONS",
+      label: "Serviceoptionen",
+      amountCents: serviceOptionsCents,
+    });
+  }
+  if (addonsCents > 0) {
+    lineItems.push({
+      code: "ADDONS",
+      label: "Zusatzleistungen",
+      amountCents: addonsCents,
+    });
+  }
+  if (discountCents > 0) {
+    lineItems.push({
+      code: "DISCOUNT",
+      label: "Rabatt",
+      amountCents: -discountCents,
+    });
+  }
+  if (minimumOrderAppliedCents > 0) {
+    lineItems.push({
+      code: "MINIMUM_ORDER",
+      label: "Mindestauftragszuschlag",
+      amountCents: minimumOrderAppliedCents,
+    });
+  }
+
   return {
     currency: pricing.currency,
     priceMinCents,
@@ -439,6 +495,7 @@ export function estimateOrder(
     distanceKm,
     distanceSource,
     driveChargeCents,
+    lineItems,
     breakdown: {
       moveVolumeM3: round2(effectiveMoveVolume),
       disposalVolumeM3: round2(disposalVolume),

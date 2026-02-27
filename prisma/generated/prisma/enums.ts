@@ -191,3 +191,13 @@ export const PaymentMethod = {
 } as const
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
+
+export const ExpensePaymentMethod = {
+  CASH: 'CASH',
+  BANK: 'BANK',
+  CARD: 'CARD',
+  OTHER: 'OTHER'
+} as const
+
+export type ExpensePaymentMethod = (typeof ExpensePaymentMethod)[keyof typeof ExpensePaymentMethod]

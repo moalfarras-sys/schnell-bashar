@@ -153,6 +153,16 @@ export type Payment = Prisma.PaymentModel
  */
 export type AdminUser = Prisma.AdminUserModel
 /**
+ * Model ExpenseCategory
+ * 
+ */
+export type ExpenseCategory = Prisma.ExpenseCategoryModel
+/**
+ * Model ExpenseEntry
+ * 
+ */
+export type ExpenseEntry = Prisma.ExpenseEntryModel
+/**
  * Model Role
  * 
  */

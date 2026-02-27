@@ -27,6 +27,7 @@ import { generateAGBPDF } from "@/server/pdf/generate-agb";
 import { STORAGE_BUCKETS, getSupabaseAdmin } from "@/lib/supabase";
 import { deriveOfferNoFromOrderNo, nextDocumentNumber } from "@/server/ids/document-number";
 import { loadOperationalSettings } from "@/server/settings/operational-settings";
+import { getRuntimePricingConfig } from "@/server/pricing/runtime-config";
 
 export const runtime = "nodejs";
 const OFFER_VALIDITY_DAYS = parseInt(process.env.OFFER_VALIDITY_DAYS || "7", 10);
@@ -152,14 +153,17 @@ const addonLabels: Record<WizardPayload["addons"][number], string> = {
   BASEMENT_ATTIC_CLEARING: "Keller-/Dachbodenräumung",
 };
 
-function leadDaysForSpeed(speed: "ECONOMY" | "STANDARD" | "EXPRESS", pricing: any) {
+function leadDaysForSpeed(
+  speed: "ECONOMY" | "STANDARD" | "EXPRESS",
+  leadDays: { economy: number; standard: number; express: number },
+) {
   switch (speed) {
     case "ECONOMY":
-      return pricing.economyLeadDays as number;
+      return leadDays.economy;
     case "EXPRESS":
-      return pricing.expressLeadDays as number;
+      return leadDays.express;
     default:
-      return pricing.standardLeadDays as number;
+      return leadDays.standard;
   }
 }
 
@@ -272,11 +276,8 @@ export async function POST(req: Request) {
     }
   }
 
-  const [pricing, catalog, serviceOptionsData, promoRulesData, operationalSettings] = await Promise.all([
-    prisma.pricingConfig.findFirst({
-      where: { active: true },
-      orderBy: { updatedAt: "desc" },
-    }),
+  const [runtimePricing, catalog, serviceOptionsData, promoRulesData, operationalSettings] = await Promise.all([
+    getRuntimePricingConfig(),
     prisma.catalogItem.findMany({
       where: { active: true },
       orderBy: [{ sortOrder: "asc" }, { nameDe: "asc" }],
@@ -309,10 +310,6 @@ export async function POST(req: Request) {
     }),
     loadOperationalSettings(),
   ]);
-
-  if (!pricing) {
-    return NextResponse.json({ error: "Keine Preiskonfiguration gefunden" }, { status: 500 });
-  }
 
   let routeDistance:
       | {
@@ -359,7 +356,7 @@ export async function POST(req: Request) {
     }
   }
 
-  const distancePricing = resolveDistancePricingConfig(pricing.perKmCents);
+  const distancePricing = resolveDistancePricingConfig(runtimePricing.pricing.perKmCents);
 
   const bookingModuleSlug =
     payload.bookingContext === "MONTAGE"
@@ -394,48 +391,11 @@ export async function POST(req: Request) {
       : undefined,
   };
 
-  const serviceOptions = serviceOptionsData.map((option) => ({
-    code: option.code,
-    moduleSlug: option.module.slug,
-    pricingType: option.pricingType,
-    defaultPriceCents: option.defaultPriceCents,
-    defaultLaborMinutes: option.defaultLaborMinutes,
-    isHeavy: option.isHeavy,
-    requiresQuantity: option.requiresQuantity,
-  }));
+  const serviceOptions = runtimePricing.serviceOptions;
 
   const baseEstimate = estimateOrder(normalizedPayload, {
     catalog,
-    pricing: {
-      currency: pricing.currency,
-      movingBaseFeeCents: pricing.movingBaseFeeCents,
-      disposalBaseFeeCents: pricing.disposalBaseFeeCents,
-      hourlyRateCents: pricing.hourlyRateCents,
-      perM3MovingCents: pricing.perM3MovingCents,
-      perM3DisposalCents: pricing.perM3DisposalCents,
-      perKmCents: pricing.perKmCents,
-      heavyItemSurchargeCents: pricing.heavyItemSurchargeCents,
-      stairsSurchargePerFloorCents: pricing.stairsSurchargePerFloorCents,
-      carryDistanceSurchargePer25mCents: pricing.carryDistanceSurchargePer25mCents,
-      parkingSurchargeMediumCents: pricing.parkingSurchargeMediumCents,
-      parkingSurchargeHardCents: pricing.parkingSurchargeHardCents,
-      elevatorDiscountSmallCents: pricing.elevatorDiscountSmallCents,
-      elevatorDiscountLargeCents: pricing.elevatorDiscountLargeCents,
-      uncertaintyPercent: pricing.uncertaintyPercent,
-      economyMultiplier: pricing.economyMultiplier,
-      standardMultiplier: pricing.standardMultiplier,
-      expressMultiplier: pricing.expressMultiplier,
-      montageBaseFeeCents: pricing.montageBaseFeeCents,
-      entsorgungBaseFeeCents: pricing.entsorgungBaseFeeCents,
-      montageStandardMultiplier: pricing.montageStandardMultiplier,
-      montagePlusMultiplier: pricing.montagePlusMultiplier,
-      montagePremiumMultiplier: pricing.montagePremiumMultiplier,
-      entsorgungStandardMultiplier: pricing.entsorgungStandardMultiplier,
-      entsorgungPlusMultiplier: pricing.entsorgungPlusMultiplier,
-      entsorgungPremiumMultiplier: pricing.entsorgungPremiumMultiplier,
-      montageMinimumOrderCents: pricing.montageMinimumOrderCents,
-      entsorgungMinimumOrderCents: pricing.entsorgungMinimumOrderCents,
-    },
+    pricing: runtimePricing.pricing,
     serviceOptions,
   }, {
     distanceKm: routeDistance?.distanceKm,
@@ -469,36 +429,7 @@ export async function POST(req: Request) {
     normalizedPayload,
     {
       catalog,
-      pricing: {
-        currency: pricing.currency,
-        movingBaseFeeCents: pricing.movingBaseFeeCents,
-        disposalBaseFeeCents: pricing.disposalBaseFeeCents,
-        hourlyRateCents: pricing.hourlyRateCents,
-        perM3MovingCents: pricing.perM3MovingCents,
-        perM3DisposalCents: pricing.perM3DisposalCents,
-        perKmCents: pricing.perKmCents,
-        heavyItemSurchargeCents: pricing.heavyItemSurchargeCents,
-        stairsSurchargePerFloorCents: pricing.stairsSurchargePerFloorCents,
-        carryDistanceSurchargePer25mCents: pricing.carryDistanceSurchargePer25mCents,
-        parkingSurchargeMediumCents: pricing.parkingSurchargeMediumCents,
-        parkingSurchargeHardCents: pricing.parkingSurchargeHardCents,
-        elevatorDiscountSmallCents: pricing.elevatorDiscountSmallCents,
-        elevatorDiscountLargeCents: pricing.elevatorDiscountLargeCents,
-        uncertaintyPercent: pricing.uncertaintyPercent,
-        economyMultiplier: pricing.economyMultiplier,
-        standardMultiplier: pricing.standardMultiplier,
-        expressMultiplier: pricing.expressMultiplier,
-        montageBaseFeeCents: pricing.montageBaseFeeCents,
-        entsorgungBaseFeeCents: pricing.entsorgungBaseFeeCents,
-        montageStandardMultiplier: pricing.montageStandardMultiplier,
-        montagePlusMultiplier: pricing.montagePlusMultiplier,
-        montagePremiumMultiplier: pricing.montagePremiumMultiplier,
-        entsorgungStandardMultiplier: pricing.entsorgungStandardMultiplier,
-        entsorgungPlusMultiplier: pricing.entsorgungPlusMultiplier,
-        entsorgungPremiumMultiplier: pricing.entsorgungPremiumMultiplier,
-        montageMinimumOrderCents: pricing.montageMinimumOrderCents,
-        entsorgungMinimumOrderCents: pricing.entsorgungMinimumOrderCents,
-      },
+      pricing: runtimePricing.pricing,
       serviceOptions,
     },
     {
@@ -536,7 +467,7 @@ export async function POST(req: Request) {
   }
 
   // Lead-time check (Europe/Berlin) for the requested start date.
-  const leadDays = leadDaysForSpeed(payload.timing.speed, pricing);
+  const leadDays = leadDaysForSpeed(payload.timing.speed, runtimePricing.leadDays);
   const todayISO = formatInTimeZone(new Date(), "Europe/Berlin", "yyyy-MM-dd");
   const earliestISO = format(addDays(parseISO(todayISO), Math.max(0, leadDays)), "yyyy-MM-dd");
   const requestedFromISO = formatInTimeZone(requestedDateFrom, "Europe/Berlin", "yyyy-MM-dd");

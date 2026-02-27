@@ -55,6 +55,9 @@ const navItems: NavItem[] = [
   { href: "/admin/accounting", label: "Buchhaltung", icon: Wallet, section: "accounting" },
   { href: "/admin/accounting/invoices", label: "Rechnungen", icon: Receipt, section: "accounting" },
   { href: "/admin/accounting/invoices/new", label: "Neue Rechnung (manuell)", icon: PlusCircle, section: "accounting" },
+  { href: "/admin/accounting/expenses", label: "Ausgaben", icon: Wallet, section: "accounting" },
+  { href: "/admin/accounting/expense-categories", label: "Ausgabenkategorien", icon: Settings, section: "accounting" },
+  { href: "/admin/accounting/quarterly-report", label: "Quartalsbericht", icon: BarChart3, section: "accounting" },
   { href: "/admin/accounting/reports", label: "Berichte", icon: BarChart3, section: "accounting" },
 ];
 

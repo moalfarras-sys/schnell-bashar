@@ -40,6 +40,7 @@ export type BookingDraft = {
   volumeM3: number;
   floors: number;
   hasElevator: boolean;
+  selectedServiceOptions: Array<{ code: string; qty: number }>;
   preset: "studio" | "2zimmer" | "3zimmer" | "haus";
   extras: ExtrasState;
   contact: ContactState;

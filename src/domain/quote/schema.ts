@@ -161,6 +161,17 @@ export const QuoteResultSchema = z.object({
       }),
     )
     .default([]),
+  lineItems: z
+    .array(
+      z.object({
+        code: z.string().min(2).max(64),
+        label: z.string().min(2).max(160),
+        amountCents: z.number().int(),
+        quantity: z.number().int().min(1).optional(),
+        unit: z.string().min(1).max(32).optional(),
+      }),
+    )
+    .default([]),
   breakdown: z
     .object({
       laborHours: z.number().min(0).optional(),

@@ -84,3 +84,50 @@ test("estimateOrder uses volumeM3 when no move items are selected", () => {
   assert.equal(high.breakdown.moveVolumeM3, 58);
 });
 
+test("estimateOrder includes PACKING addon and reports line items", () => {
+  const basePayload = payloadWithVolume(20);
+  const base = estimateOrder(
+    basePayload,
+    {
+      catalog: [],
+      pricing,
+      serviceOptions: [
+        {
+          code: "PACKING",
+          moduleSlug: "SPECIAL",
+          pricingType: "FLAT",
+          defaultPriceCents: 1800,
+          defaultLaborMinutes: 45,
+          isHeavy: false,
+          requiresQuantity: false,
+        },
+      ],
+    },
+    { distanceKm: 5, distanceSource: "cache" },
+  );
+
+  const withPacking = estimateOrder(
+    { ...basePayload, addons: ["PACKING"] },
+    {
+      catalog: [],
+      pricing,
+      serviceOptions: [
+        {
+          code: "PACKING",
+          moduleSlug: "SPECIAL",
+          pricingType: "FLAT",
+          defaultPriceCents: 1800,
+          defaultLaborMinutes: 45,
+          isHeavy: false,
+          requiresQuantity: false,
+        },
+      ],
+    },
+    { distanceKm: 5, distanceSource: "cache" },
+  );
+
+  assert.ok(withPacking.breakdown.totalCents > base.breakdown.totalCents);
+  assert.ok(withPacking.breakdown.addonsCents >= 1800);
+  assert.ok(withPacking.lineItems.length > 0);
+  assert.ok(withPacking.lineItems.some((line) => line.code === "ADDONS"));
+});

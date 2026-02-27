@@ -635,6 +635,13 @@ enum PaymentMethod {
   OTHER
 }
 
+enum ExpensePaymentMethod {
+  CASH
+  BANK
+  CARD
+  OTHER
+}
+
 model Invoice {
   id        String @id @default(cuid())
   invoiceNo String? @unique
@@ -741,6 +748,51 @@ model AdminUser {
 
   roles     UserRole[]
   auditLogs AuditLog[] @relation("AuditActor")
+  expenseEntries ExpenseEntry[] @relation("ExpenseEntryCreatedBy")
+}
+
+model ExpenseCategory {
+  id             String   @id @default(cuid())
+  nameDe         String   @unique
+  defaultVatRate Float?   @default(19)
+  active         Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  deletedAt      DateTime?
+  deletedBy      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  entries ExpenseEntry[]
+
+  @@index([active, sortOrder])
+}
+
+model ExpenseEntry {
+  id               String   @id @default(cuid())
+  date             DateTime @db.Date
+  vendor           String?
+  description      String
+  categoryId       String
+  category         ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  netCents         Int
+  vatRatePercent   Float
+  vatCents         Int
+  grossCents       Int
+  paymentMethod    ExpensePaymentMethod @default(BANK)
+  receiptFileUrl   String?
+  notes            String?
+  createdByUserId  String?
+  createdBy        AdminUser? @relation("ExpenseEntryCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  deletedAt        DateTime?
+  deletedBy        String?
+  version          Int      @default(1)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([date])
+  @@index([categoryId])
+  @@index([createdByUserId])
+  @@index([deletedAt])
 }
 
 model Role {

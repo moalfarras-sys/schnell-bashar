@@ -47,6 +47,13 @@ export type PriceCalcResponse = {
     maxCents: number;
     optionTotalCents: number;
   }>;
+  lineItems?: Array<{
+    code: string;
+    label: string;
+    amountCents: number;
+    quantity?: number;
+    unit?: string;
+  }>;
 };
 
 export function formatEuroFromCents(cents: number) {

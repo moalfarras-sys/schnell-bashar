@@ -1,4 +1,3 @@
-import { prisma } from "@/server/db/prisma";
 import { estimateOrder } from "@/server/calc/estimate";
 import { resolveRouteDistance } from "@/server/distance/ors";
 import { QuoteDraftSchema } from "@/domain/quote/schema";
@@ -8,6 +7,7 @@ import {
   quoteDraftToWizardPayload,
   quoteSpeedToPackageTier,
 } from "@/server/quotes/map-quote-to-wizard";
+import { getRuntimePricingConfig } from "@/server/pricing/runtime-config";
 
 type PackageBreakdown = {
   tier: "ECONOMY" | "STANDARD" | "EXPRESS";
@@ -55,23 +55,7 @@ export async function calculateQuote(
 }> {
   const parsed = QuoteDraftSchema.parse(input);
   const wizardPayload = quoteDraftToWizardPayload(parsed);
-
-  const pricing = await prisma.pricingConfig.findFirst({
-    where: { active: true },
-    orderBy: { updatedAt: "desc" },
-  });
-  if (!pricing) {
-    throw new Error("Die Preiskonfiguration ist aktuell nicht verfügbar.");
-  }
-
-  const serviceOptionsDb = await prisma.serviceOption.findMany({
-    where: {
-      active: true,
-      deletedAt: null,
-      module: { active: true, deletedAt: null, slug: { in: ["MONTAGE", "ENTSORGUNG", "SPECIAL"] } },
-    },
-    include: { module: { select: { slug: true } } },
-  });
+  const runtimeConfig = await getRuntimePricingConfig();
 
   const needsRoute = parsed.serviceContext === "MOVING" || parsed.serviceContext === "COMBO";
   let distanceKm: number | undefined;
@@ -99,57 +83,21 @@ export async function calculateQuote(
   }
 
   const estimateInput = {
-    catalog: [] as Array<{ id: string; nameDe: string; categoryKey: string; defaultVolumeM3: number; laborMinutesPerUnit: number; isHeavy: boolean }>,
-    pricing: {
-      currency: pricing.currency,
-      movingBaseFeeCents: pricing.movingBaseFeeCents,
-      disposalBaseFeeCents: pricing.disposalBaseFeeCents,
-      hourlyRateCents: pricing.hourlyRateCents,
-      perM3MovingCents: pricing.perM3MovingCents,
-      perM3DisposalCents: pricing.perM3DisposalCents,
-      perKmCents: pricing.perKmCents,
-      heavyItemSurchargeCents: pricing.heavyItemSurchargeCents,
-      stairsSurchargePerFloorCents: pricing.stairsSurchargePerFloorCents,
-      carryDistanceSurchargePer25mCents: pricing.carryDistanceSurchargePer25mCents,
-      parkingSurchargeMediumCents: pricing.parkingSurchargeMediumCents,
-      parkingSurchargeHardCents: pricing.parkingSurchargeHardCents,
-      elevatorDiscountSmallCents: pricing.elevatorDiscountSmallCents,
-      elevatorDiscountLargeCents: pricing.elevatorDiscountLargeCents,
-      uncertaintyPercent: pricing.uncertaintyPercent,
-      economyMultiplier: pricing.economyMultiplier,
-      standardMultiplier: pricing.standardMultiplier,
-      expressMultiplier: pricing.expressMultiplier,
-      montageBaseFeeCents: pricing.montageBaseFeeCents,
-      entsorgungBaseFeeCents: pricing.entsorgungBaseFeeCents,
-      montageStandardMultiplier: pricing.montageStandardMultiplier,
-      montagePlusMultiplier: pricing.montagePlusMultiplier,
-      montagePremiumMultiplier: pricing.montagePremiumMultiplier,
-      entsorgungStandardMultiplier: pricing.entsorgungStandardMultiplier,
-      entsorgungPlusMultiplier: pricing.entsorgungPlusMultiplier,
-      entsorgungPremiumMultiplier: pricing.entsorgungPremiumMultiplier,
-      montageMinimumOrderCents: pricing.montageMinimumOrderCents,
-      entsorgungMinimumOrderCents: pricing.entsorgungMinimumOrderCents,
-    },
-    serviceOptions: serviceOptionsDb.map((option) => ({
-      code: option.code,
-      moduleSlug: option.module.slug,
-      pricingType: option.pricingType,
-      defaultPriceCents: option.defaultPriceCents,
-      defaultLaborMinutes: option.defaultLaborMinutes,
-      isHeavy: option.isHeavy,
-      requiresQuantity: option.requiresQuantity,
-    })),
+    catalog: [] as Array<{
+      id: string;
+      nameDe: string;
+      categoryKey: string;
+      defaultVolumeM3: number;
+      laborMinutesPerUnit: number;
+      isHeavy: boolean;
+    }>,
+    pricing: runtimeConfig.pricing,
+    serviceOptions: runtimeConfig.serviceOptions,
   };
 
-  const estimateOptions = {
-    distanceKm,
-    distanceSource,
-  };
+  const estimateOptions = { distanceKm, distanceSource };
 
-  const estimateBySpeed = new Map<
-    "ECONOMY" | "STANDARD" | "EXPRESS",
-    ReturnType<typeof estimateOrder>
-  >();
+  const estimateBySpeed = new Map<"ECONOMY" | "STANDARD" | "EXPRESS", ReturnType<typeof estimateOrder>>();
   for (const speed of ["ECONOMY", "STANDARD", "EXPRESS"] as const) {
     const payloadForSpeed = {
       ...wizardPayload,
@@ -163,18 +111,24 @@ export async function calculateQuote(
   }
 
   const selectedEstimate = estimateBySpeed.get(parsed.packageSpeed) ?? estimateBySpeed.get("STANDARD")!;
+  const perM3MovingCents = runtimeConfig.pricing.perM3MovingCents ?? 0;
+  const perM3DisposalCents = runtimeConfig.pricing.perM3DisposalCents ?? 0;
+  const perKmCents = runtimeConfig.pricing.perKmCents ?? 0;
+  const movingBaseFeeCents = runtimeConfig.pricing.movingBaseFeeCents ?? 0;
+  const entsorgungBaseFeeCents = runtimeConfig.pricing.entsorgungBaseFeeCents ?? 0;
+  const montageBaseFeeCents = runtimeConfig.pricing.montageBaseFeeCents ?? 0;
   const packages = packageSet(
     (["ECONOMY", "STANDARD", "EXPRESS"] as const).map((tier) => ({
       tier,
       netCents: estimateBySpeed.get(tier)?.breakdown.totalCents ?? 0,
     })),
-    pricing.uncertaintyPercent,
+    runtimeConfig.pricing.uncertaintyPercent,
   );
   const selected =
     packages.find((pkg) => pkg.tier === parsed.packageSpeed) ??
     packages.find((pkg) => pkg.tier === "STANDARD")!;
 
-  const serviceOptionsByCode = new Map(serviceOptionsDb.map((option) => [option.code, option]));
+  const serviceOptionsByCode = new Map(runtimeConfig.serviceOptions.map((option) => [option.code, option]));
   const cart = quoteContextToServiceCart(parsed.serviceContext).map((item) => ({
     ...item,
     titleDe: item.titleDe || serviceKindLabel[item.kind],
@@ -182,7 +136,7 @@ export async function calculateQuote(
 
   const servicesBreakdown = cart.map((service) => {
     const optionRows = parsed.selectedServiceOptions.filter((item) => {
-      const moduleSlug = serviceOptionsByCode.get(item.code)?.module.slug;
+      const moduleSlug = serviceOptionsByCode.get(item.code)?.moduleSlug;
       if (!moduleSlug) return false;
       if (service.kind === "MONTAGE") return moduleSlug === "MONTAGE";
       if (service.kind === "ENTSORGUNG") return moduleSlug === "ENTSORGUNG";
@@ -198,18 +152,19 @@ export async function calculateQuote(
     let baseCents = 0;
     if (service.kind === "UMZUG") {
       baseCents =
-        pricing.movingBaseFeeCents +
-        Math.round(parsed.volumeM3 * pricing.perM3MovingCents) +
-        (distanceKm ? Math.round(distanceKm * pricing.perKmCents) : 0);
+        movingBaseFeeCents +
+        Math.round(parsed.volumeM3 * perM3MovingCents) +
+        (distanceKm ? Math.round(distanceKm * perKmCents) : 0);
     } else if (service.kind === "ENTSORGUNG") {
       baseCents =
-        pricing.entsorgungBaseFeeCents + Math.round(parsed.volumeM3 * pricing.perM3DisposalCents);
+        entsorgungBaseFeeCents +
+        Math.round(parsed.volumeM3 * perM3DisposalCents);
     } else if (service.kind === "MONTAGE" || service.kind === "SPECIAL") {
-      baseCents = pricing.montageBaseFeeCents;
+      baseCents = montageBaseFeeCents;
     }
 
     const subtotalCents = Math.max(0, baseCents + optionTotal);
-    const spread = Math.round(subtotalCents * (pricing.uncertaintyPercent / 100));
+    const spread = Math.round(subtotalCents * (runtimeConfig.pricing.uncertaintyPercent / 100));
 
     return {
       kind: service.kind,
@@ -239,6 +194,7 @@ export async function calculateQuote(
     computedAt: new Date().toISOString(),
     serviceCart: cart,
     servicesBreakdown,
+    lineItems: selectedEstimate.lineItems,
     breakdown: {
       laborHours: selectedEstimate.breakdown.laborHours,
       distanceKm: selectedEstimate.breakdown.distanceKm,

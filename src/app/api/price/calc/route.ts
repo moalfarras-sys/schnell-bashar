@@ -30,10 +30,11 @@ export async function POST(req: Request) {
   const draft = mapCalcInputToQuoteDraft(parsed.data);
 
   try {
-    const { result } = await calculateQuote(draft, { allowDistanceFallback: true });
+    const { result } = await calculateQuote(draft, { allowDistanceFallback: false });
     return NextResponse.json({
       serviceCart: result.serviceCart,
       servicesBreakdown: result.servicesBreakdown,
+      lineItems: result.lineItems,
       packages: result.packages,
       totals: {
         tier: result.packageSpeed,
@@ -80,3 +81,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: message }, { status });
   }
 }
+

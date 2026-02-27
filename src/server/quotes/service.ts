@@ -49,7 +49,7 @@ function toQuoteSnapshot(record: {
 }
 
 export async function createQuote(input: QuoteDraft): Promise<QuoteSnapshot> {
-  const calculated = await calculateQuote(input, { allowDistanceFallback: true });
+  const calculated = await calculateQuote(input, { allowDistanceFallback: false });
   const quoteId = `q_${nanoid(24)}`;
   const expiresAt = addDays(new Date(), 14);
 
@@ -115,7 +115,7 @@ export async function updateQuote(
       ...(patch.extras ?? {}),
     },
   } as QuoteDraft;
-  const calculated = await calculateQuote(nextDraft, { allowDistanceFallback: true });
+  const calculated = await calculateQuote(nextDraft, { allowDistanceFallback: false });
 
   const updated = await prisma.quote.update({
     where: { quoteId },

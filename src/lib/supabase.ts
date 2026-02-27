@@ -57,4 +57,5 @@ export const supabaseAdmin = isAdminConfigured()
 export const STORAGE_BUCKETS = {
   OFFERS: "offers",
   SIGNED_CONTRACTS: "signed-contracts",
+  EXPENSE_RECEIPTS: "expense-receipts",
 } as const;

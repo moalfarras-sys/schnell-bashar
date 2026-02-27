@@ -78,6 +78,8 @@ export const ModelName = {
   InvoiceItem: 'InvoiceItem',
   Payment: 'Payment',
   AdminUser: 'AdminUser',
+  ExpenseCategory: 'ExpenseCategory',
+  ExpenseEntry: 'ExpenseEntry',
   Role: 'Role',
   Permission: 'Permission',
   UserRole: 'UserRole',
@@ -649,6 +651,45 @@ export const AdminUserScalarFieldEnum = {
 } as const
 
 export type AdminUserScalarFieldEnum = (typeof AdminUserScalarFieldEnum)[keyof typeof AdminUserScalarFieldEnum]
+
+
+export const ExpenseCategoryScalarFieldEnum = {
+  id: 'id',
+  nameDe: 'nameDe',
+  defaultVatRate: 'defaultVatRate',
+  active: 'active',
+  sortOrder: 'sortOrder',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExpenseCategoryScalarFieldEnum = (typeof ExpenseCategoryScalarFieldEnum)[keyof typeof ExpenseCategoryScalarFieldEnum]
+
+
+export const ExpenseEntryScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  vendor: 'vendor',
+  description: 'description',
+  categoryId: 'categoryId',
+  netCents: 'netCents',
+  vatRatePercent: 'vatRatePercent',
+  vatCents: 'vatCents',
+  grossCents: 'grossCents',
+  paymentMethod: 'paymentMethod',
+  receiptFileUrl: 'receiptFileUrl',
+  notes: 'notes',
+  createdByUserId: 'createdByUserId',
+  deletedAt: 'deletedAt',
+  deletedBy: 'deletedBy',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExpenseEntryScalarFieldEnum = (typeof ExpenseEntryScalarFieldEnum)[keyof typeof ExpenseEntryScalarFieldEnum]
 
 
 export const RoleScalarFieldEnum = {

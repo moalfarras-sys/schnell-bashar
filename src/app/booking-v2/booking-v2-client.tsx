@@ -70,6 +70,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
     volumeM3: 24,
     floors: 0,
     hasElevator: false,
+    selectedServiceOptions: [],
     preset: "2zimmer",
     extras: {
       packing: false,
@@ -132,7 +133,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
         fromAddress: draft.from,
         toAddress: draft.to,
         extras: draft.extras,
-        selectedServiceOptions: [],
+        selectedServiceOptions: draft.selectedServiceOptions,
       },
     }),
     [draft],
@@ -182,6 +183,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
               fromAddress?: BookingDraft["from"];
               toAddress?: BookingDraft["to"];
               extras: BookingDraft["extras"];
+              selectedServiceOptions?: Array<{ code: string; qty: number }>;
             };
             result?: {
               packageSpeed: "ECONOMY" | "STANDARD" | "EXPRESS";
@@ -215,6 +217,8 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
           from: json.snapshot!.draft.fromAddress ?? prev.from,
           to: json.snapshot!.draft.toAddress ?? prev.to,
           extras: json.snapshot!.draft.extras ?? prev.extras,
+          selectedServiceOptions:
+            json.snapshot!.draft.selectedServiceOptions ?? prev.selectedServiceOptions,
           schedule: {
             ...prev.schedule,
             speed: json.snapshot!.draft.packageSpeed ?? prev.schedule.speed,
@@ -294,6 +298,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
             hasElevator: draft.hasElevator,
             needNoParkingZone: draft.extras.noParkingZone,
             addons,
+            selectedServiceOptions: draft.selectedServiceOptions,
             fromAddressObject: draft.from,
             toAddressObject: draft.to,
             fromAddress,
@@ -332,6 +337,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
     draft.extras.express,
     draft.extras.noParkingZone,
     draft.extras.disposalBags,
+    draft.selectedServiceOptions,
     draft.schedule.speed,
   ]);
 
@@ -407,7 +413,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
         packageTier: toWizardPackageTier(speed),
         serviceCart,
         volumeM3: draft.volumeM3,
-        selectedServiceOptions: [],
+        selectedServiceOptions: draft.selectedServiceOptions,
         serviceType,
         addons,
         pickupAddress: draft.service === "DISPOSAL" || draft.service === "ASSEMBLY" ? draft.to : undefined,
