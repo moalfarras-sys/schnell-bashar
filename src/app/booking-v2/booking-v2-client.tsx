@@ -122,6 +122,9 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
 
   const prevStep = () => goStep(Math.max(step - 1, 0));
 
+  const hasCompleteAddress = (address?: BookingDraft["from"]) =>
+    Boolean(address?.displayName?.trim() && /\b\d{5}\b/.test(address.displayName));
+
   useEffect(() => {
     if (!initialQuoteId) {
       setQuoteHydrated(true);
@@ -185,6 +188,15 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
     const id = setTimeout(async () => {
       const serviceCart = toServiceCart(draft.service);
       const needsRoute = draft.service === "MOVING" || draft.service === "COMBO";
+      const requiresSingleAddress = draft.service === "DISPOSAL" || draft.service === "ASSEMBLY";
+      const hasFrom = hasCompleteAddress(draft.from);
+      const hasTo = hasCompleteAddress(draft.to);
+
+      if ((needsRoute && (!hasFrom || !hasTo)) || (requiresSingleAddress && !hasTo)) {
+        setCalcState((prev) => ({ ...prev, loading: false, error: null }));
+        return;
+      }
+
       const fromAddress = needsRoute ? draft.from?.displayName : undefined;
       const toAddress = needsRoute ? draft.to?.displayName : draft.to?.displayName;
 
@@ -260,6 +272,14 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
         ASSEMBLY: "MONTAGE",
         COMBO: "COMBO",
       };
+      const needsRoute = draft.service === "MOVING" || draft.service === "COMBO";
+      const requiresSingleAddress = draft.service === "DISPOSAL" || draft.service === "ASSEMBLY";
+      const hasFrom = hasCompleteAddress(draft.from);
+      const hasTo = hasCompleteAddress(draft.to);
+
+      if ((needsRoute && (!hasFrom || !hasTo)) || (requiresSingleAddress && !hasTo)) {
+        return;
+      }
       await fetch(`/api/quotes/${encodeURIComponent(quoteId)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
