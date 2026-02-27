@@ -150,6 +150,11 @@ function toAddressPayload(value: string, selected?: AddressAutocompleteOption) {
   };
 }
 
+function hasCompleteAddressInput(value: string) {
+  const normalized = value.trim();
+  return normalized.length >= 5 && /\b\d{5}\b/.test(normalized);
+}
+
 export function PriceCalculator({
   montageOptions = [],
   externalVolumeM3,
@@ -227,8 +232,22 @@ export function PriceCalculator({
   useEffect(() => {
     let cancel = false;
     const timer = window.setTimeout(async () => {
+      const normalizedFrom = fromAddress.trim();
+      const normalizedTo = toAddress.trim();
+      const canCalcMoving = hasMoving
+        ? hasCompleteAddressInput(normalizedFrom) && hasCompleteAddressInput(normalizedTo)
+        : true;
+      const canCalcSingle = hasMoving ? true : hasCompleteAddressInput(normalizedFrom);
+      if (!canCalcMoving || !canCalcSingle) {
+        if (!cancel) {
+          setLoading(false);
+          setCalcError(null);
+        }
+        return;
+      }
+
       try {
-        const handoffTargetAddress = hasMoving ? toAddress.trim() : fromAddress.trim();
+        const handoffTargetAddress = hasMoving ? normalizedTo : normalizedFrom;
         setLoading(true);
         const res = await fetch("/api/price/calc", {
           method: "POST",
@@ -245,9 +264,9 @@ export function PriceCalculator({
               code,
               qty,
             })),
-            fromAddress: fromAddress.trim() || undefined,
+            fromAddress: normalizedFrom || undefined,
             toAddress: handoffTargetAddress || undefined,
-            fromAddressObject: toAddressPayload(fromAddress, fromAddressOption),
+            fromAddressObject: toAddressPayload(normalizedFrom, fromAddressOption),
             toAddressObject: toAddressPayload(handoffTargetAddress, hasMoving ? toAddressOption : fromAddressOption),
           }),
         });
