@@ -168,6 +168,12 @@
   .dark * {
     @apply border-slate-800;
   }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 }
 
 @layer utilities {
