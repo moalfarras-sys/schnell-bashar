@@ -179,8 +179,8 @@ export async function POST(req: Request) {
   }
 
   const raw = formSchema.safeParse({
-    payload: formData.get("payload"),
-    quoteId: formData.get("quoteId"),
+    payload: formData.get("payload") ?? undefined,
+    quoteId: formData.get("quoteId") ?? undefined,
   });
   if (!raw.success) {
     return NextResponse.json({ error: "Ungültige Formulardaten" }, { status: 400 });
