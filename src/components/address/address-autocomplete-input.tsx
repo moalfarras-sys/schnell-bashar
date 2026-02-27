@@ -69,7 +69,6 @@ export function AddressAutocompleteInput(props: {
           value={props.value}
           onChange={(e) => {
             props.onValueChange(e.target.value);
-            props.onSelect?.(undefined);
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
