@@ -17,12 +17,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="luxury-bg min-h-screen text-slate-900 dark:text-slate-100">
       <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] bg-[color:var(--surface-elevated)]/90 backdrop-blur-xl">
-        <Container className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/admin" className="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
+        <Container className="flex min-h-16 flex-wrap items-center justify-between gap-2 py-2">
+          <div className="flex min-w-0 items-center gap-3">
+            <Link href="/admin" className="truncate text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
               Admin · Schnell Sicher Umzug
             </Link>
-            <Link href="/" className="text-xs font-medium text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+            <Link href="/" className="shrink-0 text-xs font-medium text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
               Zur Website
             </Link>
           </div>
