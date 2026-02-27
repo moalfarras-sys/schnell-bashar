@@ -56,8 +56,8 @@ services:
       cp -r .next/static .next/standalone/.next/static &&
       cp -r public .next/standalone/public &&
       node .next/standalone/server.js"
-    ports:
-      - "${WEB_PORT:-3001}:3000"
+    expose:
+      - "3000"
 
 volumes:
   db_data:
@@ -78,7 +78,7 @@ echo "==> Web logs (tail)"
 docker compose logs web --tail=120 || true
 
 echo "==> HTTP checks"
-curl -I "http://127.0.0.1:${WEB_PORT:-3001}" || true
+docker compose exec -T web wget --spider -q "http://127.0.0.1:3000" || true
 curl -I https://schnellsicherumzug.de || true
 
 echo "==> Done"
