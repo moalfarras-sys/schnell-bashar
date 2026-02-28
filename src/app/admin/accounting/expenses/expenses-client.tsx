@@ -40,6 +40,7 @@ type ExpenseFormState = {
   description: string;
   categoryId: string;
   netEuro: string;
+  grossEuro: string;
   vatRatePercent: string;
   paymentMethod: PaymentMethod;
   notes: string;
@@ -56,6 +57,7 @@ function defaultForm(categories: Category[]): ExpenseFormState {
     description: "",
     categoryId: categories[0]?.id ?? "",
     netEuro: "",
+    grossEuro: "",
     vatRatePercent: categories[0]?.defaultVatRate?.toString() ?? "19",
     paymentMethod: "BANK",
     notes: "",
@@ -63,7 +65,51 @@ function defaultForm(categories: Category[]): ExpenseFormState {
 }
 
 function parseEuroString(value: string) {
-  return Number(value.replace(",", "."));
+  return Number(value.replace(/\./g, "").replace(",", "."));
+}
+
+function formatEuroInput(value: number) {
+  if (!Number.isFinite(value)) return "";
+  return value.toFixed(2).replace(".", ",");
+}
+
+function computeGrossFromNet(netEuro: number, vatRatePercent: number) {
+  return netEuro * (1 + Math.max(0, vatRatePercent) / 100);
+}
+
+function computeNetFromGross(grossEuro: number, vatRatePercent: number) {
+  const factor = 1 + Math.max(0, vatRatePercent) / 100;
+  if (factor <= 0) return grossEuro;
+  return grossEuro / factor;
+}
+
+function syncDraft(next: ExpenseFormState, source: "net" | "gross" | "vat") {
+  const vat = Number(next.vatRatePercent || 0);
+  const net = parseEuroString(next.netEuro);
+  const gross = parseEuroString(next.grossEuro);
+
+  if (source === "gross" && Number.isFinite(gross) && gross >= 0) {
+    next.netEuro = formatEuroInput(computeNetFromGross(gross, vat));
+    return next;
+  }
+
+  if (source === "net" && Number.isFinite(net) && net >= 0) {
+    next.grossEuro = formatEuroInput(computeGrossFromNet(net, vat));
+    return next;
+  }
+
+  if (source === "vat") {
+    if (Number.isFinite(gross) && gross >= 0) {
+      next.netEuro = formatEuroInput(computeNetFromGross(gross, vat));
+      return next;
+    }
+    if (Number.isFinite(net) && net >= 0) {
+      next.grossEuro = formatEuroInput(computeGrossFromNet(net, vat));
+      return next;
+    }
+  }
+
+  return next;
 }
 
 export function ExpensesClient(props: { categories: Category[] }) {
@@ -154,8 +200,11 @@ export function ExpensesClient(props: { categories: Category[] }) {
     }
 
     const netEuro = parseEuroString(form.netEuro);
-    if (!form.description.trim() || !form.categoryId || !Number.isFinite(netEuro) || netEuro < 0) {
-      setError("Bitte füllen Sie Beschreibung, Kategorie und Netto korrekt aus.");
+    const grossEuro = parseEuroString(form.grossEuro);
+    const hasNet = Number.isFinite(netEuro) && netEuro >= 0;
+    const hasGross = Number.isFinite(grossEuro) && grossEuro >= 0;
+    if (!form.description.trim() || !form.categoryId || (!hasNet && !hasGross)) {
+      setError("Bitte füllen Sie Beschreibung, Kategorie und Brutto/Netto korrekt aus.");
       return;
     }
 
@@ -167,7 +216,8 @@ export function ExpensesClient(props: { categories: Category[] }) {
         vendor: form.vendor || null,
         description: form.description.trim(),
         categoryId: form.categoryId,
-        netEuro,
+        netEuro: hasNet ? netEuro : undefined,
+        grossEuro: hasGross ? grossEuro : undefined,
         vatRatePercent: Number(form.vatRatePercent || 0),
         paymentMethod: form.paymentMethod,
         receiptFileUrl: receiptUrl || null,
@@ -193,6 +243,7 @@ export function ExpensesClient(props: { categories: Category[] }) {
       description: row.description,
       categoryId: row.category.id,
       netEuro: (row.netCents / 100).toFixed(2).replace(".", ","),
+      grossEuro: (row.grossCents / 100).toFixed(2).replace(".", ","),
       vatRatePercent: String(row.vatRatePercent),
       paymentMethod: row.paymentMethod,
       notes: row.notes ?? "",
@@ -203,8 +254,11 @@ export function ExpensesClient(props: { categories: Category[] }) {
   async function saveEdit() {
     if (!editingId || !editForm) return;
     const netEuro = parseEuroString(editForm.netEuro);
-    if (!editForm.description.trim() || !editForm.categoryId || !Number.isFinite(netEuro) || netEuro < 0) {
-      setError("Bitte füllen Sie Beschreibung, Kategorie und Netto korrekt aus.");
+    const grossEuro = parseEuroString(editForm.grossEuro);
+    const hasNet = Number.isFinite(netEuro) && netEuro >= 0;
+    const hasGross = Number.isFinite(grossEuro) && grossEuro >= 0;
+    if (!editForm.description.trim() || !editForm.categoryId || (!hasNet && !hasGross)) {
+      setError("Bitte füllen Sie Beschreibung, Kategorie und Brutto/Netto korrekt aus.");
       return;
     }
 
@@ -217,7 +271,8 @@ export function ExpensesClient(props: { categories: Category[] }) {
         vendor: editForm.vendor || null,
         description: editForm.description.trim(),
         categoryId: editForm.categoryId,
-        netEuro,
+        netEuro: hasNet ? netEuro : undefined,
+        grossEuro: hasGross ? grossEuro : undefined,
         vatRatePercent: Number(editForm.vatRatePercent || 0),
         paymentMethod: editForm.paymentMethod,
         notes: editForm.notes || null,
@@ -310,9 +365,11 @@ export function ExpensesClient(props: { categories: Category[] }) {
             onChange={(e) => {
               const next = props.categories.find((cat) => cat.id === e.target.value);
               setForm((p) => ({
-                ...p,
-                categoryId: e.target.value,
-                vatRatePercent: next?.defaultVatRate != null ? String(next.defaultVatRate) : p.vatRatePercent,
+                ...syncDraft({
+                  ...p,
+                  categoryId: e.target.value,
+                  vatRatePercent: next?.defaultVatRate != null ? String(next.defaultVatRate) : p.vatRatePercent,
+                }, "vat"),
               }));
             }}
             className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
@@ -324,8 +381,27 @@ export function ExpensesClient(props: { categories: Category[] }) {
               </option>
             ))}
           </select>
-          <Input placeholder="Netto (EUR)" value={form.netEuro} onChange={(e) => setForm((p) => ({ ...p, netEuro: e.target.value }))} />
-          <Input placeholder="USt-Satz (%)" value={form.vatRatePercent} onChange={(e) => setForm((p) => ({ ...p, vatRatePercent: e.target.value }))} />
+          <Input
+            placeholder="Brutto (EUR)"
+            value={form.grossEuro}
+            onChange={(e) =>
+              setForm((p) => syncDraft({ ...p, grossEuro: e.target.value }, "gross"))
+            }
+          />
+          <Input
+            placeholder="Netto (EUR)"
+            value={form.netEuro}
+            onChange={(e) =>
+              setForm((p) => syncDraft({ ...p, netEuro: e.target.value }, "net"))
+            }
+          />
+          <Input
+            placeholder="USt-Satz (%)"
+            value={form.vatRatePercent}
+            onChange={(e) =>
+              setForm((p) => syncDraft({ ...p, vatRatePercent: e.target.value }, "vat"))
+            }
+          />
           <select
             value={form.paymentMethod}
             onChange={(e) => setForm((p) => ({ ...p, paymentMethod: e.target.value as PaymentMethod }))}
@@ -399,8 +475,21 @@ export function ExpensesClient(props: { categories: Category[] }) {
                           <option key={cat.id} value={cat.id}>{cat.nameDe}</option>
                         ))}
                       </select>
-                      <Input value={editForm.netEuro} placeholder="Netto" onChange={(e) => setEditForm((prev) => (prev ? { ...prev, netEuro: e.target.value } : prev))} />
-                      <Input value={editForm.vatRatePercent} placeholder="USt %" onChange={(e) => setEditForm((prev) => (prev ? { ...prev, vatRatePercent: e.target.value } : prev))} />
+                      <Input
+                        value={editForm.grossEuro}
+                        placeholder="Brutto"
+                        onChange={(e) => setEditForm((prev) => (prev ? syncDraft({ ...prev, grossEuro: e.target.value }, "gross") : prev))}
+                      />
+                      <Input
+                        value={editForm.netEuro}
+                        placeholder="Netto"
+                        onChange={(e) => setEditForm((prev) => (prev ? syncDraft({ ...prev, netEuro: e.target.value }, "net") : prev))}
+                      />
+                      <Input
+                        value={editForm.vatRatePercent}
+                        placeholder="USt %"
+                        onChange={(e) => setEditForm((prev) => (prev ? syncDraft({ ...prev, vatRatePercent: e.target.value }, "vat") : prev))}
+                      />
                       <div className="md:col-span-3 flex flex-wrap gap-2">
                         <Button size="sm" onClick={() => void saveEdit()}>Speichern</Button>
                         <Button size="sm" variant="outline" onClick={() => { setEditingId(null); setEditForm(null); }}>

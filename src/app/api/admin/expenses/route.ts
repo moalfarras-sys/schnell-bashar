@@ -5,21 +5,36 @@ import { prisma } from "@/server/db/prisma";
 import { requireAdminPermission } from "@/server/auth/require-admin-permission";
 import { computeVatAndGross, ensureDefaultExpenseCategories, listExpenses, toCentsFromEuro } from "@/server/accounting/expenses";
 
-const createSchema = z.object({
+const expenseBodySchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   vendor: z.string().trim().max(200).optional().nullable(),
   description: z.string().trim().min(2).max(500),
   categoryId: z.string().min(2),
-  netEuro: z.number().min(0),
+  netEuro: z.number().min(0).optional(),
+  grossEuro: z.number().min(0).optional(),
   vatRatePercent: z.number().min(0).max(100),
   paymentMethod: z.enum(["CASH", "BANK", "CARD", "OTHER"]).default("BANK"),
   receiptFileUrl: z.string().trim().url().optional().nullable(),
   notes: z.string().trim().max(2000).optional().nullable(),
 });
 
-const patchSchema = createSchema.partial().extend({
+const createSchema = expenseBodySchema.refine((v) => v.netEuro != null || v.grossEuro != null, {
+  message: "Netto oder Brutto ist erforderlich.",
+  path: ["netEuro"],
+});
+
+const patchSchema = expenseBodySchema.partial().extend({
   id: z.string().min(2),
 });
+
+function resolveNetEuro(input: { netEuro?: number; grossEuro?: number; vatRatePercent: number }) {
+  if (input.netEuro != null) return input.netEuro;
+  if (input.grossEuro != null) {
+    const factor = 1 + Math.max(0, input.vatRatePercent) / 100;
+    return factor > 0 ? input.grossEuro / factor : input.grossEuro;
+  }
+  return null;
+}
 
 export async function GET(req: NextRequest) {
   const claims = await requireAdminPermission("accounting.read");
@@ -49,7 +64,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Ungültige Eingabe", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const netCents = toCentsFromEuro(parsed.data.netEuro);
+  const resolvedNetEuro = resolveNetEuro(parsed.data);
+  if (resolvedNetEuro == null || !Number.isFinite(resolvedNetEuro) || resolvedNetEuro < 0) {
+    return NextResponse.json({ error: "Ungültige Beträge." }, { status: 400 });
+  }
+
+  const netCents = toCentsFromEuro(resolvedNetEuro);
   const { vatCents, grossCents } = computeVatAndGross(netCents, parsed.data.vatRatePercent);
 
   const item = await prisma.expenseEntry.create({
@@ -90,10 +110,14 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Ausgabe nicht gefunden." }, { status: 404 });
   }
 
-  const nextNetCents =
-    parsed.data.netEuro != null ? toCentsFromEuro(parsed.data.netEuro) : existing.netCents;
   const nextVatRate =
     parsed.data.vatRatePercent != null ? parsed.data.vatRatePercent : existing.vatRatePercent;
+  const resolvedNetEuro = resolveNetEuro({
+    netEuro: parsed.data.netEuro,
+    grossEuro: parsed.data.grossEuro,
+    vatRatePercent: nextVatRate,
+  });
+  const nextNetCents = resolvedNetEuro != null ? toCentsFromEuro(resolvedNetEuro) : existing.netCents;
   const nextTax = computeVatAndGross(nextNetCents, nextVatRate);
 
   const item = await prisma.expenseEntry.update({
