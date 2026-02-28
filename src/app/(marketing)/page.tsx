@@ -163,27 +163,27 @@ export default async function HomePage() {
         <Container className="relative z-10 py-20 sm:py-24 lg:py-28">
           <div className="mx-auto max-w-4xl text-center">
             <div className="fade-in-up hero-panel-light rounded-3xl px-5 py-8 sm:px-8 sm:py-10 dark:hero-panel-dark">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-300/55 bg-white/76 px-4 py-1.5 text-xs font-bold text-sky-900 shadow-[0_0_0_0.5px_rgba(255,255,255,0.6),0_8px_20px_rgba(15,23,42,0.1)] backdrop-blur-md dark:border-cyan-300/35 dark:bg-slate-950/52 dark:text-cyan-100 dark:shadow-[0_0_0_0.5px_rgba(6,18,38,0.5),0_8px_24px_rgba(6,18,38,0.45),inset_0_1px_0_rgba(125,211,252,0.2)]">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-300/60 bg-white/82 px-4 py-1.5 text-xs font-bold text-sky-900 shadow-[0_0_0_0.5px_rgba(255,255,255,0.65),0_8px_20px_rgba(15,23,42,0.14)] backdrop-blur-md dark:border-cyan-300/40 dark:bg-slate-950/58 dark:text-cyan-100 dark:shadow-[0_0_0_0.5px_rgba(6,18,38,0.6),0_10px_28px_rgba(6,18,38,0.58),inset_0_1px_0_rgba(125,211,252,0.26)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Deutschlandweit verfügbar - 24/7
               </div>
 
-              <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-950 drop-shadow-[0_10px_26px_rgba(255,255,255,0.52)] sm:text-5xl lg:text-6xl xl:text-7xl dark:text-white dark:drop-shadow-[0_10px_32px_rgba(8,23,48,0.72)]">
+              <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-950 drop-shadow-[0_10px_26px_rgba(255,255,255,0.52)] sm:text-5xl lg:text-6xl xl:text-7xl dark:text-white dark:drop-shadow-[0_10px_36px_rgba(8,23,48,0.86)]">
                 {txt["text.home.hero.headline"].includes(" ") ? (
                   <>
                     {txt["text.home.hero.headline"].split(" ").slice(0, -2).join(" ")}{" "}
-                    <span className="block bg-linear-to-r from-sky-400 via-sky-500 to-blue-700 bg-clip-text text-transparent">
+                    <span className="block bg-linear-to-r from-sky-400 via-cyan-400 to-blue-600 bg-clip-text text-transparent dark:from-cyan-300 dark:via-sky-300 dark:to-blue-300">
                       {txt["text.home.hero.headline"].split(" ").slice(-2).join(" ")}
                     </span>
                   </>
                 ) : (
-                  <span className="block bg-linear-to-r from-sky-400 via-sky-500 to-blue-700 bg-clip-text text-transparent">
+                  <span className="block bg-linear-to-r from-sky-400 via-cyan-400 to-blue-600 bg-clip-text text-transparent dark:from-cyan-300 dark:via-sky-300 dark:to-blue-300">
                     {txt["text.home.hero.headline"]}
                   </span>
                 )}
               </h1>
 
-              <p className="mx-auto mt-6 max-w-2xl rounded-2xl bg-white/62 px-4 py-3 text-base font-semibold leading-relaxed text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.16)] backdrop-blur-sm sm:text-lg dark:bg-slate-900/45 dark:text-slate-200">
+              <p className="mx-auto mt-6 max-w-2xl rounded-2xl border border-sky-200/70 bg-white/68 px-4 py-3 text-base font-semibold leading-relaxed text-slate-900 shadow-[0_10px_24px_rgba(15,23,42,0.18)] backdrop-blur-sm sm:text-lg dark:border-cyan-300/30 dark:bg-slate-900/58 dark:text-slate-100">
                 {txt["text.home.hero.subtitle"]}
               </p>
 
