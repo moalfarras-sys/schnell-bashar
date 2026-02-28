@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdminPermission } from "@/server/auth/require-admin-permission";
@@ -59,4 +59,3 @@ export async function GET(req: NextRequest) {
     },
   });
 }
-

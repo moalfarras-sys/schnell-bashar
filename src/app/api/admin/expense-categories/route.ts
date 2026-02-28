@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@/server/db/prisma";
 import { requireAdminPermission } from "@/server/auth/require-admin-permission";
+import { ensureDefaultExpenseCategories } from "@/server/accounting/expenses";
 
 const createSchema = z.object({
   nameDe: z.string().trim().min(2).max(120),
@@ -22,6 +23,8 @@ const patchSchema = z.object({
 export async function GET() {
   const claims = await requireAdminPermission("accounting.read");
   if (!claims) return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
+
+  await ensureDefaultExpenseCategories();
 
   const items = await prisma.expenseCategory.findMany({
     where: { deletedAt: null },
@@ -78,4 +81,3 @@ export async function PATCH(req: NextRequest) {
   });
   return NextResponse.json({ item });
 }
-

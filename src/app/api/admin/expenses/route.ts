@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "@/server/db/prisma";
 import { requireAdminPermission } from "@/server/auth/require-admin-permission";
-import { computeVatAndGross, listExpenses, toCentsFromEuro } from "@/server/accounting/expenses";
+import { computeVatAndGross, ensureDefaultExpenseCategories, listExpenses, toCentsFromEuro } from "@/server/accounting/expenses";
 
 const createSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -41,6 +41,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const claims = await requireAdminPermission("accounting.update");
   if (!claims) return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
+
+  await ensureDefaultExpenseCategories();
 
   const parsed = createSchema.safeParse(await req.json());
   if (!parsed.success) {
@@ -121,4 +123,3 @@ export async function PATCH(req: NextRequest) {
 
   return NextResponse.json({ item });
 }
-

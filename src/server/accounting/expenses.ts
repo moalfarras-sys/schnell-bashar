@@ -1,4 +1,4 @@
-import { prisma } from "@/server/db/prisma";
+﻿import { prisma } from "@/server/db/prisma";
 
 export type ExpenseFilters = {
   month?: string;
@@ -9,6 +9,40 @@ export type ExpenseFilters = {
   page?: number;
   pageSize?: number;
 };
+
+const DEFAULT_EXPENSE_CATEGORIES: Array<{ nameDe: string; defaultVatRate: number; sortOrder: number }> = [
+  { nameDe: "Diesel", defaultVatRate: 19, sortOrder: 10 },
+  { nameDe: "Büromaterial", defaultVatRate: 19, sortOrder: 20 },
+  { nameDe: "Arbeitskleidung", defaultVatRate: 19, sortOrder: 30 },
+  { nameDe: "Werkzeug", defaultVatRate: 19, sortOrder: 40 },
+  { nameDe: "Sonstiges", defaultVatRate: 19, sortOrder: 50 },
+];
+
+export async function ensureDefaultExpenseCategories() {
+  const count = await prisma.expenseCategory.count({ where: { deletedAt: null } });
+  if (count > 0) return;
+
+  await prisma.$transaction(
+    DEFAULT_EXPENSE_CATEGORIES.map((category) =>
+      prisma.expenseCategory.upsert({
+        where: { nameDe: category.nameDe },
+        update: {
+          deletedAt: null,
+          deletedBy: null,
+          active: true,
+          defaultVatRate: category.defaultVatRate,
+          sortOrder: category.sortOrder,
+        },
+        create: {
+          nameDe: category.nameDe,
+          defaultVatRate: category.defaultVatRate,
+          sortOrder: category.sortOrder,
+          active: true,
+        },
+      }),
+    ),
+  );
+}
 
 export function toCentsFromEuro(input: number) {
   return Math.round(input * 100);
@@ -36,6 +70,8 @@ export function resolveMonthRange(month?: string) {
 }
 
 export async function listExpenses(filters: ExpenseFilters) {
+  await ensureDefaultExpenseCategories();
+
   const page = Math.max(1, Number(filters.page ?? 1) || 1);
   const pageSize = Math.min(100, Math.max(10, Number(filters.pageSize ?? 20) || 20));
   const and: Record<string, unknown>[] = [{ deletedAt: null }];
@@ -196,4 +232,3 @@ export async function buildQuarterlyReport(input: { year: number; quarter: 1 | 2
       "Umsätze basieren auf bezahlten Rechnungen (Status PAID) im Zeitraum. Ausgaben basieren auf manuellen Einträgen in der Ausgabenverwaltung.",
   };
 }
-

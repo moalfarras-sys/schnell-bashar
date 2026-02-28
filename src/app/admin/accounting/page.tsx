@@ -116,7 +116,7 @@ export default async function AccountingDashboardPage() {
                 Ausgaben
               </Button>
             </Link>
-            <Link href="/admin/accounting/quarterly-report">
+            <Link href="/admin/accounting/quarterly">
               <Button variant="outline" size="sm" className="gap-2">
                 <Files className="h-4 w-4" />
                 Quartalsbericht

@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { adminCookieName, verifyAdminToken } from "@/server/auth/admin-session";
@@ -32,4 +32,3 @@ export default async function QuarterlyReportPage() {
     </div>
   );
 }
-

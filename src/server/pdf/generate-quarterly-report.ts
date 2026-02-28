@@ -1,4 +1,4 @@
-import PDFDocument from "pdfkit";
+﻿import PDFDocument from "pdfkit";
 
 type QuarterlyReportData = {
   year: number;
@@ -116,4 +116,3 @@ export async function generateQuarterlyReportPdf(input: QuarterlyReportData): Pr
     doc.end();
   });
 }
-

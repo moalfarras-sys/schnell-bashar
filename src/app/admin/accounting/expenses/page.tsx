@@ -1,8 +1,9 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { adminCookieName, verifyAdminToken } from "@/server/auth/admin-session";
 import { prisma } from "@/server/db/prisma";
+import { ensureDefaultExpenseCategories } from "@/server/accounting/expenses";
 import { Container } from "@/components/container";
 import { ExpensesClient } from "./expenses-client";
 
@@ -17,6 +18,8 @@ export default async function ExpensesPage() {
   } catch {
     redirect("/admin/login");
   }
+
+  await ensureDefaultExpenseCategories();
 
   const categories = await prisma.expenseCategory.findMany({
     where: { deletedAt: null },
@@ -35,4 +38,3 @@ export default async function ExpensesPage() {
     </Container>
   );
 }
-
