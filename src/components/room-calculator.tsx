@@ -22,7 +22,7 @@ export function RoomCalculator({ onVolumeChange }: RoomCalculatorProps) {
   const m3 = useMemo(() => roomToVolume[kind].volume, [kind]);
 
   return (
-    <div className="rounded-3xl border-2 border-slate-200 bg-[color:var(--surface-elevated)] p-5 shadow-md backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80">
+    <div className="rounded-3xl border-2 border-sky-200 bg-white/88 p-5 shadow-md backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80">
       <div className="text-sm font-extrabold text-slate-900 dark:text-white">
         Zimmer zu m³ Schnellrechner
       </div>
@@ -42,7 +42,7 @@ export function RoomCalculator({ onVolumeChange }: RoomCalculatorProps) {
               className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-2xl border-2 px-3 py-3 text-sm font-bold transition-all ${
                 key === kind
                   ? "border-brand-500 bg-brand-50 text-brand-800 shadow-md dark:bg-brand-950/30 dark:text-brand-300 dark:border-brand-400"
-                  : "border-slate-300 bg-[color:var(--surface-elevated)] text-slate-800 hover:border-slate-400 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-800"
+                  : "border-slate-300 bg-white/90 text-slate-800 hover:border-sky-300 hover:bg-sky-50 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-800"
               }`}
               aria-pressed={key === kind}
             >
@@ -55,7 +55,7 @@ export function RoomCalculator({ onVolumeChange }: RoomCalculatorProps) {
           ),
         )}
       </div>
-      <div className="mt-4 rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-200">
+      <div className="mt-4 rounded-xl border-2 border-sky-200 bg-sky-50/90 px-4 py-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-200">
         Geschätztes Volumen:{" "}
         <span className="font-extrabold text-slate-950 dark:text-white">{formatNumberDE(m3)} m³</span>
         <span className="ml-2 text-xs text-slate-600 dark:text-slate-400">(Durchschnittswert)</span>

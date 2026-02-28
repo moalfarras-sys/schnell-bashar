@@ -113,7 +113,7 @@ export default async function PreisePage() {
 
   return (
     <Container className="py-14">
-      <div className="max-w-3xl">
+      <div className="max-w-3xl rounded-3xl border border-sky-200/80 bg-white/70 p-6 shadow-[0_16px_42px_rgba(15,23,42,0.14)] backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/55">
         <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
           Preise & Pakete
         </h1>
@@ -122,13 +122,13 @@ export default async function PreisePage() {
           ein verbindliches Angebot bestätigt.
         </p>
         <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold">
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+          <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sky-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
             Umzug ab {settings.movingFromPriceEur} €
           </span>
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+          <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sky-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
             Entsorgung ab {settings.disposalFromPriceEur} €
           </span>
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+          <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sky-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
             Montage ab {settings.montageFromPriceEur} €
           </span>
         </div>
@@ -156,8 +156,8 @@ export default async function PreisePage() {
               href="#price-calculator"
               className={`relative flex flex-col rounded-3xl border-2 p-6 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 ${
                 i === 1
-                  ? "border-brand-500 bg-brand-50/70 shadow-lg dark:bg-brand-900/20"
-                  : "border-slate-300 bg-[color:var(--surface-elevated)] shadow-md hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-slate-600"
+                  ? "border-brand-500 bg-sky-50/90 shadow-lg dark:bg-brand-900/20"
+                  : "border-slate-300 bg-white/85 shadow-md hover:border-sky-300 dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-slate-600"
               }`}
             >
               {i === 1 && (
@@ -243,7 +243,7 @@ export default async function PreisePage() {
         }}
       />
 
-      <div className="mt-10 rounded-3xl border-2 border-slate-300 bg-slate-50 p-6 text-sm font-semibold text-slate-800 shadow-sm dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+      <div className="mt-10 rounded-3xl border-2 border-sky-200 bg-sky-50/90 p-6 text-sm font-semibold text-slate-900 shadow-sm dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
         Richtpreis-Hinweis: Alle Werte sind unverbindliche Orientierung auf Basis Ihrer Angaben.
         Der endgültige Preis wird nach Prüfung in einem verbindlichen Angebot festgelegt.
       </div>
