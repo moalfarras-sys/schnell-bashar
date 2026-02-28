@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   // On Windows, Next may generate traced filenames with ":" which can break copy.
   output: isWindows ? undefined : "standalone",
   poweredByHeader: false,
+  compress: true,
   serverExternalPackages: ["pdfkit", "docusign-esign"],
   experimental: {
     optimizePackageImports: ["lucide-react"],
@@ -16,6 +17,10 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      {
+        source: "/_next/static/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
       {
         source: "/media/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],

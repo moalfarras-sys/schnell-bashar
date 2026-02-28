@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Schnell Sicher Umzug - Umzug & Entsorgung deutschlandweit",
     description:
-      "Super schnelle & absolut sichere Umzüge. Fachgerechte Entsorgung, strukturierte Anfrage und schnelle Rückmeldung.",
+      "Super schnelle und absolut sichere Umzüge. Fachgerechte Entsorgung, strukturierte Anfrage und schnelle Rückmeldung.",
     url: baseUrl,
     siteName: "Schnell Sicher Umzug",
     locale: "de_DE",

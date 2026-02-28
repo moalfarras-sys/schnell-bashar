@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+import type { Metadata } from "next";
+import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -23,6 +24,15 @@ import { QuickEstimateWidget } from "@/components/quick-estimate-widget";
 import { Reveal } from "@/components/motion/reveal";
 import { MovingFAQSection } from "@/components/sections/moving-faq";
 import { getImageSlots, getTextSlots } from "@/server/content/slots";
+
+export const metadata: Metadata = {
+  title: "Umzug Berlin & deutschlandweit | Schnell Sicher Umzug",
+  description:
+    "Professioneller Umzug, Entsorgung und Montage in Berlin und deutschlandweit. Jetzt Richtpreis berechnen und direkt online buchen.",
+  alternates: {
+    canonical: "/",
+  },
+};
 
 const services = [
   {

@@ -1,4 +1,4 @@
-﻿import type { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 import { cities } from "@/data/cities";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellsicherumzug.de";
@@ -10,28 +10,25 @@ const routes = [
   "/montage",
   "/preise",
   "/kalender",
-  "/booking?context=MOVING",
+  "/booking",
   "/anfrage",
   "/galerie",
   "/faq",
   "/tipps",
   "/ueber-uns",
   "/kontakt",
-  "/booking",
-  "/booking?context=MONTAGE",
-  "/booking?context=ENTSORGUNG",
   "/agb",
   "/datenschutz",
   "/impressum",
-];
+] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   const baseEntries = routes.map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: now,
-    changeFrequency: (route === "" ? "weekly" : "monthly") as "weekly" | "monthly",
-    priority: route === "" ? 1 : 0.7,
+    changeFrequency: route === "" ? ("weekly" as const) : ("monthly" as const),
+    priority: route === "" ? 1 : route === "/booking" || route === "/preise" ? 0.9 : 0.7,
   }));
 
   const cityEntries = cities.map((city) => ({
@@ -43,7 +40,3 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...baseEntries, ...cityEntries];
 }
-
-
-
-
