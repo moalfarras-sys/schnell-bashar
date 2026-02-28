@@ -74,14 +74,34 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </Container>
       </header>
 
-      <Container className="grid gap-6 py-6 lg:grid-cols-[300px_1fr] lg:py-8">
-        <aside className="surface-glass h-fit rounded-3xl border p-4 lg:sticky lg:top-24">
+      <Container className="grid gap-4 py-4 lg:grid-cols-[300px_1fr] lg:gap-6 lg:py-8">
+        <details className="surface-glass rounded-2xl border p-3 lg:hidden">
+          <summary className="cursor-pointer list-none text-sm font-extrabold text-slate-900 dark:text-white">
+            Menü öffnen
+          </summary>
+          <div className="mt-3 border-t border-[color:var(--line-soft)] pt-3">
+            <div className="mb-3 rounded-2xl bg-slate-100/75 p-3 text-xs font-semibold text-slate-700 dark:bg-slate-900/45 dark:text-slate-300">
+              Verwaltung, Buchhaltung und Inhalte in einer Übersicht.
+            </div>
+            <AdminNav newOrderCount={newOrderCount} />
+            <form action={logoutAction} className="mt-3">
+              <Button type="submit" variant="outline-light" size="sm" className="w-full">
+                Abmelden
+              </Button>
+            </form>
+          </div>
+        </details>
+
+        <aside className="hidden h-fit rounded-3xl border p-4 lg:sticky lg:top-24 lg:block lg:bg-[color:var(--surface-glass)] lg:backdrop-blur-xl">
           <div className="mb-3 rounded-2xl bg-slate-100/75 p-3 text-xs font-semibold text-slate-700 dark:bg-slate-900/45 dark:text-slate-300">
             Verwaltung, Buchhaltung und Inhalte in einer Übersicht.
           </div>
           <AdminNav newOrderCount={newOrderCount} />
         </aside>
-        <main className="min-w-0">{children}</main>
+
+        <main className="min-w-0 rounded-3xl border border-[color:var(--line-soft)] bg-white/35 p-3 backdrop-blur-sm dark:bg-slate-900/20 lg:p-4">
+          {children}
+        </main>
       </Container>
     </div>
   );
