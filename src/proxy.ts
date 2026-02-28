@@ -4,6 +4,13 @@ import { NextResponse } from "next/server";
 import { adminCookieName, verifyAdminToken } from "@/server/auth/admin-session";
 import { hasPermission, requiredPermissionForPath } from "@/server/auth/admin-permissions";
 
+function withAdminNoCache(res: NextResponse) {
+  res.headers.set("Cache-Control", "private, no-store, no-cache, must-revalidate, max-age=0");
+  res.headers.set("Pragma", "no-cache");
+  res.headers.set("Expires", "0");
+  return res;
+}
+
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -17,14 +24,14 @@ export async function proxy(req: NextRequest) {
   }
 
   // Allow login page
-  if (pathname.startsWith("/admin/login")) return NextResponse.next();
+  if (pathname.startsWith("/admin/login")) return withAdminNoCache(NextResponse.next());
 
   const token = req.cookies.get(adminCookieName())?.value;
   if (!token) {
     const url = req.nextUrl.clone();
     url.pathname = "/admin/login";
     url.searchParams.set("next", pathname);
-    return NextResponse.redirect(url);
+    return withAdminNoCache(NextResponse.redirect(url));
   }
 
   try {
@@ -34,14 +41,14 @@ export async function proxy(req: NextRequest) {
       const url = req.nextUrl.clone();
       url.pathname = "/admin";
       url.searchParams.set("denied", "1");
-      return NextResponse.redirect(url);
+      return withAdminNoCache(NextResponse.redirect(url));
     }
-    return NextResponse.next();
+    return withAdminNoCache(NextResponse.next());
   } catch {
     const url = req.nextUrl.clone();
     url.pathname = "/admin/login";
     url.searchParams.set("next", pathname);
-    return NextResponse.redirect(url);
+    return withAdminNoCache(NextResponse.redirect(url));
   }
 }
 
