@@ -130,8 +130,8 @@ export default async function HomePage() {
     { key: "img.home.why_us.sub_2", fallbackSrc: "/media/gallery/movers-boxes.jpeg" },
     { key: "img.home.cta.bg", fallbackSrc: "/media/gallery/2.jpeg" },
   ]);
-  const heroLightSrc = "/media/gallery/hero-home-light.webp?v=20260228a";
-  const heroDarkSrc = "/media/gallery/hero-home-dark.webp?v=20260228a";
+  const heroLightSrc = "/media/gallery/hero-home-light-v2.webp";
+  const heroDarkSrc = "/media/gallery/hero-home-dark-v2.webp";
   return (
     <>
       {/* Cinematic hero */}
