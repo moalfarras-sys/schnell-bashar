@@ -30,26 +30,26 @@
     --surface-2: 232 242 252;
     --line: 195 210 230;
     --border-emphasis: 165 190 220;
-    --premium-shadow: 0 14px 40px rgba(15, 42, 69, 0.12);
-    --premium-shadow-soft: 0 8px 24px rgba(15, 42, 69, 0.09);
-    --premium-shadow-emphasis: 0 4px 16px rgba(15, 42, 69, 0.08);
+    --premium-shadow: 0 16px 44px rgba(15, 42, 69, 0.14);
+    --premium-shadow-soft: 0 10px 26px rgba(15, 42, 69, 0.11);
+    --premium-shadow-emphasis: 0 6px 18px rgba(15, 42, 69, 0.1);
     --premium-glow:
       radial-gradient(circle at 14% 6%, rgba(63, 143, 232, 0.18), transparent 44%),
       radial-gradient(circle at 82% 2%, rgba(143, 196, 255, 0.14), transparent 40%);
-    --surface-base: rgba(241, 248, 255, 0.96);
-    --surface-elevated: rgba(234, 244, 253, 0.92);
-    --surface-soft: rgba(226, 238, 250, 0.86);
-    --surface-glass: rgba(230, 242, 253, 0.74);
-    --line-soft: rgba(15, 42, 69, 0.10);
-    --line-strong: rgba(15, 42, 69, 0.16);
+    --surface-base: rgba(241, 248, 255, 0.99);
+    --surface-elevated: rgba(236, 245, 254, 0.97);
+    --surface-soft: rgba(230, 240, 252, 0.94);
+    --surface-glass: rgba(232, 243, 255, 0.9);
+    --line-soft: rgba(15, 42, 69, 0.16);
+    --line-strong: rgba(15, 42, 69, 0.24);
     --section-warm-gradient:
       linear-gradient(180deg, rgba(246, 249, 253, 0.70), rgba(238, 244, 251, 0.88));
     --color-bg: #eaf4ff;
-    --color-surface: rgba(241, 248, 255, 0.96);
-    --color-surface-elevated: rgba(234, 244, 253, 0.92);
+    --color-surface: rgba(241, 248, 255, 0.99);
+    --color-surface-elevated: rgba(236, 245, 254, 0.97);
     --color-text: #0f2a45;
     --color-text-muted: #3b5773;
-    --color-border: rgba(15, 42, 69, 0.15);
+    --color-border: rgba(15, 42, 69, 0.22);
     --color-primary: #3f8fe8;
     --color-success: #059669;
     --color-danger: #dc2626;
@@ -1038,8 +1038,12 @@
     background-color: var(--surface-glass);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-color: var(--glass-border);
+    border-color: var(--line-strong);
     box-shadow: var(--glass-ring), var(--glass-shadow-sm), var(--glass-highlight);
+  }
+
+  .dark .surface-glass {
+    border-color: var(--glass-border);
   }
 
   .section-warm {
