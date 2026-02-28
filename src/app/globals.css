@@ -1327,6 +1327,7 @@
 /* Admin responsive hardening (350px+) */
 .admin-shell {
   overflow-x: hidden;
+  padding-bottom: max(0px, env(safe-area-inset-bottom));
 }
 
 .admin-main {
@@ -1362,5 +1363,75 @@
 
   .admin-shell :where(.snap-x::-webkit-scrollbar) {
     display: none;
+  }
+
+  .admin-mobile-menu-trigger {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.7rem;
+    border-radius: 0.95rem;
+    border: 1px solid rgba(14, 165, 233, 0.36);
+    background:
+      linear-gradient(155deg, rgba(224, 242, 254, 0.92), rgba(186, 230, 253, 0.58));
+    padding: 0.65rem 0.72rem;
+    box-shadow:
+      0 10px 24px rgba(14, 116, 144, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  }
+
+  .dark .admin-mobile-menu-trigger {
+    border-color: rgba(56, 189, 248, 0.46);
+    background:
+      linear-gradient(155deg, rgba(7, 24, 59, 0.9), rgba(11, 40, 86, 0.78));
+    box-shadow:
+      0 14px 28px rgba(3, 17, 42, 0.58),
+      inset 0 1px 0 rgba(125, 211, 252, 0.2);
+  }
+
+  .admin-mobile-menu-trigger__icon {
+    display: inline-flex;
+    height: 2rem;
+    width: 2rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    color: #0369a1;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 4px 14px rgba(14, 116, 144, 0.22);
+  }
+
+  .dark .admin-mobile-menu-trigger__icon {
+    background: rgba(12, 74, 110, 0.36);
+    color: #7dd3fc;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.5);
+  }
+
+  .admin-mobile-menu-trigger__chip {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(14, 165, 233, 0.45);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #075985;
+  }
+
+  .dark .admin-mobile-menu-trigger__chip {
+    border-color: rgba(56, 189, 248, 0.42);
+    background: rgba(8, 47, 73, 0.52);
+    color: #bae6fd;
+  }
+
+  .admin-mobile-nav[open] .admin-mobile-nav-panel {
+    max-height: 72vh;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
   }
 }

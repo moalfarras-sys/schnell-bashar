@@ -1,11 +1,13 @@
 ﻿import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { Menu, Sparkles } from "lucide-react";
 
 import { logoutAction } from "@/app/admin/actions";
 import { Container } from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { AdminNav } from "@/components/admin/admin-nav";
 import { AdminPwaRegister } from "@/components/admin/admin-pwa-register";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { prisma } from "@/server/db/prisma";
 
 export const metadata: Metadata = {
@@ -60,6 +62,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </Link>
           </div>
           <div className="flex items-center gap-2">
+            <div className="inline-flex items-center gap-1 rounded-full border border-brand-300/60 bg-brand-100/80 px-1.5 py-1 shadow-[0_8px_24px_rgba(14,165,233,0.18)] dark:border-brand-500/40 dark:bg-brand-900/30">
+              <ThemeToggle />
+            </div>
             <Link href="/admin/orders">
               <Button type="button" variant="outline-light" size="sm">
                 Aufträge
@@ -75,11 +80,21 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </header>
 
       <Container className="grid gap-4 py-4 lg:grid-cols-[300px_1fr] lg:gap-6 lg:py-8">
-        <details className="surface-glass rounded-2xl border p-3 lg:hidden">
-          <summary className="cursor-pointer list-none text-sm font-extrabold text-slate-900 dark:text-white">
-            Menü öffnen
+        <details className="admin-mobile-nav surface-glass rounded-2xl border p-3 lg:hidden">
+          <summary className="admin-mobile-menu-trigger cursor-pointer list-none">
+            <span className="admin-mobile-menu-trigger__icon" aria-hidden="true">
+              <Menu className="h-4 w-4" />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-sm font-black tracking-tight text-slate-900 dark:text-white">Admin-Menü</span>
+              <span className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300">Navigation, Buchhaltung und Einstellungen</span>
+            </span>
+            <span className="admin-mobile-menu-trigger__chip">
+              <Sparkles className="h-3.5 w-3.5" />
+              Öffnen
+            </span>
           </summary>
-          <div className="mt-3 border-t border-[color:var(--line-soft)] pt-3">
+          <div className="admin-mobile-nav-panel mt-3 border-t border-[color:var(--line-soft)] pt-3">
             <div className="mb-3 rounded-2xl bg-slate-100/75 p-3 text-xs font-semibold text-slate-700 dark:bg-slate-900/45 dark:text-slate-300">
               Verwaltung, Buchhaltung und Inhalte in einer Übersicht.
             </div>
