@@ -174,7 +174,7 @@ export default async function AdminDashboard() {
   };
 
   return (
-    <div className="grid gap-6">
+    <div className="min-w-0 grid gap-6">
       <div className="surface-glass overflow-hidden rounded-3xl border p-6 shadow-lg">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -199,8 +199,8 @@ export default async function AdminDashboard() {
         </div>
       ) : null}
 
-      <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-1 sm:grid sm:grid-cols-2 sm:overflow-visible xl:grid-cols-4">
-        <div className="min-w-[260px] snap-start sm:min-w-0">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="min-w-0">
           <StatCard
             title="Umsatz (Monat)"
             value={eur(revenueThisMonth)}
@@ -209,24 +209,30 @@ export default async function AdminDashboard() {
             icon={<Receipt className="h-5 w-5" />}
           />
         </div>
-        <div className="min-w-[260px] snap-start sm:min-w-0">
+        <div className="min-w-0">
           <StatCard title="Neue Anfragen" value={openOrders} hint="Status: REQUESTED/NEW" icon={<Users className="h-5 w-5" />} />
         </div>
-        <div className="min-w-[260px] snap-start sm:min-w-0">
+        <div className="min-w-0">
           <StatCard title="Heute" value={todayOrders} hint="seit 00:00 Uhr" icon={<FileText className="h-5 w-5" />} />
         </div>
-        <div className="min-w-[260px] snap-start sm:min-w-0">
+        <div className="min-w-0">
           <StatCard title="Gesamt" value={totalOrders} hint="alle Aufträge" icon={<FileCheck2 className="h-5 w-5" />} />
         </div>
       </div>
 
       <div className="surface-glass rounded-3xl border p-6 shadow-lg">
         <div className="text-sm font-extrabold text-slate-900 dark:text-white">Conversion-Funnel</div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-4">
+        <div className="mt-4 hidden gap-3 sm:grid sm:grid-cols-4">
           <FunnelStep label="Anfragen" value={totalOrders} pctLabel="100%" color="bg-blue-500" />
           <FunnelStep label="Angebote" value={totalOffers} pctLabel={pct(totalOffers, totalOrders)} color="bg-amber-500" />
           <FunnelStep label="Angenommen" value={acceptedOffers} pctLabel={pct(acceptedOffers, totalOrders)} color="bg-purple-500" />
           <FunnelStep label="Unterschrieben" value={signedContracts} pctLabel={pct(signedContracts, totalOrders)} color="bg-emerald-500" />
+        </div>
+        <div className="mt-4 grid gap-3 sm:hidden">
+          <FunnelStepMobile label="Anfragen" value={totalOrders} pctLabel="100%" color="bg-blue-500" />
+          <FunnelStepMobile label="Angebote" value={totalOffers} pctLabel={pct(totalOffers, totalOrders)} color="bg-amber-500" />
+          <FunnelStepMobile label="Angenommen" value={acceptedOffers} pctLabel={pct(acceptedOffers, totalOrders)} color="bg-purple-500" />
+          <FunnelStepMobile label="Unterschrieben" value={signedContracts} pctLabel={pct(signedContracts, totalOrders)} color="bg-emerald-500" />
         </div>
       </div>
 
@@ -273,23 +279,23 @@ export default async function AdminDashboard() {
 
       <div className="surface-glass rounded-3xl border p-6 shadow-lg">
         <div className="text-sm font-extrabold text-slate-900 dark:text-white">Schnellzugriff</div>
-        <div className="mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 sm:flex-row sm:flex-wrap sm:overflow-visible">
-          <Link href="/admin/orders" className="shrink-0 snap-start">
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link href="/admin/orders">
             <Button>Aufträge öffnen</Button>
           </Link>
-          <Link href="/admin/offers" className="shrink-0 snap-start">
+          <Link href="/admin/offers">
             <Button variant="outline-light">Angebote & Verträge</Button>
           </Link>
-          <Link href="/admin/pricing" className="shrink-0 snap-start">
+          <Link href="/admin/pricing">
             <Button variant="outline-light">Preise bearbeiten</Button>
           </Link>
-          <Link href="/admin/availability" className="shrink-0 snap-start">
+          <Link href="/admin/availability">
             <Button variant="outline-light">Zeitfenster</Button>
           </Link>
-          <Link href="/admin/calendar" className="shrink-0 snap-start">
+          <Link href="/admin/calendar">
             <Button variant="outline-light">Abholkalender</Button>
           </Link>
-          <Link href="/admin/media/slots" className="shrink-0 snap-start">
+          <Link href="/admin/media/slots">
             <Button variant="outline-light">Bild-Slots</Button>
           </Link>
         </div>
@@ -340,6 +346,27 @@ function FunnelStep(props: {
         />
       </div>
       <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">{props.pctLabel}</div>
+    </div>
+  );
+}
+
+function FunnelStepMobile(props: {
+  label: string;
+  value: number;
+  pctLabel: string;
+  color: string;
+}) {
+  const width = props.pctLabel === "—" ? "0%" : props.pctLabel;
+  return (
+    <div className="rounded-2xl bg-white/65 p-3 ring-1 ring-slate-300/70 dark:bg-slate-900/50 dark:ring-slate-700/70">
+      <div className="flex items-baseline justify-between gap-3">
+        <div className="truncate text-xs font-bold text-slate-700 dark:text-slate-300">{props.label}</div>
+        <div className="text-lg font-extrabold text-slate-900 dark:text-white">{props.value}</div>
+      </div>
+      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-300 dark:bg-slate-700">
+        <div className={`h-full rounded-full ${props.color}`} style={{ width }} />
+      </div>
+      <div className="mt-1 text-right text-xs font-semibold text-slate-600 dark:text-slate-400">{props.pctLabel}</div>
     </div>
   );
 }
