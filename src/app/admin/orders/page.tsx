@@ -108,25 +108,29 @@ export default async function AdminOrdersPage({
 
   return (
     <div className="grid gap-6">
-      <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
+      <div className="surface-glass rounded-3xl border p-6 shadow-lg">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <div className="text-xl font-extrabold text-white">Aufträge</div>
-            <div className="mt-2 text-sm font-semibold text-slate-200">
+            <div className="text-xl font-extrabold text-slate-900 dark:text-white">Aufträge</div>
+            <div className="mt-2 text-sm font-semibold text-slate-600 dark:text-slate-200">
               Letzte 200 Einträge. Klicken Sie auf eine Auftrags-ID für Details.
             </div>
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <Link href="/admin/orders/export">
               <Button variant="outline-light" size="sm">
                 CSV Export
               </Button>
             </Link>
-            <form action="/admin/orders" method="get" className="flex items-center gap-2">
+            <form
+              action="/admin/orders"
+              method="get"
+              className="grid w-full grid-cols-1 gap-2 sm:w-auto sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
+            >
               <Select
                 name="status"
                 defaultValue={status || ""}
-                className="h-10 border-2 border-slate-600 bg-slate-700 text-white"
+                className="h-10 border-2 border-slate-300 bg-white/85 text-slate-900 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
               >
                 <option value="">Alle</option>
                 <option value="NEW">NEW</option>
@@ -139,7 +143,7 @@ export default async function AdminOrdersPage({
               <Select
                 name="context"
                 defaultValue={context || ""}
-                className="h-10 border-2 border-slate-600 bg-slate-700 text-white"
+                className="h-10 border-2 border-slate-300 bg-white/85 text-slate-900 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
               >
                 <option value="">Alle Bereiche</option>
                 <option value="STANDARD">Standard</option>
@@ -150,7 +154,7 @@ export default async function AdminOrdersPage({
               <Select
                 name="sort"
                 defaultValue={sort}
-                className="h-10 border-2 border-slate-600 bg-slate-700 text-white"
+                className="h-10 border-2 border-slate-300 bg-white/85 text-slate-900 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
               >
                 <option value="newest">Neueste zuerst</option>
                 <option value="oldest">Älteste zuerst</option>
@@ -159,21 +163,21 @@ export default async function AdminOrdersPage({
                 type="date"
                 name="from"
                 defaultValue={fromParam || ""}
-                className="h-10 rounded-md border-2 border-slate-600 bg-slate-700 px-2 text-sm font-semibold text-white"
+                className="h-10 rounded-md border-2 border-slate-300 bg-white/85 px-2 text-sm font-semibold text-slate-900 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
               />
               <input
                 type="date"
                 name="to"
                 defaultValue={toParam || ""}
-                className="h-10 rounded-md border-2 border-slate-600 bg-slate-700 px-2 text-sm font-semibold text-white"
+                className="h-10 rounded-md border-2 border-slate-300 bg-white/85 px-2 text-sm font-semibold text-slate-900 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
               />
               {showDeleted ? <input type="hidden" name="deleted" value="1" /> : null}
-              <Button size="sm" type="submit">
+              <Button size="sm" type="submit" className="w-full xl:w-auto">
                 Filtern
               </Button>
             </form>
             <Link href={`/admin/orders${showDeleted ? "" : "?deleted=1"}`}>
-              <Button size="sm" variant="outline-light">
+              <Button size="sm" variant="outline-light" className="w-full sm:w-auto">
                 {showDeleted ? "Aktive anzeigen" : "Gelöschte anzeigen"}
               </Button>
             </Link>
@@ -181,7 +185,7 @@ export default async function AdminOrdersPage({
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-600 bg-slate-700/40 px-4 py-2 text-sm text-slate-200">
+      <div className="surface-glass rounded-xl border px-4 py-2 text-sm text-slate-700 dark:text-slate-200">
         Sortierung: <span className="font-extrabold">{sort === "oldest" ? "Älteste zuerst" : "Neueste zuerst"}</span>
       </div>
 
@@ -191,9 +195,61 @@ export default async function AdminOrdersPage({
         </div>
       ) : null}
 
-      <div className="overflow-hidden rounded-3xl border-2 border-slate-600 bg-slate-800 shadow-lg">
+      <div className="grid gap-3 lg:hidden">
+        {orders.map((o) => (
+          <article key={o.publicId} className="surface-glass rounded-2xl border p-4 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+              <Link className="text-base font-extrabold text-brand-700 hover:underline dark:text-brand-300" href={`/admin/orders/${o.publicId}`}>
+                {o.orderNo ?? o.publicId}
+              </Link>
+              <span className="rounded-full border border-brand-400 bg-brand-500/20 px-2 py-0.5 text-[10px] font-extrabold text-brand-800 dark:text-brand-200">
+                {o.status}
+              </span>
+            </div>
+            <div className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-300">{o.customerName}</div>
+            <div className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+              {formatInTimeZone(o.createdAt, "Europe/Berlin", "dd.MM.yyyy HH:mm")}
+            </div>
+            <div className="mt-2 text-sm text-slate-700 dark:text-slate-300">
+              {o.serviceType} · {o.speed}
+            </div>
+            <div className="mt-1 text-sm font-bold text-slate-900 dark:text-white">
+              {eur(o.priceMinCents)} – {eur(o.priceMaxCents)}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {showDeleted ? (
+                <form action={restoreOrderAction}>
+                  <input type="hidden" name="publicId" value={o.publicId} />
+                  <Button size="sm" variant="outline-light" type="submit">
+                    Wiederherstellen
+                  </Button>
+                </form>
+              ) : (
+                <form action={softDeleteOrderAction}>
+                  <input type="hidden" name="publicId" value={o.publicId} />
+                  <Button size="sm" variant="outline-light" type="submit">
+                    Löschen
+                  </Button>
+                </form>
+              )}
+              <HardDeleteButton
+                endpoint={`/api/admin/orders/${encodeURIComponent(o.publicId)}/hard-delete`}
+                entityLabel={`Auftrag ${o.orderNo ?? o.publicId}`}
+                compact
+              />
+            </div>
+          </article>
+        ))}
+        {orders.length === 0 ? (
+          <div className="surface-glass rounded-2xl border px-4 py-10 text-center text-sm font-semibold text-slate-500 dark:text-slate-300">
+            Keine Aufträge gefunden.
+          </div>
+        ) : null}
+      </div>
+
+      <div className="hidden overflow-hidden rounded-3xl border-2 border-slate-600 bg-slate-800 shadow-lg lg:block">
         <div className="overflow-auto">
-          <table className="w-full text-left text-sm">
+          <table className="min-w-[1120px] w-full text-left text-sm">
             <thead className="border-b-2 border-slate-600 bg-slate-700 text-xs font-extrabold text-slate-100">
               <tr>
                 <th className="px-4 py-3">Auftrags-ID</th>
