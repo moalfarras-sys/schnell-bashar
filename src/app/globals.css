@@ -26,8 +26,8 @@
     --brand: 63 143 232;
     --brand-dark: 47 118 204;
     --ink: 15 42 69;
-    --surface: 246 249 253;
-    --surface-2: 238 244 251;
+    --surface: 241 248 255;
+    --surface-2: 232 242 252;
     --line: 195 210 230;
     --border-emphasis: 165 190 220;
     --premium-shadow: 0 14px 40px rgba(15, 42, 69, 0.12);
@@ -36,17 +36,17 @@
     --premium-glow:
       radial-gradient(circle at 14% 6%, rgba(63, 143, 232, 0.18), transparent 44%),
       radial-gradient(circle at 82% 2%, rgba(143, 196, 255, 0.14), transparent 40%);
-    --surface-base: rgba(246, 249, 253, 0.96);
-    --surface-elevated: rgba(241, 245, 251, 0.90);
-    --surface-soft: rgba(234, 240, 249, 0.84);
-    --surface-glass: rgba(237, 243, 251, 0.72);
+    --surface-base: rgba(241, 248, 255, 0.96);
+    --surface-elevated: rgba(234, 244, 253, 0.92);
+    --surface-soft: rgba(226, 238, 250, 0.86);
+    --surface-glass: rgba(230, 242, 253, 0.74);
     --line-soft: rgba(15, 42, 69, 0.10);
     --line-strong: rgba(15, 42, 69, 0.16);
     --section-warm-gradient:
       linear-gradient(180deg, rgba(246, 249, 253, 0.70), rgba(238, 244, 251, 0.88));
-    --color-bg: #f0f4f8;
-    --color-surface: rgba(246, 249, 253, 0.96);
-    --color-surface-elevated: rgba(241, 245, 251, 0.9);
+    --color-bg: #eaf4ff;
+    --color-surface: rgba(241, 248, 255, 0.96);
+    --color-surface-elevated: rgba(234, 244, 253, 0.92);
     --color-text: #0f2a45;
     --color-text-muted: #3b5773;
     --color-border: rgba(15, 42, 69, 0.15);
@@ -71,17 +71,17 @@
     --premium-glow:
       radial-gradient(circle at 14% 6%, rgba(96, 165, 250, 0.12), transparent 44%),
       radial-gradient(circle at 82% 2%, rgba(147, 197, 253, 0.08), transparent 40%);
-    --surface-base: rgba(15, 23, 42, 0.94);
-    --surface-elevated: rgba(15, 23, 42, 0.98);
-    --surface-soft: rgba(30, 41, 59, 0.72);
-    --surface-glass: rgba(15, 23, 42, 0.7);
+    --surface-base: rgba(8, 20, 42, 0.95);
+    --surface-elevated: rgba(12, 28, 56, 0.98);
+    --surface-soft: rgba(24, 40, 72, 0.76);
+    --surface-glass: rgba(10, 24, 50, 0.72);
     --line-soft: rgba(71, 85, 105, 0.5);
     --line-strong: rgba(100, 116, 139, 0.7);
     --section-warm-gradient:
       linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(2, 6, 23, 0.88));
-    --color-bg: #020617;
-    --color-surface: rgba(15, 23, 42, 0.94);
-    --color-surface-elevated: rgba(15, 23, 42, 0.98);
+    --color-bg: #041028;
+    --color-surface: rgba(8, 20, 42, 0.95);
+    --color-surface-elevated: rgba(12, 28, 56, 0.98);
     --color-text: #f1f5f9;
     --color-text-muted: #a0aec0;
     --color-border: rgba(100, 116, 139, 0.45);
@@ -103,21 +103,21 @@
   body {
     @apply text-slate-900 antialiased;
     font-family: var(--font-inter), var(--font-manrope), "Noto Sans", "Segoe UI", Roboto, Arial, sans-serif;
-    background-color: #f0f4f8;
+    background-color: #eaf4ff;
     background-image:
-      radial-gradient(ellipse at 8% -8%, rgba(99, 168, 246, 0.09), transparent 38%),
-      radial-gradient(ellipse at 88% -4%, rgba(143, 196, 255, 0.07), transparent 32%),
-      radial-gradient(ellipse at 50% 100%, rgba(183, 217, 255, 0.06), transparent 44%),
-      linear-gradient(180deg, #f0f4f8 0%, #eaeff6 50%, #e4eaf3 100%);
+      radial-gradient(ellipse at 8% -8%, rgba(99, 168, 246, 0.14), transparent 40%),
+      radial-gradient(ellipse at 88% -4%, rgba(143, 196, 255, 0.12), transparent 36%),
+      radial-gradient(ellipse at 50% 100%, rgba(183, 217, 255, 0.09), transparent 46%),
+      linear-gradient(180deg, #eaf4ff 0%, #e3f0ff 52%, #dcecff 100%);
     background-attachment: fixed;
   }
 
   .dark body {
     @apply bg-slate-950 text-slate-100;
     background-image:
-      radial-gradient(ellipse at 12% -12%, rgba(37, 99, 235, 0.16), transparent 45%),
-      radial-gradient(ellipse at 88% 0%, rgba(56, 189, 248, 0.1), transparent 36%),
-      linear-gradient(180deg, rgba(2, 6, 23, 1), rgba(15, 23, 42, 1));
+      radial-gradient(ellipse at 12% -12%, rgba(37, 99, 235, 0.18), transparent 45%),
+      radial-gradient(ellipse at 88% 0%, rgba(56, 189, 248, 0.14), transparent 38%),
+      linear-gradient(180deg, rgba(4, 16, 40, 1), rgba(8, 22, 48, 1));
   }
 
   h1, h2, h3, h4 {

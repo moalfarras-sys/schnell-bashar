@@ -5,7 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { AdminPwaRegister } from "@/components/admin/admin-pwa-register";
 
 export const metadata: Metadata = {
-  title: "Admin Login",
+  title: "Admin Anmeldung",
   manifest: "/admin/manifest.webmanifest",
   icons: {
     apple: "/admin/pwa-icon-192.png",
