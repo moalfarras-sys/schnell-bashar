@@ -1323,3 +1323,44 @@
     transform: scale(1);
   }
 }
+
+/* Admin responsive hardening (350px+) */
+.admin-shell {
+  overflow-x: hidden;
+}
+
+.admin-main {
+  overflow-x: clip;
+}
+
+.admin-main :where(.overflow-auto, .overflow-x-auto) {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-main :where(table) {
+  min-width: 720px;
+}
+
+@media (max-width: 640px) {
+  .admin-shell :where(h1) {
+    font-size: 1.45rem;
+    line-height: 1.2;
+  }
+
+  .admin-shell :where(.rounded-3xl) {
+    border-radius: 1rem;
+  }
+
+  .admin-shell :where(input, select, textarea, button) {
+    max-width: 100%;
+  }
+
+  .admin-shell :where(.snap-x) {
+    scrollbar-width: none;
+  }
+
+  .admin-shell :where(.snap-x::-webkit-scrollbar) {
+    display: none;
+  }
+}

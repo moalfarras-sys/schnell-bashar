@@ -42,7 +42,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="luxury-bg min-h-screen text-slate-900 dark:text-slate-100">
+    <div className="admin-shell luxury-bg min-h-screen text-slate-900 dark:text-slate-100">
       <AdminPwaRegister />
 
       <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] bg-[color:var(--surface-elevated)]/90 backdrop-blur-xl">
@@ -99,7 +99,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <AdminNav newOrderCount={newOrderCount} />
         </aside>
 
-        <main className="min-w-0 rounded-3xl border border-[color:var(--line-soft)] bg-white/35 p-3 backdrop-blur-sm dark:bg-slate-900/20 lg:p-4">
+        <main className="admin-main min-w-0 rounded-3xl border border-[color:var(--line-soft)] bg-white/35 p-3 backdrop-blur-sm dark:bg-slate-900/20 lg:p-4">
           {children}
         </main>
       </Container>
