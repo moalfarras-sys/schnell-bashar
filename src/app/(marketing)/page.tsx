@@ -168,22 +168,22 @@ export default async function HomePage() {
                 Deutschlandweit verfügbar - 24/7
               </div>
 
-              <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-950 drop-shadow-[0_10px_26px_rgba(255,255,255,0.45)] sm:text-5xl lg:text-6xl xl:text-7xl dark:text-white dark:drop-shadow-[0_10px_32px_rgba(8,23,48,0.72)]">
+              <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-950 drop-shadow-[0_10px_26px_rgba(255,255,255,0.52)] sm:text-5xl lg:text-6xl xl:text-7xl dark:text-white dark:drop-shadow-[0_10px_32px_rgba(8,23,48,0.72)]">
                 {txt["text.home.hero.headline"].includes(" ") ? (
                   <>
                     {txt["text.home.hero.headline"].split(" ").slice(0, -2).join(" ")}{" "}
-                    <span className="block bg-linear-to-r from-cyan-200 via-blue-300 to-blue-500 bg-clip-text text-transparent">
+                    <span className="block bg-linear-to-r from-sky-400 via-sky-500 to-blue-700 bg-clip-text text-transparent">
                       {txt["text.home.hero.headline"].split(" ").slice(-2).join(" ")}
                     </span>
                   </>
                 ) : (
-                  <span className="block bg-linear-to-r from-cyan-200 via-blue-300 to-blue-500 bg-clip-text text-transparent">
+                  <span className="block bg-linear-to-r from-sky-400 via-sky-500 to-blue-700 bg-clip-text text-transparent">
                     {txt["text.home.hero.headline"]}
                   </span>
                 )}
               </h1>
 
-              <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-800 sm:text-lg dark:text-slate-200">
+              <p className="mx-auto mt-6 max-w-2xl rounded-2xl bg-white/62 px-4 py-3 text-base font-semibold leading-relaxed text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.16)] backdrop-blur-sm sm:text-lg dark:bg-slate-900/45 dark:text-slate-200">
                 {txt["text.home.hero.subtitle"]}
               </p>
 

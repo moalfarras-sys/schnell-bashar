@@ -199,17 +199,25 @@ export default async function AdminDashboard() {
         </div>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          title="Umsatz (Monat)"
-          value={eur(revenueThisMonth)}
-          hint={revTrend >= 0 ? `+${revTrend}% ggü. Vormonat` : `${revTrend}% ggü. Vormonat`}
-          trend={revTrend >= 0 ? "up" : "down"}
-          icon={<Receipt className="h-5 w-5" />}
-        />
-        <StatCard title="Neue Anfragen" value={openOrders} hint="Status: REQUESTED/NEW" icon={<Users className="h-5 w-5" />} />
-        <StatCard title="Heute" value={todayOrders} hint="seit 00:00 Uhr" icon={<FileText className="h-5 w-5" />} />
-        <StatCard title="Gesamt" value={totalOrders} hint="alle Aufträge" icon={<FileCheck2 className="h-5 w-5" />} />
+      <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-1 sm:grid sm:grid-cols-2 sm:overflow-visible xl:grid-cols-4">
+        <div className="min-w-[260px] snap-start sm:min-w-0">
+          <StatCard
+            title="Umsatz (Monat)"
+            value={eur(revenueThisMonth)}
+            hint={revTrend >= 0 ? `+${revTrend}% ggü. Vormonat` : `${revTrend}% ggü. Vormonat`}
+            trend={revTrend >= 0 ? "up" : "down"}
+            icon={<Receipt className="h-5 w-5" />}
+          />
+        </div>
+        <div className="min-w-[260px] snap-start sm:min-w-0">
+          <StatCard title="Neue Anfragen" value={openOrders} hint="Status: REQUESTED/NEW" icon={<Users className="h-5 w-5" />} />
+        </div>
+        <div className="min-w-[260px] snap-start sm:min-w-0">
+          <StatCard title="Heute" value={todayOrders} hint="seit 00:00 Uhr" icon={<FileText className="h-5 w-5" />} />
+        </div>
+        <div className="min-w-[260px] snap-start sm:min-w-0">
+          <StatCard title="Gesamt" value={totalOrders} hint="alle Aufträge" icon={<FileCheck2 className="h-5 w-5" />} />
+        </div>
       </div>
 
       <div className="surface-glass rounded-3xl border p-6 shadow-lg">
@@ -265,23 +273,23 @@ export default async function AdminDashboard() {
 
       <div className="surface-glass rounded-3xl border p-6 shadow-lg">
         <div className="text-sm font-extrabold text-slate-900 dark:text-white">Schnellzugriff</div>
-        <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-          <Link href="/admin/orders">
+        <div className="mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 sm:flex-row sm:flex-wrap sm:overflow-visible">
+          <Link href="/admin/orders" className="shrink-0 snap-start">
             <Button>Aufträge öffnen</Button>
           </Link>
-          <Link href="/admin/offers">
+          <Link href="/admin/offers" className="shrink-0 snap-start">
             <Button variant="outline-light">Angebote & Verträge</Button>
           </Link>
-          <Link href="/admin/pricing">
+          <Link href="/admin/pricing" className="shrink-0 snap-start">
             <Button variant="outline-light">Preise bearbeiten</Button>
           </Link>
-          <Link href="/admin/availability">
+          <Link href="/admin/availability" className="shrink-0 snap-start">
             <Button variant="outline-light">Zeitfenster</Button>
           </Link>
-          <Link href="/admin/calendar">
+          <Link href="/admin/calendar" className="shrink-0 snap-start">
             <Button variant="outline-light">Abholkalender</Button>
           </Link>
-          <Link href="/admin/media/slots">
+          <Link href="/admin/media/slots" className="shrink-0 snap-start">
             <Button variant="outline-light">Bild-Slots</Button>
           </Link>
         </div>
