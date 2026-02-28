@@ -28,6 +28,25 @@ function pct(a: number, b: number) {
   return `${Math.round((a / b) * 100)}%`;
 }
 
+function statusLabel(status: "NEW" | "REQUESTED" | "CONFIRMED" | "IN_PROGRESS" | "DONE" | "CANCELLED") {
+  return {
+    NEW: "Neu",
+    REQUESTED: "Angefragt",
+    CONFIRMED: "Bestätigt",
+    IN_PROGRESS: "In Arbeit",
+    DONE: "Abgeschlossen",
+    CANCELLED: "Storniert",
+  }[status];
+}
+
+function serviceLabel(serviceType: "MOVING" | "DISPOSAL" | "BOTH") {
+  return {
+    MOVING: "Umzug",
+    DISPOSAL: "Entsorgung",
+    BOTH: "Umzug + Entsorgung",
+  }[serviceType];
+}
+
 export default async function AdminDashboard() {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -146,20 +165,31 @@ export default async function AdminDashboard() {
   }));
 
   const statusColors: Record<string, string> = {
-    NEW: "bg-blue-500/20 text-blue-400",
-    REQUESTED: "bg-sky-500/20 text-sky-400",
-    CONFIRMED: "bg-amber-500/20 text-amber-400",
-    IN_PROGRESS: "bg-purple-500/20 text-purple-400",
-    DONE: "bg-emerald-500/20 text-emerald-400",
-    CANCELLED: "bg-red-500/20 text-red-400",
+    NEW: "bg-blue-500/15 text-blue-800 dark:bg-blue-500/20 dark:text-blue-300",
+    REQUESTED: "bg-sky-500/15 text-sky-800 dark:bg-sky-500/20 dark:text-sky-300",
+    CONFIRMED: "bg-amber-500/20 text-amber-800 dark:bg-amber-500/25 dark:text-amber-300",
+    IN_PROGRESS: "bg-purple-500/15 text-purple-800 dark:bg-purple-500/25 dark:text-purple-300",
+    DONE: "bg-emerald-500/15 text-emerald-800 dark:bg-emerald-500/25 dark:text-emerald-300",
+    CANCELLED: "bg-red-500/15 text-red-800 dark:bg-red-500/25 dark:text-red-300",
   };
 
   return (
     <div className="grid gap-6">
-      <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
-        <div className="text-xl font-extrabold text-white">Dashboard</div>
-        <div className="mt-1 text-sm font-semibold text-slate-300">
-          Überblick über Aufträge, Umsatz und Kundenaktivität.
+      <div className="surface-glass overflow-hidden rounded-3xl border p-6 shadow-lg">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-brand-500/15 px-3 py-1 text-xs font-bold text-brand-800 ring-1 ring-brand-400/35 dark:text-brand-200">
+              Zentrale Steuerung
+            </div>
+            <h1 className="mt-3 text-2xl font-extrabold md:text-3xl">Admin Dashboard</h1>
+            <p className="mt-1 text-sm font-medium text-slate-600 dark:text-slate-300">
+              Überblick über Aufträge, Umsatz und Kundenaktivität.
+            </p>
+          </div>
+          <div className="rounded-2xl bg-white/70 px-4 py-3 text-right text-xs font-semibold text-slate-600 ring-1 ring-slate-300/70 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700/70">
+            <div>Monatserlös</div>
+            <div className="mt-1 text-lg font-extrabold text-slate-900 dark:text-white">{eur(revenueThisMonth)}</div>
+          </div>
         </div>
       </div>
 
@@ -182,8 +212,8 @@ export default async function AdminDashboard() {
         <StatCard title="Gesamt" value={totalOrders} hint="alle Aufträge" icon={<FileCheck2 className="h-5 w-5" />} />
       </div>
 
-      <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
-        <div className="text-sm font-extrabold text-white">Conversion-Funnel</div>
+      <div className="surface-glass rounded-3xl border p-6 shadow-lg">
+        <div className="text-sm font-extrabold text-slate-900 dark:text-white">Conversion-Funnel</div>
         <div className="mt-4 grid gap-3 sm:grid-cols-4">
           <FunnelStep label="Anfragen" value={totalOrders} pctLabel="100%" color="bg-blue-500" />
           <FunnelStep label="Angebote" value={totalOffers} pctLabel={pct(totalOffers, totalOrders)} color="bg-amber-500" />
@@ -193,23 +223,23 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
-          <div className="text-sm font-extrabold text-white">Aufträge pro Monat</div>
+        <div className="surface-glass rounded-3xl border p-6 shadow-lg">
+          <div className="text-sm font-extrabold text-slate-900 dark:text-white">Aufträge pro Monat</div>
           <div className="mt-4">
             <MonthlyOrdersChart data={chartData} />
           </div>
         </div>
 
-        <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
+        <div className="surface-glass rounded-3xl border p-6 shadow-lg">
           <div className="flex items-center justify-between">
-            <div className="text-sm font-extrabold text-white">Neueste Anfragen</div>
+            <div className="text-sm font-extrabold text-slate-900 dark:text-white">Neueste Anfragen</div>
             <Link href="/admin/orders" className="inline-flex items-center gap-1 text-xs font-semibold text-brand-400 hover:underline">
               Alle anzeigen <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
           <div className="mt-4 grid gap-2">
             {recentOrders.length === 0 ? (
-              <div className="rounded-xl bg-slate-700/40 p-4 text-center text-sm text-slate-400">
+              <div className="rounded-xl bg-slate-200/60 p-4 text-center text-sm text-slate-600 dark:bg-slate-700/40 dark:text-slate-400">
                 Noch keine Anfragen.
               </div>
             ) : (
@@ -217,14 +247,14 @@ export default async function AdminDashboard() {
                 <Link
                   key={o.publicId}
                   href={`/admin/orders/${o.publicId}`}
-                  className="flex items-center justify-between gap-3 rounded-xl bg-slate-700/30 px-4 py-3 transition-colors hover:bg-slate-700/50"
+                  className="flex items-center justify-between gap-3 rounded-2xl bg-white/70 px-4 py-3 ring-1 ring-slate-300/70 transition-colors hover:bg-white/90 dark:bg-slate-700/30 dark:ring-slate-700/70 dark:hover:bg-slate-700/50"
                 >
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-bold text-white">{o.customerName}</div>
-                    <div className="mt-0.5 text-xs text-slate-400">{o.orderNo ?? o.publicId} · {o.serviceType}</div>
+                    <div className="truncate text-sm font-bold text-slate-900 dark:text-white">{o.customerName}</div>
+                    <div className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">{o.orderNo ?? o.publicId} · {serviceLabel(o.serviceType)}</div>
                   </div>
                   <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold ${statusColors[o.status] ?? "bg-slate-600 text-slate-300"}`}>
-                    {o.status}
+                    {statusLabel(o.status)}
                   </span>
                 </Link>
               ))
@@ -233,8 +263,8 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
-        <div className="text-sm font-extrabold text-white">Schnellzugriff</div>
+      <div className="surface-glass rounded-3xl border p-6 shadow-lg">
+        <div className="text-sm font-extrabold text-slate-900 dark:text-white">Schnellzugriff</div>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
           <Link href="/admin/orders">
             <Button>Aufträge öffnen</Button>
@@ -268,15 +298,15 @@ function StatCard(props: {
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border-2 border-slate-600 bg-slate-800 p-6 shadow-lg">
+    <div className="surface-glass rounded-3xl border p-6 shadow-lg">
       <div className="flex items-center justify-between">
-        <div className="text-xs font-bold text-slate-300">{props.title}</div>
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-700/60 text-slate-400">
+        <div className="text-xs font-bold text-slate-600 dark:text-slate-300">{props.title}</div>
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-200/70 text-slate-700 dark:bg-slate-700/60 dark:text-slate-400">
           {props.icon}
         </div>
       </div>
-      <div className="mt-3 text-2xl font-extrabold text-white">{props.value}</div>
-      <div className="mt-1 flex items-center gap-1 text-xs font-semibold text-slate-400">
+      <div className="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">{props.value}</div>
+      <div className="mt-1 flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
         {props.trend === "up" && <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />}
         {props.trend === "down" && <TrendingDown className="h-3.5 w-3.5 text-red-400" />}
         {props.hint}
@@ -293,15 +323,15 @@ function FunnelStep(props: {
 }) {
   return (
     <div className="text-center">
-      <div className="text-2xl font-extrabold text-white">{props.value}</div>
-      <div className="mt-1 text-xs font-bold text-slate-300">{props.label}</div>
-      <div className="mx-auto mt-2 h-1.5 w-full max-w-[80px] overflow-hidden rounded-full bg-slate-700">
+      <div className="text-2xl font-extrabold text-slate-900 dark:text-white">{props.value}</div>
+      <div className="mt-1 text-xs font-bold text-slate-600 dark:text-slate-300">{props.label}</div>
+      <div className="mx-auto mt-2 h-1.5 w-full max-w-[80px] overflow-hidden rounded-full bg-slate-300 dark:bg-slate-700">
         <div
           className={`h-full rounded-full ${props.color}`}
           style={{ width: props.pctLabel === "—" ? "0%" : props.pctLabel }}
         />
       </div>
-      <div className="mt-1 text-xs font-semibold text-slate-400">{props.pctLabel}</div>
+      <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">{props.pctLabel}</div>
     </div>
   );
 }

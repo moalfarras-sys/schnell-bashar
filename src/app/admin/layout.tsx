@@ -46,28 +46,42 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <AdminPwaRegister />
 
       <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] bg-[color:var(--surface-elevated)]/90 backdrop-blur-xl">
-        <Container className="flex min-h-16 flex-wrap items-center justify-between gap-2 py-2">
+        <Container className="flex min-h-16 flex-wrap items-center justify-between gap-3 py-2">
           <div className="flex min-w-0 items-center gap-3">
-            <Link href="/admin" className="truncate text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
-              Admin · Schnell Sicher Umzug
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-2 rounded-full bg-brand-500/15 px-3 py-1.5 text-sm font-extrabold tracking-tight text-slate-900 ring-1 ring-brand-400/35 dark:bg-brand-400/15 dark:text-white"
+            >
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              SSU Admin
             </Link>
-            <Link href="/" className="shrink-0 text-xs font-medium text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+            <Link href="/" className="shrink-0 text-xs font-semibold text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
               Zur Website
             </Link>
           </div>
-          <form action={logoutAction}>
-            <Button type="submit" variant="outline-light" size="sm">
-              Abmelden
-            </Button>
-          </form>
+          <div className="flex items-center gap-2">
+            <Link href="/admin/orders">
+              <Button type="button" variant="outline-light" size="sm">
+                Aufträge
+              </Button>
+            </Link>
+            <form action={logoutAction}>
+              <Button type="submit" variant="outline-light" size="sm">
+                Abmelden
+              </Button>
+            </form>
+          </div>
         </Container>
       </header>
 
-      <Container className="grid gap-6 py-8 lg:grid-cols-[240px_1fr]">
-        <aside className="surface-glass h-fit rounded-2xl border p-3">
+      <Container className="grid gap-6 py-6 lg:grid-cols-[300px_1fr] lg:py-8">
+        <aside className="surface-glass h-fit rounded-3xl border p-4 lg:sticky lg:top-24">
+          <div className="mb-3 rounded-2xl bg-slate-100/75 p-3 text-xs font-semibold text-slate-700 dark:bg-slate-900/45 dark:text-slate-300">
+            Verwaltung, Buchhaltung und Inhalte in einer Übersicht.
+          </div>
           <AdminNav newOrderCount={newOrderCount} />
         </aside>
-        <main>{children}</main>
+        <main className="min-w-0">{children}</main>
       </Container>
     </div>
   );
