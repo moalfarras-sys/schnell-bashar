@@ -116,7 +116,6 @@ export default async function HomePage() {
   }));
 
   const slotMap = await getImageSlots([
-    { key: "img.home.hero.bg", fallbackSrc: "/media/gallery/move-action-04.jpeg" },
     { key: "img.home.services.umzug", fallbackSrc: "/media/gallery/movers-boxes.jpeg" },
     { key: "img.home.services.entsorgung", fallbackSrc: "/media/gallery/disposal-dumpster.jpeg" },
     { key: "img.home.services.montage", fallbackSrc: "/media/gallery/montage.jpeg" },
@@ -131,13 +130,15 @@ export default async function HomePage() {
     { key: "img.home.why_us.sub_2", fallbackSrc: "/media/gallery/movers-boxes.jpeg" },
     { key: "img.home.cta.bg", fallbackSrc: "/media/gallery/2.jpeg" },
   ]);
+  const heroLightSrc = "/media/gallery/hero-home-light.webp?v=20260228a";
+  const heroDarkSrc = "/media/gallery/hero-home-dark.webp?v=20260228a";
   return (
     <>
       {/* Cinematic hero */}
       <section className="relative overflow-hidden section-divider-glow min-h-[24rem] md:min-h-[30rem]">
         <div className="absolute inset-0 z-0">
           <Image
-            src={slotMap["img.home.hero.bg"]?.src || "/media/gallery/hero-home-light.webp"}
+            src={heroLightSrc}
             alt=""
             fill
             priority
@@ -145,7 +146,7 @@ export default async function HomePage() {
             sizes="100vw"
           />
           <Image
-            src={slotMap["img.home.hero.bg"]?.src || "/media/gallery/hero-home-dark.webp"}
+            src={heroDarkSrc}
             alt=""
             fill
             priority
