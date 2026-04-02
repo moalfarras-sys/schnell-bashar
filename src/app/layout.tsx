@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Inter, Manrope } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { Inter, Manrope } from "next/font/google";
+
 import { LocalBusinessSchema } from "@/components/schema/local-business";
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -66,7 +67,7 @@ export default function RootLayout({
           <LocalBusinessSchema />
           {children}
         </ThemeProvider>
-        {gaId && <GoogleAnalytics gaId={gaId} />}
+        {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
       </body>
     </html>
   );

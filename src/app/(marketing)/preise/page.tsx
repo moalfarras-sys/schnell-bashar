@@ -1,5 +1,6 @@
-﻿import Link from "next/link";
+import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { BadgeEuro, CheckCircle2, Clock, Sparkles } from "lucide-react";
 
 import {
@@ -7,18 +8,23 @@ import {
   type PricingData,
 } from "@/app/(marketing)/preise/price-calculator";
 import { Container } from "@/components/container";
-import { Button } from "@/components/ui/button";
+import { Reveal } from "@/components/motion/reveal";
 import { Preisbeispiele } from "@/components/preisbeispiele";
 import { PreiseCalculatorSection } from "@/components/preise-calculator-section";
-import { Reveal } from "@/components/motion/reveal";
-import { prisma } from "@/server/db/prisma";
+import { Button } from "@/components/ui/button";
 import { getImageSlot } from "@/server/content/slots";
+import { prisma } from "@/server/db/prisma";
 import { loadOperationalSettings } from "@/server/settings/operational-settings";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Preise",
+  description:
+    "Transparente Richtpreise für Umzug, Entsorgung und Montage mit klarer Preislogik und direkter Anfrage.",
+  alternates: {
+    canonical: "/preise",
+  },
 };
 
 const packages = [
@@ -78,16 +84,9 @@ async function getPricing(): Promise<PricingData | null> {
   }
 }
 
-export default async function PreisePage() {
-  const [banner, pricing, settings, montageOptions] = await Promise.all([
-    getImageSlot({
-      key: "img.preise.banner",
-      fallbackSrc: "/media/gallery/money.jpeg",
-      fallbackAlt: "Transparente Preise",
-    }),
-    getPricing(),
-    loadOperationalSettings(),
-    prisma.serviceOption.findMany({
+async function getMontageOptions(): Promise<MontageCalculatorOption[]> {
+  try {
+    const montageOptions = await prisma.serviceOption.findMany({
       where: {
         active: true,
         deletedAt: null,
@@ -101,15 +100,31 @@ export default async function PreisePage() {
         defaultPriceCents: true,
         requiresQuantity: true,
       },
+    });
+
+    return montageOptions.map((option) => ({
+      code: option.code,
+      nameDe: option.nameDe,
+      descriptionDe: option.descriptionDe,
+      defaultPriceCents: option.defaultPriceCents,
+      requiresQuantity: option.requiresQuantity,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export default async function PreisePage() {
+  const [banner, pricing, settings, montageCalculatorOptions] = await Promise.all([
+    getImageSlot({
+      key: "img.preise.banner",
+      fallbackSrc: "/media/gallery/money.jpeg",
+      fallbackAlt: "Transparente Preise",
     }),
+    getPricing(),
+    loadOperationalSettings(),
+    getMontageOptions(),
   ]);
-  const montageCalculatorOptions: MontageCalculatorOption[] = montageOptions.map((option) => ({
-    code: option.code,
-    nameDe: option.nameDe,
-    descriptionDe: option.descriptionDe,
-    defaultPriceCents: option.defaultPriceCents,
-    requiresQuantity: option.requiresQuantity,
-  }));
 
   return (
     <Container className="py-14">
@@ -160,12 +175,12 @@ export default async function PreisePage() {
                   : "border-slate-300 bg-white/85 shadow-md hover:border-sky-300 dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-slate-600"
               }`}
             >
-              {i === 1 && (
+              {i === 1 ? (
                 <div className="absolute -top-3 left-6 inline-flex items-center gap-1 rounded-full bg-brand-600 px-3 py-1 text-xs font-bold text-white shadow-md">
                   <Sparkles className="h-3 w-3" />
                   Empfohlen
                 </div>
-              )}
+              ) : null}
               <div className="text-lg font-extrabold text-slate-950 dark:text-white">{p.title}</div>
               <div className="mt-1 text-xs font-bold text-brand-700 dark:text-brand-400">{p.tag}</div>
               <div className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-400">{p.desc}</div>
@@ -200,35 +215,43 @@ export default async function PreisePage() {
             </Link>
           </div>
 
-          <div className="mt-5 grid gap-3 md:grid-cols-2">
-            {montageCalculatorOptions.map((option, idx) => (
-              <div
-                key={option.code}
-                className="rounded-2xl border border-slate-300 bg-slate-50/70 p-4 dark:border-slate-700 dark:bg-slate-800/60"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-sm font-extrabold text-slate-900 dark:text-white">
-                      {option.nameDe}
-                    </div>
-                    {option.descriptionDe ? (
-                      <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                        {option.descriptionDe}
+          {montageCalculatorOptions.length > 0 ? (
+            <div className="mt-5 grid gap-3 md:grid-cols-2">
+              {montageCalculatorOptions.map((option, idx) => (
+                <div
+                  key={option.code}
+                  className="rounded-2xl border border-slate-300 bg-slate-50/70 p-4 dark:border-slate-700 dark:bg-slate-800/60"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="text-sm font-extrabold text-slate-900 dark:text-white">
+                        {option.nameDe}
                       </div>
+                      {option.descriptionDe ? (
+                        <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                          {option.descriptionDe}
+                        </div>
+                      ) : null}
+                    </div>
+                    {idx < 2 ? (
+                      <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                        Beliebt
+                      </span>
                     ) : null}
                   </div>
-                  {idx < 2 ? (
-                    <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                      Beliebt
-                    </span>
-                  ) : null}
+                  <div className="mt-2 text-base font-extrabold text-brand-700 dark:text-brand-400">
+                    ab {Math.max(1, Math.round(option.defaultPriceCents / 100))} €
+                  </div>
                 </div>
-                <div className="mt-2 text-base font-extrabold text-brand-700 dark:text-brand-400">
-                  ab {Math.max(1, Math.round(option.defaultPriceCents / 100))} €
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-5 rounded-2xl border border-slate-300 bg-slate-50/80 p-4 text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+              Montagepreise werden derzeit strukturiert vorbereitet. Für ein verbindliches Angebot
+              können Sie die Anfrage direkt starten.
+            </div>
+          )}
+
           <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-xs font-semibold text-amber-900 dark:border-amber-500/40 dark:bg-amber-950/20 dark:text-amber-200">
             Richtpreis: Endgültiger Preis nach Prüfung/Angebot.
           </div>
@@ -260,5 +283,3 @@ export default async function PreisePage() {
     </Container>
   );
 }
-
-

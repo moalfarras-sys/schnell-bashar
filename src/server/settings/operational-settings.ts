@@ -89,14 +89,20 @@ function toSigningMode(value: string | null | undefined): "INTERNAL_ONLY" | "HYB
 
 export async function loadOperationalSettings(): Promise<OperationalSettings> {
   const keys = Object.values(SETTINGS_KEYS);
-  const rows = await prisma.contentSlot.findMany({
-    where: {
-      type: "config",
-      key: { in: keys },
-    },
-    select: { key: true, value: true },
-  });
-  const map = new Map(rows.map((row) => [row.key, row.value ?? ""]));
+  let map = new Map<string, string>();
+
+  try {
+    const rows = await prisma.contentSlot.findMany({
+      where: {
+        type: "config",
+        key: { in: keys },
+      },
+      select: { key: true, value: true },
+    });
+    map = new Map(rows.map((row) => [row.key, row.value ?? ""]));
+  } catch {
+    return { ...DEFAULT_SETTINGS };
+  }
 
   return {
     internalOrderEmailEnabled: toBool(

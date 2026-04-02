@@ -1,9 +1,14 @@
-﻿import { BookingV2Client } from "@/app/booking-v2/booking-v2-client";
+import type { Metadata } from "next";
 
-export const metadata = {
+import { BookingV2Client } from "@/app/booking-v2/booking-v2-client";
+
+export const metadata: Metadata = {
   title: "Jetzt buchen | Schnell Sicher Umzug",
   description:
     "Modernes Buchungssystem mit Live-Kalkulation, klaren Schritten und direkter Anfrageübermittlung.",
+  alternates: {
+    canonical: "/booking",
+  },
 };
 
 export default async function BookingPage({
@@ -19,6 +24,3 @@ export default async function BookingPage({
     />
   );
 }
-
-
-
