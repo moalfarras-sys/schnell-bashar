@@ -1,10 +1,47 @@
 ﻿import { createPrivateKey } from "crypto";
 import { readFileSync } from "fs";
+import { createRequire } from "module";
 import path from "path";
 
-import docusign, { type ApiClient, type EnvelopesApi } from "docusign-esign";
-
 const SCOPES = ["signature", "impersonation"];
+
+type DocuSignApiClient = {
+  setOAuthBasePath(basePath: string): void;
+  setBasePath(basePath: string): void;
+  addDefaultHeader(header: string, value: string): void;
+  getUserInfo(accessToken: string): Promise<{
+    accounts?: Array<{
+      accountId?: string;
+      baseUri?: string;
+      isDefault?: string | boolean;
+    }>;
+  }>;
+  requestJWTUserToken(
+    integrationKey: string,
+    userId: string,
+    scopes: string[],
+    privateKey: string,
+    expiresIn: number,
+  ): Promise<{ body: { access_token: string; expires_in: number; token_type?: string } }>;
+};
+
+type DocuSignEnvelopesApi = {
+  update(
+    accountId: string,
+    envelopeId: string,
+    opts: { resendEnvelope: string; envelope: { status: string } },
+  ): Promise<unknown>;
+  getDocument(
+    accountId: string,
+    envelopeId: string,
+    documentId: string,
+  ): Promise<unknown>;
+};
+
+type DocuSignSdk = {
+  ApiClient: new () => DocuSignApiClient;
+  EnvelopesApi: new (client: DocuSignApiClient) => DocuSignEnvelopesApi;
+};
 
 type PrivateKeySource = "inline" | "path" | "missing";
 export type DocuSignAuthErrorCode =
@@ -33,9 +70,22 @@ export type DocuSignDeepCheckResult = {
   restBasePath: string | null;
 };
 
-let cachedClient: ApiClient | null = null;
+let cachedClient: DocuSignApiClient | null = null;
 let tokenExpiresAt = 0;
 let resolvedRestBasePath: string | null = null;
+let docusignModulePromise: Promise<DocuSignSdk> | null = null;
+
+async function getDocuSignSdk(): Promise<DocuSignSdk> {
+  if (!docusignModulePromise) {
+    docusignModulePromise = Promise.resolve().then(() => {
+      const requireAtRuntime = createRequire(import.meta.url);
+      const packageName = ["docusign", "esign"].join("-");
+      const loaded = requireAtRuntime(packageName);
+      return (loaded?.default ?? loaded) as DocuSignSdk;
+    });
+  }
+  return docusignModulePromise;
+}
 
 function normalizeInlineKey(raw: string): string {
   return raw.replace(/\\n/g, "\n").trim();
@@ -240,7 +290,7 @@ export function resetDocuSignClientCache(): void {
   resolvedRestBasePath = null;
 }
 
-export async function getDocuSignClient(): Promise<ApiClient> {
+export async function getDocuSignClient(): Promise<DocuSignApiClient> {
   const now = Date.now();
   if (cachedClient && tokenExpiresAt > now + 60_000) {
     return cachedClient;
@@ -257,6 +307,7 @@ export async function getDocuSignClient(): Promise<ApiClient> {
 
   const privateKey = resolvePrivateKeyOrThrow();
 
+  const docusign = await getDocuSignSdk();
   const apiClient = new docusign.ApiClient();
   apiClient.setOAuthBasePath(process.env.DOCUSIGN_BASE_PATH || "account-d.docusign.com");
 
@@ -327,8 +378,9 @@ export async function testDocuSignJwtDeepCheck(): Promise<DocuSignDeepCheckResul
   }
 }
 
-export async function getEnvelopesApi(): Promise<EnvelopesApi> {
+export async function getEnvelopesApi(): Promise<DocuSignEnvelopesApi> {
   const apiClient = await getDocuSignClient();
+  const docusign = await getDocuSignSdk();
   return new docusign.EnvelopesApi(apiClient);
 }
 
