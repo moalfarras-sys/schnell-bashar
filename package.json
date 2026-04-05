@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx scripts/dev-db-check.ts && next dev --webpack",
     "dev:no-db-check": "next dev --webpack",
+    "dev:vps-tunnel": "powershell -ExecutionPolicy Bypass -File scripts/dev-vps-tunnel.ps1",
     "build": "npm run prisma:generate && npm run images:check && npm run images:forbidden && npm run text:scan-mojibake && npm run text:scan-transliteration && next build && npm run standalone:sync",
     "start": "node .next/standalone/server.js",
     "lint": "eslint . --ignore-pattern test-results --ignore-pattern playwright-report",
