@@ -100,7 +100,8 @@ export async function loadOperationalSettings(): Promise<OperationalSettings> {
       select: { key: true, value: true },
     });
     map = new Map(rows.map((row) => [row.key, row.value ?? ""]));
-  } catch {
+  } catch (error) {
+    console.error("[operational-settings] falling back to defaults", error);
     return { ...DEFAULT_SETTINGS };
   }
 

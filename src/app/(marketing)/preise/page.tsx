@@ -109,7 +109,8 @@ async function getMontageOptions(): Promise<MontageCalculatorOption[]> {
       defaultPriceCents: option.defaultPriceCents,
       requiresQuantity: option.requiresQuantity,
     }));
-  } catch {
+  } catch (error) {
+    console.error("[preise] failed to load montage options, using empty fallback", error);
     return [];
   }
 }

@@ -31,7 +31,7 @@ export async function sendSigningEmail(
   const subject =
     provider === "INTERNAL"
       ? "Bitte unterschreiben Sie Ihren Umzugsvertrag (Online-Link) - Schnell Sicher Umzug"
-      : "Ihr Umzugsvertrag wurde über DocuSign zur Unterschrift versendet - Schnell Sicher Umzug";
+      : "Ihr Umzugsvertrag steht zur digitalen Unterschrift bereit - Schnell Sicher Umzug";
 
   const internalLinkBlock =
     provider === "INTERNAL"
@@ -48,7 +48,7 @@ export async function sendSigningEmail(
     provider === "DOCUSIGN"
       ? `
       <div class="note">
-        Der Vertrag wurde an DocuSign übergeben. Bitte öffnen Sie die separate E-Mail von DocuSign und folgen Sie den Schritten zur Unterschrift.
+        Ihr Vertrag steht zur digitalen Unterschrift bereit. Bitte nutzen Sie den bereitgestellten Link und folgen Sie den Schritten zur Unterschrift.
       </div>
       ${
         signingLink
@@ -137,7 +137,7 @@ vielen Dank für die Annahme unseres Angebots.
 ${
   provider === "INTERNAL"
     ? `Bitte unterschreiben Sie Ihren Umzugsvertrag digital über den folgenden sicheren Link:\n\n${signingLink}\n`
-    : "Der Vertrag wurde an DocuSign übergeben. Bitte öffnen Sie die separate E-Mail von DocuSign und folgen Sie den Schritten zur Unterschrift."
+    : "Ihr Vertrag steht zur digitalen Unterschrift bereit. Bitte nutzen Sie den bereitgestellten Link und folgen Sie den Schritten zur Unterschrift."
 }
 
 Nach erfolgreicher Unterzeichnung erhalten Sie automatisch eine Kopie des unterschriebenen Vertrags per E-Mail.

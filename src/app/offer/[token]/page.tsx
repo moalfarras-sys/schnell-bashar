@@ -114,8 +114,9 @@ export default async function OfferPage({ params }: OfferPageProps) {
                       format(offer.acceptedAt, "dd.MM.yyyy 'um' HH:mm 'Uhr'", {
                         locale: de,
                       })}{" "}
-                    angenommen. Die Unterschrift erfolgt über DocuSign per E-Mail oder über den
-                    bereitgestellten Signatur-Link.
+                    angenommen. Die Unterschrift erfolgt digital über unseren sicheren
+                    Signatur-Link, den Sie direkt im nächsten Schritt und zusätzlich per E-Mail
+                    erhalten.
                   </p>
                 </div>
               </div>
