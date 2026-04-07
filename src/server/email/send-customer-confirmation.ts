@@ -1,6 +1,6 @@
 import { formatInTimeZone } from "date-fns-tz";
 
-import { getMailer } from "@/server/email/mailer";
+import { sendMail } from "@/lib/mail";
 import { generateQuotePdf } from "@/server/pdf/generate-quote";
 
 type EmailItemRow = {
@@ -43,10 +43,7 @@ export async function sendCustomerConfirmationEmail(args: {
   supportEmail: string;
   whatsappPhoneE164: string;
 }) {
-  const transporter = getMailer();
-  if (!transporter) return { ok: false as const, skipped: true as const };
-
-  const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+  const from = process.env.MAIL_FROM || process.env.SMTP_FROM || process.env.SMTP_USER;
   if (!from || !args.customerEmail) return { ok: false as const, skipped: true as const };
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellsicherumzug.de";
@@ -204,7 +201,7 @@ export async function sendCustomerConfirmationEmail(args: {
   });
 
   try {
-    await transporter.sendMail({
+    await sendMail({
       to: args.customerEmail,
       from,
       replyTo: process.env.ORDER_RECEIVER_EMAIL || from,

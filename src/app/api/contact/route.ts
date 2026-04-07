@@ -1,7 +1,7 @@
 ﻿import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getMailer } from "@/server/email/mailer";
+import { sendMail } from "@/lib/mail";
 import { isRateLimited, requestIp } from "@/lib/spam-protection";
 
 export const runtime = "nodejs";
@@ -48,11 +48,10 @@ export async function POST(req: Request) {
     );
   }
 
-  const mailer = getMailer();
   const to = process.env.ORDER_RECEIVER_EMAIL || process.env.SMTP_USER;
-  const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+  const from = process.env.MAIL_FROM || process.env.SMTP_FROM || process.env.SMTP_USER;
 
-  if (!mailer || !to || !from) {
+  if (!to || !from) {
     return NextResponse.json(
       {
         error:
@@ -92,14 +91,7 @@ export async function POST(req: Request) {
     </div>
   `;
 
-  await mailer.sendMail({
-    to,
-    from,
-    subject,
-    text,
-    html,
-    replyTo: email,
-  });
+  await sendMail({ to, from, subject, text, html, replyTo: email });
 
   return NextResponse.json({ ok: true });
 }

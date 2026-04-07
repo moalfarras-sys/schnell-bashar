@@ -1,6 +1,6 @@
 import { formatInTimeZone } from "date-fns-tz";
 
-import { getMailer } from "@/server/email/mailer";
+import { sendMail } from "@/lib/mail";
 
 export async function sendScheduleConfirmationEmail(args: {
   publicId: string;
@@ -10,10 +10,7 @@ export async function sendScheduleConfirmationEmail(args: {
   slotEnd: Date;
   note?: string | null;
 }) {
-  const transporter = getMailer();
-  if (!transporter) return { ok: false as const, skipped: true as const };
-
-  const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+  const from = process.env.MAIL_FROM || process.env.SMTP_FROM || process.env.SMTP_USER;
   if (!from || !args.customerEmail) return { ok: false as const, skipped: true as const };
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellsicherumzug.de";
@@ -49,7 +46,7 @@ export async function sendScheduleConfirmationEmail(args: {
   `;
 
   try {
-    await transporter.sendMail({
+    await sendMail({
       to: args.customerEmail,
       from,
       replyTo: process.env.ORDER_RECEIVER_EMAIL || from,

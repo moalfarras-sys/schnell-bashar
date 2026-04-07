@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
 
+import { getMailFrom, isMailConfigured, sendMail } from "@/lib/mail";
+
 const DEFAULT_FROM = "Schnell Sicher Umzug <kontakt@schnellsicherumzug.de>";
 const SAFE_MODE_FLAG = "SAFE_MODE_EXTERNAL_IO";
 const TRANSIENT_SMTP_PATTERNS = [
@@ -15,31 +17,11 @@ function isSafeModeEnabled() {
 }
 
 export function getMailer(): nodemailer.Transporter | null {
-  const host = process.env.SMTP_HOST;
-  const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-  const from = process.env.SMTP_FROM || DEFAULT_FROM;
-
-  if (!host || !user || !pass) {
-    console.error(
-      "[mailer] SMTP not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS in .env. " +
-        "Optionally SMTP_FROM (default: Schnell Sicher Umzug <kontakt@schnellsicherumzug.de>)",
-    );
-    return null;
-  }
-
-  return nodemailer.createTransport({
-    host,
-    port: port || 587,
-    secure: port === 465,
-    auth: { user, pass },
-    from,
-  });
+  return null;
 }
 
 export function getDefaultFrom(): string {
-  return process.env.SMTP_FROM || DEFAULT_FROM;
+  return getMailFrom() || DEFAULT_FROM;
 }
 
 function shouldRetryEmail(error: unknown): boolean {
@@ -68,20 +50,27 @@ export async function sendEmail(
     return { success: true };
   }
 
-  const transporter = getMailer();
-  if (!transporter) {
+  if (!isMailConfigured()) {
     return { success: false, error: "SMTP not configured" };
   }
 
-  const from = options.from || getDefaultFrom();
+  const from = typeof options.from === "string" ? options.from : getDefaultFrom();
 
   try {
     for (let attempt = 1; attempt <= 2; attempt += 1) {
       try {
-        await transporter.sendMail({
-          ...options,
-          from,
-        });
+        await sendMail(
+          {
+            to: options.to as string | string[],
+            subject: options.subject || "(no subject)",
+            html: options.html ? String(options.html) : "",
+            text: options.text ? String(options.text) : undefined,
+            replyTo: options.replyTo ? String(options.replyTo) : undefined,
+            from,
+            attachments: options.attachments,
+          },
+          1,
+        );
         console.log(
           `[mailer] Email sent to ${Array.isArray(options.to) ? options.to.join(",") : options.to}`,
         );
@@ -117,8 +106,5 @@ export async function sendEmail(
 }
 
 export function isEmailConfigured(): boolean {
-  const host = process.env.SMTP_HOST;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-  return !!(host && user && pass);
+  return isMailConfigured();
 }

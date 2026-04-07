@@ -2,7 +2,7 @@
 
 import type { EstimateResult } from "@/server/calc/estimate";
 import type { WizardPayload } from "@/lib/wizard-schema";
-import { getMailer } from "@/server/email/mailer";
+import { sendMail } from "@/lib/mail";
 import { generateQuotePdf } from "@/server/pdf/generate-quote";
 
 type EmailItemRow = {
@@ -61,11 +61,8 @@ export async function sendOrderEmail(args: {
   offerNo?: string;
   offerLink?: string;
 }) {
-  const transporter = getMailer();
-  if (!transporter) return { ok: false as const, skipped: true as const };
-
   const to = process.env.ORDER_RECEIVER_EMAIL || process.env.SMTP_USER;
-  const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+  const from = process.env.MAIL_FROM || process.env.SMTP_FROM || process.env.SMTP_USER;
   if (!to || !from) return { ok: false as const, skipped: true as const };
 
   const timingLabel =
@@ -207,7 +204,7 @@ export async function sendOrderEmail(args: {
   });
 
   try {
-    await transporter.sendMail({
+    await sendMail({
       to,
       from,
       subject,
