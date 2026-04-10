@@ -23,11 +23,22 @@ echo "==> Restarting Docker stack"
 docker compose down --remove-orphans
 docker compose up -d
 
-echo "==> Waiting for app startup"
-sleep 20
+echo "==> Waiting for app HTTP (build can take several minutes)"
+for i in $(seq 1 80); do
+  if docker compose exec -T web wget -q -O /dev/null http://127.0.0.1:3000/ 2>/dev/null; then
+    echo "==> App responded after attempt ${i}"
+    break
+  fi
+  if [[ "$i" -eq 80 ]]; then
+    echo "ERROR: Web container did not become ready in time."
+    docker compose logs web --tail=80
+    exit 1
+  fi
+  sleep 5
+done
 
 echo "==> Running post-deploy invoice backfill (idempotent)"
-docker compose exec -T web npm run accounting:backfill:invoices || true
+docker compose exec -T web npx tsx scripts/backfill-invoices.ts || true
 
 echo "==> Smoke checks"
 wget -S --spider "https://${DOMAIN}/"
@@ -46,4 +57,3 @@ fi
 echo "==> Booking APIs are live (demoMode=false)"
 
 echo "==> Deployment finished successfully"
-
