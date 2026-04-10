@@ -129,6 +129,9 @@ function newLineItem(preset?: Partial<LineItem>): LineItem {
 const inputCls =
   "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100";
 const labelCls = "mb-1.5 block text-sm font-semibold text-slate-700";
+/** Labels in dense grids: allow wrap + stable column width (avoids overlap). */
+const labelClsDense =
+  "mb-1.5 block min-h-[2.75rem] text-sm font-semibold leading-snug text-slate-700 [overflow-wrap:anywhere] hyphens-auto";
 const sectionCls =
   "rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]";
 
@@ -883,10 +886,13 @@ export function NewInvoiceForm() {
                   />
                 </div>
 
-                <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
-                  <div>
-                    <label className={labelCls}>Arbeitsstunden</label>
+                <div className="mt-3 grid min-w-0 grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="min-w-0">
+                    <label className={labelClsDense} htmlFor={`${item.id}-workHours`}>
+                      Arbeitsstunden
+                    </label>
                     <input
+                      id={`${item.id}-workHours`}
                       type="text"
                       value={item.workHours}
                       onChange={(e) => updateItem(item.id, { workHours: e.target.value })}
@@ -894,9 +900,12 @@ export function NewInvoiceForm() {
                       placeholder="6"
                     />
                   </div>
-                  <div>
-                    <label className={labelCls}>Fläche (m²)</label>
+                  <div className="min-w-0">
+                    <label className={labelClsDense} htmlFor={`${item.id}-areaSqm`}>
+                      Fläche (m²)
+                    </label>
                     <input
+                      id={`${item.id}-areaSqm`}
                       type="text"
                       value={item.areaSqm}
                       onChange={(e) => updateItem(item.id, { areaSqm: e.target.value })}
@@ -904,9 +913,12 @@ export function NewInvoiceForm() {
                       placeholder="120"
                     />
                   </div>
-                  <div>
-                    <label className={labelCls}>Volumen (m³)</label>
+                  <div className="min-w-0">
+                    <label className={labelClsDense} htmlFor={`${item.id}-volumeM3`}>
+                      Volumen (m³)
+                    </label>
                     <input
+                      id={`${item.id}-volumeM3`}
                       type="text"
                       value={item.volumeM3}
                       onChange={(e) => updateItem(item.id, { volumeM3: e.target.value })}
@@ -914,9 +926,12 @@ export function NewInvoiceForm() {
                       placeholder="48"
                     />
                   </div>
-                  <div>
-                    <label className={labelCls}>Etage</label>
+                  <div className="min-w-0">
+                    <label className={labelClsDense} htmlFor={`${item.id}-floor`}>
+                      Etage
+                    </label>
                     <input
+                      id={`${item.id}-floor`}
                       type="text"
                       value={item.floor}
                       onChange={(e) => updateItem(item.id, { floor: e.target.value })}
@@ -924,9 +939,12 @@ export function NewInvoiceForm() {
                       placeholder="4. OG"
                     />
                   </div>
-                  <div>
-                    <label className={labelCls}>Teile / Stückzahl</label>
+                  <div className="min-w-0">
+                    <label className={labelClsDense} htmlFor={`${item.id}-pieces`}>
+                      Teile / Stückzahl
+                    </label>
                     <input
+                      id={`${item.id}-pieces`}
                       type="text"
                       value={item.pieces}
                       onChange={(e) => updateItem(item.id, { pieces: e.target.value })}
@@ -934,9 +952,12 @@ export function NewInvoiceForm() {
                       placeholder="12"
                     />
                   </div>
-                  <div>
-                    <label className={labelCls}>MwSt.</label>
+                  <div className="min-w-0">
+                    <label className={labelClsDense} htmlFor={`${item.id}-vat`}>
+                      MwSt.
+                    </label>
                     <select
+                      id={`${item.id}-vat`}
                       value={item.vatPercent}
                       onChange={(e) =>
                         updateItem(item.id, { vatPercent: Number.parseFloat(e.target.value) || 19 })
