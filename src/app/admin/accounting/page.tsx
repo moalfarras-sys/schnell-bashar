@@ -104,31 +104,31 @@ export default async function AccountingDashboardPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <Container className="py-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
             <h1 className="text-3xl font-bold text-slate-900">Buchhaltung</h1>
             <p className="mt-2 text-slate-600">Umsatz, Rechnungen und Zahlungen im Überblick</p>
           </div>
-          <div className="flex gap-3">
-            <Link href="/admin/accounting/expenses">
+          <div className="flex flex-wrap gap-2 sm:max-w-none sm:justify-end">
+            <Link href="/admin/accounting/expenses" className="min-w-0 shrink-0">
               <Button variant="outline" size="sm" className="gap-2">
                 <Wallet className="h-4 w-4" />
                 Ausgaben
               </Button>
             </Link>
-            <Link href="/admin/accounting/quarterly">
+            <Link href="/admin/accounting/quarterly" className="min-w-0 shrink-0">
               <Button variant="outline" size="sm" className="gap-2">
                 <Files className="h-4 w-4" />
                 Quartalsbericht
               </Button>
             </Link>
-            <Link href="/admin/accounting/invoices/new">
+            <Link href="/admin/accounting/invoices/new" className="min-w-0 shrink-0">
               <Button size="sm" className="gap-2">
                 <PlusCircle className="h-4 w-4" />
                 Neue Rechnung
               </Button>
             </Link>
-            <Link href="/admin/accounting/reports">
+            <Link href="/admin/accounting/reports" className="min-w-0 shrink-0">
               <Button variant="outline" size="sm" className="gap-2">
                 Berichte
                 <ArrowRight className="h-4 w-4" />
@@ -182,7 +182,7 @@ export default async function AccountingDashboardPage() {
         />
 
         <div className="mt-8">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-lg font-bold text-slate-900">Top offene Rechnungen</h2>
             <Link href="/admin/accounting/invoices">
               <Button variant="outline" size="sm" className="gap-1">

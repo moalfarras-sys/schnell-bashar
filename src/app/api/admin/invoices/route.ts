@@ -5,6 +5,7 @@ import { prisma } from "@/server/db/prisma";
 import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
 import { hasPermission } from "@/server/auth/admin-permissions";
 import { formatManualDocumentNo, nextDocumentNumber } from "@/server/ids/document-number";
+import { buildManualInvoiceMeta } from "@/lib/manual-invoice";
 
 async function verifyAdmin(requiredPermission: string) {
   const cookieStore = await cookies();
@@ -66,6 +67,8 @@ export async function POST(req: NextRequest) {
       contractId,
       offerId,
       orderId,
+      manualReferences,
+      serviceDetails,
     } = body;
 
     if (!customerName || !customerEmail) {
@@ -200,14 +203,28 @@ export async function POST(req: NextRequest) {
               }
             : undefined,
         lineItems:
-          lineItems.length > 0
+          buildManualInvoiceMeta({
+            references: manualReferences,
+            serviceDetails,
+            itemDetails: Array.isArray(items)
+              ? items.map((item) => ({
+                  detail: item.detail,
+                  workHours: item.workHours,
+                  areaSqm: item.areaSqm,
+                  volumeM3: item.volumeM3,
+                  floor: item.floor,
+                  pieces: item.pieces,
+                }))
+              : undefined,
+          }) ??
+          (lineItems.length > 0
             ? lineItems.map((li) => ({
                 name: li.description,
                 quantity: li.quantity,
                 unit: li.unit,
                 priceCents: li.lineTotalCents,
               }))
-            : undefined,
+            : undefined),
         payments:
           paidCents > 0
             ? {

@@ -45,7 +45,7 @@ export default async function AdminPricingPage() {
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid min-w-0 gap-6">
       {dbWarning ? (
         <div className="rounded-xl border border-amber-300 bg-amber-100/95 px-4 py-3 text-sm font-semibold text-amber-900">
           {dbWarning}

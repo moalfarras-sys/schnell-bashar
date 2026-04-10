@@ -20,6 +20,12 @@ import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
 import { Container } from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { PaymentForm, MarkAsPaidButton, CancelInvoiceButton } from "./invoice-actions";
+import {
+  manualInvoiceReferenceRows,
+  manualInvoiceServiceRows,
+  manualItemDetailLines,
+  normalizeManualInvoiceMeta,
+} from "@/lib/manual-invoice";
 
 function formatEuro(cents: number): string {
   return new Intl.NumberFormat("de-DE", {
@@ -92,6 +98,10 @@ export default async function InvoiceDetailPage({
   }
 
   if (!invoice) notFound();
+
+  const manualMeta = normalizeManualInvoiceMeta(invoice.lineItems);
+  const manualReferenceRows = manualInvoiceReferenceRows(manualMeta?.references);
+  const manualServiceRows = manualInvoiceServiceRows(manualMeta?.serviceDetails);
 
   const outstanding = Math.max(0, invoice.grossCents - invoice.paidCents);
   const now = new Date();
@@ -201,6 +211,24 @@ export default async function InvoiceDetailPage({
               </div>
             )}
 
+            {manualServiceRows.length > 0 && (
+              <div className="rounded-xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-slate-500">
+                  Leistungsdetails
+                </h2>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {manualServiceRows.map((row) => (
+                    <div key={`${row.label}-${row.value}`}>
+                      <div className="text-xs text-slate-500">{row.label}</div>
+                      <div className="whitespace-pre-wrap text-sm font-semibold text-slate-900">
+                        {row.value}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {invoice.items.length > 0 && (
               <div className="rounded-xl border-2 border-slate-200 bg-white p-6 shadow-sm">
                 <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-slate-500">
@@ -217,6 +245,15 @@ export default async function InvoiceDetailPage({
                           Position {index + 1}
                         </div>
                         <div className="mt-1 text-sm font-semibold text-slate-900">{item.description}</div>
+                        {manualItemDetailLines(manualMeta?.itemDetails?.[index]).length > 0 && (
+                          <div className="mt-2 space-y-1">
+                            {manualItemDetailLines(manualMeta?.itemDetails?.[index]).map((line) => (
+                              <div key={line} className="text-xs text-slate-600">
+                                {line}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="text-sm text-slate-700">
                         <div className="text-xs text-slate-500">Menge</div>
@@ -344,6 +381,12 @@ export default async function InvoiceDetailPage({
                     {format(invoice.dueAt, "dd.MM.yyyy", { locale: de })}
                   </div>
                 </div>
+                {manualReferenceRows.map((row) => (
+                  <div key={`${row.label}-${row.value}`}>
+                    <span className="text-slate-500">{row.label}</span>
+                    <div className="break-words font-semibold text-slate-900">{row.value}</div>
+                  </div>
+                ))}
                 {invoice.order && (
                   <div>
                     <span className="text-slate-500">Auftrag</span>

@@ -221,7 +221,7 @@ export function ServicesAdminClient(props: {
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid min-w-0 gap-6">
       <section className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -248,7 +248,8 @@ export function ServicesAdminClient(props: {
 
       <section className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-6">
         <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-300">Service-Module</h2>
-        <form onSubmit={createOrUpdateModule} className="grid gap-3 md:grid-cols-4">
+        <div className="overflow-x-auto pb-1">
+        <form onSubmit={createOrUpdateModule} className="grid min-w-[min(100%,520px)] gap-3 md:grid-cols-4">
           <select
             value={newModuleSlug}
             onChange={(e) => setNewModuleSlug(e.target.value as "MONTAGE" | "ENTSORGUNG" | "SPECIAL")}
@@ -285,6 +286,7 @@ export function ServicesAdminClient(props: {
             </button>
           </div>
         </form>
+        </div>
       </section>
 
       {modules.map((module) => (
@@ -325,7 +327,8 @@ export function ServicesAdminClient(props: {
 
       <section className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-6">
         <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-300">Promo-Regeln</h2>
-        <form onSubmit={createPromo} className="grid gap-3 md:grid-cols-4">
+        <div className="overflow-x-auto pb-1">
+        <form onSubmit={createPromo} className="grid min-w-[min(100%,520px)] gap-3 md:grid-cols-4">
           <input name="code" placeholder="Code (z.B. MONTAGE10)" className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white" />
           <select name="moduleId" className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white">
             <option value="">Alle Module</option>
@@ -350,6 +353,7 @@ export function ServicesAdminClient(props: {
             Regel anlegen
           </button>
         </form>
+        </div>
 
         <div className="mt-4 grid gap-3">
           {promoRules.map((rule) => (
@@ -417,8 +421,9 @@ function CreateServiceOptionForm(props: {
   onCreate: (moduleId: string, payload: Record<string, unknown>) => Promise<void>;
 }) {
   return (
+    <div className="overflow-x-auto pb-1">
     <form
-      className="grid gap-2 md:grid-cols-6"
+      className="grid min-w-[min(100%,640px)] gap-2 md:grid-cols-6"
       onSubmit={async (e) => {
         e.preventDefault();
         const form = new FormData(e.currentTarget);
@@ -456,6 +461,7 @@ function CreateServiceOptionForm(props: {
       <label className="flex items-center gap-2 text-xs text-slate-300"><input name="requiresPhoto" type="checkbox" />Foto</label>
       <label className="flex items-center gap-2 text-xs text-slate-300"><input name="isHeavy" type="checkbox" />Schwer</label>
     </form>
+    </div>
   );
 }
 

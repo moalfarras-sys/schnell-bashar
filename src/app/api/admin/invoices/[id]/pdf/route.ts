@@ -4,6 +4,12 @@ import { prisma } from "@/server/db/prisma";
 import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
 import { hasPermission } from "@/server/auth/admin-permissions";
 import { generateInvoicePDF } from "@/server/pdf/generate-invoice";
+import {
+  manualInvoiceReferenceRows,
+  manualInvoiceServiceRows,
+  manualItemDetailLines,
+  normalizeManualInvoiceMeta,
+} from "@/lib/manual-invoice";
 
 export async function GET(
   _req: NextRequest,
@@ -39,6 +45,10 @@ export async function GET(
     return NextResponse.json({ error: "Rechnung nicht gefunden." }, { status: 404 });
   }
 
+  const manualMeta = normalizeManualInvoiceMeta(invoice.lineItems);
+  const manualReferenceRows = manualInvoiceReferenceRows(manualMeta?.references);
+  const manualServiceRows = manualInvoiceServiceRows(manualMeta?.serviceDetails);
+
   const pdfBuffer = await generateInvoicePDF({
     invoiceId: invoice.id,
     invoiceNo: invoice.invoiceNo ?? undefined,
@@ -52,8 +62,9 @@ export async function GET(
     notes: invoice.notes ?? undefined,
     lineItems:
       invoice.items.length > 0
-        ? invoice.items.map((item) => ({
+        ? invoice.items.map((item, index) => ({
             name: item.description,
+            detailLines: manualItemDetailLines(manualMeta?.itemDetails?.[index]),
             quantity: item.quantity,
             unit: item.unit,
             priceCents: item.lineTotalCents,
@@ -63,14 +74,24 @@ export async function GET(
     vatCents: invoice.vatCents,
     grossCents: invoice.grossCents,
     paidCents: invoice.paidCents,
-    contractNo: invoice.contract?.contractNo ?? undefined,
-    offerNo: invoice.contract?.offer?.offerNo ?? invoice.offer?.offerNo ?? undefined,
+    contractNo:
+      manualReferenceRows.find((row) => row.label === "Vertrag")?.value ??
+      invoice.contract?.contractNo ??
+      undefined,
+    offerNo:
+      manualReferenceRows.find((row) => row.label === "Angebot")?.value ??
+      invoice.contract?.offer?.offerNo ??
+      invoice.offer?.offerNo ??
+      undefined,
     orderNo:
+      manualReferenceRows.find((row) => row.label === "Auftrag")?.value ??
       invoice.contract?.offer?.order?.orderNo ??
       invoice.order?.orderNo ??
       invoice.contract?.offer?.order?.publicId ??
       invoice.order?.publicId ??
       undefined,
+    manualReferenceRows,
+    serviceDetailRows: manualServiceRows,
   });
 
   return new NextResponse(new Uint8Array(pdfBuffer), {

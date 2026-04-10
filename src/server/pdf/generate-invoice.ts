@@ -33,6 +33,7 @@ export interface InvoiceData {
   notes?: string;
   lineItems?: Array<{
     name: string;
+    detailLines?: string[];
     quantity?: number;
     unit?: string;
     priceCents?: number;
@@ -44,6 +45,8 @@ export interface InvoiceData {
   contractNo?: string;
   offerNo?: string;
   orderNo?: string;
+  manualReferenceRows?: Array<{ label: string; value: string }>;
+  serviceDetailRows?: Array<{ label: string; value: string }>;
 }
 
 function eur(cents: number): string {
@@ -137,13 +140,18 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
           4,
         0,
       );
-    const refs = [
-      data.orderNo ? ["Auftrag", data.orderNo] : null,
-      data.offerNo ? ["Angebot", data.offerNo] : null,
-      data.contractNo ? ["Vertrag", data.contractNo] : null,
-    ].filter(Boolean) as [string, string][];
+    const refs =
+      data.manualReferenceRows && data.manualReferenceRows.length > 0
+        ? data.manualReferenceRows.map((row) => [row.label, row.value] as [string, string])
+        : ([
+            data.orderNo ? ["Auftrag", data.orderNo] : null,
+            data.offerNo ? ["Angebot", data.offerNo] : null,
+            data.contractNo ? ["Vertrag", data.contractNo] : null,
+          ].filter(Boolean) as [string, string][]);
     const refsCardHeight = Math.max(92, 34 + refs.length * 16);
     const infoCardH = Math.max(leftCardHeight, refsCardHeight);
+
+    y = ensurePageSpace(doc, y, infoCardH + 14, layout);
 
     drawSectionCard(doc, {
       x: left,
@@ -192,6 +200,71 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
 
     y += infoCardH + 14;
 
+    if ((data.serviceDetailRows?.length ?? 0) > 0) {
+      const detailColumnWidth = (width - gap) / 2;
+      const serviceRows = data.serviceDetailRows ?? [];
+      const leftRows = serviceRows.filter((_, index) => index % 2 === 0);
+      const rightRows = serviceRows.filter((_, index) => index % 2 === 1);
+
+      const measureRowsHeight = (rows: Array<{ label: string; value: string }>) =>
+        rows.reduce((sum, row) => {
+          const valueHeight = doc
+            .font(PDF_THEME.type.bodySmall.font)
+            .fontSize(PDF_THEME.type.bodySmall.size)
+            .heightOfString(sanitizePdfText(row.value), {
+              width: detailColumnWidth - 40,
+              lineGap: 1.7,
+            });
+          return sum + 22 + valueHeight;
+        }, 0);
+
+      const serviceCardHeight =
+        22 + Math.max(measureRowsHeight(leftRows), measureRowsHeight(rightRows)) + 16;
+
+      y = ensurePageSpace(doc, y, serviceCardHeight + 14, layout);
+
+      drawSectionCard(doc, {
+        x: left,
+        y,
+        width,
+        height: serviceCardHeight,
+        fill: PDF_THEME.colors.card,
+        border: PDF_THEME.colors.border,
+        borderWidth: 0.8,
+        radius: PDF_THEME.radius.card,
+      });
+      doc
+        .font(PDF_THEME.type.cardTitle.font)
+        .fontSize(PDF_THEME.type.cardTitle.size)
+        .fillColor(PDF_THEME.colors.muted);
+      doc.text("LEISTUNGSDETAILS", left + 14, y + 12);
+
+      const drawServiceColumn = (
+        rows: Array<{ label: string; value: string }>,
+        startX: number,
+      ) => {
+        let currentY = y + 28;
+        rows.forEach((row) => {
+          currentY = drawLabelValue(doc, {
+            label: row.label,
+            value: row.value,
+            x: startX,
+            y: currentY,
+            width: detailColumnWidth - 20,
+            labelFontSize: 7.2,
+            valueFontSize: 8.8,
+            gap: 2,
+            lineGap: 1.55,
+          });
+          currentY += 8;
+        });
+      };
+
+      drawServiceColumn(leftRows, left + 14);
+      drawServiceColumn(rightRows, left + detailColumnWidth + gap + 14);
+      y += serviceCardHeight + 14;
+    }
+
     if (data.description) {
       const descriptionText = sanitizePdfText(data.description);
       const cardH =
@@ -201,6 +274,7 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
           lineGap: 1.6,
         }) +
         12;
+      y = ensurePageSpace(doc, y, cardH + 14, layout);
       drawSectionCard(doc, {
         x: left,
         y,
@@ -221,10 +295,14 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
       y += cardH + 14;
     }
 
+    y = ensurePageSpace(doc, y, 48, layout);
     y = drawSectionHeading(doc, "Leistungsübersicht", left, y, width);
 
     const rows = (data.lineItems ?? []).map((item) => ({
-      name: item.name,
+      name: [item.name, ...(item.detailLines ?? [])]
+        .filter(Boolean)
+        .map((line, index) => (index === 0 ? line : `• ${line}`))
+        .join("\n"),
       quantity: item.quantity ?? 1,
       unit: item.unit || "Paket",
       total: item.priceCents ?? 0,
@@ -315,13 +393,15 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
 
     y += blockH + 14;
 
+    const paymentNoticeText = sanitizePdfText(data.notes?.trim() || PAYMENT_NOTICE);
     const noticeH =
       28 +
-      doc.font("Helvetica").fontSize(8.9).heightOfString(PAYMENT_NOTICE, {
+      doc.font("Helvetica").fontSize(8.9).heightOfString(paymentNoticeText, {
         width: width - 32,
         lineGap: 1.5,
       }) +
       8;
+    y = ensurePageSpace(doc, y, noticeH + 14, layout);
     drawSectionCard(doc, {
       x: left,
       y,
@@ -334,7 +414,7 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     });
     doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.5).fillColor("#9a6700");
     doc.text("ZAHLUNGSBEDINGUNGEN", left + 16, y + 12);
-    drawBodyText(doc, PAYMENT_NOTICE, left + 16, y + 27, width - 32, {
+    drawBodyText(doc, paymentNoticeText, left + 16, y + 27, width - 32, {
       size: 8.6,
       lineGap: 1.5,
       color: PDF_THEME.colors.ink,

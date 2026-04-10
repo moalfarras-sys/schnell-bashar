@@ -44,7 +44,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="admin-shell luxury-bg min-h-screen text-slate-900 dark:text-slate-100">
+    <div className="admin-shell luxury-bg min-h-screen overflow-x-hidden text-slate-900 dark:text-slate-100">
       <AdminPwaRegister />
 
       <header className="sticky top-0 z-50 border-b border-[color:var(--line-soft)] bg-[color:var(--surface-elevated)]/90 backdrop-blur-xl">
@@ -79,7 +79,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </Container>
       </header>
 
-      <Container className="grid gap-4 py-4 lg:grid-cols-[300px_1fr] lg:gap-6 lg:py-8">
+      <Container className="grid min-w-0 gap-4 py-4 lg:grid-cols-[300px_1fr] lg:gap-6 lg:py-8">
         <details className="admin-mobile-nav surface-glass rounded-2xl border p-3 lg:hidden">
           <summary className="admin-mobile-menu-trigger cursor-pointer list-none">
             <span className="admin-mobile-menu-trigger__icon" aria-hidden="true">
@@ -114,7 +114,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <AdminNav newOrderCount={newOrderCount} />
         </aside>
 
-        <main className="admin-main min-w-0 rounded-3xl border border-[color:var(--line-soft)] bg-white/35 p-3 backdrop-blur-sm dark:bg-slate-900/20 lg:p-4">
+        <main className="admin-main min-w-0 max-w-full overflow-x-auto rounded-3xl border border-[color:var(--line-soft)] bg-white/35 p-3 backdrop-blur-sm dark:bg-slate-900/20 lg:p-4">
           {children}
         </main>
       </Container>
