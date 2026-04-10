@@ -155,7 +155,8 @@ export type SignatureProvider = (typeof SignatureProvider)[keyof typeof Signatur
 export const DocumentScope = {
   ORDER: 'ORDER',
   OFFER: 'OFFER',
-  CONTRACT: 'CONTRACT'
+  CONTRACT: 'CONTRACT',
+  INVOICE: 'INVOICE'
 } as const
 
 export type DocumentScope = (typeof DocumentScope)[keyof typeof DocumentScope]

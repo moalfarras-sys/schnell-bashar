@@ -1,3 +1,4 @@
+import "server-only";
 import nodemailer from "nodemailer";
 
 type MailPayload = {
@@ -19,8 +20,8 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS,
   },
   pool: true,
-  maxConnections: 5,
-  maxMessages: 100,
+  maxConnections: 3,
+  maxMessages: 50,
 });
 
 async function wait(ms: number) {
@@ -33,15 +34,17 @@ function getFromAddress() {
 
 export async function sendMail(payload: MailPayload, retries = 2) {
   const from = payload.from || getFromAddress();
-  if (!from) {
-    throw new Error("MAIL_FROM/SMTP_FROM is not configured");
+  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS || !from) {
+    throw new Error("Missing SMTP env vars");
   }
 
   let lastError: unknown;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      await transporter.verify();
+      if (attempt === 0) {
+        await transporter.verify();
+      }
       return await transporter.sendMail({
         from,
         to: payload.to,
@@ -61,11 +64,43 @@ export async function sendMail(payload: MailPayload, retries = 2) {
 }
 
 export function isMailConfigured() {
-  return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
+  return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS && process.env.MAIL_FROM);
 }
 
 export function getMailFrom() {
   return getFromAddress();
+}
+
+export async function verifyMailConnection() {
+  if (!isMailConfigured()) {
+    return {
+      ok: false as const,
+      code: "NOT_CONFIGURED",
+      message: "SMTP is not fully configured.",
+    };
+  }
+
+  try {
+    await transporter.verify();
+    return {
+      ok: true as const,
+      code: "OK",
+      message: "SMTP connection verified.",
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const response =
+      error && typeof error === "object" && "response" in error
+        ? String((error as { response?: unknown }).response ?? "")
+        : "";
+
+    return {
+      ok: false as const,
+      code: "AUTH_FAILED",
+      message,
+      response: response || undefined,
+    };
+  }
 }
 
 export const templates = {

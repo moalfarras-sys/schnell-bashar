@@ -42,6 +42,8 @@
     "text:fix-mojibake": "tsx scripts/fix-mojibake.ts",
     "text:scan-mojibake": "tsx scripts/check-mojibake.ts",
     "text:scan-transliteration": "tsx scripts/check-transliteration.ts",
+    "pdf:samples": "tsx scripts/export-pdf-samples.ts",
+    "pdf:renders": "tsx scripts/render-pdf-previews.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

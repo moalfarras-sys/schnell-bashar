@@ -1,8 +1,19 @@
-﻿import PDFDocument from "pdfkit";
+import PDFDocument from "pdfkit";
 import path from "path";
 import { existsSync } from "fs";
 import { getImageSlot, publicSrcToAbsolute } from "@/server/content/slots";
-import { sanitizePdfText } from "@/server/pdf/layout";
+import {
+  PDF_THEME,
+  TableColumn,
+  drawPageHeader,
+  drawSectionCard,
+  drawSectionHeading,
+  drawTable,
+  pdfContentWidth,
+  pdfPageLayout,
+  renderFooterOnAllPages,
+  sanitizePdfText,
+} from "@/server/pdf/layout";
 
 type QuoteLine = { label: string; qty: number; unit: number; total: number };
 
@@ -26,22 +37,17 @@ function eur(cents: number) {
   }).format(cents / 100);
 }
 
-const BLUE = "#1e3a8a";
-const DARK = "#0f172a";
-const BODY = "#334155";
-const MUTED = "#64748b";
-const LIGHT_BG = "#f8fafc";
-const BORDER = "#e2e8f0";
-const ACCENT = "#2563eb";
+function serviceLabel(value: string) {
+  if (value === "DISPOSAL" || value === "ENTSORGUNG") return "Entsorgung";
+  if (value === "COMBO" || value === "KOMBI") return "Umzug + Entsorgung";
+  return "Umzug";
+}
 
-const M = 56;
-const W = 595;
-const H = 842;
-const LEFT = M;
-const RIGHT = W - M;
-const CW = RIGHT - LEFT;
-const FOOTER_H = 52;
-const SAFE_BOTTOM = H - M - FOOTER_H - 10;
+function speedLabel(value: string) {
+  if (value === "EXPRESS") return "Express";
+  if (value === "ECONOMY") return "Economy";
+  return "Standard";
+}
 
 export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
   let slotLogoPath: string | null = null;
@@ -63,7 +69,7 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
       info: {
         Title: `Angebot ${input.publicId}`,
         Author: "Schnell Sicher Umzug",
-        Subject: "Umzugsangebot",
+        Subject: "Kurzangebot",
       },
     });
 
@@ -72,213 +78,164 @@ export async function generateQuotePdf(input: QuoteInput): Promise<Buffer> {
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    let y = M;
-
-    function ensureSpace(need: number) {
-      if (y + need > SAFE_BOTTOM) {
-        doc.addPage();
-        y = M;
-      }
-    }
-
-    function sectionHeading(label: string) {
-      ensureSpace(30);
-      doc.font("Helvetica-Bold").fontSize(10).fillColor(BLUE);
-      doc.text(label.toUpperCase(), LEFT, y, { width: CW, characterSpacing: 0.8 });
-      y += 16;
-      doc.strokeColor(ACCENT).lineWidth(0.5).moveTo(LEFT, y).lineTo(LEFT + 40, y).stroke();
-      y += 10;
-    }
-
-    function labelValue(label: string, value: string, x: number, w: number) {
-      const cleanLabel = sanitizePdfText(label);
-      const cleanValue = sanitizePdfText(value);
-      const lineGap = 1.3;
-      doc.font("Helvetica").fontSize(7.5).fillColor(MUTED);
-      doc.text(cleanLabel, x, y, { width: w, lineGap });
-      const labelHeight = doc.heightOfString(cleanLabel || " ", { width: w, lineGap });
-      y += labelHeight + 3;
-      doc.font("Helvetica").fontSize(9.5).fillColor(DARK);
-      doc.text(cleanValue, x, y, { width: w, lineGap });
-      const valueHeight = doc.heightOfString(cleanValue || " ", { width: w, lineGap });
-      y += valueHeight + 5;
-    }
-
-    // HEADER
-    const logoPath = slotLogoPath ?? path.join(process.cwd(), "public", "media", "brand", "hero-logo.jpeg");
-    const logoSize = 52;
-    if (existsSync(logoPath)) {
-      try {
-        doc.image(logoPath, LEFT, y, { width: logoSize, height: logoSize });
-      } catch {
-        doc.font("Helvetica-Bold").fontSize(13).fillColor(BLUE);
-        doc.text("SSU", LEFT, y + 16);
-      }
-    } else {
-      doc.font("Helvetica-Bold").fontSize(11).fillColor(BLUE);
-      doc.text("Schnell Sicher Umzug", LEFT, y + 16);
-    }
-
-    const companyLines = [
-      { text: "Schnell Sicher Umzug", bold: true },
-      { text: "Anzengruber Straße 9, 12043 Berlin", bold: false },
-      { text: "Tel.: +49 172 9573681", bold: false },
-      { text: "kontakt@schnellsicherumzug.de", bold: false },
-      { text: "USt-IdNr.: DE454603297", bold: false },
-    ];
-    let cy = y;
-    for (const line of companyLines) {
-      doc.font(line.bold ? "Helvetica-Bold" : "Helvetica").fontSize(7.5).fillColor(MUTED);
-      doc.text(sanitizePdfText(line.text), LEFT, cy, { width: CW, align: "right" });
-      cy += 9;
-    }
-
-    y += logoSize + 12;
-
-    doc.strokeColor(BLUE).lineWidth(1.5).moveTo(LEFT, y).lineTo(RIGHT, y).stroke();
-    y += 24;
-
-    // TITLE
-    doc.font("Helvetica-Bold").fontSize(22).fillColor(DARK);
-    doc.text("ANGEBOT", LEFT, y, { width: CW, align: "center" });
-    y += 30;
-
-    doc.font("Helvetica").fontSize(9).fillColor(MUTED);
-    doc.text(`Nr. ${input.publicId}  ·  Termin: ${input.slotLabel}`, LEFT, y, {
-      width: CW,
-      align: "center",
+    const left = PDF_THEME.page.marginX;
+    const width = pdfContentWidth();
+    const layout = pdfPageLayout();
+    let y = drawPageHeader(doc, {
+      y: 18,
+      contentWidth: width,
+      title: "KURZANGEBOT",
+      documentTag: "VORABKALKULATION",
+      metaRows: [
+        { label: "Angebotsnr.", value: input.publicId },
+        { label: "Termin", value: input.slotLabel },
+      ],
+      logoPath:
+        slotLogoPath && existsSync(slotLogoPath)
+          ? slotLogoPath
+          : path.join(process.cwd(), "public", "media", "brand", "hero-logo.jpeg"),
+      companyLines: [
+        { text: "Schnell Sicher Umzug", bold: true },
+        { text: "Anzengruber Straße 9, 12043 Berlin" },
+        { text: "Tel.: +49 172 9573681" },
+        { text: "kontakt@schnellsicherumzug.de" },
+        { text: "USt-IdNr.: DE454603297" },
+      ],
     });
-    y += 28;
 
-    // KUNDENANGABEN
-    sectionHeading("Kundenangaben");
-
-    const colW = Math.floor(CW / 2) - 8;
-    const savedY = y;
-
-    labelValue("Name", input.customerName, LEFT, colW);
-    const leftEnd = y;
-
-    y = savedY;
-    labelValue("E-Mail", input.customerEmail, LEFT + colW + 16, colW);
-    const rightEnd = y;
-
-    y = Math.max(leftEnd, rightEnd) + 8;
-
-    // AUFTRAGSDETAILS
-    const serviceLabel =
-      input.serviceType === "UMZUG" || input.serviceType === "MOVING"
-        ? "Umzug"
-        : input.serviceType === "ENTSORGUNG" || input.serviceType === "DISPOSAL"
-          ? "Entsorgung"
-          : "Umzug + Entsorgung";
-
-    const speedLabel =
-      input.speed === "ECONOMY" ? "Economy" : input.speed === "EXPRESS" ? "Express" : "Standard";
-
-    sectionHeading("Auftragsdetails");
-
-    const savedY2 = y;
-
-    labelValue("Leistung", serviceLabel, LEFT, colW);
-    labelValue("Termin", input.slotLabel, LEFT, colW);
-    const leftEnd2 = y;
-
-    y = savedY2;
-    labelValue("Priorität", speedLabel, LEFT + colW + 16, colW);
-    const rightEnd2 = y;
-
-    y = Math.max(leftEnd2, rightEnd2) + 8;
-
-    // LEISTUNGEN
-    if (input.lines.length > 0) {
-      ensureSpace(40 + input.lines.length * 24);
-      sectionHeading("Leistungsumfang");
-
-      doc.font("Helvetica").fontSize(9.5).fillColor(BODY);
-      input.lines.forEach((line, i) => {
-        const rowText = sanitizePdfText(`${i + 1}.  ${line.label}  ·  ${line.qty} Stück`);
-        const rowHeight = Math.max(16, doc.heightOfString(rowText, { width: CW - 4, lineGap: 1.2 }) + 2);
-        ensureSpace(rowHeight + 2);
-        doc.text(rowText, LEFT + 4, y, { width: CW - 4, lineGap: 1.2 });
-        y += rowHeight;
-      });
-      y += 10;
-    }
-
-    // PREISÜBERSICHT
-    const priceCardH = 100;
-    ensureSpace(priceCardH + 40);
-    sectionHeading("Preisübersicht");
-
-    const pad = 18;
-    const innerW = CW - pad * 2;
-
-    doc.save();
-    doc.roundedRect(LEFT, y, CW, priceCardH, 6).fill(LIGHT_BG);
-    doc.roundedRect(LEFT, y, CW, priceCardH, 6).strokeColor(BORDER).lineWidth(0.75).stroke();
-    doc.restore();
-
-    const priceY = y + pad;
-
-    doc.font("Helvetica").fontSize(9.5).fillColor(BODY);
-    doc.text("Nettobetrag:", LEFT + pad, priceY);
-    doc.text(eur(input.netCents), LEFT + pad, priceY, { width: innerW, align: "right" });
-
-    doc.text("MwSt. (19%):", LEFT + pad, priceY + 22);
-    doc.text(eur(input.vatCents), LEFT + pad, priceY + 22, { width: innerW, align: "right" });
-
-    doc
-      .strokeColor(BORDER)
-      .lineWidth(0.5)
-      .moveTo(LEFT + pad, priceY + 46)
-      .lineTo(RIGHT - pad, priceY + 46)
-      .stroke();
-
-    doc.font("Helvetica-Bold").fontSize(11).fillColor(DARK);
-    doc.text("Gesamtbetrag (brutto):", LEFT + pad, priceY + 54);
-    doc.text(eur(input.grossCents), LEFT + pad, priceY + 54, { width: innerW, align: "right" });
-
-    y += priceCardH + 18;
-
-    // TERMS
-    ensureSpace(30);
-    doc.font("Helvetica").fontSize(7.5).fillColor(MUTED);
-    doc.text(
-      "Dieses Angebot wurde automatisch erstellt und dient als Vorabinformation. Die Durchführung erfolgt gemäß unseren AGB.",
-      LEFT,
+    const colGap = 14;
+    const colW = (width - colGap) / 2;
+    const cardH = 78;
+    drawSectionCard(doc, {
+      x: left,
       y,
-      { width: CW },
+      width: colW,
+      height: cardH,
+      fill: PDF_THEME.colors.card,
+      border: PDF_THEME.colors.border,
+      borderWidth: 0.8,
+      radius: PDF_THEME.radius.card,
+    });
+    drawSectionCard(doc, {
+      x: left + colW + colGap,
+      y,
+      width: colW,
+      height: cardH,
+      fill: PDF_THEME.colors.card,
+      border: PDF_THEME.colors.border,
+      borderWidth: 0.8,
+      radius: PDF_THEME.radius.card,
+    });
+
+    doc.font(PDF_THEME.type.cardTitle.font).fontSize(PDF_THEME.type.cardTitle.size).fillColor(PDF_THEME.colors.muted);
+    doc.text("KUNDE", left + 14, y + 12);
+    doc.text("LEISTUNG", left + colW + colGap + 14, y + 12);
+
+    doc.font(PDF_THEME.type.body.font).fontSize(PDF_THEME.type.body.size).fillColor(PDF_THEME.colors.ink);
+    doc.text(sanitizePdfText(input.customerName), left + 14, y + 28, { width: colW - 28, lineGap: 1.7 });
+    doc.text(sanitizePdfText(input.customerEmail), left + 14, y + 45, { width: colW - 28, lineGap: 1.7 });
+
+    doc.text(`Service: ${serviceLabel(input.serviceType)}`, left + colW + colGap + 14, y + 28, {
+      width: colW - 28,
+      lineGap: 1.7,
+    });
+    doc.text(`Priorität: ${speedLabel(input.speed)}`, left + colW + colGap + 14, y + 45, {
+      width: colW - 28,
+      lineGap: 1.7,
+    });
+
+    y += cardH + 20;
+    y = drawSectionHeading(doc, "Leistungsübersicht", left, y, width);
+
+    const columns: TableColumn<QuoteLine>[] = [
+      {
+        key: "label",
+        header: "Beschreibung",
+        width: 315,
+        value: (row) => row.label,
+      },
+      {
+        key: "qty",
+        header: "Menge",
+        width: 60,
+        align: "center",
+        value: (row) => String(row.qty || 1),
+      },
+      {
+        key: "unit",
+        header: "Einzelpreis",
+        width: 74,
+        align: "right",
+        value: (row) => eur(row.unit),
+      },
+      {
+        key: "total",
+        header: "Gesamt",
+        width: width - 315 - 60 - 74,
+        align: "right",
+        value: (row) => eur(row.total),
+      },
+    ];
+
+    y = drawTable({
+      doc,
+      y,
+      layout,
+      x: left,
+      width,
+      columns,
+      rows: input.lines,
+      card: true,
+      zebra: true,
+    });
+
+    y += 14;
+    const summaryH = 92;
+    drawSectionCard(doc, {
+      x: left,
+      y,
+      width,
+      height: summaryH,
+      fill: PDF_THEME.colors.panel,
+      border: PDF_THEME.colors.border,
+      borderWidth: 0.8,
+      radius: PDF_THEME.radius.card,
+    });
+
+    doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.4).fillColor(PDF_THEME.colors.muted);
+    doc.text("PREISZUSAMMENFASSUNG", left + 16, y + 14);
+    doc.font(PDF_THEME.type.body.font).fontSize(9).fillColor(PDF_THEME.colors.body);
+    doc.text("Nettobetrag", left + 16, y + 34);
+    doc.text(eur(input.netCents), left + 16, y + 34, { width: width - 32, align: "right" });
+    doc.text("MwSt. (19 %)", left + 16, y + 52);
+    doc.text(eur(input.vatCents), left + 16, y + 52, { width: width - 32, align: "right" });
+    doc.strokeColor(PDF_THEME.colors.border).lineWidth(0.6).moveTo(left + 16, y + 69).lineTo(left + width - 16, y + 69).stroke();
+    doc.font(PDF_THEME.type.total.font).fontSize(14.5).fillColor(PDF_THEME.colors.ink);
+    doc.text("Gesamt", left + 16, y + 74);
+    doc.text(eur(input.grossCents), left + 16, y + 74, { width: width - 32, align: "right" });
+
+    y += summaryH + 14;
+    drawSectionCard(doc, {
+      x: left,
+      y,
+      width,
+      height: 54,
+      fill: PDF_THEME.colors.warnBg,
+      border: PDF_THEME.colors.warnBorder,
+      borderWidth: 0.9,
+      radius: PDF_THEME.radius.card,
+    });
+    doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.5).fillColor("#9a6700");
+    doc.text("WICHTIGER HINWEIS", left + 16, y + 14);
+    doc.font(PDF_THEME.type.bodySmall.font).fontSize(8.5).fillColor(PDF_THEME.colors.ink);
+    doc.text(
+      "Dieses Kurzangebot ist eine belastbare Vorabkalkulation. Die endgültige Durchführung erfolgt auf Basis des bestätigten Angebots oder Vertrags sowie unserer AGB.",
+      left + 16,
+      y + 26,
+      { width: width - 32, lineGap: 1.6 },
     );
 
-    // FOOTER (every page)
-    function drawFooter() {
-      const fy = H - M - FOOTER_H;
-      doc.strokeColor(BORDER).lineWidth(0.5).moveTo(LEFT, fy).lineTo(RIGHT, fy).stroke();
-
-      const fy1 = fy + 8;
-      doc.font("Helvetica").fontSize(6.5).fillColor(MUTED);
-      doc.text(
-        "Schnell Sicher Umzug  ·  Anzengruber Straße 9, 12043 Berlin  ·  Tel.: +49 172 9573681  ·  USt-IdNr.: DE454603297",
-        LEFT,
-        fy1,
-        { width: CW, align: "center" },
-      );
-      doc.text(
-        "Bankverbindung: Berliner Sparkasse  ·  Kontoinhaber: Baschar Al Hasan  ·  IBAN: DE75 1005 0000 0191 5325 76  ·  BIC: BELADEBEXXX",
-        LEFT,
-        fy1 + 10,
-        { width: CW, align: "center" },
-      );
-    }
-
-    const pages = doc.bufferedPageRange();
-    for (let i = 0; i < pages.count; i++) {
-      doc.switchToPage(i);
-      drawFooter();
-    }
-
+    renderFooterOnAllPages(doc);
     doc.end();
   });
 }
-

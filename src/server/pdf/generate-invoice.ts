@@ -4,32 +4,43 @@ import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { existsSync } from "fs";
 import { getImageSlot, publicSrcToAbsolute } from "@/server/content/slots";
-import { sanitizePdfText } from "@/server/pdf/layout";
+import {
+  PDF_THEME,
+  TableColumn,
+  drawBodyText,
+  drawLabelValue,
+  drawPageHeader,
+  drawSectionCard,
+  drawSectionHeading,
+  drawTable,
+  ensurePageSpace,
+  pdfContentWidth,
+  pdfPageLayout,
+  renderFooterOnAllPages,
+  sanitizePdfText,
+} from "@/server/pdf/layout";
 
 export interface InvoiceData {
   invoiceId: string;
   invoiceNo?: string;
   issuedAt: Date;
   dueAt: Date;
-
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
   address?: string;
-
   description?: string;
+  notes?: string;
   lineItems?: Array<{
     name: string;
     quantity?: number;
     unit?: string;
     priceCents?: number;
   }>;
-
   netCents: number;
   vatCents: number;
   grossCents: number;
   paidCents: number;
-
   contractNo?: string;
   offerNo?: string;
   orderNo?: string;
@@ -46,23 +57,8 @@ function fmtDate(date: Date): string {
   return format(date, "dd.MM.yyyy", { locale: de });
 }
 
-const BLUE = "#1e3a8a";
-const DARK = "#0f172a";
-const BODY = "#334155";
-const MUTED = "#64748b";
-const LIGHT_BG = "#f8fafc";
-const BORDER = "#e2e8f0";
-const ACCENT = "#2563eb";
-
-const TOP_M = 44;
-const M = 50;
-const W = 595;
-const H = 842;
-const LEFT = M;
-const RIGHT = W - M;
-const CW = RIGHT - LEFT;
-const FOOTER_H = 52;
-const SAFE_BOTTOM = H - M - FOOTER_H - 10;
+const PAYMENT_NOTICE =
+  "Die Zahlung spätestens 3 Tage vor dem Umzugstag überweisen oder am Umzugstag in Echtzeitüberweisung oder in Bar 50% vor dem Beladen und 50 % vor dem Entladen.";
 
 export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
   let slotLogoPath: string | null = null;
@@ -80,7 +76,7 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     const doc = new PDFDocument({
       size: "A4",
       bufferPages: true,
-      margins: { top: 0, bottom: 0, left: 0, right: 0 },
+      margins: { top: 0, right: 0, bottom: 0, left: 0 },
       info: {
         Title: `Rechnung ${data.invoiceNo || data.invoiceId}`,
         Author: "Schnell Sicher Umzug",
@@ -89,257 +85,261 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     });
 
     const chunks: Buffer[] = [];
-    doc.on("data", (c) => chunks.push(c));
+    doc.on("data", (chunk) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    let y = TOP_M;
-
-    function ensureSpace(need: number) {
-      if (y + need > SAFE_BOTTOM) {
-        doc.addPage();
-        y = TOP_M;
-      }
-    }
-
-    function sectionHeading(label: string) {
-      ensureSpace(24);
-      doc.font("Helvetica-Bold").fontSize(9.5).fillColor(BLUE);
-      doc.text(label.toUpperCase(), LEFT, y, { width: CW, characterSpacing: 0.8 });
-      y += 13;
-      doc.strokeColor(ACCENT).lineWidth(0.5).moveTo(LEFT, y).lineTo(LEFT + 36, y).stroke();
-      y += 7;
-    }
-
-    function labelValue(label: string, value: string, x: number, w: number) {
-      const cleanLabel = sanitizePdfText(label);
-      const cleanValue = sanitizePdfText(value);
-      const lineGap = 1.3;
-      doc.font("Helvetica").fontSize(7).fillColor(MUTED);
-      doc.text(cleanLabel, x, y, { width: w, lineGap });
-      const labelHeight = doc.heightOfString(cleanLabel || " ", { width: w, lineGap });
-      y += labelHeight + 3;
-      doc.font("Helvetica").fontSize(9).fillColor(DARK);
-      doc.text(cleanValue, x, y, { width: w, lineGap });
-      const valueHeight = doc.heightOfString(cleanValue || " ", { width: w, lineGap });
-      y += valueHeight + 4;
-    }
-
-    const LOGO_W = 150;
-    const INFO_FONT = 8.5;
-    const INFO_BOLD_FONT = 9.5;
-    const INFO_LINE_H = 11;
+    const left = PDF_THEME.page.marginX;
+    const width = pdfContentWidth();
+    const layout = pdfPageLayout();
     const logoPath =
-      slotLogoPath ??
-      path.join(process.cwd(), "public", "media", "brand", "hero-logo.jpeg");
+      slotLogoPath && existsSync(slotLogoPath)
+        ? slotLogoPath
+        : path.join(process.cwd(), "public", "media", "brand", "hero-logo.jpeg");
 
-    const companyLines = [
-      { text: "Schnell Sicher Umzug", bold: true },
-      { text: "Anzengruber Stra\u00DFe 9, 12043 Berlin", bold: false },
-      { text: "Tel.: +49 172 9573681", bold: false },
-      { text: "kontakt@schnellsicherumzug.de", bold: false },
-      { text: "USt-IdNr.: DE454603297", bold: false },
-    ];
-    const infoBlockH = companyLines.length * INFO_LINE_H;
-    const headerBlockH = Math.max(LOGO_W, infoBlockH);
+    let y = drawPageHeader(doc, {
+      y: 18,
+      contentWidth: width,
+      title: "RECHNUNG",
+      documentTag: "ABRECHNUNG",
+      metaRows: [
+        { label: "Rechnungsnr.", value: data.invoiceNo || data.invoiceId },
+        { label: "Datum", value: fmtDate(data.issuedAt) },
+        { label: "Fällig", value: fmtDate(data.dueAt) },
+      ],
+      logoPath,
+      companyLines: [
+        { text: "Schnell Sicher Umzug", bold: true },
+        { text: "Anzengruber Straße 9, 12043 Berlin" },
+        { text: "Tel.: +49 172 9573681" },
+        { text: "kontakt@schnellsicherumzug.de" },
+        { text: "USt-IdNr.: DE454603297" },
+      ],
+    });
 
-    if (existsSync(logoPath)) {
-      try {
-        doc.image(logoPath, LEFT, y, { width: LOGO_W });
-      } catch {
-        doc.font("Helvetica-Bold").fontSize(15).fillColor(BLUE);
-        doc.text("SSU", LEFT, y + 12);
-      }
-    } else {
-      doc.font("Helvetica-Bold").fontSize(13).fillColor(BLUE);
-      doc.text("Schnell Sicher Umzug", LEFT, y + 12);
-    }
+    const gap = 14;
+    const colW = (width - gap) / 2;
+    const leftCardLines = [
+      data.customerName,
+      data.address,
+      data.customerPhone ? `Tel.: ${data.customerPhone}` : null,
+      `E-Mail: ${data.customerEmail}`,
+    ].filter(Boolean) as string[];
+    const leftCardHeight =
+      34 +
+      leftCardLines.reduce(
+        (sum, line) =>
+          sum +
+          doc
+            .font(PDF_THEME.type.body.font)
+            .fontSize(8.9)
+            .heightOfString(sanitizePdfText(line), { width: colW - 28, lineGap: 1.55 }) +
+          4,
+        0,
+      );
+    const refs = [
+      data.orderNo ? ["Auftrag", data.orderNo] : null,
+      data.offerNo ? ["Angebot", data.offerNo] : null,
+      data.contractNo ? ["Vertrag", data.contractNo] : null,
+    ].filter(Boolean) as [string, string][];
+    const refsCardHeight = Math.max(92, 34 + refs.length * 16);
+    const infoCardH = Math.max(leftCardHeight, refsCardHeight);
 
-    let cy = y;
-    for (const line of companyLines) {
-      const fs = line.bold ? INFO_BOLD_FONT : INFO_FONT;
-      doc
-        .font(line.bold ? "Helvetica-Bold" : "Helvetica")
-        .fontSize(fs)
-        .fillColor(line.bold ? DARK : MUTED);
-      doc.text(sanitizePdfText(line.text), LEFT, cy, { width: CW, align: "right" });
-      cy += INFO_LINE_H;
-    }
+    drawSectionCard(doc, {
+      x: left,
+      y,
+      width: colW,
+      height: infoCardH,
+      fill: PDF_THEME.colors.card,
+      border: PDF_THEME.colors.border,
+      borderWidth: 0.8,
+      radius: PDF_THEME.radius.card,
+    });
+    drawSectionCard(doc, {
+      x: left + colW + gap,
+      y,
+      width: colW,
+      height: infoCardH,
+      fill: PDF_THEME.colors.card,
+      border: PDF_THEME.colors.border,
+      borderWidth: 0.8,
+      radius: PDF_THEME.radius.card,
+    });
 
-    y += headerBlockH + 14;
-    doc.strokeColor(BLUE).lineWidth(1.5).moveTo(LEFT, y).lineTo(RIGHT, y).stroke();
-    y += 20;
+    doc.font(PDF_THEME.type.cardTitle.font).fontSize(PDF_THEME.type.cardTitle.size).fillColor(PDF_THEME.colors.muted);
+    doc.text("RECHNUNGSEMPFÄNGER", left + 14, y + 12);
+    doc.text("REFERENZEN", left + colW + gap + 14, y + 12);
 
-    doc.font("Helvetica-Bold").fontSize(20).fillColor(DARK);
-    doc.text("RECHNUNG", LEFT, y, { width: CW, align: "center" });
-    y += 26;
+    let leftY = y + 28;
+    leftCardLines.forEach((line, index) => {
+      leftY = drawBodyText(doc, line, left + 14, leftY, colW - 28, {
+        size: index === 0 ? 10.4 : 8.9,
+        font: index === 0 ? "Helvetica-Bold" : "Helvetica",
+        lineGap: 1.55,
+        color: PDF_THEME.colors.ink,
+      });
+      leftY += 4;
+    });
 
-    const refParts = [`Nr. ${data.invoiceNo || data.invoiceId}`];
-    if (data.contractNo) refParts.push(`Vertrag: ${data.contractNo}`);
-    if (data.offerNo) refParts.push(`Angebot: ${data.offerNo}`);
-    if (data.orderNo) refParts.push(`Auftrag: ${data.orderNo}`);
-    refParts.push(`Datum: ${fmtDate(data.issuedAt)}`);
-    refParts.push(`F\u00E4llig: ${fmtDate(data.dueAt)}`);
+    let rightY = y + 28;
+    refs.forEach(([label, value]) => {
+      doc.font("Helvetica").fontSize(7.5).fillColor(PDF_THEME.colors.muted);
+      doc.text(label, left + colW + gap + 14, rightY, { width: 60 });
+      doc.font("Helvetica-Bold").fontSize(8.9).fillColor(PDF_THEME.colors.ink);
+      doc.text(value, left + colW + gap + 76, rightY, { width: colW - 90, align: "right" });
+      rightY += 16;
+    });
 
-    doc.font("Helvetica").fontSize(8.5).fillColor(MUTED);
-    doc.text(refParts.join("  \u00B7  "), LEFT, y, { width: CW, align: "center" });
-    y += 16;
-
-    sectionHeading("Rechnungsempf\u00E4nger");
-    const colW = Math.floor(CW / 2) - 8;
-    const savedY = y;
-
-    labelValue("Name", data.customerName, LEFT, colW);
-    if (data.address) {
-      labelValue("Adresse", data.address, LEFT, colW);
-    }
-    const leftEnd = y;
-    y = savedY;
-    if (data.customerPhone) {
-      labelValue("Telefon", data.customerPhone, LEFT + colW + 16, colW);
-    }
-    labelValue("E-Mail", data.customerEmail, LEFT + colW + 16, colW);
-    y = Math.max(leftEnd, y) + 4;
+    y += infoCardH + 14;
 
     if (data.description) {
-      sectionHeading("Beschreibung");
-      doc.font("Helvetica").fontSize(9).fillColor(BODY);
       const descriptionText = sanitizePdfText(data.description);
-      doc.text(descriptionText, LEFT, y, { width: CW, lineGap: 1.5 });
-      y += doc.heightOfString(descriptionText, { width: CW, lineGap: 1.5 }) + 8;
-    }
-
-    const items = data.lineItems ?? [];
-    if (items.length > 0) {
-      ensureSpace(30 + items.length * 20);
-      sectionHeading("Positionen");
-
-      const hasPrice = items.some((s) => s.priceCents !== undefined);
-      items.forEach((s, i) => {
-        const qty = s.quantity ? `  \u00B7  ${s.quantity} ${s.unit || "St\u00FCck"}` : "";
-        const priceStr =
-          hasPrice && s.priceCents !== undefined ? `   ${eur(s.priceCents)}` : "";
-        const rowText = sanitizePdfText(`${i + 1}.  ${s.name}${qty}`);
-        const textWidth = CW - 4 - (hasPrice ? 90 : 0);
-        const rowHeight = Math.max(14, doc.heightOfString(rowText, { width: textWidth, lineGap: 1.2 }) + 2);
-        ensureSpace(rowHeight + 2);
-        doc.font("Helvetica").fontSize(9).fillColor(BODY);
-        doc.text(rowText, LEFT + 4, y, {
-          width: textWidth,
-          lineGap: 1.2,
-        });
-        if (priceStr) {
-          doc.text(priceStr, LEFT + 4, y, { width: CW - 4, align: "right" });
-        }
-        y += rowHeight;
+      const cardH =
+        28 +
+        doc.font("Helvetica").fontSize(8.8).heightOfString(descriptionText, {
+          width: width - 28,
+          lineGap: 1.6,
+        }) +
+        12;
+      drawSectionCard(doc, {
+        x: left,
+        y,
+        width,
+        height: cardH,
+        fill: PDF_THEME.colors.card,
+        border: PDF_THEME.colors.border,
+        borderWidth: 0.8,
+        radius: PDF_THEME.radius.card,
       });
-      y += 6;
-    }
-
-    const outstanding = data.grossCents - data.paidCents;
-    const priceCardH = data.paidCents > 0 ? 104 : 84;
-    ensureSpace(priceCardH + 28);
-    sectionHeading("Betrag");
-
-    const pad = 14;
-    const innerW = CW - pad * 2;
-
-    doc.save();
-    doc.roundedRect(LEFT, y, CW, priceCardH, 6).fill(LIGHT_BG);
-    doc
-      .roundedRect(LEFT, y, CW, priceCardH, 6)
-      .strokeColor(BORDER)
-      .lineWidth(0.75)
-      .stroke();
-    doc.restore();
-
-    let priceY = y + pad;
-    doc.font("Helvetica").fontSize(9).fillColor(BODY);
-    doc.text("Nettobetrag:", LEFT + pad, priceY);
-    doc.text(eur(data.netCents), LEFT + pad, priceY, { width: innerW, align: "right" });
-
-    priceY += 20;
-    doc.text("MwSt. (19%):", LEFT + pad, priceY);
-    doc.text(eur(data.vatCents), LEFT + pad, priceY, { width: innerW, align: "right" });
-
-    priceY += 16;
-    doc
-      .strokeColor(BORDER)
-      .lineWidth(0.5)
-      .moveTo(LEFT + pad, priceY)
-      .lineTo(RIGHT - pad, priceY)
-      .stroke();
-    priceY += 8;
-
-    doc.font("Helvetica-Bold").fontSize(11).fillColor(DARK);
-    doc.text("Gesamtbetrag (brutto):", LEFT + pad, priceY);
-    doc.text(eur(data.grossCents), LEFT + pad, priceY, { width: innerW, align: "right" });
-
-    if (data.paidCents > 0) {
-      priceY += 20;
-      doc.font("Helvetica").fontSize(9).fillColor(BODY);
-      doc.text("Bereits bezahlt:", LEFT + pad, priceY);
-      doc.text(eur(data.paidCents), LEFT + pad, priceY, {
-        width: innerW,
-        align: "right",
+      doc.font(PDF_THEME.type.cardTitle.font).fontSize(PDF_THEME.type.cardTitle.size).fillColor(PDF_THEME.colors.muted);
+      doc.text("LEISTUNGSBESCHREIBUNG", left + 14, y + 12);
+      drawBodyText(doc, descriptionText, left + 14, y + 24, width - 28, {
+        size: 8.8,
+        lineGap: 1.6,
+        color: PDF_THEME.colors.body,
       });
-
-      priceY += 14;
-      doc.font("Helvetica-Bold").fontSize(10).fillColor(outstanding > 0 ? "#dc2626" : "#16a34a");
-      doc.text("Offener Betrag:", LEFT + pad, priceY);
-      doc.text(eur(outstanding), LEFT + pad, priceY, { width: innerW, align: "right" });
+      y += cardH + 14;
     }
 
-    y += priceCardH + 10;
+    y = drawSectionHeading(doc, "Leistungsübersicht", left, y, width);
 
-    ensureSpace(36);
-    doc.font("Helvetica").fontSize(7.5).fillColor(MUTED);
-    doc.text(
-      "Bitte \u00FCberweisen Sie den Betrag innerhalb der Zahlungsfrist auf das unten angegebene Konto.",
-      LEFT,
+    const rows = (data.lineItems ?? []).map((item) => ({
+      name: item.name,
+      quantity: item.quantity ?? 1,
+      unit: item.unit || "Paket",
+      total: item.priceCents ?? 0,
+    }));
+    const columns: TableColumn<(typeof rows)[number]>[] = [
+      { key: "name", header: "Beschreibung", width: 312, value: (row) => row.name },
+      { key: "quantity", header: "Menge", width: 58, align: "center", value: (row) => String(row.quantity) },
+      { key: "unit", header: "Einheit", width: 70, align: "center", value: (row) => row.unit },
+      { key: "total", header: "Gesamt", width: width - 312 - 58 - 70, align: "right", value: (row) => eur(row.total) },
+    ];
+
+    y = drawTable({
+      doc,
       y,
-      { width: CW },
-    );
-    y += 10;
-    doc.font("Helvetica-Bold").fontSize(7.5).fillColor(BODY);
-    doc.text(
-      "Bankverbindung: Berliner Sparkasse  \u00B7  Kontoinhaber: Baschar Al Hasan  \u00B7  IBAN: DE75 1005 0000 0191 5325 76  \u00B7  BIC: BELADEBEXXX",
-      LEFT,
+      layout,
+      x: left,
+      width,
+      columns,
+      rows,
+      card: true,
+      zebra: true,
+    });
+
+    y += 14;
+    y = ensurePageSpace(doc, y, 170, layout);
+    const bottomGap = 14;
+    const statusW = 176;
+    const totalsW = width - statusW - bottomGap;
+    const blockH = 92;
+
+    y = drawSectionHeading(doc, "Rechnungsbetrag", left, y, width);
+    drawSectionCard(doc, {
+      x: left,
       y,
-      { width: CW },
+      width: statusW,
+      height: blockH,
+      fill: PDF_THEME.colors.card,
+      border: PDF_THEME.colors.border,
+      borderWidth: 0.8,
+      radius: PDF_THEME.radius.card,
+    });
+    drawSectionCard(doc, {
+      x: left + statusW + bottomGap,
+      y,
+      width: totalsW,
+      height: blockH,
+      fill: PDF_THEME.colors.panel,
+      border: PDF_THEME.colors.border,
+      borderWidth: 0.8,
+      radius: PDF_THEME.radius.card,
+    });
+
+    const outstanding = Math.max(0, data.grossCents - data.paidCents);
+    doc.font("Helvetica-Bold").fontSize(8.8).fillColor(data.paidCents > 0 ? PDF_THEME.colors.danger : PDF_THEME.colors.brand);
+    doc.text(data.paidCents > 0 ? "Offener Betrag" : "Zahlungsziel", left + 16, y + 16);
+    doc.font(PDF_THEME.type.total.font).fontSize(14.5).fillColor(PDF_THEME.colors.ink);
+    doc.text(data.paidCents > 0 ? eur(outstanding) : fmtDate(data.dueAt), left + 16, y + 34, { width: statusW - 32 });
+    doc.font("Helvetica").fontSize(8.1).fillColor(PDF_THEME.colors.muted);
+    doc.text(
+      data.paidCents > 0 ? `Bereits bezahlt: ${eur(data.paidCents)}` : "Bitte fristgerecht überweisen.",
+      left + 16,
+      y + 60,
+      { width: statusW - 32, lineGap: 1.5 },
     );
 
-    function drawFooter() {
-      const fy = H - M - FOOTER_H;
+    let totalsY = y + 16;
+    [
+      ["Nettobetrag", eur(data.netCents)],
+      ["MwSt.", eur(data.vatCents)],
+      ["Gesamtbetrag", eur(data.grossCents)],
+    ].forEach(([label, value], index) => {
       doc
-        .strokeColor(BORDER)
-        .lineWidth(0.5)
-        .moveTo(LEFT, fy)
-        .lineTo(RIGHT, fy)
-        .stroke();
+        .font(index === 2 ? "Helvetica-Bold" : "Helvetica")
+        .fontSize(index === 2 ? 10.2 : 8.7)
+        .fillColor(index === 2 ? PDF_THEME.colors.ink : PDF_THEME.colors.body);
+      doc.text(label, left + statusW + bottomGap + 16, totalsY);
+      doc.text(value, left + statusW + bottomGap + 16, totalsY, { width: totalsW - 32, align: "right" });
+      totalsY += index === 1 ? 18 : 14;
+      if (index === 1) {
+        doc
+          .strokeColor(PDF_THEME.colors.border)
+          .lineWidth(0.65)
+          .moveTo(left + statusW + bottomGap + 16, totalsY - 6)
+          .lineTo(left + width - 16, totalsY - 6)
+          .stroke();
+      }
+    });
 
-      const fy1 = fy + 8;
-      doc.font("Helvetica").fontSize(6.5).fillColor(MUTED);
-      doc.text(
-        "Schnell Sicher Umzug  \u00B7  Anzengruber Stra\u00DFe 9, 12043 Berlin  \u00B7  Tel.: +49 172 9573681  \u00B7  USt-IdNr.: DE454603297",
-        LEFT,
-        fy1,
-        { width: CW, align: "center" },
-      );
-      doc.text(
-        "Bankverbindung: Berliner Sparkasse  \u00B7  Kontoinhaber: Baschar Al Hasan  \u00B7  IBAN: DE75 1005 0000 0191 5325 76  \u00B7  BIC: BELADEBEXXX",
-        LEFT,
-        fy1 + 10,
-        { width: CW, align: "center" },
-      );
-    }
+    y += blockH + 14;
 
-    const pages = doc.bufferedPageRange();
-    for (let i = 0; i < pages.count; i++) {
-      doc.switchToPage(i);
-      drawFooter();
-    }
-
+    const noticeH =
+      28 +
+      doc.font("Helvetica").fontSize(8.9).heightOfString(PAYMENT_NOTICE, {
+        width: width - 32,
+        lineGap: 1.5,
+      }) +
+      8;
+    drawSectionCard(doc, {
+      x: left,
+      y,
+      width,
+      height: noticeH,
+      fill: PDF_THEME.colors.warnBg,
+      border: PDF_THEME.colors.warnBorder,
+      borderWidth: 0.9,
+      radius: PDF_THEME.radius.card,
+    });
+    doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.5).fillColor("#9a6700");
+    doc.text("ZAHLUNGSBEDINGUNGEN", left + 16, y + 12);
+    drawBodyText(doc, PAYMENT_NOTICE, left + 16, y + 27, width - 32, {
+      size: 8.6,
+      lineGap: 1.5,
+      color: PDF_THEME.colors.ink,
+    });
+    renderFooterOnAllPages(doc);
     doc.end();
   });
 }

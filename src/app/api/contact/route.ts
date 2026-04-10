@@ -91,7 +91,23 @@ export async function POST(req: Request) {
     </div>
   `;
 
-  await sendMail({ to, from, subject, text, html, replyTo: email });
+  try {
+    await sendMail({ to, from, subject, text, html, replyTo: email });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[contact] Email send failed:", message);
+    if (error && typeof error === "object" && "response" in error) {
+      console.error("[contact] SMTP response:", (error as { response?: unknown }).response);
+    }
+
+    return NextResponse.json(
+      {
+        error:
+          "Die Anfrage konnte gerade nicht per E-Mail zugestellt werden. Bitte versuchen Sie es erneut oder rufen Sie uns direkt an: +49 172 9573681.",
+      },
+      { status: 502 },
+    );
+  }
 
   return NextResponse.json({ ok: true });
 }

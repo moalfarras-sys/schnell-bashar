@@ -26,8 +26,7 @@ export async function createInvoiceFromContract(contractId: string) {
       return existing;
     }
 
-    const docNo = await nextDocumentNumber("OFFER");
-    const invoiceNo = docNo.replace("ANG-", "RE-");
+    const invoiceNo = await nextDocumentNumber("INVOICE");
 
     const offer = contract.offer;
     const invoice = await prisma.invoice.create({

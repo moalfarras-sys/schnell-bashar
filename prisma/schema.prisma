@@ -370,6 +370,7 @@ enum DocumentScope {
   ORDER
   OFFER
   CONTRACT
+  INVOICE
 }
 
 model Offer {

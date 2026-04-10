@@ -4,16 +4,16 @@ import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import Link from "next/link";
 import {
+  AlertTriangle,
   ArrowLeft,
-  Download,
+  Banknote,
+  Building,
   CheckCircle2,
   Clock,
-  AlertTriangle,
-  XCircle,
-  Banknote,
   CreditCard,
+  Download,
   Wallet,
-  Building,
+  XCircle,
 } from "lucide-react";
 import { prisma } from "@/server/db/prisma";
 import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
@@ -53,11 +53,13 @@ export default async function InvoiceDetailPage({
   const { id } = await params;
   let dbWarning: string | null = null;
   let invoice: any = null;
+
   try {
     invoice = await prisma.invoice.findUnique({
       where: { id },
       include: {
         payments: { orderBy: { paidAt: "desc" } },
+        items: { orderBy: { sortOrder: "asc" } },
         contract: true,
         offer: true,
         order: true,
@@ -91,7 +93,7 @@ export default async function InvoiceDetailPage({
 
   if (!invoice) notFound();
 
-  const outstanding = invoice.grossCents - invoice.paidCents;
+  const outstanding = Math.max(0, invoice.grossCents - invoice.paidCents);
   const now = new Date();
   const isOverdue =
     (invoice.status === "UNPAID" || invoice.status === "PARTIAL") && invoice.dueAt < now;
@@ -138,12 +140,13 @@ export default async function InvoiceDetailPage({
               ) : (
                 <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-800">
                   <Clock className="h-3 w-3" />
-                  Unbezahlt
+                  Offen
                 </span>
               )}
             </div>
           </div>
-          <div className="flex gap-2">
+
+          <div className="flex flex-wrap gap-2">
             <a href={`/api/admin/invoices/${invoice.id}/pdf`} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="sm" className="gap-1">
                 <Download className="h-4 w-4" />
@@ -151,10 +154,7 @@ export default async function InvoiceDetailPage({
               </Button>
             </a>
             {invoice.status !== "CANCELLED" && invoice.status !== "PAID" && (
-              <MarkAsPaidButton
-                invoiceId={invoice.id}
-                outstandingCents={outstanding}
-              />
+              <MarkAsPaidButton invoiceId={invoice.id} outstandingCents={outstanding} />
             )}
             {invoice.status !== "CANCELLED" && invoice.status !== "PAID" && (
               <CancelInvoiceButton invoiceId={invoice.id} />
@@ -163,7 +163,7 @@ export default async function InvoiceDetailPage({
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             <div className="rounded-xl border-2 border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-slate-500">
                 Kundeninformationen
@@ -195,9 +195,53 @@ export default async function InvoiceDetailPage({
             {invoice.description && (
               <div className="rounded-xl border-2 border-slate-200 bg-white p-6 shadow-sm">
                 <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-slate-500">
-                  Beschreibung
+                  Leistungsbeschreibung
                 </h2>
                 <p className="whitespace-pre-wrap text-sm text-slate-700">{invoice.description}</p>
+              </div>
+            )}
+
+            {invoice.items.length > 0 && (
+              <div className="rounded-xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-slate-500">
+                  Positionen
+                </h2>
+                <div className="space-y-3">
+                  {invoice.items.map((item: any, index: number) => (
+                    <div
+                      key={item.id}
+                      className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[minmax(0,1fr)_90px_100px_120px]"
+                    >
+                      <div>
+                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Position {index + 1}
+                        </div>
+                        <div className="mt-1 text-sm font-semibold text-slate-900">{item.description}</div>
+                      </div>
+                      <div className="text-sm text-slate-700">
+                        <div className="text-xs text-slate-500">Menge</div>
+                        <div className="font-semibold">{item.quantity}</div>
+                      </div>
+                      <div className="text-sm text-slate-700">
+                        <div className="text-xs text-slate-500">Einheit</div>
+                        <div className="font-semibold">{item.unit}</div>
+                      </div>
+                      <div className="text-sm text-slate-700 md:text-right">
+                        <div className="text-xs text-slate-500">Gesamt</div>
+                        <div className="font-semibold">{formatEuro(item.lineTotalCents)}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {invoice.notes && (
+              <div className="rounded-xl border-2 border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-slate-500">
+                  Notizen / Zahlungsbedingungen
+                </h2>
+                <p className="whitespace-pre-wrap text-sm text-slate-700">{invoice.notes}</p>
               </div>
             )}
 
@@ -211,7 +255,7 @@ export default async function InvoiceDetailPage({
                   <span className="font-medium text-slate-900">{formatEuro(invoice.netCents)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-600">MwSt. (19%)</span>
+                  <span className="text-slate-600">MwSt.</span>
                   <span className="font-medium text-slate-900">{formatEuro(invoice.vatCents)}</span>
                 </div>
                 <div className="border-t border-slate-200 pt-2" />
@@ -222,10 +266,8 @@ export default async function InvoiceDetailPage({
                 {invoice.paidCents > 0 && (
                   <>
                     <div className="flex justify-between text-sm">
-                      <span className="text-green-600">Bezahlt</span>
-                      <span className="font-medium text-green-600">
-                        {formatEuro(invoice.paidCents)}
-                      </span>
+                      <span className="text-green-600">Bereits bezahlt</span>
+                      <span className="font-medium text-green-600">{formatEuro(invoice.paidCents)}</span>
                     </div>
                     <div className="flex justify-between text-base font-bold">
                       <span className={outstanding > 0 ? "text-red-600" : "text-green-600"}>
@@ -263,7 +305,7 @@ export default async function InvoiceDetailPage({
                           </div>
                           <div className="text-xs text-slate-500">
                             {methodInfo.label}
-                            {payment.reference && ` - ${payment.reference}`}
+                            {payment.reference && ` · ${payment.reference}`}
                           </div>
                           {payment.notes && (
                             <div className="mt-1 text-xs text-slate-400">{payment.notes}</div>
@@ -288,9 +330,7 @@ export default async function InvoiceDetailPage({
               <div className="space-y-3 text-sm">
                 <div>
                   <span className="text-slate-500">Rechnungsnr.</span>
-                  <div className="font-semibold text-slate-900">
-                    {invoice.invoiceNo || "-"}
-                  </div>
+                  <div className="font-semibold text-slate-900">{invoice.invoiceNo || "-"}</div>
                 </div>
                 <div>
                   <span className="text-slate-500">Erstellt am</span>
@@ -312,6 +352,18 @@ export default async function InvoiceDetailPage({
                     </div>
                   </div>
                 )}
+                {invoice.offer && (
+                  <div>
+                    <span className="text-slate-500">Angebot</span>
+                    <div className="font-semibold text-slate-900">{invoice.offer.offerNo || invoice.offer.id}</div>
+                  </div>
+                )}
+                {invoice.contract && (
+                  <div>
+                    <span className="text-slate-500">Vertrag</span>
+                    <div className="font-semibold text-slate-900">{invoice.contract.contractNo || invoice.contract.id}</div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -320,10 +372,7 @@ export default async function InvoiceDetailPage({
                 <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-green-800">
                   Zahlung erfassen
                 </h2>
-                <PaymentForm
-                  invoiceId={invoice.id}
-                  outstandingCents={outstanding}
-                />
+                <PaymentForm invoiceId={invoice.id} outstandingCents={outstanding} />
               </div>
             )}
           </div>
@@ -332,4 +381,3 @@ export default async function InvoiceDetailPage({
     </div>
   );
 }
-

@@ -26,7 +26,13 @@ export async function GET(
   const { id } = await params;
   const invoice = await prisma.invoice.findUnique({
     where: { id },
-    include: { contract: { include: { offer: { include: { order: true } } } }, payments: true },
+    include: {
+      contract: { include: { offer: { include: { order: true } } } },
+      payments: true,
+      items: { orderBy: { sortOrder: "asc" } },
+      offer: true,
+      order: true,
+    },
   });
 
   if (!invoice) {
@@ -43,14 +49,28 @@ export async function GET(
     customerPhone: invoice.customerPhone ?? undefined,
     address: invoice.address ?? undefined,
     description: invoice.description ?? undefined,
-    lineItems: (invoice.lineItems as any) ?? undefined,
+    notes: invoice.notes ?? undefined,
+    lineItems:
+      invoice.items.length > 0
+        ? invoice.items.map((item) => ({
+            name: item.description,
+            quantity: item.quantity,
+            unit: item.unit,
+            priceCents: item.lineTotalCents,
+          }))
+        : ((invoice.lineItems as any) ?? undefined),
     netCents: invoice.netCents,
     vatCents: invoice.vatCents,
     grossCents: invoice.grossCents,
     paidCents: invoice.paidCents,
     contractNo: invoice.contract?.contractNo ?? undefined,
-    offerNo: invoice.contract?.offer?.offerNo ?? undefined,
-    orderNo: invoice.contract?.offer?.order?.orderNo ?? undefined,
+    offerNo: invoice.contract?.offer?.offerNo ?? invoice.offer?.offerNo ?? undefined,
+    orderNo:
+      invoice.contract?.offer?.order?.orderNo ??
+      invoice.order?.orderNo ??
+      invoice.contract?.offer?.order?.publicId ??
+      invoice.order?.publicId ??
+      undefined,
   });
 
   return new NextResponse(new Uint8Array(pdfBuffer), {

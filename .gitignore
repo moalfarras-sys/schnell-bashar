@@ -10,6 +10,11 @@ yarn-error.log*
 !.env.production.example
 !.env.*.example
 .env.*.local
+tmp/pdfs
+tmp/pdf-renders
+visual-dev.log
+visual-dev.err.log
+*.tsbuildinfo
 
 # Prisma
 prisma/dev.db

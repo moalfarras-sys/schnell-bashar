@@ -47,7 +47,13 @@ export function PaymentForm({
       const res = await fetch(`/api/admin/invoices/${invoiceId}/payments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amountCents, method, reference, notes, paidAt: paidAt || undefined }),
+        body: JSON.stringify({
+          amountCents,
+          method,
+          reference,
+          notes,
+          paidAt: paidAt || undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Fehler");
@@ -65,7 +71,7 @@ export function PaymentForm({
     <form onSubmit={handleSubmit} className="space-y-3">
       <div>
         <label className="mb-1 block text-xs font-semibold text-slate-700">
-          Betrag (EUR) <span className="text-slate-400">- offen: {formatEuro(outstandingCents)}</span>
+          Betrag (EUR) <span className="text-slate-400">· offen: {formatEuro(outstandingCents)}</span>
         </label>
         <input
           type="number"
@@ -108,7 +114,7 @@ export function PaymentForm({
         <input
           type="text"
           name="reference"
-          placeholder="z.B. Transaktionsnr."
+          placeholder="z. B. Transaktionsnummer"
           className="w-full rounded-lg border-2 border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none"
         />
       </div>
@@ -124,7 +130,7 @@ export function PaymentForm({
       </div>
 
       {error && <p className="text-xs font-medium text-red-600">{error}</p>}
-      {success && <p className="text-xs font-medium text-green-600">Zahlung erfasst!</p>}
+      {success && <p className="text-xs font-medium text-green-600">Zahlung erfasst.</p>}
 
       <Button type="submit" size="sm" className="w-full" disabled={loading}>
         {loading ? (
@@ -221,4 +227,3 @@ export function CancelInvoiceButton({ invoiceId }: { invoiceId: string }) {
     </Button>
   );
 }
-

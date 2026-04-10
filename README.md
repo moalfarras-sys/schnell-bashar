@@ -172,6 +172,12 @@ Mindestens:
 - `SESSION_SECRET="..."`
 - SMTP: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `ORDER_RECEIVER_EMAIL`
 
+Aktueller Produktionsbetrieb:
+
+- Der laufende VPS-Stack verwendet derzeit `docker-compose.yml` mit `.env`.
+- `docker-compose.prod.yml` und `.env.production` sind aktuell nicht der aktive Pfad auf `schnellsicherumzug.de`.
+- Wenn du SMTP oder andere Runtime-Secrets für die Live-Seite änderst, musst du daher die Werte in `.env` aktualisieren und danach `docker compose up -d --force-recreate web` ausführen.
+
 Optional:
 
 - `DATABASE_SSL_REJECT_UNAUTHORIZED="false"` (falls Provider/SSL Probleme macht)

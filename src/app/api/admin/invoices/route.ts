@@ -4,7 +4,7 @@ import { addDays } from "date-fns";
 import { prisma } from "@/server/db/prisma";
 import { verifyAdminToken, adminCookieName } from "@/server/auth/admin-session";
 import { hasPermission } from "@/server/auth/admin-permissions";
-import { nextDocumentNumber } from "@/server/ids/document-number";
+import { formatManualDocumentNo, nextDocumentNumber } from "@/server/ids/document-number";
 
 async function verifyAdmin(requiredPermission: string) {
   const cookieStore = await cookies();
@@ -16,6 +16,12 @@ async function verifyAdmin(requiredPermission: string) {
   } catch {
     return false;
   }
+}
+
+function computeInvoiceStatus(grossCents: number, totalPaid: number) {
+  if (totalPaid >= grossCents) return "PAID" as const;
+  if (totalPaid > 0) return "PARTIAL" as const;
+  return "UNPAID" as const;
 }
 
 export async function GET() {
@@ -44,6 +50,7 @@ export async function POST(req: NextRequest) {
       customerPhone,
       address,
       description,
+      notes,
       items,
       netCents: clientNetCents,
       vatCents: clientVatCents,
@@ -51,7 +58,11 @@ export async function POST(req: NextRequest) {
       dueDays = 14,
       issuedAt,
       paymentStatus,
+      initialPaymentCents,
+      initialPaymentMethod,
+      paymentReference,
       discountPercent,
+      invoiceSuffix,
       contractId,
       offerId,
       orderId,
@@ -120,28 +131,54 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const invoiceNo = await nextDocumentNumber("OFFER");
-    const rechnungNo = invoiceNo.replace("ANG-", "RE-");
-
     const issuedDate = issuedAt ? new Date(issuedAt) : new Date();
-    const isPaid = paymentStatus === "PAID";
+    const normalizedInvoiceSuffix =
+      typeof invoiceSuffix === "string" ? invoiceSuffix.trim() : "";
+    const invoiceNo = normalizedInvoiceSuffix
+      ? formatManualDocumentNo("INVOICE", normalizedInvoiceSuffix, issuedDate)
+      : await nextDocumentNumber("INVOICE", issuedDate);
+
+    if (normalizedInvoiceSuffix) {
+      const existingInvoice = await prisma.invoice.findUnique({
+        where: { invoiceNo },
+        select: { id: true },
+      });
+      if (existingInvoice) {
+        return NextResponse.json(
+          { error: "Diese Rechnungsnummer ist bereits vergeben." },
+          { status: 409 },
+        );
+      }
+    }
+
+    const normalizedInitialPaymentCents =
+      typeof initialPaymentCents === "number"
+        ? Math.max(0, Math.min(grossCents, Math.round(initialPaymentCents)))
+        : 0;
+    const paidCents =
+      paymentStatus === "PAID"
+        ? grossCents
+        : paymentStatus === "PARTIAL"
+          ? normalizedInitialPaymentCents
+          : 0;
+    const status = computeInvoiceStatus(grossCents, paidCents);
 
     const invoice = await prisma.invoice.create({
       data: {
-        invoiceNo: rechnungNo,
+        invoiceNo,
         customerName,
         customerEmail,
         customerPhone: customerPhone || null,
         address: address || null,
         description: description || null,
-        notes: description || null,
+        notes: notes || null,
         discountPercent: discountPercent || null,
         discountCents: discountCents ?? null,
         netCents,
         vatCents,
         grossCents,
-        paidCents: isPaid ? grossCents : 0,
-        status: isPaid ? "PAID" : "UNPAID",
+        paidCents,
+        status,
         issuedAt: issuedDate,
         dueAt: addDays(issuedDate, dueDays),
         isManual: !contractId,
@@ -171,15 +208,20 @@ export async function POST(req: NextRequest) {
                 priceCents: li.lineTotalCents,
               }))
             : undefined,
-        payments: isPaid
-          ? {
-              create: {
-                amountCents: grossCents,
-                method: "BANK_TRANSFER",
-                notes: "Automatisch als bezahlt markiert bei Erstellung",
-              },
-            }
-          : undefined,
+        payments:
+          paidCents > 0
+            ? {
+                create: {
+                  amountCents: paidCents,
+                  method: initialPaymentMethod || "BANK_TRANSFER",
+                  reference: paymentReference || null,
+                  notes:
+                    status === "PAID"
+                      ? "Automatisch als bezahlt markiert bei Erstellung"
+                      : "Anzahlung bei Erstellung erfasst",
+                },
+              }
+            : undefined,
       },
       include: { items: true, payments: true },
     });

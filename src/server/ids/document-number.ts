@@ -3,28 +3,36 @@ import { randomUUID } from "node:crypto";
 
 import { prisma } from "@/server/db/prisma";
 
-type Scope = "ORDER" | "OFFER" | "CONTRACT";
+type Scope = "ORDER" | "OFFER" | "CONTRACT" | "INVOICE";
 
 const PREFIX: Record<Scope, string> = {
   ORDER: "AUF",
   OFFER: "ANG",
   CONTRACT: "VER",
+  INVOICE: "RE",
 };
 const ORDER_PREFIX = `${PREFIX.ORDER}-`;
 
-function minuteBucketBerlin(date: Date): string {
-  return formatInTimeZone(date, "Europe/Berlin", "yyyyMMddHHmm");
+function dailyBucketBerlin(date: Date): string {
+  return formatInTimeZone(date, "Europe/Berlin", "yyyyMMdd");
 }
 
 function formatDocumentNo(scope: Scope, bucket: string, counter: number): string {
-  const date = bucket.slice(0, 8);
-  const hm = bucket.slice(8, 12);
-  const seq = String(counter).padStart(3, "0");
-  return `${PREFIX[scope]}-${date}-${hm}-${seq}`;
+  const seq = String(counter).padStart(2, "0");
+  return `${PREFIX[scope]}-${bucket}-${seq}`;
+}
+
+export function formatManualDocumentNo(scope: Scope, suffix: string, now = new Date()): string {
+  const normalized = suffix.trim();
+  if (!/^\d{3}$/.test(normalized)) {
+    throw new Error("Manual document suffix must be exactly 3 digits");
+  }
+  const bucket = dailyBucketBerlin(now);
+  return `${PREFIX[scope]}-${bucket}-${normalized}`;
 }
 
 export async function nextDocumentNumber(scope: Scope, now = new Date()): Promise<string> {
-  const bucket = minuteBucketBerlin(now);
+  const bucket = dailyBucketBerlin(now);
 
   const rows = await prisma.$transaction(async (tx) =>
     tx.$queryRawUnsafe<Array<{ counter: number | string | bigint }>>(
@@ -76,6 +84,10 @@ export function deriveOfferNoFromOrderNo(orderNo: string): string {
 
 export function deriveContractNoFromOrderNo(orderNo: string): string {
   return `${PREFIX.CONTRACT}-${suffixFromOrderNo(orderNo)}`;
+}
+
+export function deriveInvoiceNoFromOrderNo(orderNo: string): string {
+  return `${PREFIX.INVOICE}-${suffixFromOrderNo(orderNo)}`;
 }
 
 export function contractDisplayNo(contract: {
