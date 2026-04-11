@@ -11,6 +11,40 @@ export const PDF_THEME = {
     bottom: 30,
     footerHeight: 42,
   },
+  invoiceLayout: {
+    standard: {
+      topOffset: 18,
+      pageTop: 30,
+      footerHeight: 42,
+      safeBottomPad: 8,
+      headerBandHeight: 100,
+      headerRuleY: 96,
+      bannerY: 118,
+      bannerHeight: 60,
+      afterHeaderGap: 16,
+      sectionGap: 14,
+      compactCardPaddingX: 14,
+      compactCardPaddingY: 12,
+      compactTableHeaderHeight: 22,
+      compactTableRowPaddingY: 6,
+    },
+    compact: {
+      topOffset: 12,
+      pageTop: 22,
+      footerHeight: 34,
+      safeBottomPad: 4,
+      headerBandHeight: 82,
+      headerRuleY: 78,
+      bannerY: 92,
+      bannerHeight: 50,
+      afterHeaderGap: 12,
+      sectionGap: 10,
+      compactCardPaddingX: 12,
+      compactCardPaddingY: 10,
+      compactTableHeaderHeight: 20,
+      compactTableRowPaddingY: 4,
+    },
+  },
   colors: {
     brand: "#163f6f",
     brandStrong: "#0f3158",
@@ -63,6 +97,7 @@ export type PdfPageLayout = {
   bottom: number;
   pageHeight: number;
   footerHeight: number;
+  safeBottomPad?: number;
 };
 
 export type TextMeasureOptions = {
@@ -110,12 +145,17 @@ export type DrawTableOptions<T> = {
   onPageBreak?: () => void;
 };
 
-export function pdfPageLayout(): PdfPageLayout {
+export function pdfPageLayout(input?: {
+  top?: number;
+  footerHeight?: number;
+  safeBottomPad?: number;
+}): PdfPageLayout {
   return {
-    top: PDF_THEME.page.top,
+    top: input?.top ?? PDF_THEME.page.top,
     bottom: PDF_THEME.page.bottom,
     pageHeight: PDF_THEME.page.height,
-    footerHeight: PDF_THEME.page.footerHeight,
+    footerHeight: input?.footerHeight ?? PDF_THEME.page.footerHeight,
+    safeBottomPad: input?.safeBottomPad,
   };
 }
 
@@ -124,7 +164,7 @@ export function pdfContentWidth(): number {
 }
 
 export function pdfSafeBottom(layout: PdfPageLayout): number {
-  return layout.pageHeight - layout.bottom - layout.footerHeight - 8;
+  return layout.pageHeight - layout.bottom - layout.footerHeight - (layout.safeBottomPad ?? 8);
 }
 
 export function sanitizePdfText(value: unknown): string {
@@ -245,17 +285,19 @@ export function drawPageHeader(
     logoPath?: string | null;
     companyLines: CompanyLine[];
     documentTag?: string;
+    compact?: boolean;
   },
 ): number {
   const left = PDF_THEME.page.marginX;
   const right = left + input.contentWidth;
-  const logoW = 98;
-  const logoH = 72;
+  const mode = input.compact ? PDF_THEME.invoiceLayout.compact : PDF_THEME.invoiceLayout.standard;
+  const logoW = input.compact ? 88 : 98;
+  const logoH = input.compact ? 60 : 72;
   const headerTop = input.y;
 
   doc.save();
-  doc.rect(0, 0, PDF_THEME.page.width, 100).fill("#fbfdff");
-  doc.rect(0, 96, PDF_THEME.page.width, 4).fill(PDF_THEME.colors.brand);
+  doc.rect(0, 0, PDF_THEME.page.width, mode.headerBandHeight).fill("#fbfdff");
+  doc.rect(0, mode.headerRuleY, PDF_THEME.page.width, 4).fill(PDF_THEME.colors.brand);
   doc.restore();
 
   if (input.logoPath) {
@@ -270,19 +312,19 @@ export function drawPageHeader(
     doc.text("Schnell Sicher Umzug", left, headerTop + 22);
   }
 
-  let companyY = headerTop + 2;
+  let companyY = headerTop + (input.compact ? 1 : 2);
   const companyX = right - 210;
   for (const line of input.companyLines) {
     doc
       .font(line.bold ? "Helvetica-Bold" : "Helvetica")
-      .fontSize(line.bold ? 9.5 : 8)
+      .fontSize(line.bold ? (input.compact ? 8.9 : 9.5) : input.compact ? 7.4 : 8)
       .fillColor(line.bold ? PDF_THEME.colors.ink : PDF_THEME.colors.muted);
     doc.text(sanitizePdfText(line.text), companyX, companyY, { width: 210, align: "right" });
-    companyY += line.bold ? 12 : 10;
+    companyY += line.bold ? (input.compact ? 11 : 12) : input.compact ? 9 : 10;
   }
 
-  const bannerY = 118;
-  const bannerH = 60;
+  const bannerY = mode.bannerY;
+  const bannerH = mode.bannerHeight;
   drawSectionCard(doc, {
     x: left,
     y: bannerY,
@@ -296,26 +338,31 @@ export function drawPageHeader(
 
   if (input.documentTag) {
     doc.font(PDF_THEME.type.overline.font).fontSize(PDF_THEME.type.overline.size).fillColor(PDF_THEME.colors.muted);
-    doc.text(input.documentTag, left + 18, bannerY + 10, {
+    doc.text(input.documentTag, left + 18, bannerY + (input.compact ? 8 : 10), {
       width: 160,
       characterSpacing: 0.9,
     });
   }
 
-  doc.font(PDF_THEME.type.title.font).fontSize(PDF_THEME.type.title.size).fillColor(PDF_THEME.colors.brand);
-  doc.text(sanitizePdfText(input.title), left + 18, bannerY + 20, { width: 240 });
+  doc
+    .font(PDF_THEME.type.title.font)
+    .fontSize(input.compact ? 17.8 : PDF_THEME.type.title.size)
+    .fillColor(PDF_THEME.colors.brand);
+  doc.text(sanitizePdfText(input.title), left + 18, bannerY + (input.compact ? 16 : 20), {
+    width: 240,
+  });
 
   const metaX = right - 200;
-  let metaY = bannerY + 12;
+  let metaY = bannerY + (input.compact ? 9 : 12);
   for (const row of input.metaRows) {
-    doc.font("Helvetica").fontSize(7.7).fillColor(PDF_THEME.colors.muted);
+    doc.font("Helvetica").fontSize(input.compact ? 7.2 : 7.7).fillColor(PDF_THEME.colors.muted);
     doc.text(sanitizePdfText(row.label), metaX, metaY, { width: 70 });
-    doc.font("Helvetica-Bold").fontSize(8.8).fillColor(PDF_THEME.colors.ink);
+    doc.font("Helvetica-Bold").fontSize(input.compact ? 8.2 : 8.8).fillColor(PDF_THEME.colors.ink);
     doc.text(sanitizePdfText(row.value), metaX + 74, metaY, { width: 112, align: "right" });
-    metaY += 13;
+    metaY += input.compact ? 11.5 : 13;
   }
 
-  return bannerY + bannerH + 16;
+  return bannerY + bannerH + mode.afterHeaderGap;
 }
 
 export function drawSectionHeading(doc: Doc, label: string, x: number, y: number, width: number): number {
@@ -393,11 +440,43 @@ export function drawFooter(doc: Doc, input?: { centeredNote?: string }) {
   );
 }
 
+export function drawFooterCompact(doc: Doc, input?: { centeredNote?: string }) {
+  const x = PDF_THEME.page.marginX;
+  const footerHeight = PDF_THEME.invoiceLayout.compact.footerHeight;
+  const y = PDF_THEME.page.height - PDF_THEME.page.bottom - footerHeight;
+  const width = pdfContentWidth();
+  doc.strokeColor(PDF_THEME.colors.border).lineWidth(0.55).moveTo(x, y).lineTo(x + width, y).stroke();
+  doc.font(PDF_THEME.type.footer.font).fontSize(6.35).fillColor(PDF_THEME.colors.muted);
+  doc.text(
+    sanitizePdfText(
+      input?.centeredNote ||
+        "Schnell Sicher Umzug · Anzengruber Straße 9, 12043 Berlin · Tel.: +49 172 9573681 · kontakt@schnellsicherumzug.de",
+    ),
+    x,
+    y + 6,
+    { width, align: "center" },
+  );
+  doc.text(
+    "USt-IdNr.: DE454603297 · Berliner Sparkasse · IBAN: DE75 1005 0000 0191 5325 76 · BIC: BELADEBEXXX",
+    x,
+    y + 15,
+    { width, align: "center" },
+  );
+}
+
 export function renderFooterOnAllPages(doc: Doc, input?: { centeredNote?: string }) {
   const pages = doc.bufferedPageRange();
   for (let i = 0; i < pages.count; i++) {
     doc.switchToPage(i);
     drawFooter(doc, input);
+  }
+}
+
+export function renderFooterCompactOnAllPages(doc: Doc, input?: { centeredNote?: string }) {
+  const pages = doc.bufferedPageRange();
+  for (let i = 0; i < pages.count; i++) {
+    doc.switchToPage(i);
+    drawFooterCompact(doc, input);
   }
 }
 

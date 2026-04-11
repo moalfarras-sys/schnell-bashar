@@ -7,6 +7,9 @@ import { generateInvoicePDF } from "../src/server/pdf/generate-invoice";
 import { generateAGBPDF } from "../src/server/pdf/generate-agb";
 import { generateQuarterlyReportPdf } from "../src/server/pdf/generate-quarterly-report";
 
+const DEFAULT_PAYMENT_NOTICE =
+  "Die Zahlung spätestens 3 Tage vor dem Umzugstag überweisen oder am Umzugstag in Echtzeitüberweisung oder in Bar 50% vor dem Beladen und 50 % vor dem Entladen.";
+
 async function main() {
   const outDir = path.join(process.cwd(), "tmp", "pdfs");
   mkdirSync(outDir, { recursive: true });
@@ -176,6 +179,88 @@ async function main() {
     orderNo: "AUF-20260410-002",
   });
 
+  const manualInvoiceShort = await generateInvoicePDF({
+    invoiceId: "INV-MAN-20260411-001",
+    invoiceNo: "RE-20260411-111",
+    issuedAt: new Date("2026-04-11"),
+    dueAt: new Date("2026-04-25"),
+    customerName: "NZNZM",
+    customerEmail: "admin@schnellsicherumzug.de",
+    customerPhone: "01728003410",
+    address: "Forster Str. 1",
+    description: "Rechnung gemäß individuell definiertem Leistungsumfang.",
+    notes: DEFAULT_PAYMENT_NOTICE,
+    serviceDetailRows: [
+      { label: "Leistungsart", value: "Privatumzug" },
+      { label: "Startadresse", value: "Forster Str. 1" },
+    ],
+    lineItems: [
+      {
+        name: "2",
+        detailLines: ["Arbeitsstunden: 2", "Fläche: 50 m²", "Etage: 2"],
+        quantity: 1,
+        unit: "Stück",
+        priceCents: 2500,
+      },
+    ],
+    netCents: 2500,
+    vatCents: 475,
+    grossCents: 2975,
+    paidCents: 1000,
+  });
+
+  const manualInvoiceMedium = await generateInvoicePDF({
+    invoiceId: "INV-MAN-20260411-002",
+    invoiceNo: "RE-20260411-112",
+    issuedAt: new Date("2026-04-11"),
+    dueAt: new Date("2026-04-25"),
+    customerName: "Murat Yilmaz",
+    customerEmail: "murat@example.de",
+    customerPhone: "+49 176 12345678",
+    address: "Pannierstraße 18, 12047 Berlin",
+    description: "Rechnung für individuell abgestimmte Umzugs- und Zusatzleistungen laut manueller Erfassung.",
+    notes: DEFAULT_PAYMENT_NOTICE,
+    manualReferenceRows: [
+      { label: "Auftrag", value: "AUF-MANUELL-240" },
+      { label: "Projekt", value: "Neukölln Umzug" },
+    ],
+    serviceDetailRows: [
+      { label: "Leistungsart", value: "Privatumzug + Montage" },
+      { label: "Einsatzdatum", value: "14.04.2026" },
+      { label: "Arbeitsstunden", value: "6 Stunden" },
+      { label: "Volumen", value: "38 m³" },
+      { label: "Etage", value: "3. OG ohne Aufzug" },
+      { label: "Startadresse", value: "Pannierstraße 18, 12047 Berlin" },
+    ],
+    lineItems: [
+      {
+        name: "Umzugsservice",
+        detailLines: ["Arbeitsstunden: 4", "Volumen: 30 m³", "Etage: 3. OG"],
+        quantity: 1,
+        unit: "Pauschale",
+        priceCents: 48000,
+      },
+      {
+        name: "Möbelmontage",
+        detailLines: ["Arbeitsstunden: 2", "Teile/Stückzahl: 6"],
+        quantity: 1,
+        unit: "Pauschale",
+        priceCents: 9000,
+      },
+      {
+        name: "Halteverbotszone",
+        detailLines: ["Zusätzliche Beschreibung: Organisation und Beschilderung"],
+        quantity: 1,
+        unit: "Pauschale",
+        priceCents: 12000,
+      },
+    ],
+    netCents: 69000,
+    vatCents: 13110,
+    grossCents: 82110,
+    paidCents: 25000,
+  });
+
   const agb = await generateAGBPDF();
 
   const quarterly = await generateQuarterlyReportPdf({
@@ -203,6 +288,8 @@ async function main() {
     ["contract-stress.pdf", contractStress],
     ["invoice-compact.pdf", invoiceCompact],
     ["invoice-stress.pdf", invoiceStress],
+    ["invoice-manual-short.pdf", manualInvoiceShort],
+    ["invoice-manual-medium.pdf", manualInvoiceMedium],
     ["agb.pdf", agb],
     ["quarterly-report.pdf", quarterly],
   ] as const;
