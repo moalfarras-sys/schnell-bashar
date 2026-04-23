@@ -22,6 +22,17 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
+  if (
+    pathname !== "/maintenance.html" &&
+    !pathname.startsWith("/_next/") &&
+    pathname !== "/favicon.ico"
+  ) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/maintenance.html";
+    url.search = "";
+    return NextResponse.rewrite(url);
+  }
+
   if (!pathname.startsWith("/admin")) {
     return NextResponse.next();
   }
