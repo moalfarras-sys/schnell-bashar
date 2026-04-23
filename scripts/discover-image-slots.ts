@@ -27,7 +27,6 @@ const EXPLICIT_KEY_BY_SOURCE: Record<string, string> = {
   "/media/gallery/team-back.jpeg": "img.home.cta.bg",
   "/media/gallery/calendar.jpeg": "img.kalender.main",
   "/media/gallery/money.jpeg": "img.preise.banner",
-  "/media/brand/company-signature-clean.png": "img.pdf.contract.signature",
   "/media/brand/company-stamp-clean.png": "img.pdf.contract.stamp",
 };
 const ALLOWED_EXTENSIONS = [".png", ".jpg", ".jpeg", ".webp", ".avif", ".svg"];

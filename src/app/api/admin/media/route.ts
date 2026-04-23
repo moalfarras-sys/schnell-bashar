@@ -1,12 +1,9 @@
-import crypto from "node:crypto";
-import fs from "node:fs/promises";
-import path from "node:path";
-
 import { NextResponse } from "next/server";
 
 import { requireAdminSession } from "@/server/auth/require-admin";
 import { slotAdminDelegates } from "@/server/content/slot-admin-db";
 import { getImageDimensions } from "@/server/media/image-meta";
+import { buildSafeMediaFileName, canWriteMediaInCurrentRuntime, storeMediaOriginal } from "@/server/media/storage";
 
 export const runtime = "nodejs";
 
@@ -37,6 +34,12 @@ export async function GET() {
   const delegates = slotAdminDelegates();
   if (!delegates.mediaAsset) {
     return NextResponse.json({ error: "Media DB nicht bereit" }, { status: 503 });
+  }
+  if (!canWriteMediaInCurrentRuntime()) {
+    return NextResponse.json(
+      { error: "Supabase Storage ist für Media-Uploads auf Vercel noch nicht konfiguriert" },
+      { status: 503 },
+    );
   }
 
   try {
@@ -79,19 +82,18 @@ export async function POST(req: Request) {
     const bytes = Buffer.from(await file.arrayBuffer());
     const dims = getImageDimensions(bytes, file.type);
 
-    const base = sanitizeFileBaseName(file.name);
     const ext = extensionForMime(file.type);
-    const filename = `${base}-${Date.now()}-${crypto.randomUUID().slice(0, 8)}${ext}`;
-    const publicRelative = `/uploads/media/${filename}`;
-    const absolute = path.join(process.cwd(), "public", "uploads", "media", filename);
-
-    await fs.mkdir(path.dirname(absolute), { recursive: true });
-    await fs.writeFile(absolute, bytes);
+    const filename = buildSafeMediaFileName(sanitizeFileBaseName(file.name), ext);
+    const publicPath = await storeMediaOriginal({
+      buffer: bytes,
+      contentType: file.type,
+      fileName: filename,
+    });
 
     const asset = await delegates.mediaAsset.create({
       data: {
         filename,
-        path: publicRelative,
+        path: publicPath,
         alt: alt || null,
         title: title || null,
         mime: file.type,
@@ -103,7 +105,10 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ asset }, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Upload fehlgeschlagen" }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Upload fehlgeschlagen" },
+      { status: 500 },
+    );
   }
 }

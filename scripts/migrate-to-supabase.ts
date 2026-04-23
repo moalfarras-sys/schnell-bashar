@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { mkdir, rm } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
 
@@ -33,19 +33,40 @@ function requiredEnv(name: string) {
   return value;
 }
 
+function getSourceDatabaseUrl() {
+  return process.env.SOURCE_DATABASE_URL?.trim() || process.env.LOCAL_DATABASE_URL?.trim() || "";
+}
+
 async function main() {
-  const sourceUrl = requiredEnv("LOCAL_DATABASE_URL");
+  const sourceUrl = getSourceDatabaseUrl();
   const targetUrl = requiredEnv("DIRECT_URL");
 
+  if (!sourceUrl) {
+    throw new Error("Missing SOURCE_DATABASE_URL (preferred) or LOCAL_DATABASE_URL.");
+  }
   if (!targetUrl.includes("supabase.com")) {
     throw new Error("DIRECT_URL must point to your Supabase direct Postgres host.");
   }
 
   const projectRoot = process.cwd();
   const tmpDir = path.join(projectRoot, ".tmp");
-  const dumpFile = "/work/.tmp/supabase-data.sql";
+  const dumpFile = path.join(tmpDir, "supabase-data.sql");
+  const verifySql = path.join(tmpDir, "supabase-verify-counts.sql");
 
   await mkdir(tmpDir, { recursive: true });
+  await writeFile(
+    verifySql,
+    [
+      "SELECT 'Order' AS table_name, COUNT(*) AS row_count FROM \"Order\";",
+      "SELECT 'Offer' AS table_name, COUNT(*) AS row_count FROM \"Offer\";",
+      "SELECT 'Contract' AS table_name, COUNT(*) AS row_count FROM \"Contract\";",
+      "SELECT 'Invoice' AS table_name, COUNT(*) AS row_count FROM \"Invoice\";",
+      "SELECT 'Document' AS table_name, COUNT(*) AS row_count FROM \"Document\";",
+      "SELECT 'DocumentVersion' AS table_name, COUNT(*) AS row_count FROM \"DocumentVersion\";",
+      "SELECT 'SigningToken' AS table_name, COUNT(*) AS row_count FROM \"SigningToken\";",
+    ].join("\n"),
+    "utf8",
+  );
 
   console.log("[supabase:migrate] Applying Prisma migrations to Supabase...");
   await run("npx", ["prisma", "migrate", "deploy"], {
@@ -57,7 +78,7 @@ async function main() {
     },
   });
 
-  console.log("[supabase:migrate] Exporting data from local Docker/Postgres...");
+  console.log("[supabase:migrate] Exporting data from source Postgres...");
   await run("docker", [
     "run",
     "--rm",
@@ -68,7 +89,7 @@ async function main() {
     "postgres:16",
     "sh",
     "-lc",
-    `pg_dump "$SRC_URL" --data-only --no-owner --no-privileges --schema=public --exclude-table=public._prisma_migrations --file=${dumpFile}`,
+    'pg_dump "$SRC_URL" --data-only --no-owner --no-privileges --schema=public --exclude-table=public._prisma_migrations --file=/work/.tmp/supabase-data.sql',
   ]);
 
   console.log("[supabase:migrate] Cleaning Supabase public tables (except _prisma_migrations)...");
@@ -94,7 +115,7 @@ async function main() {
     "postgres:16",
     "sh",
     "-lc",
-    `psql "$DST_URL" -v ON_ERROR_STOP=1 -f ${dumpFile}`,
+    'psql "$DST_URL" -v ON_ERROR_STOP=1 -f /work/.tmp/supabase-data.sql',
   ]);
 
   console.log("[supabase:migrate] Running ANALYZE on Supabase...");
@@ -106,14 +127,43 @@ async function main() {
     "postgres:16",
     "sh",
     "-lc",
-    `psql "$DST_URL" -v ON_ERROR_STOP=1 -c "ANALYZE;"`,
+    'psql "$DST_URL" -v ON_ERROR_STOP=1 -c "ANALYZE;"',
+  ]);
+
+  console.log("[supabase:migrate] Verifying key table counts on source...");
+  await run("docker", [
+    "run",
+    "--rm",
+    "-e",
+    `SRC_URL=${sourceUrl}`,
+    "-v",
+    `${projectRoot}:/work`,
+    "postgres:16",
+    "sh",
+    "-lc",
+    'psql "$SRC_URL" -v ON_ERROR_STOP=1 -f /work/.tmp/supabase-verify-counts.sql',
+  ]);
+
+  console.log("[supabase:migrate] Verifying key table counts on Supabase...");
+  await run("docker", [
+    "run",
+    "--rm",
+    "-e",
+    `DST_URL=${targetUrl}`,
+    "-v",
+    `${projectRoot}:/work`,
+    "postgres:16",
+    "sh",
+    "-lc",
+    'psql "$DST_URL" -v ON_ERROR_STOP=1 -f /work/.tmp/supabase-verify-counts.sql',
   ]);
 
   if (process.env.KEEP_SUPABASE_DUMP !== "true") {
-    await rm(path.join(tmpDir, "supabase-data.sql"), { force: true });
+    await rm(dumpFile, { force: true });
+    await rm(verifySql, { force: true });
   }
 
-  console.log("[supabase:migrate] Done. Supabase now has migrated schema+data from local DB.");
+  console.log("[supabase:migrate] Done. Supabase now has migrated schema and data from the source database.");
 }
 
 main().catch((error) => {

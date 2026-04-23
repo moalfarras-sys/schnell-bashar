@@ -19,13 +19,7 @@ function mediaBrandPath(fileName: string): string {
 }
 
 export function resolveCompanySignaturePath(): string | null {
-  return resolveFirstExisting([
-    mediaBrandPath("company-signature-clean.png"),
-    mediaBrandPath("company-signature.png"),
-    mediaBrandPath("company-signature.jpg"),
-    mediaBrandPath("company-signature.jpeg"),
-    path.join(process.cwd(), "public", "media", "gallery", "sig", "sig1.jpeg"),
-  ]);
+  return resolveLegacySignaturePath();
 }
 
 export function resolveCompanyStampPath(): string | null {
@@ -39,11 +33,7 @@ export function resolveCompanyStampPath(): string | null {
 }
 
 export function resolveCompanySignatureStampPath(): string | null {
-  return resolveFirstExisting([
-    mediaBrandPath("company-signature-stamp.png"),
-    mediaBrandPath("company-signature-stamp.jpg"),
-    mediaBrandPath("company-signature-stamp.jpeg"),
-  ]);
+  return null;
 }
 
 export function resolveLegacySignaturePath(): string | null {

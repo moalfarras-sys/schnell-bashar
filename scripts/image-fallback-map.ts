@@ -1,6 +1,9 @@
-export const IMAGE_FALLBACK_MAP: Record<string, string> = {};
+export const IMAGE_FALLBACK_MAP: Record<string, string> = {
+  "/media/gallery/1.jpeg": "/media/gallery/team-back.jpeg",
+  "/media/gallery/2.jpeg": "/media/gallery/team-portrait-2.jpeg",
+};
 
-const NON_IMAGE_ROUTE_PREFIXES = ["/media/slots", "/media/image-meta"];
+const NON_IMAGE_ROUTE_PREFIXES = ["/media/slots", "/media/image-meta", "/media/storage"];
 const NON_IMAGE_ROUTE_EXACT = new Set(["/media/slots/sync"]);
 
 export function normalizeMediaPath(value: string): string {

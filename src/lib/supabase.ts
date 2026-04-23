@@ -55,6 +55,7 @@ export const supabaseAdmin = isAdminConfigured()
   : (null as unknown as SupabaseClient);
 
 export const STORAGE_BUCKETS = {
+  MEDIA_PUBLIC: "media-public",
   OFFERS: "offers",
   SIGNED_CONTRACTS: "signed-contracts",
   EXPENSE_RECEIPTS: "expense-receipts",

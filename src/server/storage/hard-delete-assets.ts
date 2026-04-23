@@ -61,7 +61,11 @@ function parseSupabasePublicUrl(rawUrl: string): ParsedSupabasePublic | null {
 }
 
 function canDeleteBucket(bucket: string): boolean {
-  return bucket === STORAGE_BUCKETS.OFFERS || bucket === STORAGE_BUCKETS.SIGNED_CONTRACTS;
+  return (
+    bucket === STORAGE_BUCKETS.MEDIA_PUBLIC ||
+    bucket === STORAGE_BUCKETS.OFFERS ||
+    bucket === STORAGE_BUCKETS.SIGNED_CONTRACTS
+  );
 }
 
 async function deleteLocalFile(target: string, allowedRoots: string[]): Promise<{ deleted: boolean; warning?: DeleteWarning }> {
@@ -136,4 +140,3 @@ export async function hardDeleteAssetTargets(targets: Array<string | null | unde
 
   return { deletedCount, warnings };
 }
-

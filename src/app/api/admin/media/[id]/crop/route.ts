@@ -1,13 +1,11 @@
-﻿import crypto from "node:crypto";
-import fs from "node:fs/promises";
-import path from "node:path";
-
 import sharp from "sharp";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdminSession } from "@/server/auth/require-admin";
+import { canWriteMediaInCurrentRuntime, readMediaAssetBuffer, storeMediaVariant } from "@/server/media/storage";
 import { slotAdminDelegates } from "@/server/content/slot-admin-db";
+import { hardDeleteAssetTargets } from "@/server/storage/hard-delete-assets";
 
 export const runtime = "nodejs";
 
@@ -20,14 +18,6 @@ const cropSchema = z.object({
   height: z.number().min(0.05).max(1).default(1),
   quality: z.number().int().min(55).max(95).default(84),
 });
-
-function safePublicAbsolute(publicPath: string): string | null {
-  const normalized = publicPath.startsWith("/") ? publicPath.slice(1) : publicPath;
-  const candidate = path.join(process.cwd(), "public", normalized);
-  const root = path.join(process.cwd(), "public");
-  if (!candidate.startsWith(root)) return null;
-  return candidate;
-}
 
 function ratioForPreset(aspect: "16:9" | "4:3" | "1:1" | "free"): number | null {
   if (aspect === "16:9") return 16 / 9;
@@ -47,6 +37,12 @@ export async function POST(
   if (!delegates.mediaAsset || !delegates.mediaAssetVariant) {
     return NextResponse.json({ error: "Media DB nicht bereit" }, { status: 503 });
   }
+  if (!canWriteMediaInCurrentRuntime()) {
+    return NextResponse.json(
+      { error: "Supabase Storage ist für Media-Varianten auf Vercel noch nicht konfiguriert" },
+      { status: 503 },
+    );
+  }
 
   const parsed = cropSchema.safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) {
@@ -65,12 +61,7 @@ export async function POST(
     return NextResponse.json({ error: "Asset nicht gefunden" }, { status: 404 });
   }
 
-  const absolutePath = safePublicAbsolute(asset.path);
-  if (!absolutePath) {
-    return NextResponse.json({ error: "Ungültiger Asset-Pfad" }, { status: 400 });
-  }
-
-  const originalBuffer = await fs.readFile(absolutePath);
+  const originalBuffer = await readMediaAssetBuffer(asset.path);
   const img = sharp(originalBuffer, { failOn: "none" });
   const metadata = await img.metadata();
   const srcW = metadata.width ?? 0;
@@ -103,22 +94,31 @@ export async function POST(
     .webp({ quality: payload.quality })
     .toBuffer();
 
-  const variantDir = path.join(process.cwd(), "public", "uploads", "media", "variants", asset.id);
-  await fs.mkdir(variantDir, { recursive: true });
-
-  const fileName = `${payload.kind}-${Date.now()}-${crypto.randomUUID().slice(0, 8)}.webp`;
-  const outputAbs = path.join(variantDir, fileName);
-  await fs.writeFile(outputAbs, outputBuffer);
-
-  const publicPath = `/uploads/media/variants/${asset.id}/${fileName}`;
+  const fileName = `${payload.kind}-${Date.now()}-${asset.id.slice(0, 8)}.webp`;
+  const publicPath = await storeMediaVariant({
+    assetId: asset.id,
+    fileName,
+    buffer: outputBuffer,
+    contentType: "image/webp",
+  });
 
   if (payload.kind !== "custom") {
+    const previousVariants = (await delegates.mediaAssetVariant.findMany({
+      where: {
+        assetId: asset.id,
+        kind: payload.kind,
+      },
+      select: { path: true },
+    })) as Array<{ path: string }>;
+
     await delegates.mediaAssetVariant.deleteMany({
       where: {
         assetId: asset.id,
         kind: payload.kind,
       },
     });
+
+    await hardDeleteAssetTargets(previousVariants.map((entry) => entry.path));
   }
 
   const variant = await delegates.mediaAssetVariant.create({

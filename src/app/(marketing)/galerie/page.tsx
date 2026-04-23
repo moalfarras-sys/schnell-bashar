@@ -10,12 +10,12 @@ export const metadata = {
 
 export default async function GaleriePage() {
   const images = [
-    { key: "img.galerie.01", src: "/media/gallery/truck-street.jpeg", alt: "Umzugstransporter bei Nacht" },
-    { key: "img.galerie.02", src: "/media/gallery/1.jpeg", alt: "Unser Team" },
-    { key: "img.galerie.03", src: "/media/gallery/move-action-02.jpeg", alt: "Team im Einsatz" },
-    { key: "img.galerie.04", src: "/media/gallery/van-street.jpeg", alt: "Umzugsfahrzeug bei Nacht" },
-    { key: "img.galerie.05", src: "/media/gallery/movers-boxes.jpeg", alt: "Umzug mit Kartons" },
-    { key: "img.galerie.06", src: "/media/gallery/disposal-dumpster.jpeg", alt: "Entsorgung und Verladung" },
+    { key: "img.galerie.01", src: "/media/gallery/truck-street.jpeg", alt: "Umzugstransporter von Schnell Sicher Umzug in Berlin" },
+    { key: "img.galerie.02", src: "/media/gallery/team-portrait.jpeg", alt: "Teamfoto von Schnell Sicher Umzug" },
+    { key: "img.galerie.03", src: "/media/gallery/move-action-02.jpeg", alt: "Umzugshelfer tragen Umzugsgut zum Fahrzeug" },
+    { key: "img.galerie.04", src: "/media/gallery/van-street.jpeg", alt: "Umzugsfahrzeug bei einem Abendtermin in Berlin" },
+    { key: "img.galerie.05", src: "/media/gallery/movers-boxes.jpeg", alt: "Verpackte Umzugskartons für einen Privatumzug" },
+    { key: "img.galerie.06", src: "/media/gallery/disposal-dumpster.jpeg", alt: "Sperrmüll und Entsorgung mit Container und Verladung" },
   ];
 
   const slots = await getImageSlots(

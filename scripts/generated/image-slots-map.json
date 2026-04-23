@@ -1,43 +1,7 @@
 {
-  "generatedAt": "2026-02-24T01:54:53.265Z",
-  "count": 54,
+  "generatedAt": "2026-04-23T10:19:44.127Z",
+  "count": 27,
   "slots": [
-    {
-      "key": "img.auto.media_brand_company_signature_jpeg",
-      "defaultPath": "/media/brand/company-signature.jpeg",
-      "discoveredFrom": "src/server/pdf/company-seal-assets.ts",
-      "usageType": "pdf"
-    },
-    {
-      "key": "img.auto.media_brand_company_signature_jpg",
-      "defaultPath": "/media/brand/company-signature.jpg",
-      "discoveredFrom": "src/server/pdf/company-seal-assets.ts",
-      "usageType": "pdf"
-    },
-    {
-      "key": "img.auto.media_brand_company_signature_png",
-      "defaultPath": "/media/brand/company-signature.png",
-      "discoveredFrom": "src/server/pdf/company-seal-assets.ts",
-      "usageType": "pdf"
-    },
-    {
-      "key": "img.auto.media_brand_company_signature_stamp_jpeg",
-      "defaultPath": "/media/brand/company-signature-stamp.jpeg",
-      "discoveredFrom": "src/server/pdf/company-seal-assets.ts",
-      "usageType": "pdf"
-    },
-    {
-      "key": "img.auto.media_brand_company_signature_stamp_jpg",
-      "defaultPath": "/media/brand/company-signature-stamp.jpg",
-      "discoveredFrom": "src/server/pdf/company-seal-assets.ts",
-      "usageType": "pdf"
-    },
-    {
-      "key": "img.auto.media_brand_company_signature_stamp_png",
-      "defaultPath": "/media/brand/company-signature-stamp.png",
-      "discoveredFrom": "src/server/pdf/company-seal-assets.ts",
-      "usageType": "pdf"
-    },
     {
       "key": "img.auto.media_brand_company_stamp_jpeg",
       "defaultPath": "/media/brand/company-stamp.jpeg",
@@ -57,27 +21,9 @@
       "usageType": "pdf"
     },
     {
-      "key": "img.auto.media_gallery_1_jpeg",
-      "defaultPath": "/media/gallery/1.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.auto.media_gallery_2_jpeg",
-      "defaultPath": "/media/gallery/2.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
       "key": "img.auto.media_gallery_disposal_dumpster_jpeg",
       "defaultPath": "/media/gallery/disposal-dumpster.jpeg",
       "discoveredFrom": "src/app/staedte/[city]/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.auto.media_gallery_electronics_jpeg",
-      "defaultPath": "/media/gallery/electronics.jpeg",
-      "discoveredFrom": "src/app/(marketing)/galerie/page.tsx",
       "usageType": "next-image"
     },
     {
@@ -95,12 +41,6 @@
     {
       "key": "img.auto.media_gallery_move_action_02_jpeg",
       "defaultPath": "/media/gallery/move-action-02.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.auto.media_gallery_move_action_03_jpeg",
-      "defaultPath": "/media/gallery/move-action-03.jpeg",
       "discoveredFrom": "src/app/(marketing)/galerie/page.tsx",
       "usageType": "next-image"
     },
@@ -165,12 +105,6 @@
       "usageType": "next-image"
     },
     {
-      "key": "img.entsorgung.hero.bg",
-      "defaultPath": "/media/gallery/disposal-dumpster.jpeg",
-      "discoveredFrom": "src/app/(marketing)/entsorgung/page.tsx",
-      "usageType": "next-image"
-    },
-    {
       "key": "img.global.brand.logo_header",
       "defaultPath": "/media/brand/hero-logo.jpeg",
       "discoveredFrom": "src/server/pdf/generate-agb.ts",
@@ -189,84 +123,6 @@
       "usageType": "other"
     },
     {
-      "key": "img.home.gallery.01",
-      "defaultPath": "/media/gallery/truck-street.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.home.gallery.02",
-      "defaultPath": "/media/gallery/1.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.home.gallery.03",
-      "defaultPath": "/media/gallery/move-action-02.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.home.gallery.04",
-      "defaultPath": "/media/gallery/movers-boxes.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.home.gallery.05",
-      "defaultPath": "/media/gallery/keys-box.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.home.gallery.06",
-      "defaultPath": "/media/gallery/truck-street.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.home.hero.bg",
-      "defaultPath": "/media/gallery/move-action-04.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.home.services.entsorgung",
-      "defaultPath": "/media/gallery/disposal-dumpster.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.home.services.montage",
-      "defaultPath": "/media/gallery/montage.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.home.services.umzug",
-      "defaultPath": "/media/gallery/movers-boxes.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.home.why_us.main",
-      "defaultPath": "/media/gallery/1.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.home.why_us.sub_1",
-      "defaultPath": "/media/gallery/move-action-02.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.home.why_us.sub_2",
-      "defaultPath": "/media/gallery/movers-boxes.jpeg",
-      "discoveredFrom": "src/app/(marketing)/page.tsx",
-      "usageType": "next-image"
-    },
-    {
       "key": "img.kalender.main",
       "defaultPath": "/media/gallery/calendar.jpeg",
       "discoveredFrom": "src/data/cities.ts",
@@ -279,21 +135,9 @@
       "usageType": "next-image"
     },
     {
-      "key": "img.montage.hero.bg",
-      "defaultPath": "/media/gallery/montage.jpeg",
-      "discoveredFrom": "src/app/(marketing)/montage/page.tsx",
-      "usageType": "next-image"
-    },
-    {
       "key": "img.pdf.brand.logo",
       "defaultPath": "/media/brand/hero-logo.jpeg",
       "discoveredFrom": "src/server/pdf/generate-agb.ts",
-      "usageType": "pdf"
-    },
-    {
-      "key": "img.pdf.contract.signature",
-      "defaultPath": "/media/brand/company-signature-clean.png",
-      "discoveredFrom": "src/server/pdf/company-seal-assets.ts",
       "usageType": "pdf"
     },
     {
@@ -310,34 +154,33 @@
     },
     {
       "key": "img.ueber_uns.main",
-      "defaultPath": "/media/gallery/1.jpeg",
+      "defaultPath": "/media/gallery/team-back.jpeg",
       "discoveredFrom": "src/app/(marketing)/ueber-uns/page.tsx",
       "usageType": "next-image"
     },
     {
       "key": "img.ueber_uns.team",
-      "defaultPath": "/media/gallery/2.jpeg",
+      "defaultPath": "/media/gallery/team-portrait-2.jpeg",
       "discoveredFrom": "src/app/(marketing)/ueber-uns/page.tsx",
-      "usageType": "next-image"
-    },
-    {
-      "key": "img.umzug.hero.bg",
-      "defaultPath": "/media/gallery/truck-street.jpeg",
-      "discoveredFrom": "src/app/(marketing)/umzug/page.tsx",
       "usageType": "next-image"
     }
   ],
-  "rejectedCount": 7,
+  "rejectedCount": 9,
   "rejected": [
+    {
+      "candidate": "/uploads/media/",
+      "discoveredFrom": "src/server/media/storage.ts",
+      "reason": "auto: unsupported extension"
+    },
+    {
+      "candidate": "/uploads/media/variants/",
+      "discoveredFrom": "src/server/media/storage.ts",
+      "reason": "auto: unsupported extension"
+    },
     {
       "candidate": "/media/slots",
       "discoveredFrom": "src/components/admin/admin-nav.tsx",
       "reason": "auto: non-image route path"
-    },
-    {
-      "candidate": "/uploads/signed-contracts/",
-      "discoveredFrom": "src/app/api/contracts/sign/fallback/route.ts",
-      "reason": "auto: unsupported extension"
     },
     {
       "candidate": "/media/image-meta",
@@ -345,8 +188,13 @@
       "reason": "auto: non-image route path"
     },
     {
-      "candidate": "/uploads/media/",
+      "candidate": "/media/storage",
       "discoveredFrom": "src/app/api/admin/media/route.ts",
+      "reason": "auto: unsupported extension"
+    },
+    {
+      "candidate": "/media/storage",
+      "discoveredFrom": "src/app/api/admin/media/[id]/crop/route.ts",
       "reason": "auto: unsupported extension"
     },
     {

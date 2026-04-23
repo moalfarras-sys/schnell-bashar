@@ -1,52 +1,33 @@
 # PDF Engine Architecture
 
-## Gewählte Architektur
+## Current Reality
+- Legacy production-facing PDFs still use `pdfkit`.
+- The newer document subsystem already has an HTML/CSS + Chromium renderer path for sample/document rendering.
+- The architecture is therefore transitional, not fully migrated yet.
 
-- HTML/CSS Templates
-- serverseitiges Rendering
-- `puppeteer-core` + `@sparticuz/chromium-min`
-- `pdf-lib` nur für Merge/Appendix
+## Current Practical Split
+- `pdfkit`:
+  - legacy offer / contract / invoice generation already used in production flows
+- HTML/CSS renderer:
+  - used by the newer document engine sample/export flow
+  - requires Chromium availability outside Vercel local runtime
 
-## Warum diese Architektur
+## Why This Is Acceptable For Now
+- it preserves the existing live business workflows
+- it avoids breaking production documents while the new document workflow stabilizes
+- it keeps the codebase moving toward a stronger Vercel-compatible renderer
 
-- bessere visuelle Qualität als reines `pdfkit`
-- sauberere Wartbarkeit für deutsche Geschäftsdokumente
-- bessere Kontrolle über A4, Seitenumbrüche, Tabellen und Signaturblöcke
-- einfacher erweiterbar für neue Dokumenttypen
-- Vercel-kompatibel mit Node Runtime
+## Recommended Final Direction
+- HTML/CSS document templates
+- print CSS for A4 layout
+- server-side Chromium rendering on Node runtime
+- `pdf-lib` only for append/merge/stamp tasks
 
-## Unterstützte Dokumenttypen
+## Storage Strategy
+- generated business PDFs must not be stored in `public/`
+- document storage should use Supabase-backed protected storage access
+- public branding images may remain in `public/media`
 
-- Angebot
-- Rechnung
-- Auftrag / Vertrag
-- Mahnung
-- Kurz-AGB / Zusatzseite
-
-## Rendering Pipeline
-
-1. Admin erstellt oder bearbeitet Dokumentdaten.
-2. Daten werden versioniert gespeichert.
-3. HTML-Template wird aus Snapshot gerendert.
-4. Chromium rendert PDF serverseitig.
-5. Optional wird eine AGB-Zusatzseite per `pdf-lib` angehängt.
-6. Finale PDF-Datei wird privat gespeichert oder als Response ausgeliefert.
-
-## Storage-Strategie
-
-- private PDFs nicht in `public/`
-- Speicherung über Supabase Storage
-- Download nur über geschützte API-Routen
-- `/tmp` nur temporär während des Requests
-
-## Lokale Generierung
-
-Für lokale Sample-PDFs ist aktuell `PUPPETEER_EXECUTABLE_PATH` erforderlich.
-
-## Neue Dokumenttypen hinzufügen
-
-1. Typ in Prisma/Zod/Types ergänzen
-2. Nummernpräfix definieren
-3. neues Template unter `src/lib/documents/templates/` anlegen
-4. `renderer.ts` erweitern
-5. Admin-Auswahl und Validierung ergänzen
+## Remaining Work
+- complete migration of legacy `pdfkit` document paths into the newer renderer when business risk is acceptable
+- generate local sample PDFs only when `PUPPETEER_EXECUTABLE_PATH` is available outside Vercel

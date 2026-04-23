@@ -1,4 +1,5 @@
 import path from "node:path";
+import { existsSync } from "node:fs";
 import { unstable_cache } from "next/cache";
 
 import { prisma } from "@/server/db/prisma";
@@ -26,6 +27,21 @@ function normalizePublicSrc(value?: string | null): string | null {
   if (trimmed.startsWith("/")) return trimmed;
   if (trimmed.startsWith("media/") || trimmed.startsWith("uploads/")) return `/${trimmed}`;
   return trimmed;
+}
+
+function hasUsableLocalPublicFile(value: string): boolean {
+  const normalized = normalizePublicSrc(value);
+  if (!normalized) return false;
+  if (normalized.startsWith("http://") || normalized.startsWith("https://")) return true;
+  if (!normalized.startsWith("/media/") && !normalized.startsWith("/uploads/")) return true;
+  const absolute = path.join(process.cwd(), "public", normalized.replace(/^\//, ""));
+  return existsSync(absolute);
+}
+
+function normalizeUsablePublicSrc(value?: string | null): string | null {
+  const normalized = normalizePublicSrc(value);
+  if (!normalized) return null;
+  return hasUsableLocalPublicFile(normalized) ? normalized : null;
 }
 
 const getSlotRecordCached = unstable_cache(
@@ -73,7 +89,7 @@ const getSlotRecordCached = unstable_cache(
 export async function getImageSlot(input: SlotLookup): Promise<ResolvedImageSlot> {
   const { slot, registry } = await getSlotRecordCached(input.key);
 
-  const assetPath = normalizePublicSrc(slot?.asset?.path);
+  const assetPath = normalizeUsablePublicSrc(slot?.asset?.path);
   if (assetPath) {
     return {
       key: input.key,
@@ -83,7 +99,7 @@ export async function getImageSlot(input: SlotLookup): Promise<ResolvedImageSlot
     };
   }
 
-  const slotValue = normalizePublicSrc(slot?.value);
+  const slotValue = normalizeUsablePublicSrc(slot?.value);
   if (slotValue) {
     return {
       key: input.key,
@@ -93,7 +109,7 @@ export async function getImageSlot(input: SlotLookup): Promise<ResolvedImageSlot
     };
   }
 
-  const registryDefault = normalizePublicSrc(registry?.defaultPath);
+  const registryDefault = normalizeUsablePublicSrc(registry?.defaultPath);
   if (registryDefault) {
     return {
       key: input.key,

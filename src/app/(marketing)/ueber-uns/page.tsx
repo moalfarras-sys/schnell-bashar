@@ -13,8 +13,16 @@ export const metadata = {
 
 export default async function UeberUnsPage() {
   const slots = await getImageSlots([
-    { key: "img.ueber_uns.main", fallbackSrc: "/media/gallery/1.jpeg" },
-    { key: "img.ueber_uns.team", fallbackSrc: "/media/gallery/2.jpeg" },
+    {
+      key: "img.ueber_uns.main",
+      fallbackSrc: "/media/gallery/team-back.jpeg",
+      fallbackAlt: "Team von Schnell Sicher Umzug bei einem Einsatz in Berlin",
+    },
+    {
+      key: "img.ueber_uns.team",
+      fallbackSrc: "/media/gallery/team-portrait-2.jpeg",
+      fallbackAlt: "Mitarbeiter von Schnell Sicher Umzug im Teamfoto",
+    },
   ]);
   return (
     <Container className="py-14">
@@ -33,8 +41,8 @@ export default async function UeberUnsPage() {
 
       <div className="premium-surface-emphasis mt-10 relative aspect-16/7 overflow-hidden rounded-3xl">
         <Image
-          src={slots["img.ueber_uns.main"]?.src || "/media/gallery/1.jpeg"}
-          alt="Schnell Sicher Umzug Team"
+          src={slots["img.ueber_uns.main"]?.src || "/media/gallery/team-back.jpeg"}
+          alt={slots["img.ueber_uns.main"]?.alt || "Team von Schnell Sicher Umzug bei einem Einsatz in Berlin"}
           fill
           className="object-cover object-[50%_22%]"
           sizes="(max-width: 1024px) 100vw, 75vw"
@@ -61,8 +69,8 @@ export default async function UeberUnsPage() {
 
       <div className="premium-surface-emphasis mt-12 relative aspect-16/6 overflow-hidden rounded-3xl">
         <Image
-          src={slots["img.ueber_uns.team"]?.src || "/media/gallery/2.jpeg"}
-          alt="Unser Team"
+          src={slots["img.ueber_uns.team"]?.src || "/media/gallery/team-portrait-2.jpeg"}
+          alt={slots["img.ueber_uns.team"]?.alt || "Mitarbeiter von Schnell Sicher Umzug im Teamfoto"}
           fill
           className="object-cover object-center"
           sizes="(max-width: 1024px) 100vw, 75vw"
@@ -84,4 +92,3 @@ function ValueCard(props: { icon: any; title: string; text: string }) {
     </Card>
   );
 }
-

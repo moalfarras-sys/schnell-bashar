@@ -1,40 +1,28 @@
 # Post Launch Checklist
 
-## Technik
+## Core Runtime
+- Vercel deployment is green
+- production domain resolves to Vercel
+- production database is reachable
+- Prisma migrations are applied
+- Supabase storage buckets exist when media/document storage is expected to work
 
-- `npm run build` in CI/Vercel erfolgreich
-- Datenbank erreichbar
-- Prisma Migrationen angewendet
-- Supabase Storage Buckets vorhanden
-- keine Secrets im Repository
+## Public Website
+- homepage loads
+- `/umzug`, `/entsorgung`, `/montage`, `/preise`, `/booking`, `/galerie`, `/ueber-uns` load
+- no broken public images
+- `robots.txt` and `sitemap.xml` are reachable
 
-## Website
+## Admin And Documents
+- admin login works
+- documents list loads
+- document create/edit flow works
+- PDF generation works
+- signing approval works
+- stale signing links are invalidated after edits
 
-- Startseite lädt
-- `/umzug`, `/entsorgung`, `/montage`, `/preise`, `/booking` laden
-- Mobilansicht prüfen
-- keine Query-URLs in Hauptnavigation
-- `robots.txt` und `sitemap.xml` erreichbar
-
-## Admin & Dokumente
-
-- Admin-Login funktioniert
-- Dokument manuell anlegen
-- Dokument aus Anfrage erzeugen
-- PDF generieren
-- Signaturfreigabe erzeugen
-- alte Signaturtokens nach Bearbeitung werden ungültig
-
-## SEO
-
-- Canonical Host ist Apex
-- Search Console Sitemap eingereicht
-- Kernseiten indexierbar
-- private Seiten nicht in Sitemap
-
-## Recht & Betrieb
-
-- Impressum geprüft
-- Datenschutz geprüft
-- AGB geprüft
-- Unternehmensdaten, IBAN, BIC, Steuerdaten final bestätigt
+## VPS Shutdown Gate
+Do not shut down the VPS until:
+1. production PostgreSQL has been migrated to Supabase Postgres
+2. Vercel `DATABASE_URL` and `DIRECT_URL` point to Supabase
+3. live booking, admin, and document flows were re-tested successfully

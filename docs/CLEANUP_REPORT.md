@@ -1,12 +1,40 @@
 # Cleanup Report
 
-## Intended Removals From Git
-- Runtime logs and pid files
-- Temporary preview PDFs under `tmp`
-- Root-level preview artifact `offer-preview.pdf`
-- Temporary command scratch file `tmp-remote-cmd.txt`
+## Summary
+This cleanup round focused on media integrity, unsafe example configuration, and Vercel runtime compatibility.
 
-## Ignored Files To Enforce
+## Files Intentionally Kept Deleted
+- `public/media/gallery/1.jpeg`
+- `public/media/gallery/2.jpeg`
+- `public/media/brand/company-signature.jpeg`
+- `public/media/brand/company-signature-clean.png`
+
+Reason:
+- the deletions in the working tree were intentional
+- public references were updated to current assets instead of restoring obsolete files
+
+## Files Updated
+- `.env.example`
+- `next.config.ts`
+- `public/media/README.md`
+- `scripts/discover-image-slots.ts`
+- `scripts/generated/image-slots-map.json`
+- `scripts/image-fallback-map.ts`
+- `scripts/migrate-to-supabase.ts`
+- `scripts/setup-supabase-storage.ts`
+- `src/app/(marketing)/galerie/page.tsx`
+- `src/app/(marketing)/ueber-uns/page.tsx`
+- `src/app/api/admin/media/route.ts`
+- `src/app/api/admin/media/[id]/crop/route.ts`
+- `src/lib/supabase.ts`
+- `src/server/content/slots.ts`
+- `src/server/pdf/company-seal-assets.ts`
+- `src/server/storage/hard-delete-assets.ts`
+
+## New Files Added
+- `src/server/media/storage.ts`
+
+## Ignored Files Confirmed
 - `.env`
 - `.env.*`
 - `.next/`
@@ -15,10 +43,10 @@
 - `tmp/`
 - `*.log`
 - `*.pid`
+- `*.tsbuildinfo`
 - `public/uploads/`
-- generated private PDFs
 
-## Legacy Files Kept For Now
+## Legacy Files Still Kept
 - `Dockerfile`
 - `docker-compose.yml`
 - `docker-compose.prod.yml`
@@ -26,15 +54,13 @@
 - `ecosystem.config.cjs`
 
 Reason:
-- They are legacy Hostinger/VPS deployment artifacts and still document how the current live stack previously worked.
-- They should remain during migration, but not be documented as the production target.
+- they are still useful as historical migration reference
+- they are no longer the target production deployment path
 
-## Files Requiring Owner Decision
-- Any historical runtime uploads living outside git but still referenced in production
-- Whether old DocuSign credentials/integration should be retired immediately after internal-signing rollout
+## Dependency Cleanup
+- no package removals were applied in this round
+- existing dependencies were kept because document/admin/build paths still rely on them
 
-## Storage Migration Notes
-- Public static marketing assets remain in `public/media`
-- Private PDFs and signed contracts must move to protected object storage access patterns
-- New document downloads will be proxied through authenticated API routes
-- `/tmp` may be used only as ephemeral scratch space during PDF rendering
+## Remaining Owner / Ops Decisions
+- provide production Supabase Postgres credentials for final VPS shutdown
+- decide whether old VPS deployment notes should be archived permanently or deleted in a later cleanup
