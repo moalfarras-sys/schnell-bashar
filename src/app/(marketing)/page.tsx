@@ -89,7 +89,7 @@ export default function HomePage() {
                 <a
                   href="tel:+491729573681"
                   aria-label="Direkt anrufen unter +49 172 9573681"
-                  className="inline-flex h-14 w-full items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-[rgba(255,255,255,0.60)] bg-[rgba(255,255,255,0.55)] px-8 text-base font-bold text-slate-900 shadow-[0_0_0_0.5px_rgba(10,16,32,0.04),0_2px_8px_rgba(10,16,32,0.04),inset_0_1px_0_rgba(255,255,255,0.70)] backdrop-blur-md transition-all duration-220 ease-premium hover:-translate-y-px hover:bg-[rgba(255,255,255,0.75)] hover:shadow-[0_0_0_0.5px_rgba(10,16,32,0.05),0_4px_14px_rgba(10,16,32,0.06),inset_0_1px_0_rgba(255,255,255,0.80)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:border-brand-500/50 dark:hover:bg-slate-800/90 dark:hover:shadow-[0_0_24px_rgba(59,130,246,0.12)] dark:focus-visible:ring-brand-500/30 sm:min-w-[220px] sm:w-auto sm:text-lg"
+                  className="inline-flex h-14 w-full items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-brand-500 bg-brand-600 px-8 text-base font-bold text-white shadow-[0_18px_40px_-20px_rgba(37,99,235,0.7)] transition-all duration-220 ease-premium hover:-translate-y-px hover:border-brand-400 hover:bg-brand-500 hover:shadow-[0_22px_46px_-20px_rgba(37,99,235,0.78)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 focus-visible:ring-offset-2 dark:border-brand-400 dark:bg-brand-500 dark:text-white dark:hover:border-brand-300 dark:hover:bg-brand-400 sm:min-w-[220px] sm:w-auto sm:text-lg"
                 >
                   <Phone className="h-4 w-4" />
                   Direkt anrufen
@@ -196,11 +196,11 @@ export default function HomePage() {
                     Einsatz vor Ort
                   </div>
                   <div className="mt-2 max-w-md text-2xl font-extrabold leading-tight">
-                    Mehr Bildstärke auf der Startseite, ohne die Anfrageführung zu überladen.
+                    Verlaessliche Trageleistung, saubere Beladung und klare Abstimmung vor Ort.
                   </div>
                   <div className="mt-3 text-sm leading-relaxed text-slate-100/85">
-                    Reales Servicebild aus dem Projektbestand für eine ausgewogenere, weniger
-                    textlastige Startseite.
+                    Reale Einsaetze aus Berlin und dem Umland zeigen, wie wir Transporte,
+                    Be- und Entladung sowie Terminabstimmung praktisch umsetzen.
                   </div>
                 </div>
               </div>
@@ -260,6 +260,47 @@ export default function HomePage() {
                     <div className="mt-2 max-w-sm text-xl font-extrabold leading-tight">
                       Reale Umzugseinsätze mit klarer Planung, geschützten Wegen und sauberer Abstimmung.
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+                <div className="relative overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
+                  <div className="relative aspect-[16/11]">
+                    <Image
+                      src="/media/gallery/movers-boxes.jpeg"
+                      alt="Umzugskartons und vorbereitete Beladung bei einem Einsatz von Schnell Sicher Umzug"
+                      fill
+                      sizes="(min-width: 1024px) 24vw, 100vw"
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/68 via-slate-950/10 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-200/80">
+                        Verpackung & Schutz
+                      </div>
+                      <div className="mt-2 max-w-xs text-lg font-extrabold leading-tight">
+                        Kartons, Schutzmaterial und strukturierte Vorbereitung fuer den Transport.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-brand-700">
+                    Einsatzvorteile
+                  </div>
+                  <h3 className="mt-3 text-xl font-extrabold tracking-tight text-slate-950">
+                    Mehr als nur Transport
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                    Vom ersten Kontakt bis zur Anlieferung arbeiten wir mit klaren Absprachen,
+                    passenden Verpackungsloesungen und nachvollziehbarer Vorbereitung.
+                  </p>
+                  <div className="mt-4 grid gap-3 text-sm font-semibold text-slate-700">
+                    <div className="rounded-2xl bg-slate-50 px-4 py-3">Kartons und Schutzmaterial</div>
+                    <div className="rounded-2xl bg-slate-50 px-4 py-3">Saubere Ladeplanung</div>
+                    <div className="rounded-2xl bg-slate-50 px-4 py-3">Klare Kommunikation vor dem Termin</div>
                   </div>
                 </div>
               </div>

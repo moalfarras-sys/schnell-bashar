@@ -37,7 +37,7 @@ export function SiteFooter() {
             <a
               href="tel:+491729573681"
               aria-label="Direkt anrufen unter +49 172 9573681"
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-brand-200 bg-brand-50 px-4 py-2.5 text-xs font-bold text-brand-700 transition-all duration-300 hover:border-brand-300 hover:bg-brand-100 hover:shadow-md dark:border-brand-800/40 dark:bg-brand-950/30 dark:text-brand-300 dark:hover:border-brand-700/50 dark:hover:bg-brand-950/50"
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-brand-500 bg-brand-600 px-4 py-2.5 text-xs font-bold text-white shadow-[0_14px_28px_-18px_rgba(37,99,235,0.72)] transition-all duration-300 hover:-translate-y-px hover:border-brand-400 hover:bg-brand-500 hover:shadow-[0_18px_36px_-18px_rgba(37,99,235,0.8)] dark:border-brand-400 dark:bg-brand-500 dark:text-white dark:hover:border-brand-300 dark:hover:bg-brand-400"
             >
               <Phone className="h-4 w-4" />
               Direkt anrufen

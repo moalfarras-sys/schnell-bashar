@@ -567,9 +567,12 @@ export function PriceCalculator({
           <span>Leistungen</span>
           <span className="text-right font-bold">{selectedServices.map((kind) => serviceLabels[kind]).join(" + ")}</span>
         </div>
-        <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
           <span>Geschätztes Volumen</span>
-          <span className="text-right font-bold">ca. {formatNumberDE(volumeM3)} m³ · Durchschnittswert</span>
+          <span className="flex flex-wrap items-center justify-end gap-2 text-right font-bold">
+            <span>ca. {formatNumberDE(volumeM3)} m³</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">· Durchschnittswert</span>
+          </span>
         </div>
         <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
           Richtpreis: Endpreis nach Angebot.
@@ -602,7 +605,7 @@ export function PriceCalculator({
         </div>
       ) : null}
 
-      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 lg:gap-5">
         <Button
           size="lg"
           className="w-full gap-2 sm:min-w-[220px] sm:w-auto sm:flex-none"
@@ -713,7 +716,7 @@ export function PriceCalculator({
         <a
           href="tel:+491729573681"
           aria-label="Direkt anrufen unter +49 172 9573681"
-          className="inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-[rgba(255,255,255,0.60)] bg-[rgba(255,255,255,0.55)] px-6 text-base font-bold text-slate-900 shadow-[0_0_0_0.5px_rgba(10,16,32,0.04),0_2px_8px_rgba(10,16,32,0.04),inset_0_1px_0_rgba(255,255,255,0.70)] backdrop-blur-md transition-all duration-220 ease-premium hover:-translate-y-px hover:bg-[rgba(255,255,255,0.75)] hover:shadow-[0_0_0_0.5px_rgba(10,16,32,0.05),0_4px_14px_rgba(10,16,32,0.06),inset_0_1px_0_rgba(255,255,255,0.80)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:border-brand-500/50 dark:hover:bg-slate-800/90 dark:hover:shadow-[0_0_24px_rgba(59,130,246,0.12)] sm:min-w-[220px] sm:w-auto sm:flex-none"
+          className="inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-brand-500 bg-brand-600 px-6 text-base font-bold text-white shadow-[0_16px_34px_-18px_rgba(37,99,235,0.72)] transition-all duration-220 ease-premium hover:-translate-y-px hover:border-brand-400 hover:bg-brand-500 hover:shadow-[0_20px_42px_-18px_rgba(37,99,235,0.8)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 focus-visible:ring-offset-2 dark:border-brand-400 dark:bg-brand-500 dark:text-white dark:hover:border-brand-300 dark:hover:bg-brand-400 sm:min-w-[220px] sm:w-auto sm:flex-none"
         >
           <Phone className="h-4 w-4" />
           Direkt anrufen
@@ -722,4 +725,3 @@ export function PriceCalculator({
     </div>
   );
 }
-

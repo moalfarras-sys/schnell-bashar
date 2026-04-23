@@ -501,7 +501,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
 
   return (
     <section className={styles.page}>
-      <Container className="relative z-10 py-10 pb-20 sm:py-14 sm:pb-28">
+      <Container className="relative z-10 py-10 pb-28 sm:py-14 sm:pb-36">
         <div className="mx-auto max-w-6xl" ref={topRef}>
           <div className={`${styles.glass} rounded-3xl p-5 sm:p-7`}>
             <div className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-700 dark:text-cyan-200">Online-Anfrage</div>
@@ -523,7 +523,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
               <a
                 href="tel:+491729573681"
                 aria-label="Direkt anrufen unter +49 172 9573681"
-                className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-cyan-300/80 bg-white/70 px-4 py-2.5 text-sm font-bold text-cyan-800 transition hover:bg-cyan-50 dark:border-cyan-500/40 dark:bg-slate-900/45 dark:text-cyan-100 dark:hover:bg-slate-900/70 sm:min-w-[220px] sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-brand-500 bg-brand-600 px-4 py-2.5 text-sm font-bold text-white shadow-[0_14px_30px_-18px_rgba(37,99,235,0.72)] transition hover:-translate-y-px hover:border-brand-400 hover:bg-brand-500 dark:border-brand-400 dark:bg-brand-500 dark:text-white dark:hover:border-brand-300 dark:hover:bg-brand-400 sm:min-w-[220px] sm:w-auto"
               >
                 <Phone className="h-4 w-4" />
                 Direkt anrufen
@@ -685,7 +685,9 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
             />
           </div>
 
-          <div className="mt-12 h-px bg-linear-to-r from-transparent via-sky-200/80 to-transparent dark:via-slate-700/80" />
+          <div className="mt-12 rounded-[28px] border border-white/40 bg-white/40 px-4 py-6 shadow-[0_24px_60px_-40px_rgba(14,165,233,0.45)] backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-900/35">
+            <div className="h-px bg-linear-to-r from-transparent via-sky-200/80 to-transparent dark:via-slate-700/80" />
+          </div>
         </div>
       </Container>
     </section>
