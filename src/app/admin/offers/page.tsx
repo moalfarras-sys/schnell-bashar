@@ -386,7 +386,6 @@ export default async function AdminOffersPage({
                         signedPdfUrl={offer.contract?.signedPdfUrl ?? null}
                         auditTrailUrl={offer.contract?.auditTrailUrl ?? null}
                         contractStatus={offer.contract?.status ?? null}
-                        signingUrl={offer.contract?.signingUrl ?? null}
                         signatureProvider={offer.contract?.signatureProvider ?? null}
                         orderNo={displayOrderNo}
                       />
@@ -403,4 +402,3 @@ export default async function AdminOffersPage({
     </div>
   );
 }
-

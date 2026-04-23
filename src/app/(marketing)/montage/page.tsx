@@ -1,299 +1,110 @@
-﻿import Link from "next/link";
-import Image from "next/image";
-import {
-  CalendarDays,
-  CheckCircle2,
-  Clock,
-  CookingPot,
-  MapPin,
-  Monitor,
-  Package,
-  Refrigerator,
-  ShieldCheck,
-  Star,
-  WashingMachine,
-  Wrench,
-} from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, CheckCircle2, Phone, Wrench } from "lucide-react";
 
 import { Container } from "@/components/container";
-import { Button } from "@/components/ui/button";
 import { PaketeSection } from "@/components/pakete-section";
-import { Reveal } from "@/components/motion/reveal";
-import { ServiceSchema } from "@/components/schema/service-schema";
-import { getImageSlot } from "@/server/content/slots";
+import { Preisbeispiele } from "@/components/preisbeispiele";
+import { Button } from "@/components/ui/button";
 
-export const metadata = {
-  title: "Montage",
+export const metadata: Metadata = {
+  title: "Möbelmontage Berlin | Küchenmontage, Schrankaufbau & Geräteanschluss",
+  description:
+    "Professionelle Möbelmontage in Berlin: Küche, Schrank, Bett, Regal, TV-Wandhalterung und Geräteanschluss. 24/7 erreichbar und flexibel buchbar.",
+  alternates: { canonical: "/montage" },
 };
 
-const benefits = [
-  {
-    icon: Wrench,
-    title: "Professionelle Montage",
-    desc: "Möbel fachgerecht abbauen, transportieren und am Zielort wieder aufbauen.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Erfahrene Montage-Teams",
-    desc: "Sauber arbeiten, präzise und ohne Beschädigungen vom Aufbau bis zur Übergabe.",
-  },
-  {
-    icon: Clock,
-    title: "Flexible Termine",
-    desc: "Kurzfristig oder geplant - wir finden den passenden Termin für Ihre Montage.",
-  },
-  {
-    icon: MapPin,
-    title: "Berlin & deutschlandweit",
-    desc: "Montage bei Ihnen vor Ort - deutschlandweit im Einsatz.",
-  },
+const included = ["Möbelaufbau und Demontage", "Küchen- und Schrankmontage", "Vor-Ort-Prüfung der Angaben", "Ergänzung zu Umzug oder Einzelauftrag"];
+const priceFactors = ["Anzahl und Art der Möbel", "Zeitaufwand und Sondermontagen", "Geräteanschlüsse oder Zusatzmaterial", "Kombination mit Umzug oder Entsorgung"];
+const faq = [
+  ["Kann Montage mit Umzug kombiniert werden?", "Ja. Montage kann als Zusatzleistung gemeinsam mit Umzug oder separat angefragt werden."],
+  ["Sind Küchenmontagen möglich?", "Ja. Küchenmontage und ausgewählte Anschlussarbeiten sind Bestandteil des Leistungsangebots."],
+  ["Wird direkt ein Vertrag freigeschaltet?", "Nein. Zunächst prüft unser Team die Angaben und erstellt das passende Angebot."],
 ];
 
-const steps = [
-  { num: 1, title: "Montage beschreiben", desc: "Anzahl und Art der Möbel - wir kalkulieren fair." },
-  { num: 2, title: "Angebot erhalten", desc: "Schnelle Rückmeldung mit transparentem Preis." },
-  { num: 3, title: "Montage durchführen", desc: "Unser Team kommt pünktlich und arbeitet zuverlässig." },
-];
-
-const services = [
-  { icon: CookingPot, name: "Küchenmontage komplett", price: "ab 299 €", tag: "Beliebt" },
-  { icon: Package, name: "Küchenmontage einfach (IKEA)", price: "ab 149 €" },
-  { icon: WashingMachine, name: "Waschmaschine anschließen", price: "ab 69 €" },
-  { icon: Refrigerator, name: "Kühlschrank aufstellen", price: "ab 49 €" },
-  { icon: Wrench, name: "Geschirrspüler anschließen", price: "ab 79 €" },
-  { icon: CookingPot, name: "Herd / Backofen anschließen", price: "ab 89 €" },
-  { icon: Package, name: "Kleiderschrank aufbauen", price: "ab 89 €" },
-  { icon: Package, name: "Bett aufbauen", price: "ab 69 €" },
-  { icon: Package, name: "Regal aufbauen", price: "ab 39 €" },
-  { icon: Monitor, name: "TV-Wandhalterung montieren", price: "ab 59 €" },
-  { icon: Wrench, name: "Sonstige Montagearbeiten", price: "ab 65 € / Std." },
-];
-
-const trustItems = [
-  { icon: Star, text: "5.0 / 5.0 Bewertungen" },
-  { icon: ShieldCheck, text: "Versichert" },
-  { icon: Clock, text: "Schnelle Rückmeldung" },
-  { icon: MapPin, text: "Berlin & deutschlandweit" },
-];
-
-export default async function MontagePage() {
-  const hero = await getImageSlot({
-    key: "img.montage.hero.bg",
-    fallbackSrc: "/media/gallery/montage.jpeg",
-    fallbackAlt: "Möbelmontage und Aufbau",
-  });
+export default function MontagePage() {
   return (
-    <>
-      <ServiceSchema
-        name="Möbelmontage und Aufbauservice"
-        description="Professioneller Aufbau- und Abbau-Service für Möbel - sauber, schnell und zuverlässig."
-      />
-
-      {/* Hero */}
-      <section className="relative min-h-[56vh] overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src={hero.src}
-            alt="Möbelmontage und Aufbau"
-            fill
-            priority
-            className="object-cover hero-bg-image"
-            sizes="100vw"
-          />
-          <div className="hero-overlay-light absolute inset-0 dark:hidden" />
-          <div className="hero-overlay-dark absolute inset-0 hidden dark:block" />
-        </div>
-
-        <Container className="relative z-10 flex min-h-[56vh] flex-col justify-end pb-14 pt-24 sm:pb-16 sm:pt-28">
-          <Reveal>
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand-400/40 bg-brand-500/20 px-4 py-1.5 text-xs font-bold text-brand-100 backdrop-blur-sm">
-              <Wrench className="h-4 w-4" />
-              Möbelmontage & Aufbau
-            </div>
-            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
-              Montage
-            </h1>
-            <p className="mt-4 max-w-2xl text-base text-slate-200">
-              Möbel ab- und aufbauen, sauber und mit Präzision. Ob Umzugsmontage oder
-              Einzelaufbau - wir erledigen es professionell.
+    <div className="bg-white">
+      <section className="bg-slate-950 py-20 text-white">
+        <Container>
+          <div className="max-w-4xl">
+            <span className="inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-bold">Möbelmontage Berlin</span>
+            <h1 className="mt-5 text-4xl font-extrabold tracking-tight sm:text-5xl">Küchenmontage, Schrankaufbau und Möbelservice</h1>
+            <p className="mt-5 max-w-3xl text-base leading-relaxed text-slate-300">
+              Schnell Sicher Umzug unterstützt bei Möbelmontage, Küchenmontage und ausgewählten
+              Geräteanschlüssen in Berlin und deutschlandweit. Die Anfrage bleibt zunächst eine
+              Prüfung und wird nicht automatisch zu einem unterschriftsreifen Vertrag.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/preise?service=MONTAGE" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full gap-2 sm:w-auto">
-                  <Wrench className="h-5 w-5" />
-                  Richtpreis berechnen
-                </Button>
-              </Link>
-              <Link href="/booking?context=MONTAGE" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full gap-2 border-white/50 bg-white/10 text-white hover:bg-white/20 sm:w-auto">
-                  <CalendarDays className="h-5 w-5" />
-                  Termin wählen
-                </Button>
-              </Link>
+              <Link href="/booking"><Button size="lg">Möbelmontage Berlin buchen</Button></Link>
+              <Link href="/preise"><Button size="lg" variant="outline-light">Preise ansehen</Button></Link>
             </div>
-          </Reveal>
+          </div>
         </Container>
       </section>
 
-      {/* Trust Row */}
-      <section className="border-b border-slate-200 bg-[color:var(--surface-elevated)] py-6 dark:border-slate-800 dark:bg-slate-950">
+      <section className="py-16">
+        <Container className="grid gap-6 lg:grid-cols-2">
+          <div className="rounded-3xl border border-slate-200 p-7 shadow-sm">
+            <h2 className="text-2xl font-extrabold text-slate-950">Was ist enthalten?</h2>
+            <ul className="mt-5 grid gap-3">
+              {included.map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm text-slate-700">
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 text-brand-700" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-3xl border border-slate-200 p-7 shadow-sm">
+            <h2 className="text-2xl font-extrabold text-slate-950">Was beeinflusst den Preis?</h2>
+            <ul className="mt-5 grid gap-3">
+              {priceFactors.map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm text-slate-700">
+                  <Wrench className="mt-0.5 h-5 w-5 text-brand-700" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Container>
+      </section>
+
+      <section className="bg-slate-50 py-16">
         <Container>
-          <div className="flex flex-wrap items-center justify-center gap-8">
-            {trustItems.map((item) => (
-              <div
-                key={item.text}
-                className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300"
-              >
-                <item.icon className="h-5 w-5 text-brand-600 dark:text-brand-400" />
-                {item.text}
+          <h2 className="text-2xl font-extrabold text-slate-950">Ablauf der Montageanfrage</h2>
+          <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            {["Leistung und Umfang senden", "Prüfung und Angebot erhalten", "Termin abstimmen und durchführen"].map((step, index) => (
+              <div key={step} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-600 font-bold text-white">{index + 1}</div>
+                <p className="mt-4 text-sm font-semibold text-slate-700">{step}</p>
               </div>
             ))}
           </div>
         </Container>
       </section>
 
-      {/* Benefit Cards */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-b from-[color:var(--surface-soft)] to-[color:var(--surface-elevated)] dark:from-slate-900/50 dark:to-slate-950" />
-        <Container className="relative py-20">
-          <Reveal>
-            <div className="text-center">
-              <span className="inline-block rounded-full bg-brand-100/80 px-3 py-1 text-xs font-bold text-brand-700 dark:bg-brand-950/50 dark:text-brand-300">
-                Ihre Vorteile
-              </span>
-              <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
-                Warum Montage mit uns
-              </h2>
-            </div>
-          </Reveal>
-
-          <Reveal className="mt-12">
-            <div className="grid gap-6 sm:grid-cols-2">
-              {benefits.map((b) => (
-                <div
-                  key={b.title}
-                  className="rounded-2xl border-2 border-slate-200 bg-[color:var(--surface-elevated)] p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-brand-500/40"
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-700 dark:bg-brand-950/50 dark:text-brand-400">
-                    <b.icon className="h-6 w-6" />
-                  </div>
-                  <h3 className="mt-4 text-lg font-extrabold text-slate-950 dark:text-white">
-                    {b.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{b.desc}</p>
-                </div>
-              ))}
-            </div>
-          </Reveal>
-        </Container>
-      </section>
-
-      {/* Unsere Leistungen & Preise */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-b from-[color:var(--surface-elevated)] to-[color:var(--surface-soft)] dark:from-slate-950 dark:to-slate-900/50" />
-        <Container className="relative py-20">
-          <Reveal>
-            <div className="text-center">
-              <span className="inline-block rounded-full bg-brand-100/80 px-3 py-1 text-xs font-bold text-brand-700 dark:bg-brand-950/50 dark:text-brand-300">
-                Leistungen & Preise
-              </span>
-              <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
-                Unsere Montage-Services
-              </h2>
-              <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
-                Alle Preise sind Richtwerte. Der finale Preis wird nach Prüfung Ihrer Anfrage individuell bestätigt.
-              </p>
-            </div>
-          </Reveal>
-
-          <Reveal className="mt-12">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {services.map((s) => (
-                <div
-                  key={s.name}
-                  className="group relative flex items-start gap-4 rounded-2xl border-2 border-slate-200 bg-[color:var(--surface-elevated)] p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-brand-500/40"
-                >
-                  {"tag" in s && s.tag && (
-                    <span className="absolute -top-2.5 right-4 rounded-full bg-brand-600 px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
-                      {s.tag}
-                    </span>
-                  )}
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700 dark:bg-brand-950/50 dark:text-brand-400">
-                    <s.icon className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-extrabold text-slate-950 dark:text-white">{s.name}</div>
-                    <div className="mt-1 text-lg font-extrabold text-brand-700 dark:text-brand-400">{s.price}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Reveal>
-
-          <Reveal className="mt-10 text-center">
-            <Link href="/booking?context=MONTAGE">
-              <Button size="lg" className="gap-2">
-                <Wrench className="h-5 w-5" />
-                Jetzt Montage anfragen
-              </Button>
-            </Link>
-          </Reveal>
-        </Container>
-      </section>
-
-      {/* So funktioniert's */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-b from-[color:var(--surface-soft)] to-[color:var(--surface-elevated)] dark:from-slate-900/50 dark:to-slate-950" />
-        <Container className="relative py-20">
-          <Reveal>
-            <div className="text-center">
-              <span className="inline-block rounded-full bg-brand-100/80 px-3 py-1 text-xs font-bold text-brand-700 dark:bg-brand-950/50 dark:text-brand-300">
-                Ablauf
-              </span>
-              <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
-                So funktioniert&apos;s
-              </h2>
-            </div>
-          </Reveal>
-
-          <Reveal className="mt-12">
-            <div className="mx-auto grid max-w-3xl gap-8 sm:grid-cols-3">
-              {steps.map((s) => (
-                <div key={s.num} className="relative text-center">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-brand-600 to-brand-500 text-lg font-extrabold text-white shadow-md dark:from-brand-500 dark:to-brand-400">
-                    {s.num}
-                  </div>
-                  <h3 className="mt-4 text-lg font-extrabold text-slate-950 dark:text-white">
-                    {s.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{s.desc}</p>
-                  {s.num < 3 && (
-                    <div className="absolute top-7 left-[calc(50%+2rem)] hidden h-0.5 w-[calc(100%-4rem)] bg-slate-200 sm:block dark:bg-slate-700" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </Reveal>
-
-          <Reveal className="mt-12 text-center">
-            <Link href="/booking?context=MONTAGE">
-              <Button size="lg" className="gap-2">
-                Jetzt Montage anfragen
-                <CheckCircle2 className="h-5 w-5" />
-              </Button>
-            </Link>
-          </Reveal>
-        </Container>
-      </section>
-
+      <Preisbeispiele service="MONTAGE" />
       <PaketeSection service="montage" />
-    </>
+
+      <section className="py-16">
+        <Container>
+          <h2 className="text-2xl font-extrabold text-slate-950">Häufige Fragen zur Montage</h2>
+          <div className="mt-8 grid gap-4">
+            {faq.map(([question, answer]) => (
+              <div key={question} className="rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-slate-950">{question}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{answer}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+            <Link href="/umzug"><Button variant="outline">Umzug ergänzen</Button></Link>
+            <Link href="/booking"><Button className="gap-2">Kostenloses Angebot anfragen <ArrowRight className="h-4 w-4" /></Button></Link>
+            <a href="tel:+491729573681"><Button variant="outline" className="gap-2"><Phone className="h-4 w-4" />Direkt anrufen</Button></a>
+          </div>
+        </Container>
+      </section>
+    </div>
   );
 }
-
-
-
-
-
-
-

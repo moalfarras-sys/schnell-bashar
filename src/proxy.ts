@@ -12,7 +12,19 @@ function withAdminNoCache(res: NextResponse) {
 }
 
 export async function proxy(req: NextRequest) {
+  const host = req.headers.get("host") || "";
   const { pathname } = req.nextUrl;
+
+  if (host === "www.schnellsicherumzug.de") {
+    const url = req.nextUrl.clone();
+    url.host = "schnellsicherumzug.de";
+    url.protocol = "https:";
+    return NextResponse.redirect(url, 308);
+  }
+
+  if (!pathname.startsWith("/admin")) {
+    return NextResponse.next();
+  }
 
   // Allow public admin PWA assets and login page
   if (
@@ -53,6 +65,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
-

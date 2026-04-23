@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
+const canonicalHost = "https://schnellsicherumzug.de";
 
 const inter = Inter({ subsets: ["latin", "latin-ext"], display: "swap", variable: "--font-inter" });
 const manrope = Manrope({
@@ -16,42 +17,46 @@ const manrope = Manrope({
   variable: "--font-manrope",
   weight: ["400", "500", "600", "700", "800"],
 });
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://schnellsicherumzug.de";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(baseUrl),
+  metadataBase: new URL(canonicalHost),
   title: {
-    default: "Schnell Sicher Umzug - Umzug & Entsorgung deutschlandweit",
-    template: "%s - Schnell Sicher Umzug",
+    default: "Umzugsunternehmen Berlin | Umzug, Entsorgung & Montage 24/7",
+    template: "%s | Schnell Sicher Umzug",
   },
   description:
-    "Premium Umzug, Montage und Entsorgung in ganz Deutschland. Angebot berechnen, Termin wählen, Auftrag senden - schnell und strukturiert.",
+    "Schnell Sicher Umzug in Berlin: Umzug, Entsorgung und Möbelmontage 24/7 erreichbar. Transparente Preise, schnelle Termine und professionelle Durchführung.",
   keywords: [
     "Schnell Sicher Umzug",
+    "Umzugsunternehmen Berlin",
     "Umzug Berlin",
-    "Umzug deutschlandweit",
-    "Sperrmüll Abholung",
     "Entsorgung Berlin",
-    "Entrümpelung",
-    "Umzugsfirma",
+    "Sperrmüll Berlin",
+    "Möbelmontage Berlin",
+    "Umzug deutschlandweit",
   ],
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Schnell Sicher Umzug - Umzug & Entsorgung deutschlandweit",
+    title: "Umzugsunternehmen Berlin | Umzug, Entsorgung & Montage 24/7",
     description:
-      "Super schnelle und absolut sichere Umzüge. Fachgerechte Entsorgung, strukturierte Anfrage und schnelle Rückmeldung.",
-    url: baseUrl,
+      "Schnell Sicher Umzug in Berlin: Umzug, Entsorgung und Möbelmontage 24/7 erreichbar. Transparente Preise, schnelle Termine und professionelle Durchführung.",
+    url: canonicalHost,
     siteName: "Schnell Sicher Umzug",
     locale: "de_DE",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Schnell Sicher Umzug",
+    title: "Umzugsunternehmen Berlin | Umzug, Entsorgung & Montage 24/7",
     description:
-      "Stressfrei umziehen mit erfahrenen Profis. Umzug, Entsorgung und Montage mit schneller Anfrage.",
+      "Schnell Sicher Umzug in Berlin: Umzug, Entsorgung und Möbelmontage 24/7 erreichbar.",
+  },
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: "/media/brand/hero-logo.jpeg",
+    apple: "/media/brand/hero-logo.jpeg",
   },
 };
 

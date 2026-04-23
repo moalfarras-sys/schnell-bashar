@@ -1,23 +1,20 @@
-﻿"use client";
+"use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
   Filter,
-  Send,
-  Loader2,
   Download,
   FileText,
   FileCheck,
   FileArchive,
-  ExternalLink,
-  Copy,
   XCircle,
   Pencil,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import { HardDeleteButton } from "@/components/admin/hard-delete-button";
+import { Button } from "@/components/ui/button";
 
 export function OfferFilterBar() {
   const router = useRouter();
@@ -112,95 +109,6 @@ export function OfferFilterBar() {
   );
 }
 
-interface ResendSigningButtonProps {
-  offerId: string;
-  onSigningUrl?: (url: string) => void;
-}
-
-export function ResendSigningButton({ offerId, onSigningUrl }: ResendSigningButtonProps) {
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-
-  async function handleResend() {
-    setLoading(true);
-    setMessage(null);
-    try {
-      const res = await fetch(`/api/admin/offers/${offerId}/resend-signing`, {
-        method: "POST",
-      });
-      const data = (await res.json()) as {
-        error?: string;
-        message?: string;
-        provider?: "INTERNAL";
-        fallbackActivated?: boolean;
-        signingUrl?: string;
-      };
-      if (!res.ok) {
-        throw new Error(data.error || "Fehler beim erneuten Senden");
-      }
-      const successText = data.message || "Signatur-Link erneut gesendet";
-      if (data.signingUrl) {
-        onSigningUrl?.(data.signingUrl);
-      }
-      setMessage({ type: "success", text: successText });
-    } catch (err) {
-      setMessage({
-        type: "error",
-        text: err instanceof Error ? err.message : "Ein Fehler ist aufgetreten",
-      });
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="inline-flex flex-col items-start gap-1">
-      <Button
-        variant="outline"
-        size="sm"
-        className="gap-1"
-        onClick={handleResend}
-        disabled={loading}
-      >
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-        Signierlink senden
-      </Button>
-      {message && (
-        <span
-          className={`text-xs ${message.type === "success" ? "text-green-600" : "text-red-600"}`}
-        >
-          {message.text}
-        </span>
-      )}
-    </div>
-  );
-}
-
-function CopySigningLinkButton({ signingUrl }: { signingUrl: string }) {
-  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(signingUrl);
-      setStatus("success");
-      window.setTimeout(() => setStatus("idle"), 2500);
-    } catch {
-      setStatus("error");
-    }
-  }
-
-  return (
-    <div className="inline-flex flex-col items-start gap-1">
-      <Button variant="outline" size="sm" className="gap-1" onClick={handleCopy}>
-        <Copy className="h-4 w-4" />
-        Link kopieren
-      </Button>
-      {status === "success" ? <span className="text-xs text-green-600">Link kopiert</span> : null}
-      {status === "error" ? <span className="text-xs text-red-600">Kopieren fehlgeschlagen</span> : null}
-    </div>
-  );
-}
-
 interface OfferActionButtonsProps {
   offerId: string;
   offerNo: string | null;
@@ -211,7 +119,6 @@ interface OfferActionButtonsProps {
   signedPdfUrl: string | null;
   auditTrailUrl: string | null;
   contractStatus: string | null;
-  signingUrl: string | null;
   signatureProvider: string | null;
   orderNo: string | null;
 }
@@ -226,18 +133,11 @@ export function OfferActionButtons({
   signedPdfUrl,
   auditTrailUrl,
   contractStatus,
-  signingUrl,
   signatureProvider,
   orderNo,
 }: OfferActionButtonsProps) {
   const router = useRouter();
   const [closing, setClosing] = useState<"offer" | "contract" | null>(null);
-  const [currentSigningUrl, setCurrentSigningUrl] = useState(signingUrl);
-  const showResend = contractStatus === "PENDING_SIGNATURE";
-
-  useEffect(() => {
-    setCurrentSigningUrl(signingUrl);
-  }, [signingUrl]);
 
   async function closeOffer() {
     setClosing("offer");
@@ -284,24 +184,25 @@ export function OfferActionButtons({
         </Button>
       </a>
 
-      {contractId && (
+      {contractId ? (
         <a href={`/api/contracts/${contractId}/pdf`} target="_blank" rel="noopener noreferrer">
           <Button variant="outline" size="sm" className="gap-1">
             <FileText className="h-4 w-4" />
             Vertrag PDF
           </Button>
         </a>
-      )}
-      {!contractId && contractPdfUrl && (
+      ) : null}
+
+      {!contractId && contractPdfUrl ? (
         <a href={contractPdfUrl} target="_blank" rel="noopener noreferrer">
           <Button variant="outline" size="sm" className="gap-1">
             <FileText className="h-4 w-4" />
             Vertrag PDF
           </Button>
         </a>
-      )}
+      ) : null}
 
-      {(signedPdfUrl || (contractStatus === "SIGNED" && contractPdfUrl)) && (
+      {signedPdfUrl || (contractStatus === "SIGNED" && contractPdfUrl) ? (
         <a
           href={
             contractId
@@ -316,28 +217,21 @@ export function OfferActionButtons({
             {signedPdfUrl ? "Signierter Vertrag" : "Vertrag (Fallback)"}
           </Button>
         </a>
-      )}
+      ) : null}
 
-      {auditTrailUrl && (
+      {auditTrailUrl ? (
         <a href={auditTrailUrl} target="_blank" rel="noopener noreferrer">
           <Button variant="outline" size="sm" className="gap-1">
             <FileArchive className="h-4 w-4" />
             Audit Trail
           </Button>
         </a>
-      )}
+      ) : null}
 
-      {currentSigningUrl && contractStatus === "PENDING_SIGNATURE" && (
-        <a href={currentSigningUrl} target="_blank" rel="noopener noreferrer">
-          <Button variant="outline" size="sm" className="gap-1">
-            <ExternalLink className="h-4 w-4" />
-            Signierlink öffnen
-          </Button>
-        </a>
-      )}
-
-      {currentSigningUrl && contractStatus === "PENDING_SIGNATURE" ? (
-        <CopySigningLinkButton signingUrl={currentSigningUrl} />
+      {signatureProvider ? (
+        <span className="inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600">
+          Signaturdienst: {signatureProvider}
+        </span>
       ) : null}
 
       <a href={`/offer/${offerToken}`} target="_blank" rel="noopener noreferrer">
@@ -346,8 +240,6 @@ export function OfferActionButtons({
           Ansehen
         </Button>
       </a>
-
-      {showResend && <ResendSigningButton offerId={offerId} onSigningUrl={setCurrentSigningUrl} />}
 
       <Button
         type="button"
@@ -361,7 +253,7 @@ export function OfferActionButtons({
         {closing === "offer" ? "Schließe..." : `Angebot schließen${offerNo ? ` (${offerNo})` : ""}`}
       </Button>
 
-      {contractId && contractStatus !== "SIGNED" && contractStatus !== "CANCELLED" && (
+      {contractId && contractStatus !== "SIGNED" && contractStatus !== "CANCELLED" ? (
         <Button
           type="button"
           variant="outline"
@@ -373,7 +265,7 @@ export function OfferActionButtons({
           <XCircle className="h-4 w-4" />
           {closing === "contract" ? "Schließe..." : `Vertrag schließen${contractNo ? ` (${contractNo})` : ""}`}
         </Button>
-      )}
+      ) : null}
 
       <HardDeleteButton
         endpoint={`/api/admin/offers/${offerId}/hard-delete`}
@@ -384,6 +276,3 @@ export function OfferActionButtons({
     </div>
   );
 }
-
-
-

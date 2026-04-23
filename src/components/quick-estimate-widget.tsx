@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
@@ -8,7 +8,6 @@ import { Container } from "@/components/container";
 import { Button } from "@/components/ui/button";
 
 type ServiceType = "UMZUG" | "ENTSORGUNG" | "MONTAGE";
-type SizeOption = string;
 type UrgencyType = "NORMAL" | "EXPRESS" | "WEEKEND";
 
 const SERVICE_OPTIONS: { value: ServiceType; label: string; icon: typeof Truck }[] = [
@@ -42,17 +41,10 @@ const URGENCY_OPTIONS: { value: UrgencyType; label: string }[] = [
 ];
 
 function eur(cents: number) {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(
-    cents / 100,
-  );
+  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(cents / 100);
 }
 
-function calcQuickPrice(
-  service: ServiceType,
-  volumeM3: number,
-  urgency: UrgencyType,
-  hasMontageAddon: boolean
-): number {
+function calcQuickPrice(service: ServiceType, volumeM3: number, urgency: UrgencyType): number {
   const baseFee: Record<ServiceType, number> = {
     UMZUG: 19000,
     ENTSORGUNG: 14000,
@@ -64,34 +56,14 @@ function calcQuickPrice(
     MONTAGE: 3400,
   };
   const speedMult: Record<UrgencyType, number> = {
-    NORMAL: 1.0,
+    NORMAL: 1,
     EXPRESS: 1.3,
     WEEKEND: 0.9,
   };
-  const montageAddon = 3500;
 
-  const base = baseFee[service];
-  const vol = volumeM3 * perM3[service];
-  const addon = hasMontageAddon ? montageAddon : 0;
-  let subtotal = base + vol + addon;
-  subtotal = Math.round(subtotal * speedMult[urgency]);
+  const subtotal = Math.round((baseFee[service] + volumeM3 * perM3[service]) * speedMult[urgency]);
   const vatCents = Math.round(subtotal * 0.19);
   return subtotal + vatCents;
-}
-
-function buildPreiseUrl(
-  service: ServiceType,
-  volumeM3: number,
-  urgency: UrgencyType,
-  sizeValue: string
-): string {
-  const speed =
-    urgency === "NORMAL" ? "STANDARD" : urgency === "EXPRESS" ? "EXPRESS" : "ECONOMY";
-  const params = new URLSearchParams();
-  params.set("service", service);
-  params.set("volumeM3", String(volumeM3));
-  params.set("speed", speed);
-  return `/preise?${params.toString()}`;
 }
 
 export function QuickEstimateWidget() {
@@ -100,33 +72,15 @@ export function QuickEstimateWidget() {
   const [urgency, setUrgency] = useState<UrgencyType>("NORMAL");
 
   const sizeOptions =
-    service === "UMZUG"
-      ? UMZUG_SIZES
-      : service === "ENTSORGUNG"
-        ? ENTSORGUNG_SIZES
-        : MONTAGE_SIZES;
+    service === "UMZUG" ? UMZUG_SIZES : service === "ENTSORGUNG" ? ENTSORGUNG_SIZES : MONTAGE_SIZES;
 
   const volumeM3 = useMemo(() => {
     if (!sizeValue) return service === "UMZUG" ? 20 : service === "ENTSORGUNG" ? 3 : 1;
     const found = sizeOptions.find((s) => s.value === sizeValue);
     return found?.volumeM3 ?? (service === "UMZUG" ? 20 : service === "ENTSORGUNG" ? 3 : 1);
-  }, [service, sizeValue, sizeOptions]);
+  }, [service, sizeOptions, sizeValue]);
 
-  const grossCents = useMemo(
-    () =>
-      calcQuickPrice(
-        service,
-        volumeM3,
-        urgency,
-        service === "MONTAGE"
-      ),
-    [service, volumeM3, urgency]
-  );
-
-  const preiseUrl = useMemo(
-    () => buildPreiseUrl(service, volumeM3, urgency, sizeValue),
-    [service, volumeM3, urgency, sizeValue]
-  );
+  const grossCents = useMemo(() => calcQuickPrice(service, volumeM3, urgency), [service, urgency, volumeM3]);
 
   const segmentBase = "rounded-xl border px-3 py-2.5 text-sm font-semibold transition-all duration-200";
   const segmentActive = "border-[rgba(47,140,255,0.28)] bg-[rgba(47,140,255,0.10)] text-brand-700 shadow-[0_0_0_0.5px_rgba(47,140,255,0.12),0_2px_8px_rgba(47,140,255,0.10),inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur-sm dark:border-brand-500 dark:bg-brand-900/30 dark:text-brand-300 dark:shadow-none dark:backdrop-blur-none";
@@ -144,10 +98,10 @@ export function QuickEstimateWidget() {
               </div>
               <div>
                 <h2 className="text-xl font-extrabold tracking-tight text-slate-950 dark:text-white">
-                  Sofort-Preis-Schätzung
+                  Sofort-Preisorientierung
                 </h2>
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                  Nur 3 Fragen – unverbindliche Orientierung
+                  Unverbindlich, schnell und mobilfreundlich
                 </p>
               </div>
             </div>
@@ -182,7 +136,7 @@ export function QuickEstimateWidget() {
 
               <fieldset>
                 <legend className="mb-2.5 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  2. Größe
+                  2. Umfang
                 </legend>
                 <div className="grid grid-cols-3 gap-2">
                   {sizeOptions.map((opt) => (
@@ -190,9 +144,7 @@ export function QuickEstimateWidget() {
                       key={opt.value}
                       type="button"
                       onClick={() => setSizeValue(opt.value)}
-                      className={`${segmentBase} ${
-                        sizeValue === opt.value ? segmentActive : segmentInactive
-                      }`}
+                      className={`${segmentBase} ${sizeValue === opt.value ? segmentActive : segmentInactive}`}
                     >
                       {opt.label}
                     </button>
@@ -202,17 +154,15 @@ export function QuickEstimateWidget() {
 
               <fieldset>
                 <legend className="mb-2.5 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  3. Termindringlichkeit
+                  3. Dringlichkeit
                 </legend>
                 <div className="grid grid-cols-3 gap-2">
                   {URGENCY_OPTIONS.map((opt) => (
                     <button
                       key={opt.value}
                       type="button"
-                      onClick={() => setUrgency(opt.value as UrgencyType)}
-                      className={`${segmentBase} ${
-                        urgency === opt.value ? segmentActive : segmentInactive
-                      }`}
+                      onClick={() => setUrgency(opt.value)}
+                      className={`${segmentBase} ${urgency === opt.value ? segmentActive : segmentInactive}`}
                     >
                       {opt.label}
                     </button>
@@ -221,21 +171,21 @@ export function QuickEstimateWidget() {
               </fieldset>
             </div>
 
-            <div className="mt-7 rounded-2xl border border-[rgba(47,140,255,0.18)] bg-[rgba(47,140,255,0.06)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.50)] backdrop-blur-sm dark:border-brand-500/50 dark:from-brand-950/50 dark:to-blue-950/30 dark:bg-brand-950/40 dark:shadow-none dark:backdrop-blur-none">
+            <div className="mt-7 rounded-2xl border border-[rgba(47,140,255,0.18)] bg-[rgba(47,140,255,0.06)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.50)] backdrop-blur-sm dark:border-brand-500/50 dark:bg-brand-950/40 dark:shadow-none dark:backdrop-blur-none">
               <div className="text-xs font-bold uppercase tracking-wider text-brand-700 dark:text-brand-300">
-                Preis ab (brutto)
+                Richtpreis ab (brutto)
               </div>
               <div className="mt-1.5 text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
                 {eur(grossCents)}
               </div>
               <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                Unverbindliche Schätzung. Der Endpreis wird nach Prüfung bestätigt.
+                Die finale Preisbestätigung erfolgt nach Prüfung durch unser Team.
               </p>
             </div>
 
-            <Link href={preiseUrl} className="mt-6 block">
+            <Link href="/preise" className="mt-6 block">
               <Button size="lg" className="w-full gap-2">
-                Details eingeben & Angebot erhalten
+                Preise ansehen
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -245,4 +195,3 @@ export function QuickEstimateWidget() {
     </section>
   );
 }
-

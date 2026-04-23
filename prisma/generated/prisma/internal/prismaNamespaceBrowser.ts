@@ -69,6 +69,13 @@ export const ModelName = {
   QuoteEvent: 'QuoteEvent',
   RouteDistanceCache: 'RouteDistanceCache',
   DocumentSequence: 'DocumentSequence',
+  Document: 'Document',
+  DocumentVersion: 'DocumentVersion',
+  DocumentLineItem: 'DocumentLineItem',
+  DocumentNumberSequence: 'DocumentNumberSequence',
+  LegalTextBlock: 'LegalTextBlock',
+  SigningToken: 'SigningToken',
+  DocumentSignature: 'DocumentSignature',
   MediaAsset: 'MediaAsset',
   MediaAssetVariant: 'MediaAssetVariant',
   ContentSlot: 'ContentSlot',
@@ -268,6 +275,7 @@ export const OrderScalarFieldEnum = {
   serviceType: 'serviceType',
   speed: 'speed',
   status: 'status',
+  workflowStatus: 'workflowStatus',
   customerName: 'customerName',
   customerPhone: 'customerPhone',
   customerEmail: 'customerEmail',
@@ -486,6 +494,143 @@ export const DocumentSequenceScalarFieldEnum = {
 } as const
 
 export type DocumentSequenceScalarFieldEnum = (typeof DocumentSequenceScalarFieldEnum)[keyof typeof DocumentSequenceScalarFieldEnum]
+
+
+export const DocumentScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  number: 'number',
+  status: 'status',
+  orderId: 'orderId',
+  customerData: 'customerData',
+  serviceData: 'serviceData',
+  addressData: 'addressData',
+  vatConfig: 'vatConfig',
+  subtotalCents: 'subtotalCents',
+  taxCents: 'taxCents',
+  grossCents: 'grossCents',
+  paymentDetails: 'paymentDetails',
+  dueAt: 'dueAt',
+  visibleNotes: 'visibleNotes',
+  internalNotes: 'internalNotes',
+  legalBlocks: 'legalBlocks',
+  includeAgbAppendix: 'includeAgbAppendix',
+  pdfStorageKey: 'pdfStorageKey',
+  pdfUrl: 'pdfUrl',
+  currentVersionId: 'currentVersionId',
+  approvedAt: 'approvedAt',
+  approvedByUserId: 'approvedByUserId',
+  customerSignatureEnabled: 'customerSignatureEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentScalarFieldEnum = (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum]
+
+
+export const DocumentVersionScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  versionNumber: 'versionNumber',
+  dataSnapshot: 'dataSnapshot',
+  htmlSnapshot: 'htmlSnapshot',
+  pdfStorageKey: 'pdfStorageKey',
+  pdfUrl: 'pdfUrl',
+  hash: 'hash',
+  status: 'status',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type DocumentVersionScalarFieldEnum = (typeof DocumentVersionScalarFieldEnum)[keyof typeof DocumentVersionScalarFieldEnum]
+
+
+export const DocumentLineItemScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  position: 'position',
+  title: 'title',
+  description: 'description',
+  quantity: 'quantity',
+  unit: 'unit',
+  unitPriceNetCents: 'unitPriceNetCents',
+  vatRate: 'vatRate',
+  totalNetCents: 'totalNetCents',
+  totalGrossCents: 'totalGrossCents',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentLineItemScalarFieldEnum = (typeof DocumentLineItemScalarFieldEnum)[keyof typeof DocumentLineItemScalarFieldEnum]
+
+
+export const DocumentNumberSequenceScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  year: 'year',
+  prefix: 'prefix',
+  lastNumber: 'lastNumber',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentNumberSequenceScalarFieldEnum = (typeof DocumentNumberSequenceScalarFieldEnum)[keyof typeof DocumentNumberSequenceScalarFieldEnum]
+
+
+export const LegalTextBlockScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  title: 'title',
+  content: 'content',
+  documentTypes: 'documentTypes',
+  active: 'active',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type LegalTextBlockScalarFieldEnum = (typeof LegalTextBlockScalarFieldEnum)[keyof typeof LegalTextBlockScalarFieldEnum]
+
+
+export const SigningTokenScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  documentVersionId: 'documentVersionId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  signedAt: 'signedAt',
+  signerName: 'signerName',
+  signerEmail: 'signerEmail',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  consentText: 'consentText',
+  documentHash: 'documentHash',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SigningTokenScalarFieldEnum = (typeof SigningTokenScalarFieldEnum)[keyof typeof SigningTokenScalarFieldEnum]
+
+
+export const DocumentSignatureScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  documentVersionId: 'documentVersionId',
+  signingTokenId: 'signingTokenId',
+  signedAt: 'signedAt',
+  signerName: 'signerName',
+  signerEmail: 'signerEmail',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  consentText: 'consentText',
+  documentHash: 'documentHash',
+  signedPdfStorageKey: 'signedPdfStorageKey',
+  signedPdfUrl: 'signedPdfUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type DocumentSignatureScalarFieldEnum = (typeof DocumentSignatureScalarFieldEnum)[keyof typeof DocumentSignatureScalarFieldEnum]
 
 
 export const MediaAssetScalarFieldEnum = {

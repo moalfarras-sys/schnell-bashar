@@ -28,6 +28,22 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum RequestWorkflowStatus {
+  NEW
+  NEEDS_REVIEW
+  IN_REVIEW
+  OFFER_DRAFTED
+  OFFER_SENT
+  OFFER_ACCEPTED
+  CONTRACT_DRAFTED
+  CONTRACT_APPROVED_FOR_SIGNATURE
+  SIGNATURE_LINK_SENT
+  SIGNED
+  COMPLETED
+  CANCELLED
+  REJECTED
+}
+
 enum PreferredTimeWindow {
   MORNING
   AFTERNOON
@@ -60,29 +76,29 @@ enum PromoDiscountType {
 }
 
 model CatalogItem {
-  id                  String   @id @default(cuid())
-  slug                String   @unique
+  id                  String    @id @default(cuid())
+  slug                String    @unique
   categoryKey         String
   nameDe              String
   defaultVolumeM3     Float
   laborMinutesPerUnit Int
-  isHeavy             Boolean  @default(false)
-  sortOrder           Int      @default(0)
-  active              Boolean  @default(true)
+  isHeavy             Boolean   @default(false)
+  sortOrder           Int       @default(0)
+  active              Boolean   @default(true)
   deletedAt           DateTime?
   deletedBy           String?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   orderLines OrderLine[]
 }
 
 model PricingConfig {
-  id                                String   @id @default(cuid())
-  active                            Boolean  @default(true)
-  deletedAt                         DateTime?
-  deletedBy                         String?
-  currency                          String   @default("EUR")
+  id        String    @id @default(cuid())
+  active    Boolean   @default(true)
+  deletedAt DateTime?
+  deletedBy String?
+  currency  String    @default("EUR")
 
   movingBaseFeeCents                Int
   disposalBaseFeeCents              Int
@@ -107,34 +123,34 @@ model PricingConfig {
   standardLeadDays   Int
   expressLeadDays    Int
 
-  montageBaseFeeCents                Int   @default(0)
-  entsorgungBaseFeeCents             Int   @default(0)
-  montageStandardMultiplier          Float @default(1)
-  montagePlusMultiplier              Float @default(1)
-  montagePremiumMultiplier           Float @default(1)
-  entsorgungStandardMultiplier       Float @default(1)
-  entsorgungPlusMultiplier           Float @default(1)
-  entsorgungPremiumMultiplier        Float @default(1)
-  montageMinimumOrderCents           Int   @default(0)
-  entsorgungMinimumOrderCents        Int   @default(0)
+  montageBaseFeeCents          Int   @default(0)
+  entsorgungBaseFeeCents       Int   @default(0)
+  montageStandardMultiplier    Float @default(1)
+  montagePlusMultiplier        Float @default(1)
+  montagePremiumMultiplier     Float @default(1)
+  entsorgungStandardMultiplier Float @default(1)
+  entsorgungPlusMultiplier     Float @default(1)
+  entsorgungPremiumMultiplier  Float @default(1)
+  montageMinimumOrderCents     Int   @default(0)
+  entsorgungMinimumOrderCents  Int   @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model ServiceModule {
-  id          String            @id @default(cuid())
-  slug        ServiceModuleSlug @unique
-  nameDe      String
+  id            String            @id @default(cuid())
+  slug          ServiceModuleSlug @unique
+  nameDe        String
   descriptionDe String?
-  active      Boolean           @default(true)
-  sortOrder   Int               @default(0)
-  deletedAt   DateTime?
-  deletedBy   String?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  active        Boolean           @default(true)
+  sortOrder     Int               @default(0)
+  deletedAt     DateTime?
+  deletedBy     String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 
-  options   ServiceOption[]
+  options    ServiceOption[]
   promoRules PromoRule[]
 }
 
@@ -187,39 +203,40 @@ model PromoRule {
 }
 
 model AvailabilityRule {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   dayOfWeek   Int
   startTime   String
   endTime     String
   slotMinutes Int
   capacity    Int
-  active      Boolean  @default(true)
+  active      Boolean   @default(true)
   deletedAt   DateTime?
   deletedBy   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model AvailabilityException {
-  id               String   @id @default(cuid())
-  date             DateTime @db.Date
-  closed           Boolean  @default(false)
+  id               String    @id @default(cuid())
+  date             DateTime  @db.Date
+  closed           Boolean   @default(false)
   overrideCapacity Int?
   note             String?
   deletedAt        DateTime?
   deletedBy        String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 model Order {
-  id       String @id @default(cuid())
-  publicId String @unique
+  id       String  @id @default(cuid())
+  publicId String  @unique
   orderNo  String? @unique
 
-  serviceType ServiceType
-  speed       SpeedType
-  status      OrderStatus @default(NEW)
+  serviceType    ServiceType
+  speed          SpeedType
+  status         OrderStatus           @default(NEW)
+  workflowStatus RequestWorkflowStatus @default(NEW)
 
   customerName      String
   customerPhone     String
@@ -227,12 +244,12 @@ model Order {
   contactPreference ContactPreference
   note              String?
 
-  slotStart DateTime?
-  slotEnd   DateTime?
-  requestedDateFrom DateTime? @db.Date
-  requestedDateTo DateTime? @db.Date
+  slotStart           DateTime?
+  slotEnd             DateTime?
+  requestedDateFrom   DateTime?            @db.Date
+  requestedDateTo     DateTime?            @db.Date
   preferredTimeWindow PreferredTimeWindow?
-  scheduledAt DateTime?
+  scheduledAt         DateTime?
 
   volumeM3      Float
   laborHours    Float
@@ -243,7 +260,7 @@ model Order {
   wizardData Json
   deletedAt  DateTime?
   deletedBy  String?
-  version    Int      @default(1)
+  version    Int       @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -254,11 +271,13 @@ model Order {
   offer        Offer?
   quote        Quote?
   invoices     Invoice[]
+  documents    Document[]
 
   @@index([slotStart])
   @@index([requestedDateFrom])
   @@index([scheduledAt])
   @@index([status])
+  @@index([workflowStatus])
 }
 
 enum OrderServiceKind {
@@ -272,19 +291,19 @@ model OrderServiceItem {
   id String @id @default(cuid())
 
   orderId String
-  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   kind              OrderServiceKind
   moduleId          String?
   serviceOptionCode String?
   titleDe           String
   detailsJson       Json?
-  qty               Int      @default(1)
-  unit              String   @default("Pauschale")
-  unitPriceCents    Int      @default(0)
-  lineTotalCents    Int      @default(0)
-  sortOrder         Int      @default(0)
-  createdAt         DateTime @default(now())
+  qty               Int              @default(1)
+  unit              String           @default("Pauschale")
+  unitPriceCents    Int              @default(0)
+  lineTotalCents    Int              @default(0)
+  sortOrder         Int              @default(0)
+  createdAt         DateTime         @default(now())
 
   @@index([orderId, sortOrder])
   @@index([kind])
@@ -373,9 +392,39 @@ enum DocumentScope {
   INVOICE
 }
 
+enum DocumentType {
+  ANGEBOT
+  RECHNUNG
+  AUFTRAG_VERTRAG
+  MAHNUNG
+  AGB_APPENDIX
+}
+
+enum DocumentStatus {
+  DRAFT
+  INTERNAL_REVIEW
+  ADMIN_APPROVED
+  SENT
+  VIEWED
+  ACCEPTED
+  SIGNATURE_PENDING
+  SIGNED
+  VOID
+  CANCELLED
+  SUPERSEDED
+}
+
+enum SigningTokenStatus {
+  ACTIVE
+  USED
+  REVOKED
+  EXPIRED
+  SUPERSEDED
+}
+
 model Offer {
-  id      String @id @default(cuid())
-  token   String @unique
+  id      String  @id @default(cuid())
+  token   String  @unique
   orderId String? @unique
   offerNo String? @unique
 
@@ -393,8 +442,8 @@ model Offer {
   moveDate     DateTime?
   floorFrom    Int?
   floorTo      Int?
-  elevatorFrom Boolean @default(false)
-  elevatorTo   Boolean @default(false)
+  elevatorFrom Boolean   @default(false)
+  elevatorTo   Boolean   @default(false)
   notes        String?
 
   services Json
@@ -407,10 +456,10 @@ model Offer {
   discountCents   Int?
   discountNote    String?
   customNote      String?
-  isManual        Boolean @default(false)
+  isManual        Boolean   @default(false)
   deletedAt       DateTime?
   deletedBy       String?
-  version         Int      @default(1)
+  version         Int       @default(1)
 
   pdfUrl String?
 
@@ -431,12 +480,12 @@ model Offer {
 }
 
 model Contract {
-  id         String @id @default(cuid())
-  offerId    String @unique
+  id         String  @id @default(cuid())
+  offerId    String  @unique
   contractNo String? @unique
 
-  offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
-  isManual     Boolean          @default(false)
+  offer         Offer   @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  isManual      Boolean @default(false)
   manualPayload Json?
 
   status            ContractStatus    @default(PENDING_SIGNATURE)
@@ -538,10 +587,166 @@ model DocumentSequence {
   @@index([scope, timeBucket])
 }
 
+model Document {
+  id                       String           @id @default(cuid())
+  type                     DocumentType
+  number                   String?          @unique
+  status                   DocumentStatus   @default(DRAFT)
+  orderId                  String?
+  order                    Order?           @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  customerData             Json
+  serviceData              Json?
+  addressData              Json?
+  vatConfig                Json?
+  subtotalCents            Int              @default(0)
+  taxCents                 Int              @default(0)
+  grossCents               Int              @default(0)
+  paymentDetails           Json?
+  dueAt                    DateTime?
+  visibleNotes             String?          @db.Text
+  internalNotes            String?          @db.Text
+  legalBlocks              Json?
+  includeAgbAppendix       Boolean          @default(false)
+  pdfStorageKey            String?
+  pdfUrl                   String?
+  currentVersionId         String?          @unique
+  currentVersion           DocumentVersion? @relation("CurrentDocumentVersion", fields: [currentVersionId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  approvedAt               DateTime?
+  approvedByUserId         String?
+  approvedBy               AdminUser?       @relation("DocumentApprovedBy", fields: [approvedByUserId], references: [id], onDelete: SetNull)
+  customerSignatureEnabled Boolean          @default(false)
+  createdAt                DateTime         @default(now())
+  updatedAt                DateTime         @updatedAt
+
+  versions      DocumentVersion[]   @relation("DocumentVersions")
+  lineItems     DocumentLineItem[]
+  signingTokens SigningToken[]
+  signatures    DocumentSignature[]
+
+  @@index([type, status])
+  @@index([orderId])
+  @@index([approvedAt])
+}
+
+model DocumentVersion {
+  id              String         @id @default(cuid())
+  documentId      String
+  document        Document       @relation("DocumentVersions", fields: [documentId], references: [id], onDelete: Cascade)
+  versionNumber   Int
+  dataSnapshot    Json
+  htmlSnapshot    String?        @db.Text
+  pdfStorageKey   String?
+  pdfUrl          String?
+  hash            String
+  status          DocumentStatus @default(DRAFT)
+  createdByUserId String?
+  createdBy       AdminUser?     @relation("DocumentVersionCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  createdAt       DateTime       @default(now())
+
+  currentForDocument Document?           @relation("CurrentDocumentVersion")
+  signingTokens      SigningToken[]
+  signatures         DocumentSignature[]
+
+  @@unique([documentId, versionNumber])
+  @@unique([hash])
+  @@index([documentId, createdAt])
+}
+
+model DocumentLineItem {
+  id                String   @id @default(cuid())
+  documentId        String
+  document          Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  position          Int
+  title             String
+  description       String?  @db.Text
+  quantity          Float    @default(1)
+  unit              String   @default("Stück")
+  unitPriceNetCents Int
+  vatRate           Float    @default(19)
+  totalNetCents     Int
+  totalGrossCents   Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([documentId, position])
+}
+
+model DocumentNumberSequence {
+  id         String       @id @default(cuid())
+  type       DocumentType
+  year       Int
+  prefix     String
+  lastNumber Int          @default(0)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@unique([type, year])
+  @@index([prefix, year])
+}
+
+model LegalTextBlock {
+  id            String   @id @default(cuid())
+  key           String   @unique
+  title         String
+  content       String   @db.Text
+  documentTypes Json?
+  active        Boolean  @default(true)
+  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now())
+}
+
+model SigningToken {
+  id                String             @id @default(cuid())
+  documentId        String
+  document          Document           @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  documentVersionId String
+  documentVersion   DocumentVersion    @relation(fields: [documentVersionId], references: [id], onDelete: Cascade)
+  tokenHash         String             @unique
+  expiresAt         DateTime
+  usedAt            DateTime?
+  signedAt          DateTime?
+  signerName        String?
+  signerEmail       String?
+  ipAddress         String?
+  userAgent         String?
+  consentText       String?            @db.Text
+  documentHash      String
+  status            SigningTokenStatus @default(ACTIVE)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  signature DocumentSignature?
+
+  @@index([documentId, status])
+  @@index([expiresAt])
+}
+
+model DocumentSignature {
+  id                  String          @id @default(cuid())
+  documentId          String
+  document            Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  documentVersionId   String
+  documentVersion     DocumentVersion @relation(fields: [documentVersionId], references: [id], onDelete: Cascade)
+  signingTokenId      String?         @unique
+  signingToken        SigningToken?   @relation(fields: [signingTokenId], references: [id], onDelete: SetNull)
+  signedAt            DateTime
+  signerName          String
+  signerEmail         String?
+  ipAddress           String?
+  userAgent           String?
+  consentText         String?         @db.Text
+  documentHash        String
+  signedPdfStorageKey String?
+  signedPdfUrl        String?
+  createdAt           DateTime        @default(now())
+
+  @@index([documentId, signedAt])
+}
+
 model MediaAsset {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   filename  String
-  path      String   @unique
+  path      String    @unique
   alt       String?
   title     String?
   mime      String
@@ -549,10 +754,10 @@ model MediaAsset {
   width     Int?
   height    Int?
   deletedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  slots ContentSlot[]
+  slots    ContentSlot[]
   variants MediaAssetVariant[]
 }
 
@@ -565,8 +770,8 @@ enum MediaVariantKind {
 
 model MediaAssetVariant {
   id        String           @id @default(cuid())
-  assetId    String
-  asset      MediaAsset       @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  assetId   String
+  asset     MediaAsset       @relation(fields: [assetId], references: [id], onDelete: Cascade)
   kind      MediaVariantKind
   path      String           @unique
   mimeType  String
@@ -575,20 +780,20 @@ model MediaAssetVariant {
   height    Int?
   createdAt DateTime         @default(now())
 
-  @@index([assetId])
   @@unique([assetId, kind])
+  @@index([assetId])
 }
 
 model ContentSlot {
-  id         String   @id @default(cuid())
-  key        String   @unique
-  type       String   @default("image")
-  assetId    String?
-  value      String?
-  alt        String?
-  meta       Json?
-  updatedAt  DateTime @updatedAt
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  key       String   @unique
+  type      String   @default("image")
+  assetId   String?
+  value     String?
+  alt       String?
+  meta      Json?
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 
   asset     MediaAsset?       @relation(fields: [assetId], references: [id], onDelete: SetNull)
   revisions ContentRevision[]
@@ -605,19 +810,19 @@ model SlotRegistry {
 }
 
 model JobPosting {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   title        String
   department   String?
-  location     String   @default("Berlin")
-  type         String   @default("Vollzeit")
-  description  String   @db.Text
-  requirements String?  @db.Text
-  isActive     Boolean  @default(true)
+  location     String    @default("Berlin")
+  type         String    @default("Vollzeit")
+  description  String    @db.Text
+  requirements String?   @db.Text
+  isActive     Boolean   @default(true)
   deletedAt    DateTime?
   deletedBy    String?
-  version      Int      @default(1)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  version      Int       @default(1)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 enum InvoiceStatus {
@@ -644,7 +849,7 @@ enum ExpensePaymentMethod {
 }
 
 model Invoice {
-  id        String @id @default(cuid())
+  id        String  @id @default(cuid())
   invoiceNo String? @unique
 
   companyId String?
@@ -653,10 +858,10 @@ model Invoice {
   contract   Contract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
 
   offerId String?
-  offer   Offer? @relation(fields: [offerId], references: [id], onDelete: SetNull)
+  offer   Offer?  @relation(fields: [offerId], references: [id], onDelete: SetNull)
 
   orderId String?
-  order   Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
 
   isManual Boolean @default(false)
 
@@ -681,11 +886,11 @@ model Invoice {
 
   paidCents Int @default(0)
 
-  status InvoiceStatus @default(UNPAID)
-  pdfUrl String?
+  status    InvoiceStatus @default(UNPAID)
+  pdfUrl    String?
   deletedAt DateTime?
   deletedBy String?
-  version   Int      @default(1)
+  version   Int           @default(1)
 
   items    InvoiceItem[]
   payments Payment[]
@@ -700,25 +905,25 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id             String   @id @default(cuid())
-  invoiceId      String
-  invoice        Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  id        String  @id @default(cuid())
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 
   description    String
-  quantity       Float    @default(1)
-  unit           String   @default("Stück")
+  quantity       Float  @default(1)
+  unit           String @default("Stück")
   unitPriceCents Int
-  vatPercent     Float    @default(19)
+  vatPercent     Float  @default(19)
   lineTotalCents Int
-  sortOrder      Int      @default(0)
+  sortOrder      Int    @default(0)
 
-  createdAt      DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([invoiceId])
 }
 
 model Payment {
-  id        String @id @default(cuid())
+  id        String  @id @default(cuid())
   invoiceId String
   invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 
@@ -732,36 +937,38 @@ model Payment {
 }
 
 model AdminUser {
-  id                String   @id @default(cuid())
-  email             String   @unique
-  name              String
-  passwordHash      String
-  avatarUrl         String?
-  isActive          Boolean  @default(true)
-  failedLoginCount  Int      @default(0)
-  lockedUntil       DateTime?
-  lastLoginAt       DateTime?
-  notifications     Json?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  deletedAt         DateTime?
-  deletedBy         String?
+  id               String    @id @default(cuid())
+  email            String    @unique
+  name             String
+  passwordHash     String
+  avatarUrl        String?
+  isActive         Boolean   @default(true)
+  failedLoginCount Int       @default(0)
+  lockedUntil      DateTime?
+  lastLoginAt      DateTime?
+  notifications    Json?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+  deletedBy        String?
 
-  roles     UserRole[]
-  auditLogs AuditLog[] @relation("AuditActor")
-  expenseEntries ExpenseEntry[] @relation("ExpenseEntryCreatedBy")
+  roles             UserRole[]
+  auditLogs         AuditLog[]        @relation("AuditActor")
+  expenseEntries    ExpenseEntry[]    @relation("ExpenseEntryCreatedBy")
+  approvedDocuments Document[]        @relation("DocumentApprovedBy")
+  documentVersions  DocumentVersion[] @relation("DocumentVersionCreatedBy")
 }
 
 model ExpenseCategory {
-  id             String   @id @default(cuid())
-  nameDe         String   @unique
-  defaultVatRate Float?   @default(19)
-  active         Boolean  @default(true)
-  sortOrder      Int      @default(0)
+  id             String    @id @default(cuid())
+  nameDe         String    @unique
+  defaultVatRate Float?    @default(19)
+  active         Boolean   @default(true)
+  sortOrder      Int       @default(0)
   deletedAt      DateTime?
   deletedBy      String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   entries ExpenseEntry[]
 
@@ -769,26 +976,26 @@ model ExpenseCategory {
 }
 
 model ExpenseEntry {
-  id               String   @id @default(cuid())
-  date             DateTime @db.Date
-  vendor           String?
-  description      String
-  categoryId       String
-  category         ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  netCents         Int
-  vatRatePercent   Float
-  vatCents         Int
-  grossCents       Int
-  paymentMethod    ExpensePaymentMethod @default(BANK)
-  receiptFileUrl   String?
-  notes            String?
-  createdByUserId  String?
-  createdBy        AdminUser? @relation("ExpenseEntryCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
-  deletedAt        DateTime?
-  deletedBy        String?
-  version          Int      @default(1)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id              String               @id @default(cuid())
+  date            DateTime             @db.Date
+  vendor          String?
+  description     String
+  categoryId      String
+  category        ExpenseCategory      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  netCents        Int
+  vatRatePercent  Float
+  vatCents        Int
+  grossCents      Int
+  paymentMethod   ExpensePaymentMethod @default(BANK)
+  receiptFileUrl  String?
+  notes           String?
+  createdByUserId String?
+  createdBy       AdminUser?           @relation("ExpenseEntryCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  deletedAt       DateTime?
+  deletedBy       String?
+  version         Int                  @default(1)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
 
   @@index([date])
   @@index([categoryId])
@@ -820,10 +1027,10 @@ model Permission {
 }
 
 model UserRole {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
   roleId    String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   deletedAt DateTime?
 
   user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)

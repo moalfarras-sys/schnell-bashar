@@ -1,15 +1,29 @@
 .DS_Store
 .next
+.next/
+.vercel
+.vercel/
 node_modules
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
+*.pid
+dev-run.log
+dev-run.err.log
+dev-restart.log
+.next-dev.log
+next-dev.log
+next-dev.err.log
 .env
 .env.*
 !.env.example
 !.env.production.example
 !.env.*.example
 .env.*.local
+tmp
+tmp/
 tmp/pdfs
 tmp/pdf-renders
 visual-dev.log
@@ -20,11 +34,13 @@ visual-dev.err.log
 prisma/dev.db
 prisma/dev.db-journal
 
-# Uploads (store outside repo in production)
+# Uploads and generated private documents
 public/uploads
+public/uploads/
+*.private.pdf
+offer-preview.pdf
+public/offer-preview.pdf
 
 # Never commit runtime private keys
 docusign-private.key
 docusign-private.key.pub
-
-.vercel

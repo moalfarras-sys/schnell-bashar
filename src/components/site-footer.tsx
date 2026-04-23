@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { Container } from "@/components/container";
@@ -21,8 +21,8 @@ export function SiteFooter() {
             </span>
           </Link>
           <p className="mt-3 max-w-prose text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            Umzug, Montage und fachgerechte Entsorgung – strukturiert, transparent und
-            deutschlandweit planbar.
+            Umzug, Entsorgung und Möbelmontage in Berlin und deutschlandweit. Telefonisch 24/7
+            erreichbar, Termine nach Vereinbarung.
           </p>
           <div className="mt-5 flex gap-3">
             <a
@@ -39,7 +39,7 @@ export function SiteFooter() {
               className="inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-2.5 text-xs font-bold text-brand-700 transition-all duration-300 hover:border-brand-300 hover:bg-brand-100 hover:shadow-md dark:border-brand-800/40 dark:bg-brand-950/30 dark:text-brand-300 dark:hover:border-brand-700/50 dark:hover:bg-brand-950/50"
             >
               <Phone className="h-4 w-4" />
-              Anrufen
+              Direkt anrufen
             </a>
           </div>
         </div>
@@ -48,34 +48,25 @@ export function SiteFooter() {
           <div className="font-bold text-slate-900 dark:text-white">Leistungen</div>
           <div className="mt-3 grid gap-2.5 text-slate-600 dark:text-slate-400">
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/umzug">
-              Umzug
+              Umzug Berlin
             </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/entsorgung">
-              Entsorgung
+              Sperrmüll Entsorgung Berlin
             </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/montage">
-              Montage
+              Möbelmontage Berlin
             </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/preise">
-              Preise & Pakete
-            </Link>
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/kalender">
-              Abholkalender
+              Preise ansehen
             </Link>
           </div>
         </div>
 
         <div className="text-sm">
-          <div className="font-bold text-slate-900 dark:text-white">Online-Dienste</div>
+          <div className="font-bold text-slate-900 dark:text-white">Service</div>
           <div className="mt-3 grid gap-2.5 text-slate-600 dark:text-slate-400">
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/booking?context=MOVING">
-              Umzug buchen
-            </Link>
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/booking?context=MONTAGE">
-              Montage buchen
-            </Link>
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/booking?context=ENTSORGUNG">
-              Entsorgung buchen
+            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/booking">
+              Termin online buchen
             </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/anfrage">
               Anfrage verfolgen
@@ -83,18 +74,18 @@ export function SiteFooter() {
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/faq">
               FAQ
             </Link>
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/tipps">
-              Tipps & Blog
+            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/galerie">
+              Galerie
             </Link>
           </div>
 
           <div className="mt-6 font-bold text-slate-900 dark:text-white">Rechtliches</div>
           <div className="mt-3 grid gap-2.5 text-slate-600 dark:text-slate-400">
-            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/datenschutz">
-              Datenschutz
-            </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/impressum">
               Impressum
+            </Link>
+            <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/datenschutz">
+              Datenschutz
             </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/agb">
               AGB
@@ -112,21 +103,22 @@ export function SiteFooter() {
                 <br />
                 12043 Berlin
                 <br />
-                <span className="text-xs font-semibold text-brand-600 dark:text-brand-400">24/7 Erreichbar</span>
+                <span className="text-xs font-semibold text-brand-600 dark:text-brand-400">
+                  24/7 erreichbar
+                </span>
               </div>
             </div>
             <a className="flex items-center gap-2.5 font-semibold transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="tel:+491729573681">
               <Phone className="h-4 w-4 text-brand-600 dark:text-brand-400" />
               +49 172 9573681
             </a>
-            <a className="flex items-center gap-2.5 font-semibold transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="tel:+4917624863305">
-              <Phone className="h-4 w-4 text-brand-600 dark:text-brand-400" />
-              +49 176 24863305
-            </a>
             <a className="flex items-center gap-2.5 font-semibold transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="mailto:kontakt@schnellsicherumzug.de">
               <Mail className="h-4 w-4 text-brand-600 dark:text-brand-400" />
               kontakt@schnellsicherumzug.de
             </a>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              Berlin & deutschlandweit
+            </p>
           </div>
         </div>
       </Container>
@@ -137,5 +129,3 @@ export function SiteFooter() {
     </footer>
   );
 }
-
-

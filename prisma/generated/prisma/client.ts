@@ -130,6 +130,41 @@ export type RouteDistanceCache = Prisma.RouteDistanceCacheModel
  */
 export type DocumentSequence = Prisma.DocumentSequenceModel
 /**
+ * Model Document
+ * 
+ */
+export type Document = Prisma.DocumentModel
+/**
+ * Model DocumentVersion
+ * 
+ */
+export type DocumentVersion = Prisma.DocumentVersionModel
+/**
+ * Model DocumentLineItem
+ * 
+ */
+export type DocumentLineItem = Prisma.DocumentLineItemModel
+/**
+ * Model DocumentNumberSequence
+ * 
+ */
+export type DocumentNumberSequence = Prisma.DocumentNumberSequenceModel
+/**
+ * Model LegalTextBlock
+ * 
+ */
+export type LegalTextBlock = Prisma.LegalTextBlockModel
+/**
+ * Model SigningToken
+ * 
+ */
+export type SigningToken = Prisma.SigningTokenModel
+/**
+ * Model DocumentSignature
+ * 
+ */
+export type DocumentSignature = Prisma.DocumentSignatureModel
+/**
  * Model MediaAsset
  * 
  */

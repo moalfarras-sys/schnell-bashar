@@ -402,6 +402,13 @@ export const ModelName = {
   QuoteEvent: 'QuoteEvent',
   RouteDistanceCache: 'RouteDistanceCache',
   DocumentSequence: 'DocumentSequence',
+  Document: 'Document',
+  DocumentVersion: 'DocumentVersion',
+  DocumentLineItem: 'DocumentLineItem',
+  DocumentNumberSequence: 'DocumentNumberSequence',
+  LegalTextBlock: 'LegalTextBlock',
+  SigningToken: 'SigningToken',
+  DocumentSignature: 'DocumentSignature',
   MediaAsset: 'MediaAsset',
   MediaAssetVariant: 'MediaAssetVariant',
   ContentSlot: 'ContentSlot',
@@ -434,7 +441,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "catalogItem" | "pricingConfig" | "serviceModule" | "serviceOption" | "promoRule" | "availabilityRule" | "availabilityException" | "order" | "orderServiceItem" | "orderLine" | "orderUpload" | "whatsAppConversation" | "offer" | "contract" | "quote" | "quoteEvent" | "routeDistanceCache" | "documentSequence" | "mediaAsset" | "mediaAssetVariant" | "contentSlot" | "slotRegistry" | "jobPosting" | "invoice" | "invoiceItem" | "payment" | "adminUser" | "expenseCategory" | "expenseEntry" | "role" | "permission" | "userRole" | "rolePermission" | "auditLog" | "contentRevision"
+    modelProps: "catalogItem" | "pricingConfig" | "serviceModule" | "serviceOption" | "promoRule" | "availabilityRule" | "availabilityException" | "order" | "orderServiceItem" | "orderLine" | "orderUpload" | "whatsAppConversation" | "offer" | "contract" | "quote" | "quoteEvent" | "routeDistanceCache" | "documentSequence" | "document" | "documentVersion" | "documentLineItem" | "documentNumberSequence" | "legalTextBlock" | "signingToken" | "documentSignature" | "mediaAsset" | "mediaAssetVariant" | "contentSlot" | "slotRegistry" | "jobPosting" | "invoice" | "invoiceItem" | "payment" | "adminUser" | "expenseCategory" | "expenseEntry" | "role" | "permission" | "userRole" | "rolePermission" | "auditLog" | "contentRevision"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1767,6 +1774,524 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DocumentSequenceCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DocumentSequenceCountAggregateOutputType> | number
+        }
+      }
+    }
+    Document: {
+      payload: Prisma.$DocumentPayload<ExtArgs>
+      fields: Prisma.DocumentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>
+        }
+        findMany: {
+          args: Prisma.DocumentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>[]
+        }
+        create: {
+          args: Prisma.DocumentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>
+        }
+        createMany: {
+          args: Prisma.DocumentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DocumentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>[]
+        }
+        delete: {
+          args: Prisma.DocumentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>
+        }
+        update: {
+          args: Prisma.DocumentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DocumentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>[]
+        }
+        upsert: {
+          args: Prisma.DocumentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocument>
+        }
+        groupBy: {
+          args: Prisma.DocumentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentCountAggregateOutputType> | number
+        }
+      }
+    }
+    DocumentVersion: {
+      payload: Prisma.$DocumentVersionPayload<ExtArgs>
+      fields: Prisma.DocumentVersionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentVersionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentVersionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentVersionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentVersionPayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentVersionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentVersionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentVersionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentVersionPayload>
+        }
+        findMany: {
+          args: Prisma.DocumentVersionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentVersionPayload>[]
+        }
+        create: {
+          args: Prisma.DocumentVersionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentVersionPayload>
+        }
+        createMany: {
+          args: Prisma.DocumentVersionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DocumentVersionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentVersionPayload>[]
+        }
+        delete: {
+          args: Prisma.DocumentVersionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentVersionPayload>
+        }
+        update: {
+          args: Prisma.DocumentVersionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentVersionPayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentVersionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentVersionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DocumentVersionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentVersionPayload>[]
+        }
+        upsert: {
+          args: Prisma.DocumentVersionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentVersionPayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentVersionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocumentVersion>
+        }
+        groupBy: {
+          args: Prisma.DocumentVersionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentVersionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentVersionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentVersionCountAggregateOutputType> | number
+        }
+      }
+    }
+    DocumentLineItem: {
+      payload: Prisma.$DocumentLineItemPayload<ExtArgs>
+      fields: Prisma.DocumentLineItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentLineItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLineItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentLineItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLineItemPayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentLineItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLineItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentLineItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLineItemPayload>
+        }
+        findMany: {
+          args: Prisma.DocumentLineItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLineItemPayload>[]
+        }
+        create: {
+          args: Prisma.DocumentLineItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLineItemPayload>
+        }
+        createMany: {
+          args: Prisma.DocumentLineItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DocumentLineItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLineItemPayload>[]
+        }
+        delete: {
+          args: Prisma.DocumentLineItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLineItemPayload>
+        }
+        update: {
+          args: Prisma.DocumentLineItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLineItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentLineItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentLineItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DocumentLineItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLineItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.DocumentLineItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentLineItemPayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentLineItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocumentLineItem>
+        }
+        groupBy: {
+          args: Prisma.DocumentLineItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentLineItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentLineItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentLineItemCountAggregateOutputType> | number
+        }
+      }
+    }
+    DocumentNumberSequence: {
+      payload: Prisma.$DocumentNumberSequencePayload<ExtArgs>
+      fields: Prisma.DocumentNumberSequenceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentNumberSequenceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentNumberSequencePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentNumberSequenceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentNumberSequencePayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentNumberSequenceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentNumberSequencePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentNumberSequenceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentNumberSequencePayload>
+        }
+        findMany: {
+          args: Prisma.DocumentNumberSequenceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentNumberSequencePayload>[]
+        }
+        create: {
+          args: Prisma.DocumentNumberSequenceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentNumberSequencePayload>
+        }
+        createMany: {
+          args: Prisma.DocumentNumberSequenceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DocumentNumberSequenceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentNumberSequencePayload>[]
+        }
+        delete: {
+          args: Prisma.DocumentNumberSequenceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentNumberSequencePayload>
+        }
+        update: {
+          args: Prisma.DocumentNumberSequenceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentNumberSequencePayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentNumberSequenceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentNumberSequenceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DocumentNumberSequenceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentNumberSequencePayload>[]
+        }
+        upsert: {
+          args: Prisma.DocumentNumberSequenceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentNumberSequencePayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentNumberSequenceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocumentNumberSequence>
+        }
+        groupBy: {
+          args: Prisma.DocumentNumberSequenceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentNumberSequenceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentNumberSequenceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentNumberSequenceCountAggregateOutputType> | number
+        }
+      }
+    }
+    LegalTextBlock: {
+      payload: Prisma.$LegalTextBlockPayload<ExtArgs>
+      fields: Prisma.LegalTextBlockFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LegalTextBlockFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LegalTextBlockPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LegalTextBlockFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LegalTextBlockPayload>
+        }
+        findFirst: {
+          args: Prisma.LegalTextBlockFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LegalTextBlockPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LegalTextBlockFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LegalTextBlockPayload>
+        }
+        findMany: {
+          args: Prisma.LegalTextBlockFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LegalTextBlockPayload>[]
+        }
+        create: {
+          args: Prisma.LegalTextBlockCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LegalTextBlockPayload>
+        }
+        createMany: {
+          args: Prisma.LegalTextBlockCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LegalTextBlockCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LegalTextBlockPayload>[]
+        }
+        delete: {
+          args: Prisma.LegalTextBlockDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LegalTextBlockPayload>
+        }
+        update: {
+          args: Prisma.LegalTextBlockUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LegalTextBlockPayload>
+        }
+        deleteMany: {
+          args: Prisma.LegalTextBlockDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LegalTextBlockUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LegalTextBlockUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LegalTextBlockPayload>[]
+        }
+        upsert: {
+          args: Prisma.LegalTextBlockUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LegalTextBlockPayload>
+        }
+        aggregate: {
+          args: Prisma.LegalTextBlockAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLegalTextBlock>
+        }
+        groupBy: {
+          args: Prisma.LegalTextBlockGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LegalTextBlockGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LegalTextBlockCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LegalTextBlockCountAggregateOutputType> | number
+        }
+      }
+    }
+    SigningToken: {
+      payload: Prisma.$SigningTokenPayload<ExtArgs>
+      fields: Prisma.SigningTokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SigningTokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SigningTokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SigningTokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SigningTokenPayload>
+        }
+        findFirst: {
+          args: Prisma.SigningTokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SigningTokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SigningTokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SigningTokenPayload>
+        }
+        findMany: {
+          args: Prisma.SigningTokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SigningTokenPayload>[]
+        }
+        create: {
+          args: Prisma.SigningTokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SigningTokenPayload>
+        }
+        createMany: {
+          args: Prisma.SigningTokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SigningTokenCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SigningTokenPayload>[]
+        }
+        delete: {
+          args: Prisma.SigningTokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SigningTokenPayload>
+        }
+        update: {
+          args: Prisma.SigningTokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SigningTokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.SigningTokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SigningTokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SigningTokenUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SigningTokenPayload>[]
+        }
+        upsert: {
+          args: Prisma.SigningTokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SigningTokenPayload>
+        }
+        aggregate: {
+          args: Prisma.SigningTokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSigningToken>
+        }
+        groupBy: {
+          args: Prisma.SigningTokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SigningTokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SigningTokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SigningTokenCountAggregateOutputType> | number
+        }
+      }
+    }
+    DocumentSignature: {
+      payload: Prisma.$DocumentSignaturePayload<ExtArgs>
+      fields: Prisma.DocumentSignatureFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentSignatureFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentSignaturePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentSignatureFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentSignaturePayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentSignatureFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentSignaturePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentSignatureFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentSignaturePayload>
+        }
+        findMany: {
+          args: Prisma.DocumentSignatureFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentSignaturePayload>[]
+        }
+        create: {
+          args: Prisma.DocumentSignatureCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentSignaturePayload>
+        }
+        createMany: {
+          args: Prisma.DocumentSignatureCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DocumentSignatureCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentSignaturePayload>[]
+        }
+        delete: {
+          args: Prisma.DocumentSignatureDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentSignaturePayload>
+        }
+        update: {
+          args: Prisma.DocumentSignatureUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentSignaturePayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentSignatureDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentSignatureUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DocumentSignatureUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentSignaturePayload>[]
+        }
+        upsert: {
+          args: Prisma.DocumentSignatureUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentSignaturePayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentSignatureAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocumentSignature>
+        }
+        groupBy: {
+          args: Prisma.DocumentSignatureGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentSignatureGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentSignatureCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentSignatureCountAggregateOutputType> | number
         }
       }
     }
@@ -3231,6 +3756,7 @@ export const OrderScalarFieldEnum = {
   serviceType: 'serviceType',
   speed: 'speed',
   status: 'status',
+  workflowStatus: 'workflowStatus',
   customerName: 'customerName',
   customerPhone: 'customerPhone',
   customerEmail: 'customerEmail',
@@ -3449,6 +3975,143 @@ export const DocumentSequenceScalarFieldEnum = {
 } as const
 
 export type DocumentSequenceScalarFieldEnum = (typeof DocumentSequenceScalarFieldEnum)[keyof typeof DocumentSequenceScalarFieldEnum]
+
+
+export const DocumentScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  number: 'number',
+  status: 'status',
+  orderId: 'orderId',
+  customerData: 'customerData',
+  serviceData: 'serviceData',
+  addressData: 'addressData',
+  vatConfig: 'vatConfig',
+  subtotalCents: 'subtotalCents',
+  taxCents: 'taxCents',
+  grossCents: 'grossCents',
+  paymentDetails: 'paymentDetails',
+  dueAt: 'dueAt',
+  visibleNotes: 'visibleNotes',
+  internalNotes: 'internalNotes',
+  legalBlocks: 'legalBlocks',
+  includeAgbAppendix: 'includeAgbAppendix',
+  pdfStorageKey: 'pdfStorageKey',
+  pdfUrl: 'pdfUrl',
+  currentVersionId: 'currentVersionId',
+  approvedAt: 'approvedAt',
+  approvedByUserId: 'approvedByUserId',
+  customerSignatureEnabled: 'customerSignatureEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentScalarFieldEnum = (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum]
+
+
+export const DocumentVersionScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  versionNumber: 'versionNumber',
+  dataSnapshot: 'dataSnapshot',
+  htmlSnapshot: 'htmlSnapshot',
+  pdfStorageKey: 'pdfStorageKey',
+  pdfUrl: 'pdfUrl',
+  hash: 'hash',
+  status: 'status',
+  createdByUserId: 'createdByUserId',
+  createdAt: 'createdAt'
+} as const
+
+export type DocumentVersionScalarFieldEnum = (typeof DocumentVersionScalarFieldEnum)[keyof typeof DocumentVersionScalarFieldEnum]
+
+
+export const DocumentLineItemScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  position: 'position',
+  title: 'title',
+  description: 'description',
+  quantity: 'quantity',
+  unit: 'unit',
+  unitPriceNetCents: 'unitPriceNetCents',
+  vatRate: 'vatRate',
+  totalNetCents: 'totalNetCents',
+  totalGrossCents: 'totalGrossCents',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentLineItemScalarFieldEnum = (typeof DocumentLineItemScalarFieldEnum)[keyof typeof DocumentLineItemScalarFieldEnum]
+
+
+export const DocumentNumberSequenceScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  year: 'year',
+  prefix: 'prefix',
+  lastNumber: 'lastNumber',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentNumberSequenceScalarFieldEnum = (typeof DocumentNumberSequenceScalarFieldEnum)[keyof typeof DocumentNumberSequenceScalarFieldEnum]
+
+
+export const LegalTextBlockScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  title: 'title',
+  content: 'content',
+  documentTypes: 'documentTypes',
+  active: 'active',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type LegalTextBlockScalarFieldEnum = (typeof LegalTextBlockScalarFieldEnum)[keyof typeof LegalTextBlockScalarFieldEnum]
+
+
+export const SigningTokenScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  documentVersionId: 'documentVersionId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  signedAt: 'signedAt',
+  signerName: 'signerName',
+  signerEmail: 'signerEmail',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  consentText: 'consentText',
+  documentHash: 'documentHash',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SigningTokenScalarFieldEnum = (typeof SigningTokenScalarFieldEnum)[keyof typeof SigningTokenScalarFieldEnum]
+
+
+export const DocumentSignatureScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  documentVersionId: 'documentVersionId',
+  signingTokenId: 'signingTokenId',
+  signedAt: 'signedAt',
+  signerName: 'signerName',
+  signerEmail: 'signerEmail',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  consentText: 'consentText',
+  documentHash: 'documentHash',
+  signedPdfStorageKey: 'signedPdfStorageKey',
+  signedPdfUrl: 'signedPdfUrl',
+  createdAt: 'createdAt'
+} as const
+
+export type DocumentSignatureScalarFieldEnum = (typeof DocumentSignatureScalarFieldEnum)[keyof typeof DocumentSignatureScalarFieldEnum]
 
 
 export const MediaAssetScalarFieldEnum = {
@@ -3931,6 +4594,20 @@ export type ListEnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$
 
 
 /**
+ * Reference to a field of type 'RequestWorkflowStatus'
+ */
+export type EnumRequestWorkflowStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RequestWorkflowStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'RequestWorkflowStatus[]'
+ */
+export type ListEnumRequestWorkflowStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RequestWorkflowStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'ContactPreference'
  */
 export type EnumContactPreferenceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContactPreference'>
@@ -4081,6 +4758,48 @@ export type EnumDocumentScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'DocumentScope[]'
  */
 export type ListEnumDocumentScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentScope[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DocumentType'
+ */
+export type EnumDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentType'>
+    
+
+
+/**
+ * Reference to a field of type 'DocumentType[]'
+ */
+export type ListEnumDocumentTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DocumentStatus'
+ */
+export type EnumDocumentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'DocumentStatus[]'
+ */
+export type ListEnumDocumentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SigningTokenStatus'
+ */
+export type EnumSigningTokenStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SigningTokenStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SigningTokenStatus[]'
+ */
+export type ListEnumSigningTokenStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SigningTokenStatus[]'>
     
 
 
@@ -4252,6 +4971,13 @@ export type GlobalOmitConfig = {
   quoteEvent?: Prisma.QuoteEventOmit
   routeDistanceCache?: Prisma.RouteDistanceCacheOmit
   documentSequence?: Prisma.DocumentSequenceOmit
+  document?: Prisma.DocumentOmit
+  documentVersion?: Prisma.DocumentVersionOmit
+  documentLineItem?: Prisma.DocumentLineItemOmit
+  documentNumberSequence?: Prisma.DocumentNumberSequenceOmit
+  legalTextBlock?: Prisma.LegalTextBlockOmit
+  signingToken?: Prisma.SigningTokenOmit
+  documentSignature?: Prisma.DocumentSignatureOmit
   mediaAsset?: Prisma.MediaAssetOmit
   mediaAssetVariant?: Prisma.MediaAssetVariantOmit
   contentSlot?: Prisma.ContentSlotOmit

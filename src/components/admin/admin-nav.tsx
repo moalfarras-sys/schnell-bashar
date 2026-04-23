@@ -37,6 +37,8 @@ const navItems: NavItem[] = [
   { href: "/admin", label: "Übersicht", icon: LayoutDashboard, section: "main" },
   { href: "/admin/orders", label: "Aufträge", icon: ClipboardList, section: "main" },
   { href: "/admin/offers", label: "Angebote & Verträge", icon: FileText, section: "main" },
+  { href: "/admin/dokumente", label: "Dokumente", icon: FileText, section: "main" },
+  { href: "/admin/dokumente/neu", label: "Neues Dokument", icon: PlusCircle, section: "operations" },
   { href: "/admin/offers/new", label: "Neues Angebot", icon: PlusCircle, section: "operations" },
   { href: "/admin/contracts/manual", label: "Neuer Vertrag (manuell)", icon: PlusCircle, section: "operations" },
   { href: "/admin/catalog", label: "Katalog", icon: Package, section: "operations" },

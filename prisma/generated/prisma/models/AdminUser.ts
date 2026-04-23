@@ -287,6 +287,8 @@ export type AdminUserWhereInput = {
   roles?: Prisma.UserRoleListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
   expenseEntries?: Prisma.ExpenseEntryListRelationFilter
+  approvedDocuments?: Prisma.DocumentListRelationFilter
+  documentVersions?: Prisma.DocumentVersionListRelationFilter
 }
 
 export type AdminUserOrderByWithRelationInput = {
@@ -307,6 +309,8 @@ export type AdminUserOrderByWithRelationInput = {
   roles?: Prisma.UserRoleOrderByRelationAggregateInput
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
   expenseEntries?: Prisma.ExpenseEntryOrderByRelationAggregateInput
+  approvedDocuments?: Prisma.DocumentOrderByRelationAggregateInput
+  documentVersions?: Prisma.DocumentVersionOrderByRelationAggregateInput
 }
 
 export type AdminUserWhereUniqueInput = Prisma.AtLeast<{
@@ -330,6 +334,8 @@ export type AdminUserWhereUniqueInput = Prisma.AtLeast<{
   roles?: Prisma.UserRoleListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
   expenseEntries?: Prisma.ExpenseEntryListRelationFilter
+  approvedDocuments?: Prisma.DocumentListRelationFilter
+  documentVersions?: Prisma.DocumentVersionListRelationFilter
 }, "id" | "email">
 
 export type AdminUserOrderByWithAggregationInput = {
@@ -392,6 +398,8 @@ export type AdminUserCreateInput = {
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   expenseEntries?: Prisma.ExpenseEntryCreateNestedManyWithoutCreatedByInput
+  approvedDocuments?: Prisma.DocumentCreateNestedManyWithoutApprovedByInput
+  documentVersions?: Prisma.DocumentVersionCreateNestedManyWithoutCreatedByInput
 }
 
 export type AdminUserUncheckedCreateInput = {
@@ -412,6 +420,8 @@ export type AdminUserUncheckedCreateInput = {
   roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   expenseEntries?: Prisma.ExpenseEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  approvedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutApprovedByInput
+  documentVersions?: Prisma.DocumentVersionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type AdminUserUpdateInput = {
@@ -432,6 +442,8 @@ export type AdminUserUpdateInput = {
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   expenseEntries?: Prisma.ExpenseEntryUpdateManyWithoutCreatedByNestedInput
+  approvedDocuments?: Prisma.DocumentUpdateManyWithoutApprovedByNestedInput
+  documentVersions?: Prisma.DocumentVersionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type AdminUserUncheckedUpdateInput = {
@@ -452,6 +464,8 @@ export type AdminUserUncheckedUpdateInput = {
   roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   expenseEntries?: Prisma.ExpenseEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  approvedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutApprovedByNestedInput
+  documentVersions?: Prisma.DocumentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type AdminUserCreateManyInput = {
@@ -503,6 +517,11 @@ export type AdminUserUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type AdminUserNullableScalarRelationFilter = {
+  is?: Prisma.AdminUserWhereInput | null
+  isNot?: Prisma.AdminUserWhereInput | null
 }
 
 export type AdminUserCountOrderByAggregateInput = {
@@ -562,14 +581,41 @@ export type AdminUserSumOrderByAggregateInput = {
   failedLoginCount?: Prisma.SortOrder
 }
 
-export type AdminUserNullableScalarRelationFilter = {
-  is?: Prisma.AdminUserWhereInput | null
-  isNot?: Prisma.AdminUserWhereInput | null
-}
-
 export type AdminUserScalarRelationFilter = {
   is?: Prisma.AdminUserWhereInput
   isNot?: Prisma.AdminUserWhereInput
+}
+
+export type AdminUserCreateNestedOneWithoutApprovedDocumentsInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutApprovedDocumentsInput, Prisma.AdminUserUncheckedCreateWithoutApprovedDocumentsInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutApprovedDocumentsInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+}
+
+export type AdminUserUpdateOneWithoutApprovedDocumentsNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutApprovedDocumentsInput, Prisma.AdminUserUncheckedCreateWithoutApprovedDocumentsInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutApprovedDocumentsInput
+  upsert?: Prisma.AdminUserUpsertWithoutApprovedDocumentsInput
+  disconnect?: Prisma.AdminUserWhereInput | boolean
+  delete?: Prisma.AdminUserWhereInput | boolean
+  connect?: Prisma.AdminUserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutApprovedDocumentsInput, Prisma.AdminUserUpdateWithoutApprovedDocumentsInput>, Prisma.AdminUserUncheckedUpdateWithoutApprovedDocumentsInput>
+}
+
+export type AdminUserCreateNestedOneWithoutDocumentVersionsInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutDocumentVersionsInput, Prisma.AdminUserUncheckedCreateWithoutDocumentVersionsInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutDocumentVersionsInput
+  connect?: Prisma.AdminUserWhereUniqueInput
+}
+
+export type AdminUserUpdateOneWithoutDocumentVersionsNestedInput = {
+  create?: Prisma.XOR<Prisma.AdminUserCreateWithoutDocumentVersionsInput, Prisma.AdminUserUncheckedCreateWithoutDocumentVersionsInput>
+  connectOrCreate?: Prisma.AdminUserCreateOrConnectWithoutDocumentVersionsInput
+  upsert?: Prisma.AdminUserUpsertWithoutDocumentVersionsInput
+  disconnect?: Prisma.AdminUserWhereInput | boolean
+  delete?: Prisma.AdminUserWhereInput | boolean
+  connect?: Prisma.AdminUserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutDocumentVersionsInput, Prisma.AdminUserUpdateWithoutDocumentVersionsInput>, Prisma.AdminUserUncheckedUpdateWithoutDocumentVersionsInput>
 }
 
 export type AdminUserCreateNestedOneWithoutExpenseEntriesInput = {
@@ -618,6 +664,206 @@ export type AdminUserUpdateOneWithoutAuditLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AdminUserUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.AdminUserUpdateWithoutAuditLogsInput>, Prisma.AdminUserUncheckedUpdateWithoutAuditLogsInput>
 }
 
+export type AdminUserCreateWithoutApprovedDocumentsInput = {
+  id?: string
+  email: string
+  name: string
+  passwordHash: string
+  avatarUrl?: string | null
+  isActive?: boolean
+  failedLoginCount?: number
+  lockedUntil?: Date | string | null
+  lastLoginAt?: Date | string | null
+  notifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  expenseEntries?: Prisma.ExpenseEntryCreateNestedManyWithoutCreatedByInput
+  documentVersions?: Prisma.DocumentVersionCreateNestedManyWithoutCreatedByInput
+}
+
+export type AdminUserUncheckedCreateWithoutApprovedDocumentsInput = {
+  id?: string
+  email: string
+  name: string
+  passwordHash: string
+  avatarUrl?: string | null
+  isActive?: boolean
+  failedLoginCount?: number
+  lockedUntil?: Date | string | null
+  lastLoginAt?: Date | string | null
+  notifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  expenseEntries?: Prisma.ExpenseEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  documentVersions?: Prisma.DocumentVersionUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type AdminUserCreateOrConnectWithoutApprovedDocumentsInput = {
+  where: Prisma.AdminUserWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutApprovedDocumentsInput, Prisma.AdminUserUncheckedCreateWithoutApprovedDocumentsInput>
+}
+
+export type AdminUserUpsertWithoutApprovedDocumentsInput = {
+  update: Prisma.XOR<Prisma.AdminUserUpdateWithoutApprovedDocumentsInput, Prisma.AdminUserUncheckedUpdateWithoutApprovedDocumentsInput>
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutApprovedDocumentsInput, Prisma.AdminUserUncheckedCreateWithoutApprovedDocumentsInput>
+  where?: Prisma.AdminUserWhereInput
+}
+
+export type AdminUserUpdateToOneWithWhereWithoutApprovedDocumentsInput = {
+  where?: Prisma.AdminUserWhereInput
+  data: Prisma.XOR<Prisma.AdminUserUpdateWithoutApprovedDocumentsInput, Prisma.AdminUserUncheckedUpdateWithoutApprovedDocumentsInput>
+}
+
+export type AdminUserUpdateWithoutApprovedDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  expenseEntries?: Prisma.ExpenseEntryUpdateManyWithoutCreatedByNestedInput
+  documentVersions?: Prisma.DocumentVersionUpdateManyWithoutCreatedByNestedInput
+}
+
+export type AdminUserUncheckedUpdateWithoutApprovedDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  expenseEntries?: Prisma.ExpenseEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  documentVersions?: Prisma.DocumentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type AdminUserCreateWithoutDocumentVersionsInput = {
+  id?: string
+  email: string
+  name: string
+  passwordHash: string
+  avatarUrl?: string | null
+  isActive?: boolean
+  failedLoginCount?: number
+  lockedUntil?: Date | string | null
+  lastLoginAt?: Date | string | null
+  notifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  expenseEntries?: Prisma.ExpenseEntryCreateNestedManyWithoutCreatedByInput
+  approvedDocuments?: Prisma.DocumentCreateNestedManyWithoutApprovedByInput
+}
+
+export type AdminUserUncheckedCreateWithoutDocumentVersionsInput = {
+  id?: string
+  email: string
+  name: string
+  passwordHash: string
+  avatarUrl?: string | null
+  isActive?: boolean
+  failedLoginCount?: number
+  lockedUntil?: Date | string | null
+  lastLoginAt?: Date | string | null
+  notifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  expenseEntries?: Prisma.ExpenseEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  approvedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutApprovedByInput
+}
+
+export type AdminUserCreateOrConnectWithoutDocumentVersionsInput = {
+  where: Prisma.AdminUserWhereUniqueInput
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutDocumentVersionsInput, Prisma.AdminUserUncheckedCreateWithoutDocumentVersionsInput>
+}
+
+export type AdminUserUpsertWithoutDocumentVersionsInput = {
+  update: Prisma.XOR<Prisma.AdminUserUpdateWithoutDocumentVersionsInput, Prisma.AdminUserUncheckedUpdateWithoutDocumentVersionsInput>
+  create: Prisma.XOR<Prisma.AdminUserCreateWithoutDocumentVersionsInput, Prisma.AdminUserUncheckedCreateWithoutDocumentVersionsInput>
+  where?: Prisma.AdminUserWhereInput
+}
+
+export type AdminUserUpdateToOneWithWhereWithoutDocumentVersionsInput = {
+  where?: Prisma.AdminUserWhereInput
+  data: Prisma.XOR<Prisma.AdminUserUpdateWithoutDocumentVersionsInput, Prisma.AdminUserUncheckedUpdateWithoutDocumentVersionsInput>
+}
+
+export type AdminUserUpdateWithoutDocumentVersionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  expenseEntries?: Prisma.ExpenseEntryUpdateManyWithoutCreatedByNestedInput
+  approvedDocuments?: Prisma.DocumentUpdateManyWithoutApprovedByNestedInput
+}
+
+export type AdminUserUncheckedUpdateWithoutDocumentVersionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notifications?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  expenseEntries?: Prisma.ExpenseEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  approvedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutApprovedByNestedInput
+}
+
 export type AdminUserCreateWithoutExpenseEntriesInput = {
   id?: string
   email: string
@@ -635,6 +881,8 @@ export type AdminUserCreateWithoutExpenseEntriesInput = {
   deletedBy?: string | null
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  approvedDocuments?: Prisma.DocumentCreateNestedManyWithoutApprovedByInput
+  documentVersions?: Prisma.DocumentVersionCreateNestedManyWithoutCreatedByInput
 }
 
 export type AdminUserUncheckedCreateWithoutExpenseEntriesInput = {
@@ -654,6 +902,8 @@ export type AdminUserUncheckedCreateWithoutExpenseEntriesInput = {
   deletedBy?: string | null
   roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  approvedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutApprovedByInput
+  documentVersions?: Prisma.DocumentVersionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type AdminUserCreateOrConnectWithoutExpenseEntriesInput = {
@@ -689,6 +939,8 @@ export type AdminUserUpdateWithoutExpenseEntriesInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  approvedDocuments?: Prisma.DocumentUpdateManyWithoutApprovedByNestedInput
+  documentVersions?: Prisma.DocumentVersionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type AdminUserUncheckedUpdateWithoutExpenseEntriesInput = {
@@ -708,6 +960,8 @@ export type AdminUserUncheckedUpdateWithoutExpenseEntriesInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  approvedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutApprovedByNestedInput
+  documentVersions?: Prisma.DocumentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type AdminUserCreateWithoutRolesInput = {
@@ -727,6 +981,8 @@ export type AdminUserCreateWithoutRolesInput = {
   deletedBy?: string | null
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   expenseEntries?: Prisma.ExpenseEntryCreateNestedManyWithoutCreatedByInput
+  approvedDocuments?: Prisma.DocumentCreateNestedManyWithoutApprovedByInput
+  documentVersions?: Prisma.DocumentVersionCreateNestedManyWithoutCreatedByInput
 }
 
 export type AdminUserUncheckedCreateWithoutRolesInput = {
@@ -746,6 +1002,8 @@ export type AdminUserUncheckedCreateWithoutRolesInput = {
   deletedBy?: string | null
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   expenseEntries?: Prisma.ExpenseEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  approvedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutApprovedByInput
+  documentVersions?: Prisma.DocumentVersionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type AdminUserCreateOrConnectWithoutRolesInput = {
@@ -781,6 +1039,8 @@ export type AdminUserUpdateWithoutRolesInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   expenseEntries?: Prisma.ExpenseEntryUpdateManyWithoutCreatedByNestedInput
+  approvedDocuments?: Prisma.DocumentUpdateManyWithoutApprovedByNestedInput
+  documentVersions?: Prisma.DocumentVersionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type AdminUserUncheckedUpdateWithoutRolesInput = {
@@ -800,6 +1060,8 @@ export type AdminUserUncheckedUpdateWithoutRolesInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   expenseEntries?: Prisma.ExpenseEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  approvedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutApprovedByNestedInput
+  documentVersions?: Prisma.DocumentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type AdminUserCreateWithoutAuditLogsInput = {
@@ -819,6 +1081,8 @@ export type AdminUserCreateWithoutAuditLogsInput = {
   deletedBy?: string | null
   roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
   expenseEntries?: Prisma.ExpenseEntryCreateNestedManyWithoutCreatedByInput
+  approvedDocuments?: Prisma.DocumentCreateNestedManyWithoutApprovedByInput
+  documentVersions?: Prisma.DocumentVersionCreateNestedManyWithoutCreatedByInput
 }
 
 export type AdminUserUncheckedCreateWithoutAuditLogsInput = {
@@ -838,6 +1102,8 @@ export type AdminUserUncheckedCreateWithoutAuditLogsInput = {
   deletedBy?: string | null
   roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
   expenseEntries?: Prisma.ExpenseEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  approvedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutApprovedByInput
+  documentVersions?: Prisma.DocumentVersionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type AdminUserCreateOrConnectWithoutAuditLogsInput = {
@@ -873,6 +1139,8 @@ export type AdminUserUpdateWithoutAuditLogsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
   expenseEntries?: Prisma.ExpenseEntryUpdateManyWithoutCreatedByNestedInput
+  approvedDocuments?: Prisma.DocumentUpdateManyWithoutApprovedByNestedInput
+  documentVersions?: Prisma.DocumentVersionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type AdminUserUncheckedUpdateWithoutAuditLogsInput = {
@@ -892,6 +1160,8 @@ export type AdminUserUncheckedUpdateWithoutAuditLogsInput = {
   deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
   expenseEntries?: Prisma.ExpenseEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  approvedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutApprovedByNestedInput
+  documentVersions?: Prisma.DocumentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 
@@ -903,12 +1173,16 @@ export type AdminUserCountOutputType = {
   roles: number
   auditLogs: number
   expenseEntries: number
+  approvedDocuments: number
+  documentVersions: number
 }
 
 export type AdminUserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   roles?: boolean | AdminUserCountOutputTypeCountRolesArgs
   auditLogs?: boolean | AdminUserCountOutputTypeCountAuditLogsArgs
   expenseEntries?: boolean | AdminUserCountOutputTypeCountExpenseEntriesArgs
+  approvedDocuments?: boolean | AdminUserCountOutputTypeCountApprovedDocumentsArgs
+  documentVersions?: boolean | AdminUserCountOutputTypeCountDocumentVersionsArgs
 }
 
 /**
@@ -942,6 +1216,20 @@ export type AdminUserCountOutputTypeCountExpenseEntriesArgs<ExtArgs extends runt
   where?: Prisma.ExpenseEntryWhereInput
 }
 
+/**
+ * AdminUserCountOutputType without action
+ */
+export type AdminUserCountOutputTypeCountApprovedDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentWhereInput
+}
+
+/**
+ * AdminUserCountOutputType without action
+ */
+export type AdminUserCountOutputTypeCountDocumentVersionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentVersionWhereInput
+}
+
 
 export type AdminUserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -961,6 +1249,8 @@ export type AdminUserSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   roles?: boolean | Prisma.AdminUser$rolesArgs<ExtArgs>
   auditLogs?: boolean | Prisma.AdminUser$auditLogsArgs<ExtArgs>
   expenseEntries?: boolean | Prisma.AdminUser$expenseEntriesArgs<ExtArgs>
+  approvedDocuments?: boolean | Prisma.AdminUser$approvedDocumentsArgs<ExtArgs>
+  documentVersions?: boolean | Prisma.AdminUser$documentVersionsArgs<ExtArgs>
   _count?: boolean | Prisma.AdminUserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["adminUser"]>
 
@@ -1020,6 +1310,8 @@ export type AdminUserInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   roles?: boolean | Prisma.AdminUser$rolesArgs<ExtArgs>
   auditLogs?: boolean | Prisma.AdminUser$auditLogsArgs<ExtArgs>
   expenseEntries?: boolean | Prisma.AdminUser$expenseEntriesArgs<ExtArgs>
+  approvedDocuments?: boolean | Prisma.AdminUser$approvedDocumentsArgs<ExtArgs>
+  documentVersions?: boolean | Prisma.AdminUser$documentVersionsArgs<ExtArgs>
   _count?: boolean | Prisma.AdminUserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AdminUserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1031,6 +1323,8 @@ export type $AdminUserPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     roles: Prisma.$UserRolePayload<ExtArgs>[]
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
     expenseEntries: Prisma.$ExpenseEntryPayload<ExtArgs>[]
+    approvedDocuments: Prisma.$DocumentPayload<ExtArgs>[]
+    documentVersions: Prisma.$DocumentVersionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1444,6 +1738,8 @@ export interface Prisma__AdminUserClient<T, Null = never, ExtArgs extends runtim
   roles<T extends Prisma.AdminUser$rolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   auditLogs<T extends Prisma.AdminUser$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   expenseEntries<T extends Prisma.AdminUser$expenseEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$expenseEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpenseEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  approvedDocuments<T extends Prisma.AdminUser$approvedDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$approvedDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  documentVersions<T extends Prisma.AdminUser$documentVersionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AdminUser$documentVersionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1944,6 +2240,54 @@ export type AdminUser$expenseEntriesArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.ExpenseEntryScalarFieldEnum | Prisma.ExpenseEntryScalarFieldEnum[]
+}
+
+/**
+ * AdminUser.approvedDocuments
+ */
+export type AdminUser$approvedDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Document
+   */
+  select?: Prisma.DocumentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Document
+   */
+  omit?: Prisma.DocumentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentInclude<ExtArgs> | null
+  where?: Prisma.DocumentWhereInput
+  orderBy?: Prisma.DocumentOrderByWithRelationInput | Prisma.DocumentOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentScalarFieldEnum | Prisma.DocumentScalarFieldEnum[]
+}
+
+/**
+ * AdminUser.documentVersions
+ */
+export type AdminUser$documentVersionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DocumentVersion
+   */
+  select?: Prisma.DocumentVersionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DocumentVersion
+   */
+  omit?: Prisma.DocumentVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentVersionInclude<ExtArgs> | null
+  where?: Prisma.DocumentVersionWhereInput
+  orderBy?: Prisma.DocumentVersionOrderByWithRelationInput | Prisma.DocumentVersionOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentVersionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentVersionScalarFieldEnum | Prisma.DocumentVersionScalarFieldEnum[]
 }
 
 /**

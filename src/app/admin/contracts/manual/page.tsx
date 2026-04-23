@@ -1,7 +1,7 @@
-﻿import { ManualContractForm } from "./manual-contract-form";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default function AdminManualContractPage() {
-  return <ManualContractForm />;
+  redirect("/admin/dokumente/neu");
 }

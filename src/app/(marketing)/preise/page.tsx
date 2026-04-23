@@ -1,68 +1,27 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
-import { BadgeEuro, CheckCircle2, Clock, Sparkles } from "lucide-react";
+import { BadgeEuro, Clock } from "lucide-react";
 
-import {
-  type MontageCalculatorOption,
-  type PricingData,
-} from "@/app/(marketing)/preise/price-calculator";
 import { Container } from "@/components/container";
-import { Reveal } from "@/components/motion/reveal";
 import { Preisbeispiele } from "@/components/preisbeispiele";
 import { PreiseCalculatorSection } from "@/components/preise-calculator-section";
 import { Button } from "@/components/ui/button";
-import { getImageSlot } from "@/server/content/slots";
 import { prisma } from "@/server/db/prisma";
-import { loadOperationalSettings } from "@/server/settings/operational-settings";
+
+import type { MontageCalculatorOption, PricingData } from "@/app/(marketing)/preise/price-calculator";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Preise",
+  title: "Umzug Preise Berlin | Richtpreise für Umzug, Entsorgung & Montage",
   description:
-    "Transparente Richtpreise für Umzug, Entsorgung und Montage mit klarer Preislogik und direkter Anfrage.",
-  alternates: {
-    canonical: "/preise",
-  },
+    "Transparente Richtpreise für Umzug, Entsorgung und Möbelmontage. Preisbeispiele ansehen, Leistung auswählen und unverbindliches Angebot anfragen.",
+  alternates: { canonical: "/preise" },
 };
-
-const packages = [
-  {
-    title: "Günstig",
-    tag: "Preisbewusst",
-    desc: "Für flexible Termine mit starkem Preisfokus.",
-    bullets: [
-      "Ideal bei planbaren Zeitfenstern",
-      "Sehr gute Option für Standardvolumen",
-      "Kosteneffizient bei längerer Vorlaufzeit",
-    ],
-  },
-  {
-    title: "Standard",
-    tag: "Meistgewählt",
-    desc: "Balance aus Preis, Planungssicherheit und Geschwindigkeit.",
-    bullets: [
-      "Unsere beliebteste Option",
-      "Schnelle Rückmeldung",
-      "Transparenter Richtpreis mit klaren Leistungen",
-    ],
-  },
-  {
-    title: "Express",
-    tag: "Priorisiert",
-    desc: "Für dringende Aufträge mit kurzer Vorlaufzeit.",
-    bullets: [
-      "Priorisierte Planung",
-      "Kurzfristige Terminoptionen",
-      "Besonders geeignet für eilige Umzüge und Abholungen",
-    ],
-  },
-];
 
 async function getPricing(): Promise<PricingData | null> {
   try {
-    const pricing = await prisma.pricingConfig.findFirst({
+    return await prisma.pricingConfig.findFirst({
       where: { active: true },
       orderBy: { updatedAt: "desc" },
       select: {
@@ -78,7 +37,6 @@ async function getPricing(): Promise<PricingData | null> {
         expressMultiplier: true,
       },
     });
-    return pricing;
   } catch {
     return null;
   }
@@ -109,54 +67,31 @@ async function getMontageOptions(): Promise<MontageCalculatorOption[]> {
       defaultPriceCents: option.defaultPriceCents,
       requiresQuantity: option.requiresQuantity,
     }));
-  } catch (error) {
-    console.error("[preise] failed to load montage options, using empty fallback", error);
+  } catch {
     return [];
   }
 }
 
 export default async function PreisePage() {
-  const [banner, pricing, settings, montageCalculatorOptions] = await Promise.all([
-    getImageSlot({
-      key: "img.preise.banner",
-      fallbackSrc: "/media/gallery/money.jpeg",
-      fallbackAlt: "Transparente Preise",
-    }),
-    getPricing(),
-    loadOperationalSettings(),
-    getMontageOptions(),
-  ]);
+  const [pricing, montageCalculatorOptions] = await Promise.all([getPricing(), getMontageOptions()]);
 
   return (
     <Container className="py-14">
-      <div className="max-w-3xl rounded-3xl border border-sky-200/80 bg-white/70 p-6 shadow-[0_16px_42px_rgba(15,23,42,0.14)] backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/55">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">
-          Preise & Pakete
-        </h1>
-        <p className="mt-4 text-base leading-relaxed text-slate-700 dark:text-slate-400">
-          Transparente Richtpreise ohne versteckte Kosten. Der endgültige Preis wird immer über
-          ein verbindliches Angebot bestätigt.
+      <div className="max-w-3xl rounded-3xl border border-sky-200/80 bg-white/90 p-6 shadow-[0_16px_42px_rgba(15,23,42,0.14)]">
+        <h1 className="text-4xl font-extrabold tracking-tight text-slate-950">Richtpreise für Umzug, Entsorgung & Montage</h1>
+        <p className="mt-4 text-base leading-relaxed text-slate-700">
+          Alle Preisangaben dienen als unverbindliche Orientierung. Das verbindliche Angebot wird
+          nach Prüfung Ihrer Anfrage erstellt.
         </p>
-        <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold">
-          <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sky-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
-            Umzug ab {settings.movingFromPriceEur} €
-          </span>
-          <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sky-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
-            Entsorgung ab {settings.disposalFromPriceEur} €
-          </span>
-          <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sky-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
-            Montage ab {settings.montageFromPriceEur} €
-          </span>
-        </div>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <a href="#price-calculator">
-            <Button size="lg">
+            <Button size="lg" className="gap-2">
               <BadgeEuro className="h-5 w-5" />
               Richtpreis berechnen
             </Button>
           </a>
-          <Link href="/booking?context=MOVING">
-            <Button size="lg" variant="outline">
+          <Link href="/booking">
+            <Button size="lg" variant="outline" className="gap-2">
               <Clock className="h-5 w-5" />
               Anfrage starten
             </Button>
@@ -164,122 +99,12 @@ export default async function PreisePage() {
         </div>
       </div>
 
-      <Reveal className="mt-12">
-        <div className="grid gap-6 md:grid-cols-3">
-          {packages.map((p, i) => (
-            <Link
-              key={p.title + i}
-              href="#price-calculator"
-              className={`relative flex flex-col rounded-3xl border-2 p-6 transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:ring-offset-2 ${
-                i === 1
-                  ? "border-brand-500 bg-sky-50/90 shadow-lg dark:bg-brand-900/20"
-                  : "border-slate-300 bg-white/85 shadow-md hover:border-sky-300 dark:border-slate-700 dark:bg-slate-900/80 dark:hover:border-slate-600"
-              }`}
-            >
-              {i === 1 ? (
-                <div className="absolute -top-3 left-6 inline-flex items-center gap-1 rounded-full bg-brand-600 px-3 py-1 text-xs font-bold text-white shadow-md">
-                  <Sparkles className="h-3 w-3" />
-                  Empfohlen
-                </div>
-              ) : null}
-              <div className="text-lg font-extrabold text-slate-950 dark:text-white">{p.title}</div>
-              <div className="mt-1 text-xs font-bold text-brand-700 dark:text-brand-400">{p.tag}</div>
-              <div className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-400">{p.desc}</div>
-              <ul className="mt-4 grid gap-2 text-sm text-slate-700 dark:text-slate-400">
-                {p.bullets.map((b) => (
-                  <li key={b} className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brand-600 dark:text-brand-400" />
-                    {b}
-                  </li>
-                ))}
-              </ul>
-            </Link>
-          ))}
-        </div>
-      </Reveal>
-
       <PreiseCalculatorSection pricing={pricing} montageOptions={montageCalculatorOptions} />
+      <Preisbeispiele />
 
-      <Reveal className="mt-12">
-        <div className="rounded-3xl border-2 border-slate-300 bg-[color:var(--surface-elevated)] p-6 shadow-md dark:border-slate-700 dark:bg-slate-900/80">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <div className="text-xl font-extrabold text-slate-950 dark:text-white">
-                Montage Leistungen & ab-Preise
-              </div>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                Transparente Orientierung für Küchen-, Geräte- und Möbelmontage.
-              </p>
-            </div>
-            <Link href="/booking?context=MONTAGE">
-              <Button>Jetzt Montage anfragen</Button>
-            </Link>
-          </div>
-
-          {montageCalculatorOptions.length > 0 ? (
-            <div className="mt-5 grid gap-3 md:grid-cols-2">
-              {montageCalculatorOptions.map((option, idx) => (
-                <div
-                  key={option.code}
-                  className="rounded-2xl border border-slate-300 bg-slate-50/70 p-4 dark:border-slate-700 dark:bg-slate-800/60"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="text-sm font-extrabold text-slate-900 dark:text-white">
-                        {option.nameDe}
-                      </div>
-                      {option.descriptionDe ? (
-                        <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                          {option.descriptionDe}
-                        </div>
-                      ) : null}
-                    </div>
-                    {idx < 2 ? (
-                      <span className="rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                        Beliebt
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="mt-2 text-base font-extrabold text-brand-700 dark:text-brand-400">
-                    ab {Math.max(1, Math.round(option.defaultPriceCents / 100))} €
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="mt-5 rounded-2xl border border-slate-300 bg-slate-50/80 p-4 text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
-              Montagepreise werden derzeit strukturiert vorbereitet. Für ein verbindliches Angebot
-              können Sie die Anfrage direkt starten.
-            </div>
-          )}
-
-          <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-xs font-semibold text-amber-900 dark:border-amber-500/40 dark:bg-amber-950/20 dark:text-amber-200">
-            Richtpreis: Endgültiger Preis nach Prüfung/Angebot.
-          </div>
-        </div>
-      </Reveal>
-
-      <Preisbeispiele
-        starts={{
-          movingFromEur: settings.movingFromPriceEur,
-          disposalFromEur: settings.disposalFromPriceEur,
-          montageFromEur: settings.montageFromPriceEur,
-        }}
-      />
-
-      <div className="mt-10 rounded-3xl border-2 border-sky-200 bg-sky-50/90 p-6 text-sm font-semibold text-slate-900 shadow-sm dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
-        Richtpreis-Hinweis: Alle Werte sind unverbindliche Orientierung auf Basis Ihrer Angaben.
-        Der endgültige Preis wird nach Prüfung in einem verbindlichen Angebot festgelegt.
-      </div>
-
-      <div className="premium-surface-emphasis relative mt-12 aspect-16/6 overflow-hidden rounded-3xl">
-        <Image
-          src={banner.src}
-          alt={banner.alt || "Transparente Preise"}
-          fill
-          className="object-cover"
-          sizes="(max-width: 1024px) 100vw, 75vw"
-        />
+      <div className="mt-10 rounded-3xl border-2 border-sky-200 bg-sky-50/90 p-6 text-sm font-semibold text-slate-900 shadow-sm">
+        Wichtiger Hinweis: Query-Parameter dienen nur der internen Vorauswahl im Rechner. Für
+        Suchmaschinen ist immer die kanonische Seite <strong>/preise</strong> relevant.
       </div>
     </Container>
   );

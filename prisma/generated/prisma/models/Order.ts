@@ -51,6 +51,7 @@ export type OrderMinAggregateOutputType = {
   serviceType: $Enums.ServiceType | null
   speed: $Enums.SpeedType | null
   status: $Enums.OrderStatus | null
+  workflowStatus: $Enums.RequestWorkflowStatus | null
   customerName: string | null
   customerPhone: string | null
   customerEmail: string | null
@@ -81,6 +82,7 @@ export type OrderMaxAggregateOutputType = {
   serviceType: $Enums.ServiceType | null
   speed: $Enums.SpeedType | null
   status: $Enums.OrderStatus | null
+  workflowStatus: $Enums.RequestWorkflowStatus | null
   customerName: string | null
   customerPhone: string | null
   customerEmail: string | null
@@ -111,6 +113,7 @@ export type OrderCountAggregateOutputType = {
   serviceType: number
   speed: number
   status: number
+  workflowStatus: number
   customerName: number
   customerPhone: number
   customerEmail: number
@@ -162,6 +165,7 @@ export type OrderMinAggregateInputType = {
   serviceType?: true
   speed?: true
   status?: true
+  workflowStatus?: true
   customerName?: true
   customerPhone?: true
   customerEmail?: true
@@ -192,6 +196,7 @@ export type OrderMaxAggregateInputType = {
   serviceType?: true
   speed?: true
   status?: true
+  workflowStatus?: true
   customerName?: true
   customerPhone?: true
   customerEmail?: true
@@ -222,6 +227,7 @@ export type OrderCountAggregateInputType = {
   serviceType?: true
   speed?: true
   status?: true
+  workflowStatus?: true
   customerName?: true
   customerPhone?: true
   customerEmail?: true
@@ -340,6 +346,7 @@ export type OrderGroupByOutputType = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status: $Enums.OrderStatus
+  workflowStatus: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -394,6 +401,7 @@ export type OrderWhereInput = {
   serviceType?: Prisma.EnumServiceTypeFilter<"Order"> | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFilter<"Order"> | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFilter<"Order"> | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFilter<"Order"> | string
   customerPhone?: Prisma.StringFilter<"Order"> | string
   customerEmail?: Prisma.StringFilter<"Order"> | string
@@ -422,6 +430,7 @@ export type OrderWhereInput = {
   offer?: Prisma.XOR<Prisma.OfferNullableScalarRelationFilter, Prisma.OfferWhereInput> | null
   quote?: Prisma.XOR<Prisma.QuoteNullableScalarRelationFilter, Prisma.QuoteWhereInput> | null
   invoices?: Prisma.InvoiceListRelationFilter
+  documents?: Prisma.DocumentListRelationFilter
 }
 
 export type OrderOrderByWithRelationInput = {
@@ -431,6 +440,7 @@ export type OrderOrderByWithRelationInput = {
   serviceType?: Prisma.SortOrder
   speed?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  workflowStatus?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerPhone?: Prisma.SortOrder
   customerEmail?: Prisma.SortOrder
@@ -459,6 +469,7 @@ export type OrderOrderByWithRelationInput = {
   offer?: Prisma.OfferOrderByWithRelationInput
   quote?: Prisma.QuoteOrderByWithRelationInput
   invoices?: Prisma.InvoiceOrderByRelationAggregateInput
+  documents?: Prisma.DocumentOrderByRelationAggregateInput
 }
 
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -471,6 +482,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   serviceType?: Prisma.EnumServiceTypeFilter<"Order"> | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFilter<"Order"> | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFilter<"Order"> | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFilter<"Order"> | string
   customerPhone?: Prisma.StringFilter<"Order"> | string
   customerEmail?: Prisma.StringFilter<"Order"> | string
@@ -499,6 +511,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   offer?: Prisma.XOR<Prisma.OfferNullableScalarRelationFilter, Prisma.OfferWhereInput> | null
   quote?: Prisma.XOR<Prisma.QuoteNullableScalarRelationFilter, Prisma.QuoteWhereInput> | null
   invoices?: Prisma.InvoiceListRelationFilter
+  documents?: Prisma.DocumentListRelationFilter
 }, "id" | "publicId" | "orderNo">
 
 export type OrderOrderByWithAggregationInput = {
@@ -508,6 +521,7 @@ export type OrderOrderByWithAggregationInput = {
   serviceType?: Prisma.SortOrder
   speed?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  workflowStatus?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerPhone?: Prisma.SortOrder
   customerEmail?: Prisma.SortOrder
@@ -547,6 +561,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   serviceType?: Prisma.EnumServiceTypeWithAggregatesFilter<"Order"> | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeWithAggregatesFilter<"Order"> | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusWithAggregatesFilter<"Order"> | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringWithAggregatesFilter<"Order"> | string
   customerPhone?: Prisma.StringWithAggregatesFilter<"Order"> | string
   customerEmail?: Prisma.StringWithAggregatesFilter<"Order"> | string
@@ -578,6 +593,7 @@ export type OrderCreateInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -606,6 +622,7 @@ export type OrderCreateInput = {
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
   quote?: Prisma.QuoteCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateInput = {
@@ -615,6 +632,7 @@ export type OrderUncheckedCreateInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -643,6 +661,7 @@ export type OrderUncheckedCreateInput = {
   offer?: Prisma.OfferUncheckedCreateNestedOneWithoutOrderInput
   quote?: Prisma.QuoteUncheckedCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUpdateInput = {
@@ -652,6 +671,7 @@ export type OrderUpdateInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -680,6 +700,7 @@ export type OrderUpdateInput = {
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
   quote?: Prisma.QuoteUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateInput = {
@@ -689,6 +710,7 @@ export type OrderUncheckedUpdateInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -717,6 +739,7 @@ export type OrderUncheckedUpdateInput = {
   offer?: Prisma.OfferUncheckedUpdateOneWithoutOrderNestedInput
   quote?: Prisma.QuoteUncheckedUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateManyInput = {
@@ -726,6 +749,7 @@ export type OrderCreateManyInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -757,6 +781,7 @@ export type OrderUpdateManyMutationInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -788,6 +813,7 @@ export type OrderUncheckedUpdateManyInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -819,6 +845,7 @@ export type OrderCountOrderByAggregateInput = {
   serviceType?: Prisma.SortOrder
   speed?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  workflowStatus?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerPhone?: Prisma.SortOrder
   customerEmail?: Prisma.SortOrder
@@ -859,6 +886,7 @@ export type OrderMaxOrderByAggregateInput = {
   serviceType?: Prisma.SortOrder
   speed?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  workflowStatus?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerPhone?: Prisma.SortOrder
   customerEmail?: Prisma.SortOrder
@@ -889,6 +917,7 @@ export type OrderMinOrderByAggregateInput = {
   serviceType?: Prisma.SortOrder
   speed?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  workflowStatus?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerPhone?: Prisma.SortOrder
   customerEmail?: Prisma.SortOrder
@@ -941,6 +970,10 @@ export type EnumSpeedTypeFieldUpdateOperationsInput = {
 
 export type EnumOrderStatusFieldUpdateOperationsInput = {
   set?: $Enums.OrderStatus
+}
+
+export type EnumRequestWorkflowStatusFieldUpdateOperationsInput = {
+  set?: $Enums.RequestWorkflowStatus
 }
 
 export type EnumContactPreferenceFieldUpdateOperationsInput = {
@@ -1033,6 +1066,22 @@ export type OrderUpdateOneWithoutQuoteNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutQuoteInput, Prisma.OrderUpdateWithoutQuoteInput>, Prisma.OrderUncheckedUpdateWithoutQuoteInput>
 }
 
+export type OrderCreateNestedOneWithoutDocumentsInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutDocumentsInput, Prisma.OrderUncheckedCreateWithoutDocumentsInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutDocumentsInput
+  connect?: Prisma.OrderWhereUniqueInput
+}
+
+export type OrderUpdateOneWithoutDocumentsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutDocumentsInput, Prisma.OrderUncheckedCreateWithoutDocumentsInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutDocumentsInput
+  upsert?: Prisma.OrderUpsertWithoutDocumentsInput
+  disconnect?: Prisma.OrderWhereInput | boolean
+  delete?: Prisma.OrderWhereInput | boolean
+  connect?: Prisma.OrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutDocumentsInput, Prisma.OrderUpdateWithoutDocumentsInput>, Prisma.OrderUncheckedUpdateWithoutDocumentsInput>
+}
+
 export type OrderCreateNestedOneWithoutInvoicesInput = {
   create?: Prisma.XOR<Prisma.OrderCreateWithoutInvoicesInput, Prisma.OrderUncheckedCreateWithoutInvoicesInput>
   connectOrCreate?: Prisma.OrderCreateOrConnectWithoutInvoicesInput
@@ -1056,6 +1105,7 @@ export type OrderCreateWithoutServiceItemsInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -1083,6 +1133,7 @@ export type OrderCreateWithoutServiceItemsInput = {
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
   quote?: Prisma.QuoteCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutServiceItemsInput = {
@@ -1092,6 +1143,7 @@ export type OrderUncheckedCreateWithoutServiceItemsInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -1119,6 +1171,7 @@ export type OrderUncheckedCreateWithoutServiceItemsInput = {
   offer?: Prisma.OfferUncheckedCreateNestedOneWithoutOrderInput
   quote?: Prisma.QuoteUncheckedCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutServiceItemsInput = {
@@ -1144,6 +1197,7 @@ export type OrderUpdateWithoutServiceItemsInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1171,6 +1225,7 @@ export type OrderUpdateWithoutServiceItemsInput = {
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
   quote?: Prisma.QuoteUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutServiceItemsInput = {
@@ -1180,6 +1235,7 @@ export type OrderUncheckedUpdateWithoutServiceItemsInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1207,6 +1263,7 @@ export type OrderUncheckedUpdateWithoutServiceItemsInput = {
   offer?: Prisma.OfferUncheckedUpdateOneWithoutOrderNestedInput
   quote?: Prisma.QuoteUncheckedUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutLinesInput = {
@@ -1216,6 +1273,7 @@ export type OrderCreateWithoutLinesInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -1243,6 +1301,7 @@ export type OrderCreateWithoutLinesInput = {
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
   quote?: Prisma.QuoteCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutLinesInput = {
@@ -1252,6 +1311,7 @@ export type OrderUncheckedCreateWithoutLinesInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -1279,6 +1339,7 @@ export type OrderUncheckedCreateWithoutLinesInput = {
   offer?: Prisma.OfferUncheckedCreateNestedOneWithoutOrderInput
   quote?: Prisma.QuoteUncheckedCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutLinesInput = {
@@ -1304,6 +1365,7 @@ export type OrderUpdateWithoutLinesInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1331,6 +1393,7 @@ export type OrderUpdateWithoutLinesInput = {
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
   quote?: Prisma.QuoteUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutLinesInput = {
@@ -1340,6 +1403,7 @@ export type OrderUncheckedUpdateWithoutLinesInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1367,6 +1431,7 @@ export type OrderUncheckedUpdateWithoutLinesInput = {
   offer?: Prisma.OfferUncheckedUpdateOneWithoutOrderNestedInput
   quote?: Prisma.QuoteUncheckedUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutUploadsInput = {
@@ -1376,6 +1441,7 @@ export type OrderCreateWithoutUploadsInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -1403,6 +1469,7 @@ export type OrderCreateWithoutUploadsInput = {
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
   quote?: Prisma.QuoteCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutUploadsInput = {
@@ -1412,6 +1479,7 @@ export type OrderUncheckedCreateWithoutUploadsInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -1439,6 +1507,7 @@ export type OrderUncheckedCreateWithoutUploadsInput = {
   offer?: Prisma.OfferUncheckedCreateNestedOneWithoutOrderInput
   quote?: Prisma.QuoteUncheckedCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutUploadsInput = {
@@ -1464,6 +1533,7 @@ export type OrderUpdateWithoutUploadsInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1491,6 +1561,7 @@ export type OrderUpdateWithoutUploadsInput = {
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
   quote?: Prisma.QuoteUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutUploadsInput = {
@@ -1500,6 +1571,7 @@ export type OrderUncheckedUpdateWithoutUploadsInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1527,6 +1599,7 @@ export type OrderUncheckedUpdateWithoutUploadsInput = {
   offer?: Prisma.OfferUncheckedUpdateOneWithoutOrderNestedInput
   quote?: Prisma.QuoteUncheckedUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutOfferInput = {
@@ -1536,6 +1609,7 @@ export type OrderCreateWithoutOfferInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -1563,6 +1637,7 @@ export type OrderCreateWithoutOfferInput = {
   uploads?: Prisma.OrderUploadCreateNestedManyWithoutOrderInput
   quote?: Prisma.QuoteCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutOfferInput = {
@@ -1572,6 +1647,7 @@ export type OrderUncheckedCreateWithoutOfferInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -1599,6 +1675,7 @@ export type OrderUncheckedCreateWithoutOfferInput = {
   uploads?: Prisma.OrderUploadUncheckedCreateNestedManyWithoutOrderInput
   quote?: Prisma.QuoteUncheckedCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutOfferInput = {
@@ -1624,6 +1701,7 @@ export type OrderUpdateWithoutOfferInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1651,6 +1729,7 @@ export type OrderUpdateWithoutOfferInput = {
   uploads?: Prisma.OrderUploadUpdateManyWithoutOrderNestedInput
   quote?: Prisma.QuoteUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutOfferInput = {
@@ -1660,6 +1739,7 @@ export type OrderUncheckedUpdateWithoutOfferInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1687,6 +1767,7 @@ export type OrderUncheckedUpdateWithoutOfferInput = {
   uploads?: Prisma.OrderUploadUncheckedUpdateManyWithoutOrderNestedInput
   quote?: Prisma.QuoteUncheckedUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutQuoteInput = {
@@ -1696,6 +1777,7 @@ export type OrderCreateWithoutQuoteInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -1723,6 +1805,7 @@ export type OrderCreateWithoutQuoteInput = {
   uploads?: Prisma.OrderUploadCreateNestedManyWithoutOrderInput
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutQuoteInput = {
@@ -1732,6 +1815,7 @@ export type OrderUncheckedCreateWithoutQuoteInput = {
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -1759,6 +1843,7 @@ export type OrderUncheckedCreateWithoutQuoteInput = {
   uploads?: Prisma.OrderUploadUncheckedCreateNestedManyWithoutOrderInput
   offer?: Prisma.OfferUncheckedCreateNestedOneWithoutOrderInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutQuoteInput = {
@@ -1784,6 +1869,7 @@ export type OrderUpdateWithoutQuoteInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1811,6 +1897,7 @@ export type OrderUpdateWithoutQuoteInput = {
   uploads?: Prisma.OrderUploadUpdateManyWithoutOrderNestedInput
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutQuoteInput = {
@@ -1820,6 +1907,7 @@ export type OrderUncheckedUpdateWithoutQuoteInput = {
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1847,15 +1935,17 @@ export type OrderUncheckedUpdateWithoutQuoteInput = {
   uploads?: Prisma.OrderUploadUncheckedUpdateManyWithoutOrderNestedInput
   offer?: Prisma.OfferUncheckedUpdateOneWithoutOrderNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
-export type OrderCreateWithoutInvoicesInput = {
+export type OrderCreateWithoutDocumentsInput = {
   id?: string
   publicId: string
   orderNo?: string | null
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -1883,15 +1973,17 @@ export type OrderCreateWithoutInvoicesInput = {
   uploads?: Prisma.OrderUploadCreateNestedManyWithoutOrderInput
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
   quote?: Prisma.QuoteCreateNestedOneWithoutOrderInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutOrderInput
 }
 
-export type OrderUncheckedCreateWithoutInvoicesInput = {
+export type OrderUncheckedCreateWithoutDocumentsInput = {
   id?: string
   publicId: string
   orderNo?: string | null
   serviceType: $Enums.ServiceType
   speed: $Enums.SpeedType
   status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
   customerName: string
   customerPhone: string
   customerEmail: string
@@ -1919,31 +2011,33 @@ export type OrderUncheckedCreateWithoutInvoicesInput = {
   uploads?: Prisma.OrderUploadUncheckedCreateNestedManyWithoutOrderInput
   offer?: Prisma.OfferUncheckedCreateNestedOneWithoutOrderInput
   quote?: Prisma.QuoteUncheckedCreateNestedOneWithoutOrderInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutOrderInput
 }
 
-export type OrderCreateOrConnectWithoutInvoicesInput = {
+export type OrderCreateOrConnectWithoutDocumentsInput = {
   where: Prisma.OrderWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrderCreateWithoutInvoicesInput, Prisma.OrderUncheckedCreateWithoutInvoicesInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutDocumentsInput, Prisma.OrderUncheckedCreateWithoutDocumentsInput>
 }
 
-export type OrderUpsertWithoutInvoicesInput = {
-  update: Prisma.XOR<Prisma.OrderUpdateWithoutInvoicesInput, Prisma.OrderUncheckedUpdateWithoutInvoicesInput>
-  create: Prisma.XOR<Prisma.OrderCreateWithoutInvoicesInput, Prisma.OrderUncheckedCreateWithoutInvoicesInput>
+export type OrderUpsertWithoutDocumentsInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutDocumentsInput, Prisma.OrderUncheckedUpdateWithoutDocumentsInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutDocumentsInput, Prisma.OrderUncheckedCreateWithoutDocumentsInput>
   where?: Prisma.OrderWhereInput
 }
 
-export type OrderUpdateToOneWithWhereWithoutInvoicesInput = {
+export type OrderUpdateToOneWithWhereWithoutDocumentsInput = {
   where?: Prisma.OrderWhereInput
-  data: Prisma.XOR<Prisma.OrderUpdateWithoutInvoicesInput, Prisma.OrderUncheckedUpdateWithoutInvoicesInput>
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutDocumentsInput, Prisma.OrderUncheckedUpdateWithoutDocumentsInput>
 }
 
-export type OrderUpdateWithoutInvoicesInput = {
+export type OrderUpdateWithoutDocumentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   publicId?: Prisma.StringFieldUpdateOperationsInput | string
   orderNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1971,15 +2065,17 @@ export type OrderUpdateWithoutInvoicesInput = {
   uploads?: Prisma.OrderUploadUpdateManyWithoutOrderNestedInput
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
   quote?: Prisma.QuoteUpdateOneWithoutOrderNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutOrderNestedInput
 }
 
-export type OrderUncheckedUpdateWithoutInvoicesInput = {
+export type OrderUncheckedUpdateWithoutDocumentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   publicId?: Prisma.StringFieldUpdateOperationsInput | string
   orderNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
   customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2007,6 +2103,175 @@ export type OrderUncheckedUpdateWithoutInvoicesInput = {
   uploads?: Prisma.OrderUploadUncheckedUpdateManyWithoutOrderNestedInput
   offer?: Prisma.OfferUncheckedUpdateOneWithoutOrderNestedInput
   quote?: Prisma.QuoteUncheckedUpdateOneWithoutOrderNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderCreateWithoutInvoicesInput = {
+  id?: string
+  publicId: string
+  orderNo?: string | null
+  serviceType: $Enums.ServiceType
+  speed: $Enums.SpeedType
+  status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
+  customerName: string
+  customerPhone: string
+  customerEmail: string
+  contactPreference: $Enums.ContactPreference
+  note?: string | null
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
+  volumeM3: number
+  laborHours: number
+  distanceKm?: number | null
+  priceMinCents: number
+  priceMaxCents: number
+  wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.OrderLineCreateNestedManyWithoutOrderInput
+  serviceItems?: Prisma.OrderServiceItemCreateNestedManyWithoutOrderInput
+  uploads?: Prisma.OrderUploadCreateNestedManyWithoutOrderInput
+  offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
+  quote?: Prisma.QuoteCreateNestedOneWithoutOrderInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutOrderInput
+}
+
+export type OrderUncheckedCreateWithoutInvoicesInput = {
+  id?: string
+  publicId: string
+  orderNo?: string | null
+  serviceType: $Enums.ServiceType
+  speed: $Enums.SpeedType
+  status?: $Enums.OrderStatus
+  workflowStatus?: $Enums.RequestWorkflowStatus
+  customerName: string
+  customerPhone: string
+  customerEmail: string
+  contactPreference: $Enums.ContactPreference
+  note?: string | null
+  slotStart?: Date | string | null
+  slotEnd?: Date | string | null
+  requestedDateFrom?: Date | string | null
+  requestedDateTo?: Date | string | null
+  preferredTimeWindow?: $Enums.PreferredTimeWindow | null
+  scheduledAt?: Date | string | null
+  volumeM3: number
+  laborHours: number
+  distanceKm?: number | null
+  priceMinCents: number
+  priceMaxCents: number
+  wizardData: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deletedAt?: Date | string | null
+  deletedBy?: string | null
+  version?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.OrderLineUncheckedCreateNestedManyWithoutOrderInput
+  serviceItems?: Prisma.OrderServiceItemUncheckedCreateNestedManyWithoutOrderInput
+  uploads?: Prisma.OrderUploadUncheckedCreateNestedManyWithoutOrderInput
+  offer?: Prisma.OfferUncheckedCreateNestedOneWithoutOrderInput
+  quote?: Prisma.QuoteUncheckedCreateNestedOneWithoutOrderInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutOrderInput
+}
+
+export type OrderCreateOrConnectWithoutInvoicesInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutInvoicesInput, Prisma.OrderUncheckedCreateWithoutInvoicesInput>
+}
+
+export type OrderUpsertWithoutInvoicesInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutInvoicesInput, Prisma.OrderUncheckedUpdateWithoutInvoicesInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutInvoicesInput, Prisma.OrderUncheckedCreateWithoutInvoicesInput>
+  where?: Prisma.OrderWhereInput
+}
+
+export type OrderUpdateToOneWithWhereWithoutInvoicesInput = {
+  where?: Prisma.OrderWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutInvoicesInput, Prisma.OrderUncheckedUpdateWithoutInvoicesInput>
+}
+
+export type OrderUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  publicId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
+  customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
+  customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
+  laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  priceMinCents?: Prisma.IntFieldUpdateOperationsInput | number
+  priceMaxCents?: Prisma.IntFieldUpdateOperationsInput | number
+  wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.OrderLineUpdateManyWithoutOrderNestedInput
+  serviceItems?: Prisma.OrderServiceItemUpdateManyWithoutOrderNestedInput
+  uploads?: Prisma.OrderUploadUpdateManyWithoutOrderNestedInput
+  offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
+  quote?: Prisma.QuoteUpdateOneWithoutOrderNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  publicId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceType?: Prisma.EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  speed?: Prisma.EnumSpeedTypeFieldUpdateOperationsInput | $Enums.SpeedType
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  workflowStatus?: Prisma.EnumRequestWorkflowStatusFieldUpdateOperationsInput | $Enums.RequestWorkflowStatus
+  customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  customerPhone?: Prisma.StringFieldUpdateOperationsInput | string
+  customerEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  contactPreference?: Prisma.EnumContactPreferenceFieldUpdateOperationsInput | $Enums.ContactPreference
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slotStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slotEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  requestedDateTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferredTimeWindow?: Prisma.NullableEnumPreferredTimeWindowFieldUpdateOperationsInput | $Enums.PreferredTimeWindow | null
+  scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  volumeM3?: Prisma.FloatFieldUpdateOperationsInput | number
+  laborHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  distanceKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  priceMinCents?: Prisma.IntFieldUpdateOperationsInput | number
+  priceMaxCents?: Prisma.IntFieldUpdateOperationsInput | number
+  wizardData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deletedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.OrderLineUncheckedUpdateManyWithoutOrderNestedInput
+  serviceItems?: Prisma.OrderServiceItemUncheckedUpdateManyWithoutOrderNestedInput
+  uploads?: Prisma.OrderUploadUncheckedUpdateManyWithoutOrderNestedInput
+  offer?: Prisma.OfferUncheckedUpdateOneWithoutOrderNestedInput
+  quote?: Prisma.QuoteUncheckedUpdateOneWithoutOrderNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 
@@ -2019,6 +2284,7 @@ export type OrderCountOutputType = {
   serviceItems: number
   uploads: number
   invoices: number
+  documents: number
 }
 
 export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2026,6 +2292,7 @@ export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   serviceItems?: boolean | OrderCountOutputTypeCountServiceItemsArgs
   uploads?: boolean | OrderCountOutputTypeCountUploadsArgs
   invoices?: boolean | OrderCountOutputTypeCountInvoicesArgs
+  documents?: boolean | OrderCountOutputTypeCountDocumentsArgs
 }
 
 /**
@@ -2066,6 +2333,13 @@ export type OrderCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Types.
   where?: Prisma.InvoiceWhereInput
 }
 
+/**
+ * OrderCountOutputType without action
+ */
+export type OrderCountOutputTypeCountDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentWhereInput
+}
+
 
 export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2074,6 +2348,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   serviceType?: boolean
   speed?: boolean
   status?: boolean
+  workflowStatus?: boolean
   customerName?: boolean
   customerPhone?: boolean
   customerEmail?: boolean
@@ -2102,6 +2377,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   offer?: boolean | Prisma.Order$offerArgs<ExtArgs>
   quote?: boolean | Prisma.Order$quoteArgs<ExtArgs>
   invoices?: boolean | Prisma.Order$invoicesArgs<ExtArgs>
+  documents?: boolean | Prisma.Order$documentsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
@@ -2112,6 +2388,7 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   serviceType?: boolean
   speed?: boolean
   status?: boolean
+  workflowStatus?: boolean
   customerName?: boolean
   customerPhone?: boolean
   customerEmail?: boolean
@@ -2143,6 +2420,7 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   serviceType?: boolean
   speed?: boolean
   status?: boolean
+  workflowStatus?: boolean
   customerName?: boolean
   customerPhone?: boolean
   customerEmail?: boolean
@@ -2174,6 +2452,7 @@ export type OrderSelectScalar = {
   serviceType?: boolean
   speed?: boolean
   status?: boolean
+  workflowStatus?: boolean
   customerName?: boolean
   customerPhone?: boolean
   customerEmail?: boolean
@@ -2198,7 +2477,7 @@ export type OrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "publicId" | "orderNo" | "serviceType" | "speed" | "status" | "customerName" | "customerPhone" | "customerEmail" | "contactPreference" | "note" | "slotStart" | "slotEnd" | "requestedDateFrom" | "requestedDateTo" | "preferredTimeWindow" | "scheduledAt" | "volumeM3" | "laborHours" | "distanceKm" | "priceMinCents" | "priceMaxCents" | "wizardData" | "deletedAt" | "deletedBy" | "version" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "publicId" | "orderNo" | "serviceType" | "speed" | "status" | "workflowStatus" | "customerName" | "customerPhone" | "customerEmail" | "contactPreference" | "note" | "slotStart" | "slotEnd" | "requestedDateFrom" | "requestedDateTo" | "preferredTimeWindow" | "scheduledAt" | "volumeM3" | "laborHours" | "distanceKm" | "priceMinCents" | "priceMaxCents" | "wizardData" | "deletedAt" | "deletedBy" | "version" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lines?: boolean | Prisma.Order$linesArgs<ExtArgs>
   serviceItems?: boolean | Prisma.Order$serviceItemsArgs<ExtArgs>
@@ -2206,6 +2485,7 @@ export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   offer?: boolean | Prisma.Order$offerArgs<ExtArgs>
   quote?: boolean | Prisma.Order$quoteArgs<ExtArgs>
   invoices?: boolean | Prisma.Order$invoicesArgs<ExtArgs>
+  documents?: boolean | Prisma.Order$documentsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2220,6 +2500,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     offer: Prisma.$OfferPayload<ExtArgs> | null
     quote: Prisma.$QuotePayload<ExtArgs> | null
     invoices: Prisma.$InvoicePayload<ExtArgs>[]
+    documents: Prisma.$DocumentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2228,6 +2509,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     serviceType: $Enums.ServiceType
     speed: $Enums.SpeedType
     status: $Enums.OrderStatus
+    workflowStatus: $Enums.RequestWorkflowStatus
     customerName: string
     customerPhone: string
     customerEmail: string
@@ -2650,6 +2932,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   offer<T extends Prisma.Order$offerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$offerArgs<ExtArgs>>): Prisma.Prisma__OfferClient<runtime.Types.Result.GetResult<Prisma.$OfferPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   quote<T extends Prisma.Order$quoteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$quoteArgs<ExtArgs>>): Prisma.Prisma__QuoteClient<runtime.Types.Result.GetResult<Prisma.$QuotePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   invoices<T extends Prisma.Order$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  documents<T extends Prisma.Order$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2685,6 +2968,7 @@ export interface OrderFieldRefs {
   readonly serviceType: Prisma.FieldRef<"Order", 'ServiceType'>
   readonly speed: Prisma.FieldRef<"Order", 'SpeedType'>
   readonly status: Prisma.FieldRef<"Order", 'OrderStatus'>
+  readonly workflowStatus: Prisma.FieldRef<"Order", 'RequestWorkflowStatus'>
   readonly customerName: Prisma.FieldRef<"Order", 'String'>
   readonly customerPhone: Prisma.FieldRef<"Order", 'String'>
   readonly customerEmail: Prisma.FieldRef<"Order", 'String'>
@@ -3226,6 +3510,30 @@ export type Order$invoicesArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.InvoiceScalarFieldEnum | Prisma.InvoiceScalarFieldEnum[]
+}
+
+/**
+ * Order.documents
+ */
+export type Order$documentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Document
+   */
+  select?: Prisma.DocumentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Document
+   */
+  omit?: Prisma.DocumentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentInclude<ExtArgs> | null
+  where?: Prisma.DocumentWhereInput
+  orderBy?: Prisma.DocumentOrderByWithRelationInput | Prisma.DocumentOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentScalarFieldEnum | Prisma.DocumentScalarFieldEnum[]
 }
 
 /**

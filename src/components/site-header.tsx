@@ -1,14 +1,14 @@
-﻿"use client";
+"use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 
 import { Container } from "@/components/container";
-import { Button } from "@/components/ui/button";
 import { MegaMenuDesktop, MegaMenuMobile } from "@/components/layout/mega-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
 
 export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSrc?: string }) {
   const [open, setOpen] = useState(false);
@@ -44,13 +44,19 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
             />
           </div>
           <span className="hidden leading-tight sm:block dark:text-white">
-            Schnell&nbsp;Sicher&nbsp;<span className="bg-linear-to-r from-brand-600 to-brand-500 bg-clip-text text-transparent dark:from-brand-400 dark:to-brand-300">Umzug</span>
+            Schnell&nbsp;Sicher&nbsp;
+            <span className="bg-linear-to-r from-brand-600 to-brand-500 bg-clip-text text-transparent dark:from-brand-400 dark:to-brand-300">
+              Umzug
+            </span>
           </span>
         </Link>
 
         <MegaMenuDesktop />
 
         <div className="hidden items-center gap-3 lg:flex">
+          <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+            24/7 erreichbar
+          </span>
           <ThemeToggle />
           <Link
             href="/anfrage"
@@ -58,8 +64,8 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
           >
             Anfrage verfolgen
           </Link>
-          <Link href="/booking?context=MOVING">
-            <Button size="sm">Jetzt buchen</Button>
+          <Link href="/booking">
+            <Button size="sm">Termin online buchen</Button>
           </Link>
         </div>
 
@@ -75,7 +81,7 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
         </div>
       </Container>
 
-      {open && (
+      {open ? (
         <div className="max-h-[80vh] overflow-y-auto border-t border-[rgba(183,217,255,0.55)] bg-[rgba(232,243,255,0.86)] backdrop-blur-xl lg:hidden dark:border-slate-800 dark:bg-slate-950/95">
           <Container className="py-4">
             <MegaMenuMobile onClose={closeMobile} />
@@ -87,17 +93,13 @@ export function SiteHeader({ logoSrc = "/media/brand/hero-logo.jpeg" }: { logoSr
               >
                 Anfrage verfolgen
               </Link>
-              <Link href="/booking?context=MOVING" onClick={closeMobile}>
-                <Button className="mt-2 w-full">Jetzt buchen</Button>
+              <Link href="/booking" onClick={closeMobile}>
+                <Button className="mt-2 w-full">Termin online buchen</Button>
               </Link>
             </div>
           </Container>
         </div>
-      )}
+      ) : null}
     </header>
   );
 }
-
-
-
-

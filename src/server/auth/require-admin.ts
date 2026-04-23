@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 
-import { adminCookieName, verifyAdminToken } from "@/server/auth/admin-session";
+import { adminCookieName, type AdminTokenClaims, verifyAdminToken } from "@/server/auth/admin-session";
 import { hasPermission } from "@/server/auth/admin-permissions";
 
 export async function requireAdminSession(): Promise<{ ok: true } | { ok: false }> {
@@ -13,6 +13,18 @@ export async function requireAdminSession(): Promise<{ ok: true } | { ok: false 
     return { ok: true };
   } catch {
     return { ok: false };
+  }
+}
+
+export async function getAdminSessionClaims(): Promise<AdminTokenClaims | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(adminCookieName())?.value;
+  if (!token) return null;
+
+  try {
+    return await verifyAdminToken(token);
+  } catch {
+    return null;
   }
 }
 
@@ -29,4 +41,3 @@ export async function requireAdminPermission(permission: string): Promise<{ ok: 
     return { ok: false };
   }
 }
-

@@ -39,6 +39,25 @@ export const OrderStatus = {
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
 
 
+export const RequestWorkflowStatus = {
+  NEW: 'NEW',
+  NEEDS_REVIEW: 'NEEDS_REVIEW',
+  IN_REVIEW: 'IN_REVIEW',
+  OFFER_DRAFTED: 'OFFER_DRAFTED',
+  OFFER_SENT: 'OFFER_SENT',
+  OFFER_ACCEPTED: 'OFFER_ACCEPTED',
+  CONTRACT_DRAFTED: 'CONTRACT_DRAFTED',
+  CONTRACT_APPROVED_FOR_SIGNATURE: 'CONTRACT_APPROVED_FOR_SIGNATURE',
+  SIGNATURE_LINK_SENT: 'SIGNATURE_LINK_SENT',
+  SIGNED: 'SIGNED',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type RequestWorkflowStatus = (typeof RequestWorkflowStatus)[keyof typeof RequestWorkflowStatus]
+
+
 export const PreferredTimeWindow = {
   MORNING: 'MORNING',
   AFTERNOON: 'AFTERNOON',
@@ -160,6 +179,45 @@ export const DocumentScope = {
 } as const
 
 export type DocumentScope = (typeof DocumentScope)[keyof typeof DocumentScope]
+
+
+export const DocumentType = {
+  ANGEBOT: 'ANGEBOT',
+  RECHNUNG: 'RECHNUNG',
+  AUFTRAG_VERTRAG: 'AUFTRAG_VERTRAG',
+  MAHNUNG: 'MAHNUNG',
+  AGB_APPENDIX: 'AGB_APPENDIX'
+} as const
+
+export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType]
+
+
+export const DocumentStatus = {
+  DRAFT: 'DRAFT',
+  INTERNAL_REVIEW: 'INTERNAL_REVIEW',
+  ADMIN_APPROVED: 'ADMIN_APPROVED',
+  SENT: 'SENT',
+  VIEWED: 'VIEWED',
+  ACCEPTED: 'ACCEPTED',
+  SIGNATURE_PENDING: 'SIGNATURE_PENDING',
+  SIGNED: 'SIGNED',
+  VOID: 'VOID',
+  CANCELLED: 'CANCELLED',
+  SUPERSEDED: 'SUPERSEDED'
+} as const
+
+export type DocumentStatus = (typeof DocumentStatus)[keyof typeof DocumentStatus]
+
+
+export const SigningTokenStatus = {
+  ACTIVE: 'ACTIVE',
+  USED: 'USED',
+  REVOKED: 'REVOKED',
+  EXPIRED: 'EXPIRED',
+  SUPERSEDED: 'SUPERSEDED'
+} as const
+
+export type SigningTokenStatus = (typeof SigningTokenStatus)[keyof typeof SigningTokenStatus]
 
 
 export const MediaVariantKind = {

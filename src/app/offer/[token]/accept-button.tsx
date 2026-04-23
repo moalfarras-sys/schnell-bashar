@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Loader2, FileText } from "lucide-react";
+import { CheckCircle2, FileText, Loader2 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 
 interface AcceptButtonProps {
@@ -42,13 +43,14 @@ export function AcceptButton({ offerId }: AcceptButtonProps) {
         setWarning(data.warning);
       }
 
-      if (data.signingUrl) {
-        window.location.href = data.signingUrl;
-      } else {
-        router.refresh();
+      if (typeof data.message === "string" && data.message.trim()) {
+        setWarning(data.message);
       }
+
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Ein Fehler ist aufgetreten");
+    } finally {
       setLoading(false);
     }
   }
@@ -96,15 +98,21 @@ export function AcceptButton({ offerId }: AcceptButtonProps) {
         ) : (
           <>
             <CheckCircle2 className="h-5 w-5" />
-            Jetzt verbindlich beauftragen
+            Angebot annehmen
           </>
         )}
       </Button>
 
-      {error && <p className="text-center text-sm text-red-600 dark:text-red-400">{error}</p>}
-      {warning && (
+      {error ? <p className="text-center text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+      {warning ? (
         <p className="text-center text-sm text-amber-600 dark:text-amber-400">{warning}</p>
-      )}
+      ) : null}
+      {!error && !warning ? (
+        <p className="text-center text-sm text-slate-600 dark:text-slate-400">
+          Nach der Annahme prüft unser Team die Angaben. Ein Vertrag wird erst später ausdrücklich
+          zur elektronischen Bestätigung freigegeben.
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -1,18 +1,14 @@
-﻿import { Container } from "@/components/container";
+import { Container } from "@/components/container";
 
 export const metadata = {
-  title: "Datenschutz",
+  title: "Datenschutzerklärung | Schnell Sicher Umzug",
+  description: "Datenschutzerklärung von Schnell Sicher Umzug mit Informationen zur Verarbeitung personenbezogener Daten.",
 };
 
 export default function DatenschutzPage() {
   return (
     <Container className="prose prose-slate max-w-3xl py-14 dark:prose-invert">
       <h1>Datenschutzerklärung</h1>
-
-      <p>
-        Diese Datenschutzerklärung informiert Sie über die Verarbeitung personenbezogener Daten auf
-        dieser Website.
-      </p>
 
       <h2>1. Verantwortlicher</h2>
       <p>
@@ -24,69 +20,72 @@ export default function DatenschutzPage() {
         <br />
         12043 Berlin
         <br />
-        Telefon: +49 176 24863305
+        Telefon: +49 172 9573681
         <br />
         E-Mail: kontakt@schnellsicherumzug.de
       </p>
 
-      <h2>2. Erhebung und Speicherung personenbezogener Daten</h2>
+      <h2>2. Verarbeitete Daten</h2>
       <p>
-        Wir erheben und speichern personenbezogene Daten (z. B. Name, Telefonnummer, E-Mail-Adresse,
-        Anschrift) nur, wenn Sie uns diese freiwillig über Formulare auf unserer Website oder per
-        E-Mail mitteilen.
-      </p>
-      <p>Die erhobenen Daten werden ausschließlich zur Bearbeitung Ihrer Anfrage verwendet.</p>
-
-      <h2>3. Rechtsgrundlage der Verarbeitung</h2>
-      <p>
-        Die Verarbeitung Ihrer personenbezogenen Daten erfolgt gemäß Art. 6 Abs. 1 lit. b DSGVO
-        (Vertragserfüllung oder vorvertragliche Maßnahmen) sowie Art. 6 Abs. 1 lit. a DSGVO
-        (Einwilligung).
+        Wir verarbeiten personenbezogene Daten, die Sie uns über Kontaktformulare, Buchungs- und
+        Anfrageformulare, E-Mail, Telefon oder WhatsApp mitteilen. Dazu gehören insbesondere Name,
+        E-Mail-Adresse, Telefonnummer, Adressdaten, Leistungsdaten und weitere Angaben zur Planung
+        Ihres Auftrags.
       </p>
 
-      <h2>4. Weitergabe der Daten</h2>
+      <h2>3. Zwecke der Verarbeitung</h2>
       <p>
-        Eine Weitergabe Ihrer Daten an Dritte erfolgt nicht, es sei denn, wir sind gesetzlich dazu
-        verpflichtet oder Sie haben ausdrücklich eingewilligt.
+        Die Datenverarbeitung erfolgt zur Bearbeitung von Anfragen, Angebots- und Auftragsprüfung,
+        Terminabstimmung, Durchführung von Leistungen, Rechnungserstellung, Anfrageverfolgung,
+        Dokumentenerstellung sowie zur Bearbeitung elektronischer Bestätigungen.
       </p>
 
-      <h2>5. Speicherdauer</h2>
+      <h2>4. Rechtsgrundlagen</h2>
       <p>
-        Ihre Daten werden gelöscht, sobald der Zweck der Speicherung entfällt, spätestens jedoch 6
-        Monate nach Abschluss der Anfrage, sofern keine gesetzlichen Aufbewahrungspflichten
-        bestehen.
+        Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO zur Durchführung
+        vorvertraglicher Maßnahmen und Verträge sowie, soweit erforderlich, nach Art. 6 Abs. 1 lit.
+        f DSGVO für die sichere Bereitstellung und Administration des Online-Systems.
       </p>
 
-      <h2>6. Ihre Rechte</h2>
+      <h2>5. Server-Logs und technische Daten</h2>
       <p>
-        Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung
-        sowie auf Datenübertragbarkeit.
-      </p>
-      <p>
-        Zudem haben Sie das Recht, der Verarbeitung Ihrer personenbezogenen Daten jederzeit zu
-        widersprechen.
-      </p>
-      <p>
-        Bitte senden Sie Ihre Anfrage an:{" "}
-        <a href="mailto:kontakt@schnellsicherumzug.de">kontakt@schnellsicherumzug.de</a>
+        Beim Aufruf der Website können technisch erforderliche Logdaten verarbeitet werden. Dazu
+        gehören insbesondere IP-Adresse, Datum, Uhrzeit, User-Agent und angeforderte Inhalte, soweit
+        dies für den sicheren Betrieb erforderlich ist.
       </p>
 
-      <h2>7. Sicherheit Ihrer Daten</h2>
+      <h2>6. Dokumente, PDFs und elektronische Bestätigung</h2>
       <p>
-        Wir treffen geeignete technische und organisatorische Maßnahmen, um Ihre personenbezogenen
-        Daten vor Verlust, Missbrauch oder unbefugtem Zugriff zu schützen.
+        Im Rahmen von Angeboten, Aufträgen, Rechnungen und elektronischen Bestätigungen können
+        Dokumente mit personenbezogenen Daten gespeichert und verarbeitet werden. Bei einer
+        elektronischen Bestätigung können zusätzlich Zeitstempel, IP-Adresse, User-Agent und die
+        freigegebene Dokumentenversion verarbeitet werden.
       </p>
 
-      <h2>8. Cookies und Analyse-Tools</h2>
+      <h2>7. Empfänger und eingesetzte Dienste</h2>
       <p>
-        Unsere Website verwendet ggf. Cookies, um die Benutzerfreundlichkeit zu verbessern. Sie
-        können die Speicherung von Cookies in den Browsereinstellungen jederzeit deaktivieren.
+        Soweit für Betrieb und Speicherung erforderlich, können technische Dienstleister für Hosting,
+        Datenbank, E-Mail oder Dateispeicherung eingebunden sein. Eine Weitergabe erfolgt nur im
+        erforderlichen Umfang.
       </p>
 
-      <h2>9. Änderungen dieser Datenschutzerklärung</h2>
+      <h2>8. Speicherdauer</h2>
       <p>
-        Wir behalten uns das Recht vor, diese Datenschutzerklärung jederzeit anzupassen. Der
-        aktuelle Stand ist Februar 2026.
+        Daten werden nur so lange gespeichert, wie es für Anfragebearbeitung, Vertragsabwicklung,
+        Dokumentation oder gesetzliche Aufbewahrungspflichten erforderlich ist.
+      </p>
+
+      <h2>9. Ihre Rechte</h2>
+      <p>
+        Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung,
+        Datenübertragbarkeit sowie auf Widerspruch nach Maßgabe der gesetzlichen Vorgaben.
+      </p>
+
+      <h2>10. Cookies und Analyse</h2>
+      <p>
+        Diese Erklärung deckt nur technisch erforderliche Vorgänge ab. Falls künftig weitere
+        Tracking- oder Analysewerkzeuge eingesetzt werden, ist eine gesonderte rechtliche Prüfung
+        und gegebenenfalls Anpassung erforderlich.
       </p>
     </Container>
   );
