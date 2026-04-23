@@ -22,7 +22,7 @@ type Props = {
 };
 
 const inputClassName =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100";
+  "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-400 dark:focus:ring-brand-500/25";
 
 export function DocumentEditor({ mode, documentId, initial }: Props) {
   const router = useRouter();
@@ -94,10 +94,10 @@ export function DocumentEditor({ mode, documentId, initial }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-4">
+    <form onSubmit={onSubmit} className="grid gap-5">
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Dokumenttyp</label>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-200">Dokumenttyp</label>
           <select value={type} onChange={(e) => setType(e.target.value)} className={inputClassName}>
             <option value="ANGEBOT">Angebot</option>
             <option value="RECHNUNG">Rechnung</option>
@@ -107,29 +107,29 @@ export function DocumentEditor({ mode, documentId, initial }: Props) {
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Gesamtbetrag brutto in Cent</label>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-200">Gesamtbetrag brutto in Cent</label>
           <input value={grossCents} onChange={(e) => setGrossCents(e.target.value)} className={inputClassName} />
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Kundenname</label>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-200">Kundenname</label>
           <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} className={inputClassName} required />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">E-Mail</label>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-200">E-Mail</label>
           <input value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} className={inputClassName} />
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Telefon</label>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-200">Telefon</label>
           <input value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className={inputClassName} />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Leistung</label>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-200">Leistung</label>
           <input
             value={serviceType}
             onChange={(e) => setServiceType(e.target.value)}
@@ -140,18 +140,18 @@ export function DocumentEditor({ mode, documentId, initial }: Props) {
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Rechnungsadresse</label>
-        <textarea value={billingAddress} onChange={(e) => setBillingAddress(e.target.value)} className={`${inputClassName} min-h-24`} />
+        <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-200">Rechnungsadresse</label>
+        <textarea value={billingAddress} onChange={(e) => setBillingAddress(e.target.value)} className={`${inputClassName} min-h-24 resize-y`} />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Sichtbare Notizen</label>
-        <textarea value={visibleNotes} onChange={(e) => setVisibleNotes(e.target.value)} className={`${inputClassName} min-h-24`} />
+        <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-200">Sichtbare Notizen</label>
+        <textarea value={visibleNotes} onChange={(e) => setVisibleNotes(e.target.value)} className={`${inputClassName} min-h-24 resize-y`} />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Interne Notizen</label>
-        <textarea value={internalNotes} onChange={(e) => setInternalNotes(e.target.value)} className={`${inputClassName} min-h-24`} />
+        <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-200">Interne Notizen</label>
+        <textarea value={internalNotes} onChange={(e) => setInternalNotes(e.target.value)} className={`${inputClassName} min-h-24 resize-y`} />
       </div>
 
       {error ? (

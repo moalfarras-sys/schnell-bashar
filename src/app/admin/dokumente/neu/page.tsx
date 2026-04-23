@@ -16,11 +16,11 @@ export default async function NewAdminDocumentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Container className="py-8 max-w-4xl">
-        <h1 className="text-3xl font-bold text-slate-900">Neues Dokument</h1>
-        <p className="mt-2 text-slate-600">Manuelles Dokument anlegen und als Entwurf speichern.</p>
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+    <div className="min-h-screen bg-transparent">
+      <Container className="max-w-4xl py-8">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Neues Dokument</h1>
+        <p className="mt-2 text-slate-600 dark:text-slate-300">Manuelles Dokument anlegen und als Entwurf speichern.</p>
+        <div className="mt-6 rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/85">
           <DocumentEditor mode="create" />
         </div>
       </Container>
