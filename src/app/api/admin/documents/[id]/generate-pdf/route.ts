@@ -47,7 +47,7 @@ export async function POST(
   try {
     pdfBuffer = await renderDocumentPdf({
       type: document.type,
-      number: document.number || document.id,
+      number: document.number || "Dokument",
       snapshot,
       includeAgbAppendix: document.includeAgbAppendix,
     });
@@ -58,7 +58,8 @@ export async function POST(
     );
   }
 
-  const key = `documents/${document.type.toLowerCase()}/${document.number || document.id}.pdf`;
+  const fileStem = document.number || "Dokument";
+  const key = `documents/${document.type.toLowerCase()}/${fileStem}.pdf`;
   let uploadResult = null;
   try {
     uploadResult = await uploadPrivateDocument({
@@ -88,7 +89,7 @@ export async function POST(
   return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="${document.number || document.id}.pdf"`,
+      "Content-Disposition": `inline; filename="${fileStem}.pdf"`,
       "Cache-Control": "private, no-store",
     },
   });

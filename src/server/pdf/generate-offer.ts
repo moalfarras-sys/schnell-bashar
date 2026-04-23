@@ -3,6 +3,13 @@ import path from "path";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { existsSync } from "fs";
+
+import {
+  buildLineItemDescription,
+  cleanDisplayText,
+  formatAddress,
+  normalizeContactFields,
+} from "@/lib/documents/formatting";
 import { getImageSlot, publicSrcToAbsolute } from "@/server/content/slots";
 import {
   PDF_THEME,
@@ -81,6 +88,16 @@ function serviceTypeLabel(type?: string): string {
   return "Umzug";
 }
 
+function metaValueOrFallback(value: unknown, fallback: string) {
+  return cleanDisplayText(value, { allowInternalIdentifier: false }) || fallback;
+}
+
+function cleanList(values?: string[]) {
+  return (values ?? [])
+    .map((entry) => cleanDisplayText(entry))
+    .filter((entry): entry is string => Boolean(entry));
+}
+
 const OFFER_TERMS =
   "Dieses Angebot ist 7 Tage gültig. Die Durchführung erfolgt gemäß unseren AGB. Änderungen des Leistungsumfangs vor Ort können eine Preisanpassung erfordern.";
 
@@ -102,7 +119,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       bufferPages: true,
       margins: { top: 0, bottom: 0, left: 0, right: 0 },
       info: {
-        Title: `Angebot ${data.offerId}`,
+        Title: `Angebot ${metaValueOrFallback(data.offerNo, "Angebot")}`,
         Author: "Schnell Sicher Umzug",
         Subject: "Umzugsangebot",
       },
@@ -118,7 +135,33 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     const layout = pdfPageLayout();
     const logoPath =
       (data.logoPath && existsSync(data.logoPath) && data.logoPath) ||
-      (slotLogoPath && existsSync(slotLogoPath) ? slotLogoPath : path.join(process.cwd(), "public", "media", "brand", "hero-logo.jpeg"));
+      (slotLogoPath && existsSync(slotLogoPath)
+        ? slotLogoPath
+        : path.join(process.cwd(), "public", "media", "brand", "hero-logo.jpeg"));
+
+    const contacts = normalizeContactFields({
+      email: data.customerEmail,
+      phone: data.customerPhone,
+    });
+    const customerLines = [
+      cleanDisplayText(data.customerName, { kind: "name" }),
+      formatAddress(data.customerAddress),
+      contacts.phone ? `Tel.: ${contacts.phone}` : null,
+      contacts.email ? `E-Mail: ${contacts.email}` : null,
+    ].filter((line): line is string => Boolean(line));
+    const detailRows = [
+      data.moveFrom
+        ? `Von: ${formatAddress(data.moveFrom)}${data.floorFrom != null ? ` (${data.floorFrom}. OG${data.elevatorFrom ? ", Aufzug" : ""})` : ""}`
+        : null,
+      data.moveTo
+        ? `Nach: ${formatAddress(data.moveTo)}${data.floorTo != null ? ` (${data.floorTo}. OG${data.elevatorTo ? ", Aufzug" : ""})` : ""}`
+        : null,
+      data.moveDate ? `Termin: ${fmtDate(data.moveDate)}${data.moveTime ? `, ${data.moveTime}` : ""}` : null,
+      `Leistungsart: ${serviceTypeLabel(data.serviceType)}`,
+      `Priorität: ${speedLabel(data.speed)}`,
+      data.volumeM3 ? `Volumen: ${data.volumeM3} m³` : null,
+      data.needNoParkingZone ? "Halteverbotszone: Ja" : null,
+    ].map((line) => cleanDisplayText(line)).filter((line): line is string => Boolean(line));
 
     let y = drawPageHeader(doc, {
       y: 18,
@@ -126,8 +169,8 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       title: "ANGEBOT",
       documentTag: "UMZUGSANGEBOT",
       metaRows: [
-        { label: "Angebotsnr.", value: data.offerNo || data.offerId },
-        { label: "Auftrag", value: data.orderNo || "Noch offen" },
+        { label: "Angebotsnr.", value: metaValueOrFallback(data.offerNo, "Noch nicht vergeben") },
+        { label: "Auftrag", value: metaValueOrFallback(data.orderNo, "Noch offen") },
         { label: "Datum", value: fmtDate(data.offerDate) },
         { label: "Gültig bis", value: fmtDate(data.validUntil) },
       ],
@@ -143,30 +186,28 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
 
     const gap = 14;
     const colW = (width - gap) / 2;
-    const customerLines = [data.customerName, data.customerAddress, data.customerPhone, data.customerEmail]
-      .filter(Boolean)
-      .map((value, index) => (index === 2 ? `Tel.: ${value}` : index === 3 ? `E-Mail: ${value}` : String(value)));
     const customerH =
       34 +
       customerLines.reduce(
         (sum, line) =>
-          sum + doc.font("Helvetica").fontSize(8.9).heightOfString(sanitizePdfText(line), { width: colW - 28, lineGap: 1.55 }) + 4,
+          sum +
+          doc.font("Helvetica").fontSize(8.9).heightOfString(sanitizePdfText(line), {
+            width: colW - 28,
+            lineGap: 1.55,
+          }) +
+          4,
         0,
       );
-    const detailRows = [
-      data.moveFrom ? `Von: ${data.moveFrom}${data.floorFrom != null ? ` (${data.floorFrom}. OG${data.elevatorFrom ? ", Aufzug" : ""})` : ""}` : null,
-      data.moveTo ? `Nach: ${data.moveTo}${data.floorTo != null ? ` (${data.floorTo}. OG${data.elevatorTo ? ", Aufzug" : ""})` : ""}` : null,
-      data.moveDate ? `Termin: ${fmtDate(data.moveDate)}${data.moveTime ? `, ${data.moveTime}` : ""}` : null,
-      `Leistungsart: ${serviceTypeLabel(data.serviceType)}`,
-      `Priorität: ${speedLabel(data.speed)}`,
-      data.volumeM3 ? `Volumen: ${data.volumeM3} m³` : null,
-      data.needNoParkingZone ? "Halteverbotszone: Ja" : null,
-    ].filter(Boolean) as string[];
     const detailsH =
       34 +
       detailRows.reduce(
         (sum, line) =>
-          sum + doc.font("Helvetica").fontSize(8.7).heightOfString(sanitizePdfText(line), { width: colW - 28, lineGap: 1.5 }) + 4,
+          sum +
+          doc.font("Helvetica").fontSize(8.7).heightOfString(sanitizePdfText(line), {
+            width: colW - 28,
+            lineGap: 1.5,
+          }) +
+          4,
         0,
       );
     const infoH = Math.max(customerH, detailsH);
@@ -191,7 +232,10 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       borderWidth: 0.8,
       radius: PDF_THEME.radius.card,
     });
-    doc.font(PDF_THEME.type.cardTitle.font).fontSize(PDF_THEME.type.cardTitle.size).fillColor(PDF_THEME.colors.muted);
+    doc
+      .font(PDF_THEME.type.cardTitle.font)
+      .fontSize(PDF_THEME.type.cardTitle.size)
+      .fillColor(PDF_THEME.colors.muted);
     doc.text("KUNDENDATEN", left + 14, y + 12);
     doc.text("AUFTRAGSDETAILS", left + colW + gap + 14, y + 12);
 
@@ -218,15 +262,24 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
 
     y += infoH + 14;
 
-    const optionalBlocks: Array<{ title: string; text: string }> = [];
-    if (data.addons?.length) optionalBlocks.push({ title: "Zusatzleistungen", text: data.addons.join(", ") });
-    if (data.checklist?.length) optionalBlocks.push({ title: "Checkliste", text: data.checklist.join(", ") });
-    if (data.notes) optionalBlocks.push({ title: "Hinweise", text: data.notes });
+    const optionalBlocks = [
+      cleanList(data.addons).length > 0
+        ? { title: "Zusatzleistungen", text: cleanList(data.addons).join(", ") }
+        : null,
+      cleanList(data.checklist).length > 0
+        ? { title: "Checkliste", text: cleanList(data.checklist).join(", ") }
+        : null,
+      cleanDisplayText(data.notes) ? { title: "Hinweise", text: cleanDisplayText(data.notes)! } : null,
+    ].filter((block): block is { title: string; text: string } => Boolean(block));
+
     if (optionalBlocks.length > 0) {
       const blockHeights = optionalBlocks.map(
         (block) =>
           28 +
-          doc.font("Helvetica").fontSize(8.6).heightOfString(sanitizePdfText(block.text), { width: width - 28, lineGap: 1.6 }) +
+          doc.font("Helvetica").fontSize(8.6).heightOfString(sanitizePdfText(block.text), {
+            width: width - 28,
+            lineGap: 1.6,
+          }) +
           10,
       );
       const panelH = blockHeights.reduce((sum, value) => sum + value, 0) + (optionalBlocks.length - 1) * 8;
@@ -259,9 +312,9 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     y = drawSectionHeading(doc, "Leistungsumfang", left, y, width);
 
     const serviceRows = data.services.map((service) => ({
-      description: service.description ? `${service.name} · ${service.description}` : service.name,
+      description: buildLineItemDescription(service.name, service.description) || "Leistung",
       quantity: service.quantity ?? 1,
-      unit: service.unit || "Paket",
+      unit: cleanDisplayText(service.unit) || "Paket",
       total: service.priceCents ?? 0,
     }));
     const columns: TableColumn<(typeof serviceRows)[number]>[] = [

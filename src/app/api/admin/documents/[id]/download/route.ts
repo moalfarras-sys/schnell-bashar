@@ -71,7 +71,7 @@ export async function GET(
     try {
       buffer = await renderDocumentPdf({
         type: document.type,
-        number: document.number || document.id,
+        number: document.number || "Dokument",
         snapshot,
         includeAgbAppendix: document.includeAgbAppendix,
       });
@@ -86,7 +86,7 @@ export async function GET(
   return new NextResponse(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="${document.number || document.id}.pdf"`,
+      "Content-Disposition": `inline; filename="${document.number || "Dokument"}.pdf"`,
       "Cache-Control": "private, no-store",
     },
   });

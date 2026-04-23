@@ -26,7 +26,7 @@ export async function GET(
           return [`${entry.item} (${entry.actions.join(" / ")})`];
         })
       : [];
-  const orderNo = offer.order ? orderDisplayNo(offer.order) : offer.id;
+  const orderNo = offer.order ? orderDisplayNo(offer.order) : undefined;
   const displayOfferNo = offerDisplayNo({
     offerNo: offer.offerNo,
     id: offer.id,

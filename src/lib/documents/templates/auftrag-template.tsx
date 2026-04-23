@@ -1,24 +1,46 @@
 import { BaseDocumentLayout } from "@/lib/documents/templates/base-layout";
-import { formatGermanCurrency, formatGermanDate } from "@/lib/documents/formatting";
+import {
+  cleanDisplayText,
+  formatAddress,
+  formatGermanCurrency,
+  formatGermanDate,
+  normalizeContactFields,
+} from "@/lib/documents/formatting";
 import type { DocumentVersionSnapshot } from "@/lib/documents/types";
 
 export function AuftragTemplate({ number, snapshot }: { number: string; snapshot: DocumentVersionSnapshot }) {
+  const contacts = normalizeContactFields({
+    email: snapshot.customerData.email,
+    phone: snapshot.customerData.phone,
+  });
+  const serviceType = cleanDisplayText(snapshot.serviceData?.serviceType);
+  const serviceDate = formatGermanDate(snapshot.serviceData?.serviceDate || null);
+  const fromAddress = formatAddress(snapshot.addressData?.fromAddress);
+  const toAddress = formatAddress(snapshot.addressData?.toAddress);
+
   return (
-    <BaseDocumentLayout title="Auftrag / Vertrag" documentNumber={number}>
+    <BaseDocumentLayout
+      title="Auftrag / Vertrag"
+      documentNumber={number}
+      metaRows={[
+        { label: "Auftragsnr.", value: cleanDisplayText(number, { allowInternalIdentifier: false }) || "Noch nicht vergeben" },
+        { label: "Datum", value: serviceDate || null },
+      ]}
+    >
       <div className="two-col">
         <section className="card">
           <h2 className="section-title">Auftraggeber</h2>
-          <div>{snapshot.customerData.name}</div>
-          <div>{snapshot.customerData.billingAddress || "-"}</div>
-          <div>{snapshot.customerData.email || "-"}</div>
-          <div>{snapshot.customerData.phone || "-"}</div>
+          {cleanDisplayText(snapshot.customerData.name, { kind: "name" }) ? <div>{cleanDisplayText(snapshot.customerData.name, { kind: "name" })}</div> : null}
+          {formatAddress(snapshot.customerData.billingAddress) ? <div>{formatAddress(snapshot.customerData.billingAddress)}</div> : null}
+          {contacts.email ? <div>E-Mail: {contacts.email}</div> : null}
+          {contacts.phone ? <div>Telefon: {contacts.phone}</div> : null}
         </section>
         <section className="card">
           <h2 className="section-title">Leistungsrahmen</h2>
-          <div>Leistung: {snapshot.serviceData?.serviceType || "-"}</div>
-          <div>Termin: {formatGermanDate(snapshot.serviceData?.serviceDate || null) || "-"}</div>
-          <div>Von: {snapshot.addressData?.fromAddress || "-"}</div>
-          <div>Nach: {snapshot.addressData?.toAddress || "-"}</div>
+          {serviceType ? <div>Leistung: {serviceType}</div> : null}
+          {serviceDate ? <div>Termin: {serviceDate}</div> : null}
+          {fromAddress ? <div>Von: {fromAddress}</div> : null}
+          {toAddress ? <div>Nach: {toAddress}</div> : null}
         </section>
       </div>
 

@@ -2,6 +2,7 @@ type Props = {
   title: string;
   documentNumber: string;
   companyName?: string;
+  metaRows?: Array<{ label: string; value: string | null }>;
   children: React.ReactNode;
 };
 
@@ -9,8 +10,10 @@ export function BaseDocumentLayout({
   title,
   documentNumber,
   companyName = "Schnell Sicher Umzug",
+  metaRows,
   children,
 }: Props) {
+  const filteredMetaRows = (metaRows ?? []).filter((row) => row.value);
   return (
     <html lang="de">
       <body>
@@ -23,6 +26,8 @@ export function BaseDocumentLayout({
           .title { font-size: 28px; font-weight: 700; margin: 0 0 4px; }
           .subtle { color: #4b5563; }
           .meta { text-align: right; }
+          .meta-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 4px; }
+          .meta-row strong { min-width: 92px; color: #4b5563; text-align: left; }
           .card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; margin-bottom: 14px; break-inside: avoid; page-break-inside: avoid; }
           .section-title { font-size: 13px; font-weight: 700; margin: 0 0 8px; }
           .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -47,9 +52,19 @@ export function BaseDocumentLayout({
               <div className="subtle">Telefonisch 24/7 erreichbar. Termine nach Vereinbarung.</div>
             </div>
             <div className="meta">
-              <div>
-                <strong>Nr.</strong> {documentNumber}
-              </div>
+              {filteredMetaRows.length > 0 ? (
+                filteredMetaRows.map((row) => (
+                  <div key={row.label} className="meta-row">
+                    <strong>{row.label}</strong>
+                    <span>{row.value}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="meta-row">
+                  <strong>Nr.</strong>
+                  <span>{documentNumber}</span>
+                </div>
+              )}
             </div>
           </header>
           {children}

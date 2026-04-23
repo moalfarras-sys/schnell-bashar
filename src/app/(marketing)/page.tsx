@@ -177,7 +177,7 @@ export default function HomePage() {
 
       <section className="bg-slate-50 py-20">
         <Container>
-          <div className="grid gap-10 lg:grid-cols-2">
+          <div className="grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
             <div>
               <span className="inline-block rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-700">
                 Warum Schnell Sicher Umzug?
@@ -192,13 +192,36 @@ export default function HomePage() {
                 jedem Vertragsversand.
               </p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {trustBlocks.map((item) => (
-                <div key={item} className="rounded-2xl border border-slate-200 bg-white p-5 text-sm font-semibold text-slate-700 shadow-sm">
-                  <ShieldCheck className="mb-3 h-5 w-5 text-brand-700" />
-                  {item}
+            <div className="space-y-5">
+              <div className="relative overflow-hidden rounded-[28px] border border-white/80 bg-slate-900 shadow-[0_24px_70px_-28px_rgba(15,23,42,0.45)]">
+                <div className="relative aspect-[16/10]">
+                  <Image
+                    src="/media/gallery/move-action-04.jpeg"
+                    alt="Sorgfältiger Möbeltransport und Trageleistung beim Einsatz von Schnell Sicher Umzug"
+                    fill
+                    sizes="(min-width: 1024px) 42vw, 100vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/78 via-slate-950/12 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-200/80">
+                      Einsatz & Abstimmung
+                    </div>
+                    <div className="mt-2 max-w-sm text-xl font-extrabold leading-tight">
+                      Reale Umzugseinsätze mit klarer Planung, geschützten Wegen und sauberer Abstimmung.
+                    </div>
+                  </div>
                 </div>
-              ))}
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                {trustBlocks.map((item) => (
+                  <div key={item} className="rounded-2xl border border-slate-200 bg-white p-5 text-sm font-semibold text-slate-700 shadow-sm">
+                    <ShieldCheck className="mb-3 h-5 w-5 text-brand-700" />
+                    {item}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </Container>

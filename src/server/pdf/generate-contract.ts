@@ -3,6 +3,12 @@ import path from "path";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { existsSync } from "fs";
+import {
+  buildLineItemDescription,
+  cleanDisplayText,
+  formatAddress,
+  normalizeContactFields,
+} from "@/lib/documents/formatting";
 import { resolveCompanyStampPath } from "@/server/pdf/company-seal-assets";
 import { getImageSlots, publicSrcToAbsolute } from "@/server/content/slots";
 import {
@@ -65,6 +71,10 @@ function fmtDate(date: Date): string {
   return format(date, "dd.MM.yyyy", { locale: de });
 }
 
+function metaValueOrFallback(value: unknown, fallback: string) {
+  return cleanDisplayText(value, { allowInternalIdentifier: false }) || fallback;
+}
+
 const CONTRACT_PAYMENT_TERMS =
   "Die Zahlung spätestens 3 Tage vor dem Umzugstag per Überweisung oder am Umzugstag per Echtzeitüberweisung bzw. in bar: 50 % vor dem Beladen und 50 % vor dem Entladen.";
 
@@ -89,7 +99,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
       bufferPages: true,
       margins: { top: 0, bottom: 0, left: 0, right: 0 },
       info: {
-        Title: `Umzugsvertrag ${data.orderNo || data.contractId}`,
+        Title: `Umzugsvertrag ${metaValueOrFallback(data.contractNo || data.orderNo, "Umzugsvertrag")}`,
         Author: "Schnell Sicher Umzug",
         Subject: "Umzugsvertrag",
       },
@@ -114,7 +124,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
       title: "UMZUGSVERTRAG",
       documentTag: "VERBINDLICHE VEREINBARUNG",
       metaRows: [
-        { label: "Vertragsnr.", value: data.contractNo || data.contractId },
+        { label: "Vertragsnr.", value: metaValueOrFallback(data.contractNo, "Noch nicht vergeben") },
         { label: "Angebot", value: data.offerNo || "—" },
         { label: "Auftrag", value: data.orderNo || "—" },
         { label: "Datum", value: fmtDate(data.signedAt || data.contractDate) },
@@ -137,11 +147,15 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
       "Tel.: +49 172 9573681",
       "kontakt@schnellsicherumzug.de",
     ];
+    const customerContacts = normalizeContactFields({
+      email: data.customerEmail,
+      phone: data.customerPhone,
+    });
     const customerLines = [
-      data.customerName,
-      data.customerAddress,
-      `Tel.: ${data.customerPhone}`,
-      data.customerEmail,
+      cleanDisplayText(data.customerName, { kind: "name" }),
+      formatAddress(data.customerAddress),
+      customerContacts.phone ? `Tel.: ${customerContacts.phone}` : null,
+      customerContacts.email ? `E-Mail: ${customerContacts.email}` : null,
     ].filter(Boolean) as string[];
     const partyCardH = Math.max(
       104,
