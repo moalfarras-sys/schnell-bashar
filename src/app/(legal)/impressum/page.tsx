@@ -1,7 +1,7 @@
 import { Container } from "@/components/container";
 
 export const metadata = {
-  title: "Impressum | Schnell Sicher Umzug",
+  title: "Impressum",
   description: "Impressum und Anbieterkennzeichnung von Schnell Sicher Umzug.",
 };
 

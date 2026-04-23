@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-23T10:19:44.127Z",
+  "generatedAt": "2026-04-23T11:33:43.691Z",
   "count": 27,
   "slots": [
     {
@@ -190,12 +190,12 @@
     {
       "candidate": "/media/storage",
       "discoveredFrom": "src/app/api/admin/media/route.ts",
-      "reason": "auto: unsupported extension"
+      "reason": "auto: non-image route path"
     },
     {
       "candidate": "/media/storage",
       "discoveredFrom": "src/app/api/admin/media/[id]/crop/route.ts",
-      "reason": "auto: unsupported extension"
+      "reason": "auto: non-image route path"
     },
     {
       "candidate": "/media/slots",

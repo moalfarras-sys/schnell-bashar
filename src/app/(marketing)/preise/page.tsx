@@ -93,7 +93,7 @@ export default async function PreisePage() {
           <Link href="/booking">
             <Button size="lg" variant="outline" className="gap-2">
               <Clock className="h-5 w-5" />
-              Anfrage starten
+              Kostenloses Angebot anfragen
             </Button>
           </Link>
         </div>
@@ -101,11 +101,6 @@ export default async function PreisePage() {
 
       <PreiseCalculatorSection pricing={pricing} montageOptions={montageCalculatorOptions} />
       <Preisbeispiele />
-
-      <div className="mt-10 rounded-3xl border-2 border-sky-200 bg-sky-50/90 p-6 text-sm font-semibold text-slate-900 shadow-sm">
-        Wichtiger Hinweis: Query-Parameter dienen nur der internen Vorauswahl im Rechner. Für
-        Suchmaschinen ist immer die kanonische Seite <strong>/preise</strong> relevant.
-      </div>
     </Container>
   );
 }

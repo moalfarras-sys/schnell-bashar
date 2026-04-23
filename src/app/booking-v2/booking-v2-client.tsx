@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, MessageCircle, Phone } from "lucide-react";
 
 import { Container } from "@/components/container";
 import styles from "@/app/booking-v2/booking-v2.module.css";
@@ -497,21 +497,42 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
 
   const selectedRange = calcState.data?.totals
     ? `${formatEuroFromCents(calcState.data.totals.minCents)} - ${formatEuroFromCents(calcState.data.totals.maxCents)}`
-    : "Preis wird berechnet";
+    : null;
 
   return (
     <section className={styles.page}>
       <Container className="relative z-10 py-10 sm:py-14">
         <div className="mx-auto max-w-6xl" ref={topRef}>
           <div className={`${styles.glass} rounded-3xl p-5 sm:p-7`}>
-            <div className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-700 dark:text-cyan-200">Buchungsportal</div>
-            <h1 className="mt-1 text-3xl font-black text-slate-900 dark:text-white sm:text-5xl">Jetzt buchen</h1>
+            <div className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-700 dark:text-cyan-200">Online-Anfrage</div>
+            <h1 className="mt-1 text-3xl font-black text-slate-900 dark:text-white sm:text-5xl">Umzug, Entsorgung oder Montage online anfragen</h1>
             <p className="mt-2 max-w-3xl text-sm font-medium text-slate-600 dark:text-slate-300 sm:text-base">
-              Integrierte Live-Kalkulation mit direktem Versand an unser Dispositionssystem.
+              In wenigen Schritten senden Sie alle wichtigen Angaben an unser Team. Wir prüfen Ihre Anfrage,
+              melden uns mit einer passenden Einschätzung und bleiben telefonisch 24/7 erreichbar.
             </p>
-            <div className="mt-2 rounded-xl border border-slate-300/70 bg-white/60 px-3 py-2 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-900/45 dark:text-slate-200">
-              Aktueller Bereich: {selectedRange}
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+              <a
+                href="https://wa.me/491729573681"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-300/80 bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-500/40 dark:bg-emerald-900/20 dark:text-emerald-100 dark:hover:bg-emerald-900/30"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Jetzt per WhatsApp schreiben
+              </a>
+              <a
+                href="tel:+491729573681"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-300/80 bg-white/70 px-4 py-2.5 text-sm font-bold text-cyan-800 transition hover:bg-cyan-50 dark:border-cyan-500/40 dark:bg-slate-900/45 dark:text-cyan-100 dark:hover:bg-slate-900/70"
+              >
+                <Phone className="h-4 w-4" />
+                Direkt anrufen
+              </a>
             </div>
+            {selectedRange ? (
+              <div className="mt-3 rounded-xl border border-slate-300/70 bg-white/60 px-3 py-2 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-900/45 dark:text-slate-200">
+                Aktuelle Preisorientierung: {selectedRange}
+              </div>
+            ) : null}
             {quoteBanner ? (
               <div className="mt-2 rounded-xl border border-emerald-300/80 bg-emerald-100/70 px-3 py-2 text-sm font-semibold text-emerald-800 dark:border-emerald-500/40 dark:bg-emerald-900/20 dark:text-emerald-200">
                 {quoteBanner}
@@ -522,7 +543,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
                 href={draft.quoteId ? `/preise?quoteId=${encodeURIComponent(draft.quoteId)}` : "/preise"}
                 className="text-sm font-semibold text-cyan-700 underline underline-offset-2 dark:text-cyan-300"
               >
-                Zurück zum Preisrechner
+                Preise und Richtwerte ansehen
               </a>
             </div>
             <div className="mt-5">
@@ -667,6 +688,5 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
     </section>
   );
 }
-
 
 

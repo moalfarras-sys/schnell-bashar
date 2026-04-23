@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 
@@ -8,7 +8,12 @@ import { Button } from "@/components/ui/button";
 import { getImageSlot } from "@/server/content/slots";
 
 export const metadata = {
-  title: "Kontakt",
+  title: "Kontakt Berlin | Umzug, Entsorgung & Montage anfragen",
+  description:
+    "Kontakt zu Schnell Sicher Umzug in Berlin. Telefonisch 24/7 erreichbar, per WhatsApp oder E-Mail anfragen und Rückmeldung zum passenden Termin erhalten.",
+  alternates: {
+    canonical: "/kontakt",
+  },
 };
 
 export default async function KontaktPage() {
@@ -59,10 +64,7 @@ export default async function KontaktPage() {
           <Info
             icon={Phone}
             title="Telefon"
-            lines={[
-              { label: "+49 172 9573681", href: "tel:+491729573681" },
-              { label: "+49 176 24863305", href: "tel:+4917624863305" },
-            ]}
+            lines={[{ label: "+49 172 9573681", href: "tel:+491729573681" }]}
           />
           <Info
             icon={Mail}
@@ -74,7 +76,7 @@ export default async function KontaktPage() {
             title="Standort"
             lines={[
               { label: "Anzengruber Straße 9, 12043 Berlin" },
-              { label: "Erreichbarkeit: Mo – So, rund um die Uhr" },
+              { label: "Telefonisch 24/7 erreichbar. Termine nach Vereinbarung." },
             ]}
           />
         </div>

@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 import { CalendarDays, CheckCircle2 } from "lucide-react";
 
@@ -8,7 +8,16 @@ import { getImageSlot } from "@/server/content/slots";
 import { KalenderClient } from "./kalender-client";
 
 export const metadata = {
-  title: "Abholkalender & Preise",
+  title: "Terminkalender für Umzug & Entsorgung",
+  description:
+    "Verfügbare Zeitfenster für Umzug und Entsorgung prüfen. Für die verbindliche Anfrage nutzen Sie bitte das Buchungsformular von Schnell Sicher Umzug.",
+  alternates: {
+    canonical: "/kalender",
+  },
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 export default async function KalenderPage() {
@@ -30,19 +39,19 @@ export default async function KalenderPage() {
             Priorität (Günstig / Standard / Express).
           </p>
           <div className="mt-8">
-            <Link href="/booking?context=MOVING">
+            <Link href="/booking">
               <Button size="lg">
                 <CalendarDays className="h-5 w-5" />
-                Termin auswählen
+                Termin online anfragen
               </Button>
             </Link>
           </div>
         </div>
 
         <div className="premium-surface-emphasis relative aspect-[4/3] overflow-hidden rounded-3xl">
-        <Image
-          src={image.src}
-          alt={image.alt || "Kalender"}
+          <Image
+            src={image.src}
+            alt={image.alt || "Kalender"}
             fill
             className="object-cover"
             sizes="(max-width: 1024px) 100vw, 50vw"
@@ -65,7 +74,7 @@ export default async function KalenderPage() {
         />
         <Info
           title="Priorität"
-          text="Express-Priorität zeigt frühere Terminoptionen (bei freier Kapazität)."
+          text="Express-Priorität zeigt frühere Terminoptionen bei freier Kapazität."
         />
       </div>
     </Container>
@@ -87,7 +96,3 @@ function Info(props: { title: string; text: string }) {
     </div>
   );
 }
-
-
-
-

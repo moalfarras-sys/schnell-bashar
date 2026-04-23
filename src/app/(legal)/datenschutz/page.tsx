@@ -1,7 +1,7 @@
 import { Container } from "@/components/container";
 
 export const metadata = {
-  title: "Datenschutzerklärung | Schnell Sicher Umzug",
+  title: "Datenschutzerklärung",
   description: "Datenschutzerklärung von Schnell Sicher Umzug mit Informationen zur Verarbeitung personenbezogener Daten.",
 };
 

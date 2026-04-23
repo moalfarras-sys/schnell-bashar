@@ -31,14 +31,6 @@ function AnimatedCurrency(props: { valueCents: number }) {
   return <>{formatEuroFromCents(shown)}</>;
 }
 
-function sourceLabel(source?: "approx" | "ors" | "cache" | "fallback") {
-  if (source === "ors") return "ORS";
-  if (source === "cache") return "Cache";
-  if (source === "fallback") return "Fallback";
-  if (source === "approx") return "Schätzung";
-  return "n/a";
-}
-
 export function LivePriceEngineCard(props: {
   calc: PriceCalcResponse | null;
   loading: boolean;
@@ -47,22 +39,28 @@ export function LivePriceEngineCard(props: {
   volumeM3: number;
 }) {
   const totals = props.calc?.totals;
+  const hasEstimate = Boolean(totals);
 
   const rows = useMemo(() => {
     const b = props.calc?.breakdown;
+    if (!props.calc?.totals || !b) return [];
     return [
-      { label: "Zwischensumme", value: b?.subtotalCents ?? 0 },
-      { label: "Serviceoptionen", value: (b?.serviceOptionsCents ?? 0) + (b?.addonsCents ?? 0) },
-      { label: "Fahrtkosten", value: b?.driveChargeCents ?? 0 },
-      { label: "Rabatt", value: -(b?.discountCents ?? 0) },
-    ];
-  }, [props.calc?.breakdown]);
+      { label: "Zwischensumme", value: b.subtotalCents ?? 0, show: true },
+      {
+        label: "Zusatzleistungen",
+        value: (b.serviceOptionsCents ?? 0) + (b.addonsCents ?? 0),
+        show: ((b.serviceOptionsCents ?? 0) + (b.addonsCents ?? 0)) > 0,
+      },
+      { label: "Fahrtkosten", value: b.driveChargeCents ?? 0, show: (b.driveChargeCents ?? 0) > 0 },
+      { label: "Rabatt", value: -(b.discountCents ?? 0), show: (b.discountCents ?? 0) > 0 },
+    ].filter((row) => row.show);
+  }, [props.calc?.breakdown, props.calc?.totals]);
 
   return (
     <aside className={`${styles.stickyCard} ${styles.glass} rounded-3xl p-6`}>
       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-cyan-700 dark:text-cyan-200">
         <Wallet className="h-3.5 w-3.5" />
-        Live-Kalkulation
+        Unverbindliche Preisorientierung
       </div>
 
       {totals ? (
@@ -80,8 +78,9 @@ export function LivePriceEngineCard(props: {
           </div>
         </>
       ) : (
-        <div className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-          Preis erscheint nach den ersten Eingaben.
+        <div className="mt-3 rounded-2xl border border-slate-300/70 bg-white/55 px-4 py-3 text-sm font-medium leading-6 text-slate-700 dark:border-slate-700 dark:bg-slate-900/45 dark:text-slate-300">
+          Geben Sie zunächst Adresse, Leistungsumfang und Terminwunsch an. Danach sehen Sie hier eine
+          transparente Preisorientierung für Ihre Anfrage.
         </div>
       )}
 
@@ -97,45 +96,51 @@ export function LivePriceEngineCard(props: {
         </div>
       ) : null}
 
-      <div className="mt-4 space-y-2">
-        {rows.map((row) => (
-          <div
-            key={row.label}
-            className="flex items-center justify-between rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900/45"
-          >
-            <span className="font-semibold text-slate-700 dark:text-slate-200">{row.label}</span>
-            <span className="font-bold text-slate-900 dark:text-white">{formatEuroFromCents(row.value)}</span>
+      {hasEstimate ? (
+        <>
+          <div className="mt-4 space-y-2">
+            {rows.map((row) => (
+              <div
+                key={row.label}
+                className="flex items-center justify-between rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900/45"
+              >
+                <span className="font-semibold text-slate-700 dark:text-slate-200">{row.label}</span>
+                <span className="font-bold text-slate-900 dark:text-white">{formatEuroFromCents(row.value)}</span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div className="mt-4 grid gap-2">
-        <div className="flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900/45">
-          <Clock4 className="h-4 w-4 text-cyan-700 dark:text-cyan-300" />
-          <span className="font-semibold text-slate-700 dark:text-slate-200">Geschätzte Dauer:</span>
-          <span className="ml-auto font-bold text-slate-900 dark:text-white">
-            {props.calc?.breakdown?.laborHours != null ? `${props.calc.breakdown.laborHours.toFixed(1)} Std.` : "-"}
-          </span>
-        </div>
-        <div className="flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900/45">
-          <Gauge className="h-4 w-4 text-cyan-700 dark:text-cyan-300" />
-          <span className="font-semibold text-slate-700 dark:text-slate-200">Paket:</span>
-          <span className="ml-auto font-bold text-slate-900 dark:text-white">{totals?.tier ?? "-"}</span>
-        </div>
-        <div className="flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900/45">
-          <Sparkles className="h-4 w-4 text-cyan-700 dark:text-cyan-300" />
-          <span className="font-semibold text-slate-700 dark:text-slate-200">Distanz/Volumen:</span>
-          <span className="ml-auto font-bold text-slate-900 dark:text-white">
-            {props.distanceKm > 0 ? `${props.distanceKm.toFixed(1)} km` : "-"} · {props.volumeM3} m³
-          </span>
-        </div>
-        <div className="rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-900/45 dark:text-slate-200">
-          Distanzquelle: {sourceLabel(props.calc?.breakdown?.distanceSource)}
-        </div>
-      </div>
+          <div className="mt-4 grid gap-2">
+            {props.calc?.breakdown?.laborHours != null ? (
+              <div className="flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900/45">
+                <Clock4 className="h-4 w-4 text-cyan-700 dark:text-cyan-300" />
+                <span className="font-semibold text-slate-700 dark:text-slate-200">Geschätzte Einsatzdauer</span>
+                <span className="ml-auto font-bold text-slate-900 dark:text-white">
+                  {props.calc.breakdown.laborHours.toFixed(1)} Std.
+                </span>
+              </div>
+            ) : null}
+            {totals?.tier ? (
+              <div className="flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900/45">
+                <Gauge className="h-4 w-4 text-cyan-700 dark:text-cyan-300" />
+                <span className="font-semibold text-slate-700 dark:text-slate-200">Leistungsniveau</span>
+                <span className="ml-auto font-bold text-slate-900 dark:text-white">{totals.tier}</span>
+              </div>
+            ) : null}
+            <div className="flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900/45">
+              <Sparkles className="h-4 w-4 text-cyan-700 dark:text-cyan-300" />
+              <span className="font-semibold text-slate-700 dark:text-slate-200">
+                {props.distanceKm > 0 ? "Strecke & Volumen" : "Volumen"}
+              </span>
+              <span className="ml-auto font-bold text-slate-900 dark:text-white">
+                {props.distanceKm > 0 ? `${props.distanceKm.toFixed(1)} km · ` : ""}
+                {props.volumeM3} m³
+              </span>
+            </div>
+          </div>
+        </>
+      ) : null}
     </aside>
   );
 }
-
-
 

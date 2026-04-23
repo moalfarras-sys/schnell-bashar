@@ -1,11 +1,16 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 
 import { Container } from "@/components/container";
 import { Reveal } from "@/components/motion/reveal";
 import { getImageSlots } from "@/server/content/slots";
 
 export const metadata = {
-  title: "Galerie",
+  title: "Galerie | Umzug, Entsorgung & Montage Arbeiten in Berlin",
+  description:
+    "Einblicke in Umzüge, Entsorgungen und Montagearbeiten von Schnell Sicher Umzug in Berlin und deutschlandweit.",
+  alternates: {
+    canonical: "/galerie",
+  },
 };
 
 export default async function GaleriePage() {
@@ -27,7 +32,7 @@ export default async function GaleriePage() {
       <div className="max-w-3xl">
         <h1 className="text-4xl font-extrabold tracking-tight">Galerie</h1>
         <p className="mt-4 text-base text-slate-600 dark:text-slate-400">
-          Einblicke in unsere Arbeit - Umzug, Montage und Entsorgung.
+          Einblicke in unsere Arbeit bei Umzug, Montage und Entsorgung in Berlin und deutschlandweit.
         </p>
       </div>
 
