@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowRight, Calculator, CalendarDays } from "lucide-react";
+import { ArrowRight, Calculator, CalendarDays, Phone } from "lucide-react";
 
 import {
   AddressAutocompleteInput,
@@ -602,7 +602,7 @@ export function PriceCalculator({
         </div>
       ) : null}
 
-      <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
         <Button
           size="lg"
           className="flex-1 gap-2"
@@ -710,15 +710,17 @@ export function PriceCalculator({
           {handoffLoading ? "Angebot wird übernommen..." : "Jetzt buchen"}
           <ArrowRight className="h-4 w-4" />
         </Button>
-        <a href="tel:+491729573681" className="w-full sm:w-auto">
-          <Button size="lg" variant="outline" className="w-full sm:w-auto">
-            +49 172 9573681
-          </Button>
+        <a
+          href="tel:+491729573681"
+          aria-label="Direkt anrufen unter +49 172 9573681"
+          className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[rgba(255,255,255,0.60)] bg-[rgba(255,255,255,0.55)] px-6 text-base font-bold text-slate-900 shadow-[0_0_0_0.5px_rgba(10,16,32,0.04),0_2px_8px_rgba(10,16,32,0.04),inset_0_1px_0_rgba(255,255,255,0.70)] backdrop-blur-md transition-all duration-220 ease-premium hover:-translate-y-px hover:bg-[rgba(255,255,255,0.75)] hover:shadow-[0_0_0_0.5px_rgba(10,16,32,0.05),0_4px_14px_rgba(10,16,32,0.06),inset_0_1px_0_rgba(255,255,255,0.80)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:border-brand-500/50 dark:hover:bg-slate-800/90 dark:hover:shadow-[0_0_24px_rgba(59,130,246,0.12)] sm:w-auto"
+        >
+          <Phone className="h-4 w-4" />
+          Direkt anrufen
         </a>
       </div>
     </div>
   );
 }
-
 
 

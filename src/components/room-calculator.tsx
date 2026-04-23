@@ -49,18 +49,19 @@ export function RoomCalculator({ onVolumeChange }: RoomCalculatorProps) {
               <Icon className={`h-5 w-5 ${key === kind ? "text-brand-600 dark:text-brand-400" : "text-slate-500"}`} />
               <span>{label}</span>
               <span className={`text-xs ${key === kind ? "text-brand-600 dark:text-brand-400" : "text-slate-600 dark:text-slate-400"}`}>
-                ~{formatNumberDE(volume)} m³
+                ca. {formatNumberDE(volume)} m³
               </span>
             </button>
           ),
         )}
       </div>
       <div className="mt-4 rounded-xl border-2 border-sky-200 bg-sky-50/90 px-4 py-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-200">
-        Geschätztes Volumen:{" "}
-        <span className="font-extrabold text-slate-950 dark:text-white">{formatNumberDE(m3)} m³</span>
-        <span className="ml-2 text-xs text-slate-600 dark:text-slate-400">(Durchschnittswert)</span>
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <span>Geschätztes Volumen:</span>
+          <span className="font-extrabold text-slate-950 dark:text-white">{formatNumberDE(m3)} m³</span>
+          <span className="text-xs text-slate-600 dark:text-slate-400">· Durchschnittswert</span>
+        </div>
       </div>
     </div>
   );
 }
-

@@ -86,11 +86,13 @@ export default function HomePage() {
                     Jetzt per WhatsApp schreiben
                   </Button>
                 </a>
-                <a href="tel:+491729573681">
-                  <Button size="xl" variant="outline" className="gap-2">
-                    <Phone className="h-4 w-4" />
-                    Direkt anrufen
-                  </Button>
+                <a
+                  href="tel:+491729573681"
+                  aria-label="Direkt anrufen unter +49 172 9573681"
+                  className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl border border-[rgba(255,255,255,0.60)] bg-[rgba(255,255,255,0.55)] px-8 text-base font-bold text-slate-900 shadow-[0_0_0_0.5px_rgba(10,16,32,0.04),0_2px_8px_rgba(10,16,32,0.04),inset_0_1px_0_rgba(255,255,255,0.70)] backdrop-blur-md transition-all duration-220 ease-premium hover:-translate-y-px hover:bg-[rgba(255,255,255,0.75)] hover:shadow-[0_0_0_0.5px_rgba(10,16,32,0.05),0_4px_14px_rgba(10,16,32,0.06),inset_0_1px_0_rgba(255,255,255,0.80)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:border-brand-500/50 dark:hover:bg-slate-800/90 dark:hover:shadow-[0_0_24px_rgba(59,130,246,0.12)] dark:focus-visible:ring-brand-500/30 sm:text-lg"
+                >
+                  <Phone className="h-4 w-4" />
+                  Direkt anrufen
                 </a>
               </div>
             </div>

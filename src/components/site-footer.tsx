@@ -36,6 +36,7 @@ export function SiteFooter() {
             </a>
             <a
               href="tel:+491729573681"
+              aria-label="Direkt anrufen unter +49 172 9573681"
               className="inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-2.5 text-xs font-bold text-brand-700 transition-all duration-300 hover:border-brand-300 hover:bg-brand-100 hover:shadow-md dark:border-brand-800/40 dark:bg-brand-950/30 dark:text-brand-300 dark:hover:border-brand-700/50 dark:hover:bg-brand-950/50"
             >
               <Phone className="h-4 w-4" />
@@ -63,10 +64,10 @@ export function SiteFooter() {
         </div>
 
         <div className="text-sm">
-          <div className="font-bold text-slate-900 dark:text-white">Service</div>
+          <div className="font-bold text-slate-900 dark:text-white">Kundenservice</div>
           <div className="mt-3 grid gap-2.5 text-slate-600 dark:text-slate-400">
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/booking">
-              Termin online buchen
+              Online-Buchung
             </Link>
             <Link className="transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400" href="/anfrage">
               Anfrage verfolgen

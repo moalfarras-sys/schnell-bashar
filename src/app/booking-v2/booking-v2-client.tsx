@@ -501,7 +501,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
 
   return (
     <section className={styles.page}>
-      <Container className="relative z-10 py-10 sm:py-14">
+      <Container className="relative z-10 py-10 pb-16 sm:py-14 sm:pb-20">
         <div className="mx-auto max-w-6xl" ref={topRef}>
           <div className={`${styles.glass} rounded-3xl p-5 sm:p-7`}>
             <div className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-700 dark:text-cyan-200">Online-Anfrage</div>
@@ -522,6 +522,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
               </a>
               <a
                 href="tel:+491729573681"
+                aria-label="Direkt anrufen unter +49 172 9573681"
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-300/80 bg-white/70 px-4 py-2.5 text-sm font-bold text-cyan-800 transition hover:bg-cyan-50 dark:border-cyan-500/40 dark:bg-slate-900/45 dark:text-cyan-100 dark:hover:bg-slate-900/70"
               >
                 <Phone className="h-4 w-4" />
@@ -683,10 +684,10 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
               volumeM3={draft.volumeM3}
             />
           </div>
+
+          <div className="mt-10 h-px bg-linear-to-r from-transparent via-sky-200/80 to-transparent dark:via-slate-700/80" />
         </div>
       </Container>
     </section>
   );
 }
-
-

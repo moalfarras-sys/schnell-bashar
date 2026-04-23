@@ -39,18 +39,18 @@ const menuSections: MenuSection[] = [
           { label: "Entsorgung", href: "/entsorgung", desc: "Sperrmüll & Entrümpelung", icon: Recycle },
           { label: "Montage", href: "/montage", desc: "Möbelaufbau & Abbau", icon: Wrench },
           { label: "Preise", href: "/preise", desc: "Richtpreise & Beispiele", icon: BadgeEuro },
-          { label: "Booking", href: "/booking", desc: "Online anfragen", icon: CalendarDays },
+          { label: "Online-Buchung", href: "/booking", desc: "Leistung online anfragen", icon: CalendarDays },
         ],
       },
     ],
   },
   {
-    label: "Service",
+    label: "Kundenservice",
     columns: [
       {
         title: "Kundenservice",
         links: [
-          { label: "Termin online buchen", href: "/booking", desc: "Leistung und Details senden", icon: CalendarDays },
+          { label: "Online-Buchung", href: "/booking", desc: "Leistung und Details senden", icon: CalendarDays },
           { label: "Anfrage verfolgen", href: "/anfrage", desc: "Status prüfen", icon: Search },
           { label: "FAQ", href: "/faq", desc: "Häufige Fragen", icon: HelpCircle },
         ],
@@ -58,13 +58,13 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
-    label: "Info",
+    label: "Informationen",
     columns: [
       {
-        title: "Mehr erfahren",
+        title: "Informationen",
         links: [
           { label: "Galerie", href: "/galerie", desc: "Einblicke in Projekte", icon: Truck },
-          { label: "Tipps & Blog", href: "/tipps", desc: "Ratgeber", icon: Newspaper },
+          { label: "Ratgeber & Tipps", href: "/tipps", desc: "Hinweise für Planung", icon: Newspaper },
           { label: "Kontakt", href: "/kontakt", desc: "Nachricht senden", icon: Mail },
           { label: "WhatsApp", href: "https://wa.me/491729573681", desc: "Direkt schreiben", icon: MessageCircle },
         ],
