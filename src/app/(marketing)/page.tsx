@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, MessageCircle, Phone, Recycle, ShieldCheck, Truck, Wrench } from "lucide-react";
@@ -58,38 +59,84 @@ export default function HomePage() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(56,136,240,0.18),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(14,165,233,0.14),_transparent_32%),linear-gradient(180deg,#f8fbff_0%,#eef5fb_100%)] dark:bg-[linear-gradient(180deg,#0f172a_0%,#020617_100%)]" />
         <Container className="relative py-20 sm:py-24 lg:py-28">
-          <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/80 px-4 py-1.5 text-xs font-bold text-brand-700 shadow-sm">
-              <CheckCircle2 className="h-4 w-4" />
-              24/7 erreichbar • Berlin & deutschlandweit
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)] lg:items-center">
+            <div className="max-w-4xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/80 px-4 py-1.5 text-xs font-bold text-brand-700 shadow-sm">
+                <CheckCircle2 className="h-4 w-4" />
+                24/7 erreichbar • Berlin & deutschlandweit
+              </div>
+              <h1 className="mt-6 max-w-4xl text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+                Umzugsunternehmen Berlin – Umzug, Entsorgung & Montage 24/7
+              </h1>
+              <p className="mt-6 max-w-3xl text-base leading-relaxed text-slate-700 sm:text-lg">
+                Schnell Sicher Umzug unterstützt private und gewerbliche Kunden in Berlin und
+                deutschlandweit bei Umzug, Sperrmüll-Entsorgung, Möbelmontage und strukturierten
+                Online-Anfragen. Telefonisch rund um die Uhr erreichbar, Termine nach Vereinbarung.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link href="/booking">
+                  <Button size="xl" className="gap-2">
+                    Kostenloses Angebot anfragen
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <a href="https://wa.me/491729573681" target="_blank" rel="noopener noreferrer">
+                  <Button size="xl" variant="outline" className="gap-2">
+                    <MessageCircle className="h-4 w-4" />
+                    Jetzt per WhatsApp schreiben
+                  </Button>
+                </a>
+                <a href="tel:+491729573681">
+                  <Button size="xl" variant="outline" className="gap-2">
+                    <Phone className="h-4 w-4" />
+                    Direkt anrufen
+                  </Button>
+                </a>
+              </div>
             </div>
-            <h1 className="mt-6 max-w-4xl text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-              Umzugsunternehmen Berlin – Umzug, Entsorgung & Montage 24/7
-            </h1>
-            <p className="mt-6 max-w-3xl text-base leading-relaxed text-slate-700 sm:text-lg">
-              Schnell Sicher Umzug unterstützt private und gewerbliche Kunden in Berlin und
-              deutschlandweit bei Umzug, Sperrmüll-Entsorgung, Möbelmontage und strukturierten
-              Online-Anfragen. Telefonisch rund um die Uhr erreichbar, Termine nach Vereinbarung.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/booking">
-                <Button size="xl" className="gap-2">
-                  Kostenloses Angebot anfragen
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <a href="https://wa.me/491729573681" target="_blank" rel="noopener noreferrer">
-                <Button size="xl" variant="outline" className="gap-2">
-                  <MessageCircle className="h-4 w-4" />
-                  Jetzt per WhatsApp schreiben
-                </Button>
-              </a>
-              <a href="tel:+491729573681">
-                <Button size="xl" variant="outline" className="gap-2">
-                  <Phone className="h-4 w-4" />
-                  Direkt anrufen
-                </Button>
-              </a>
+
+            <div className="relative">
+              <div className="absolute -left-6 top-6 h-28 w-28 rounded-full bg-brand-200/40 blur-3xl" />
+              <div className="absolute -bottom-8 right-0 h-36 w-36 rounded-full bg-sky-300/30 blur-3xl" />
+              <div className="relative overflow-hidden rounded-[32px] border border-white/70 bg-white/70 p-2 shadow-[0_30px_90px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[24px] bg-slate-200">
+                  <Image
+                    src="/media/gallery/truck-road.jpeg"
+                    alt="Umzugslastwagen von Schnell Sicher Umzug auf dem Weg zum Einsatz"
+                    fill
+                    priority
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/15 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-slate-950/35 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-100/90 backdrop-blur">
+                      Schnell Sicher Umzug
+                    </div>
+                    <div className="mt-4 max-w-xs text-2xl font-extrabold leading-tight">
+                      Strukturierte Umzüge mit moderner Anfrage und klarer Abstimmung.
+                    </div>
+                    <div className="mt-3 text-sm leading-relaxed text-slate-100/85">
+                      Berlin, Umland und deutschlandweite Einsätze mit telefonischer Erreichbarkeit
+                      rund um die Uhr.
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 grid gap-3 rounded-[24px] bg-slate-950 px-4 py-4 text-white sm:grid-cols-3">
+                  <div>
+                    <div className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Einsatzgebiet</div>
+                    <div className="mt-1 text-sm font-semibold">Berlin & deutschlandweit</div>
+                  </div>
+                  <div>
+                    <div className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Erreichbarkeit</div>
+                    <div className="mt-1 text-sm font-semibold">24/7 telefonisch</div>
+                  </div>
+                  <div>
+                    <div className="text-[11px] uppercase tracking-[0.22em] text-slate-400">Ablauf</div>
+                    <div className="mt-1 text-sm font-semibold">Anfrage, Prüfung, Angebot</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </Container>
@@ -185,9 +232,7 @@ export default function HomePage() {
         <Container>
           <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
             <div>
-              <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-                Kontakt und Buchung
-              </h2>
+              <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Kontakt und Buchung</h2>
               <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300">
                 Für Umzug Berlin, Sperrmüll Entsorgung Berlin oder Möbelmontage Berlin können Sie
                 direkt online anfragen. Alternativ sind wir per Telefon und WhatsApp erreichbar.
