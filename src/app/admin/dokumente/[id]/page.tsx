@@ -7,6 +7,11 @@ import { DocumentEditor } from "@/components/admin/documents/document-editor";
 import { DocumentFileActions } from "@/components/admin/documents/document-file-actions";
 import { DocumentStatusBadge } from "@/components/admin/documents/document-status-badge";
 import { Container } from "@/components/container";
+import {
+  documentTypeLabel,
+  requestWorkflowStatusLabel,
+  signingTokenStatusLabel,
+} from "@/lib/admin-labels";
 import { adminCookieName, verifyAdminToken } from "@/server/auth/admin-session";
 import { prisma } from "@/server/db/prisma";
 
@@ -49,15 +54,21 @@ export default async function AdminDocumentDetailPage({
   const serviceData = document.serviceData as { serviceType?: string } | null;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <Container className="max-w-5xl py-8">
-        <div className="mb-6 flex items-center gap-3">
-          <h1 className="text-3xl font-bold text-slate-900">{document.number || document.id}</h1>
+        <div className="mb-6 flex flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+            {document.number || document.id}
+          </h1>
           <DocumentStatusBadge status={document.status} />
         </div>
 
+        <div className="mb-4 text-sm text-slate-600 dark:text-slate-300">
+          Dokumenttyp: <span className="font-semibold text-slate-900 dark:text-slate-100">{documentTypeLabel(document.type)}</span>
+        </div>
+
         <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900/80">
             <DocumentEditor
               mode="edit"
               documentId={document.id}
@@ -82,19 +93,19 @@ export default async function AdminDocumentDetailPage({
               hasSignedPdf={Boolean(document.signingTokens.some((tokenRow) => tokenRow.status === "USED"))}
             />
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5">
-              <h2 className="text-lg font-bold text-slate-900">Verknüpfte Anfrage</h2>
-              <p className="mt-2 text-sm text-slate-600">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900/80">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Verknüpfte Anfrage</h2>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
                 Anfrage: {document.order?.publicId || "-"}
               </p>
-              <p className="mt-1 text-sm text-slate-600">
-                Workflow: {document.order?.workflowStatus || "-"}
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                Workflow: {requestWorkflowStatusLabel(document.order?.workflowStatus)}
               </p>
               {document.order?.publicId ? (
                 <div className="mt-4">
                   <Link
                     href={`/admin/orders/${document.order.publicId}`}
-                    className="text-sm font-semibold text-brand-700 hover:underline"
+                    className="text-sm font-semibold text-brand-700 hover:underline dark:text-brand-300"
                   >
                     Anfrage öffnen
                   </Link>
@@ -102,17 +113,20 @@ export default async function AdminDocumentDetailPage({
               ) : null}
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5">
-              <h2 className="text-lg font-bold text-slate-900">Signatur-Status</h2>
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900/80">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Signatur-Status</h2>
               {document.signingTokens.length === 0 ? (
-                <p className="mt-2 text-sm text-slate-600">Noch kein Signatur-Link erstellt.</p>
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Noch kein Signatur-Link erstellt.</p>
               ) : (
-                <div className="mt-2 space-y-2 text-sm text-slate-700">
+                <div className="mt-2 space-y-2 text-sm text-slate-700 dark:text-slate-200">
                   {document.signingTokens.slice(0, 3).map((tokenRow) => (
-                    <div key={tokenRow.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                      <div>Status: {tokenRow.status}</div>
+                    <div
+                      key={tokenRow.id}
+                      className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800"
+                    >
+                      <div>Status: {signingTokenStatusLabel(tokenRow.status)}</div>
                       <div>Läuft ab: {tokenRow.expiresAt.toLocaleString("de-DE")}</div>
-                      <div>Hash: {tokenRow.tokenHash.slice(0, 16)}...</div>
+                      <div>Token-Hash: {tokenRow.tokenHash.slice(0, 16)}...</div>
                     </div>
                   ))}
                 </div>

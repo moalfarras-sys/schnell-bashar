@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { documentStatusLabel } from "@/lib/admin-labels";
 
 export function ApprovalPanel({
   documentId,
@@ -51,10 +52,10 @@ export function ApprovalPanel({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5">
-      <h2 className="text-lg font-bold text-slate-900">Signaturfreigabe</h2>
-      <p className="mt-2 text-sm text-slate-600">
-        Aktueller Status: <span className="font-semibold">{status}</span>
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900/80">
+      <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Signaturfreigabe</h2>
+      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+        Aktueller Status: <span className="font-semibold">{documentStatusLabel(status)}</span>
       </p>
       <div className="mt-4 flex flex-wrap gap-3">
         <Button type="button" onClick={approve} disabled={loading !== null}>
@@ -65,7 +66,7 @@ export function ApprovalPanel({
         </Button>
       </div>
       {message ? (
-        <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+        <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
           {message}
         </div>
       ) : null}

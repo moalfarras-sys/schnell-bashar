@@ -56,9 +56,9 @@ export function DocumentFileActions({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5">
-      <h2 className="text-lg font-bold text-slate-900">Dateien & PDF</h2>
-      <p className="mt-2 text-sm text-slate-600">
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900/80">
+      <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Dateien & PDF</h2>
+      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
         Dokument-PDF öffnen, neu erzeugen oder eine signierte Fassung prüfen.
       </p>
       <div className="mt-4 flex flex-wrap gap-3">
@@ -78,7 +78,7 @@ export function DocumentFileActions({
         </Button>
       </div>
       {message ? (
-        <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+        <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
           {message}
         </div>
       ) : null}

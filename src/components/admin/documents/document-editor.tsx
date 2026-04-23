@@ -21,6 +21,9 @@ type Props = {
   };
 };
 
+const inputClassName =
+  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100";
+
 export function DocumentEditor({ mode, documentId, initial }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -94,59 +97,68 @@ export function DocumentEditor({ mode, documentId, initial }: Props) {
     <form onSubmit={onSubmit} className="grid gap-4">
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-semibold">Dokumenttyp</label>
-          <select value={type} onChange={(e) => setType(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2">
+          <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Dokumenttyp</label>
+          <select value={type} onChange={(e) => setType(e.target.value)} className={inputClassName}>
             <option value="ANGEBOT">Angebot</option>
             <option value="RECHNUNG">Rechnung</option>
             <option value="AUFTRAG_VERTRAG">Auftrag / Vertrag</option>
             <option value="MAHNUNG">Mahnung</option>
-            <option value="AGB_APPENDIX">AGB Zusatzseite</option>
+            <option value="AGB_APPENDIX">AGB-Zusatzseite</option>
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold">Gesamtbetrag brutto (Cent)</label>
-          <input value={grossCents} onChange={(e) => setGrossCents(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2" />
+          <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Gesamtbetrag brutto in Cent</label>
+          <input value={grossCents} onChange={(e) => setGrossCents(e.target.value)} className={inputClassName} />
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-semibold">Kundenname</label>
-          <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2" required />
+          <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Kundenname</label>
+          <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} className={inputClassName} required />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold">E-Mail</label>
-          <input value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2" />
+          <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">E-Mail</label>
+          <input value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} className={inputClassName} />
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-semibold">Telefon</label>
-          <input value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2" />
+          <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Telefon</label>
+          <input value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className={inputClassName} />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-semibold">Leistung</label>
-          <input value={serviceType} onChange={(e) => setServiceType(e.target.value)} className="w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="Umzug Berlin" />
+          <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Leistung</label>
+          <input
+            value={serviceType}
+            onChange={(e) => setServiceType(e.target.value)}
+            className={inputClassName}
+            placeholder="Umzug Berlin"
+          />
         </div>
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-semibold">Rechnungsadresse</label>
-        <textarea value={billingAddress} onChange={(e) => setBillingAddress(e.target.value)} className="min-h-24 w-full rounded-lg border border-slate-300 px-3 py-2" />
+        <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Rechnungsadresse</label>
+        <textarea value={billingAddress} onChange={(e) => setBillingAddress(e.target.value)} className={`${inputClassName} min-h-24`} />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-semibold">Sichtbare Notizen</label>
-        <textarea value={visibleNotes} onChange={(e) => setVisibleNotes(e.target.value)} className="min-h-24 w-full rounded-lg border border-slate-300 px-3 py-2" />
+        <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Sichtbare Notizen</label>
+        <textarea value={visibleNotes} onChange={(e) => setVisibleNotes(e.target.value)} className={`${inputClassName} min-h-24`} />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-semibold">Interne Notizen</label>
-        <textarea value={internalNotes} onChange={(e) => setInternalNotes(e.target.value)} className="min-h-24 w-full rounded-lg border border-slate-300 px-3 py-2" />
+        <label className="mb-1 block text-sm font-semibold text-slate-800 dark:text-slate-200">Interne Notizen</label>
+        <textarea value={internalNotes} onChange={(e) => setInternalNotes(e.target.value)} className={`${inputClassName} min-h-24`} />
       </div>
 
-      {error ? <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div> : null}
+      {error ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300">
+          {error}
+        </div>
+      ) : null}
 
       <Button type="submit" disabled={loading}>
         {loading ? "Wird gespeichert..." : mode === "create" ? "Entwurf speichern" : "Änderungen speichern"}

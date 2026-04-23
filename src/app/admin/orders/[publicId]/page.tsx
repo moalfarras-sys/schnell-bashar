@@ -7,6 +7,7 @@ import { Select } from "@/components/ui/select";
 import { HardDeleteButton } from "@/components/admin/hard-delete-button";
 import { CreateOfferButton } from "@/components/admin/create-offer-button";
 import { OrderScheduleForm } from "@/components/admin/order-schedule-form";
+import { orderStatusLabel } from "@/lib/admin-labels";
 import {
   closeOrderAction,
   restoreOrderAction,
@@ -141,7 +142,7 @@ export default async function AdminOrderDetailPage({
                   : "offen"
             }
           />
-          <InfoCard title="Status" value={order.status} />
+          <InfoCard title="Status" value={orderStatusLabel(order.status)} />
         </div>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           <InfoCard title="Bereich" value={wizard?.bookingContext ?? "STANDARD"} />
@@ -206,12 +207,12 @@ export default async function AdminOrderDetailPage({
               defaultValue={order.status}
               className="max-w-[220px] border-2 border-slate-600 bg-slate-700 text-white"
             >
-              <option value="NEW">NEW</option>
-              <option value="REQUESTED">REQUESTED</option>
-              <option value="CONFIRMED">CONFIRMED</option>
-              <option value="IN_PROGRESS">IN_PROGRESS</option>
-              <option value="DONE">DONE</option>
-              <option value="CANCELLED">CANCELLED</option>
+              <option value="NEW">{orderStatusLabel("NEW")}</option>
+              <option value="REQUESTED">{orderStatusLabel("REQUESTED")}</option>
+              <option value="CONFIRMED">{orderStatusLabel("CONFIRMED")}</option>
+              <option value="IN_PROGRESS">{orderStatusLabel("IN_PROGRESS")}</option>
+              <option value="DONE">{orderStatusLabel("DONE")}</option>
+              <option value="CANCELLED">{orderStatusLabel("CANCELLED")}</option>
             </Select>
             <Button type="submit">Speichern</Button>
           </form>
@@ -221,7 +222,7 @@ export default async function AdminOrderDetailPage({
               <input type="hidden" name="publicId" value={order.publicId} />
               <input type="hidden" name="closeAs" value="DONE" />
               <Button type="submit" size="sm" variant="outline-light">
-                Auftrag schliexen (DONE)
+                Auftrag abschließen
               </Button>
             </form>
             <form action={closeOrderAction}>
@@ -409,7 +410,6 @@ function LineGroup(props: { title: string; lines: OrderLineLike[] }) {
     </div>
   );
 }
-
 
 
 

@@ -65,10 +65,10 @@ export default function HomePage() {
                 <CheckCircle2 className="h-4 w-4" />
                 24/7 erreichbar • Berlin & deutschlandweit
               </div>
-              <h1 className="mt-6 max-w-4xl text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+              <h1 className="mt-6 max-w-4xl text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-5xl lg:text-6xl">
                 Umzugsunternehmen Berlin – Umzug, Entsorgung & Montage 24/7
               </h1>
-              <p className="mt-6 max-w-3xl text-base leading-relaxed text-slate-700 sm:text-lg">
+              <p className="mt-6 max-w-3xl text-base leading-relaxed text-slate-700 dark:text-slate-200 sm:text-lg">
                 Schnell Sicher Umzug unterstützt private und gewerbliche Kunden in Berlin und
                 deutschlandweit bei Umzug, Sperrmüll-Entsorgung, Möbelmontage und strukturierten
                 Online-Anfragen. Telefonisch rund um die Uhr erreichbar, Termine nach Vereinbarung.

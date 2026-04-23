@@ -5,6 +5,7 @@ import { prisma } from "@/server/db/prisma";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { HardDeleteButton } from "@/components/admin/hard-delete-button";
+import { orderStatusLabel } from "@/lib/admin-labels";
 import {
   restoreOrderAction,
   softDeleteOrderAction,
@@ -133,12 +134,12 @@ export default async function AdminOrdersPage({
                 className="h-10 border-2 border-slate-300 bg-white/85 text-slate-900 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
               >
                 <option value="">Alle</option>
-                <option value="NEW">NEW</option>
-                <option value="REQUESTED">REQUESTED</option>
-                <option value="CONFIRMED">CONFIRMED</option>
-                <option value="IN_PROGRESS">IN_PROGRESS</option>
-                <option value="DONE">DONE</option>
-                <option value="CANCELLED">CANCELLED</option>
+                <option value="NEW">{orderStatusLabel("NEW")}</option>
+                <option value="REQUESTED">{orderStatusLabel("REQUESTED")}</option>
+                <option value="CONFIRMED">{orderStatusLabel("CONFIRMED")}</option>
+                <option value="IN_PROGRESS">{orderStatusLabel("IN_PROGRESS")}</option>
+                <option value="DONE">{orderStatusLabel("DONE")}</option>
+                <option value="CANCELLED">{orderStatusLabel("CANCELLED")}</option>
               </Select>
               <Select
                 name="context"
@@ -203,7 +204,7 @@ export default async function AdminOrdersPage({
                 {o.orderNo ?? o.publicId}
               </Link>
               <span className="rounded-full border border-brand-400 bg-brand-500/20 px-2 py-0.5 text-[10px] font-extrabold text-brand-800 dark:text-brand-200">
-                {o.status}
+                {orderStatusLabel(o.status)}
               </span>
             </div>
             <div className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-300">{o.customerName}</div>
@@ -331,7 +332,7 @@ export default async function AdminOrdersPage({
                           {o.quote.quoteId}
                         </div>
                         <div className="text-[10px] uppercase tracking-wide text-slate-300">
-                          {o.quote.status}
+                          {orderStatusLabel(o.quote.status)}
                         </div>
                       </div>
                     ) : (
@@ -340,7 +341,7 @@ export default async function AdminOrdersPage({
                   </td>
                   <td className="px-4 py-3">
                     <span className="rounded-full border-2 border-brand-400 bg-brand-600/30 px-2 py-1 text-xs font-extrabold text-brand-200">
-                      {o.status}
+                      {orderStatusLabel(o.status)}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -388,4 +389,3 @@ export default async function AdminOrdersPage({
     </div>
   );
 }
-
