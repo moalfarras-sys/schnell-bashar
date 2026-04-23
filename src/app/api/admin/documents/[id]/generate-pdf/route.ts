@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { renderDocumentPdf } from "@/lib/documents/renderer";
+import { documentVersionSnapshotSchema } from "@/lib/documents/schemas";
 import { uploadPrivateDocument } from "@/lib/documents/storage";
 import { getAdminSessionClaims } from "@/server/auth/require-admin";
 import { prisma } from "@/server/db/prisma";
@@ -8,7 +9,9 @@ import { prisma } from "@/server/db/prisma";
 export const runtime = "nodejs";
 
 function toSnapshot(raw: unknown) {
-  return raw as Parameters<typeof renderDocumentPdf>[0]["snapshot"];
+  const parsed = documentVersionSnapshotSchema.safeParse(raw);
+  if (!parsed.success) return null;
+  return parsed.data as Parameters<typeof renderDocumentPdf>[0]["snapshot"];
 }
 
 export async function POST(
@@ -32,18 +35,39 @@ export async function POST(
     return NextResponse.json({ error: "Dokument nicht gefunden" }, { status: 404 });
   }
 
-  const pdfBuffer = await renderDocumentPdf({
-    type: document.type,
-    number: document.number || document.id,
-    snapshot: toSnapshot(document.currentVersion.dataSnapshot),
-    includeAgbAppendix: document.includeAgbAppendix,
-  });
+  const snapshot = toSnapshot(document.currentVersion.dataSnapshot);
+  if (!snapshot) {
+    return NextResponse.json(
+      { error: "Die aktuelle Dokumentversion enthält keine vollständigen PDF-Daten." },
+      { status: 422 },
+    );
+  }
+
+  let pdfBuffer: Buffer;
+  try {
+    pdfBuffer = await renderDocumentPdf({
+      type: document.type,
+      number: document.number || document.id,
+      snapshot,
+      includeAgbAppendix: document.includeAgbAppendix,
+    });
+  } catch {
+    return NextResponse.json(
+      { error: "PDF konnte aus der aktuellen Dokumentversion nicht erzeugt werden." },
+      { status: 422 },
+    );
+  }
 
   const key = `documents/${document.type.toLowerCase()}/${document.number || document.id}.pdf`;
-  const uploadResult = await uploadPrivateDocument({
-    key,
-    buffer: pdfBuffer,
-  });
+  let uploadResult = null;
+  try {
+    uploadResult = await uploadPrivateDocument({
+      key,
+      buffer: pdfBuffer,
+    });
+  } catch {
+    uploadResult = null;
+  }
 
   if (uploadResult) {
     await prisma.document.update({
@@ -61,7 +85,7 @@ export async function POST(
     });
   }
 
-  return new NextResponse(pdfBuffer, {
+  return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="${document.number || document.id}.pdf"`,

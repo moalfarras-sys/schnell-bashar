@@ -32,7 +32,7 @@ export default async function GaleriePage() {
       <div className="max-w-3xl">
         <h1 className="text-4xl font-extrabold tracking-tight">Galerie</h1>
         <p className="mt-4 text-base text-slate-600 dark:text-slate-400">
-          Einblicke in unsere Arbeit bei Umzug, Montage und Entsorgung in Berlin und deutschlandweit.
+          Einblicke in Einsätze rund um Umzug, Entsorgung und Montage in Berlin und deutschlandweit.
         </p>
       </div>
 

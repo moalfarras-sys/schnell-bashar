@@ -9,6 +9,11 @@ import { getImageSlots } from "@/server/content/slots";
 
 export const metadata = {
   title: "Über uns",
+  description:
+    "Schnell Sicher Umzug begleitet private und gewerbliche Kunden in Berlin und deutschlandweit mit strukturierter Planung, persönlicher Betreuung und klarer Abstimmung.",
+  alternates: {
+    canonical: "/ueber-uns",
+  },
 };
 
 export default async function UeberUnsPage() {
@@ -29,12 +34,12 @@ export default async function UeberUnsPage() {
       <div className="max-w-3xl">
         <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white">Über uns</h1>
         <p className="mt-4 text-base text-slate-800 dark:text-slate-200">
-          Ihr zuverlässiger Umzugspartner: Bei Schnell Sicher Umzug kümmern wir uns persönlich um Ihren
-          Umzug — schnell, sicher und mit viel Erfahrung.
+          Schnell Sicher Umzug betreut private und gewerbliche Einsätze mit klarer Planung,
+          persönlicher Abstimmung und einem verlässlichen Ablauf von der Anfrage bis zum Termin.
         </p>
         <div className="mt-8">
-          <Link href="/preise">
-            <Button size="lg">Angebot berechnen</Button>
+          <Link href="/booking">
+            <Button size="lg">Online-Anfrage starten</Button>
           </Link>
         </div>
       </div>
@@ -53,17 +58,17 @@ export default async function UeberUnsPage() {
         <ValueCard
           icon={ShieldCheck}
           title="Schnell & Sicher"
-          text="Super schnelle und absolut sichere Umzüge mit persönlicher Betreuung."
+          text="Sorgfältige Planung, verlässliche Kommunikation und ein sauber organisierter Einsatz."
         />
         <ValueCard
           icon={Users}
           title="Team & Erfahrung"
-          text="Erfahrene Profis begleiten jeden Auftrag von der Planung bis zur Umsetzung."
+          text="Ein eingespieltes Team begleitet Umzug, Entsorgung und Montage mit klaren Zuständigkeiten."
         />
         <ValueCard
           icon={Leaf}
           title="Umweltbewusst"
-          text="Fachgerechte Entsorgung und möglichst viel Recycling für eine saubere Umgebung."
+          text="Fachgerechte Entsorgung und sinnvolle Weiterverwertung, wo es organisatorisch möglich ist."
         />
       </div>
 

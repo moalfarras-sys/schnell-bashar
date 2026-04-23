@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { renderDocumentPdf } from "@/lib/documents/renderer";
+import { documentVersionSnapshotSchema } from "@/lib/documents/schemas";
 import { downloadPrivateDocument, privateDocumentBucket, privateSignedDocumentBucket } from "@/lib/documents/storage";
 import { getAdminSessionClaims } from "@/server/auth/require-admin";
 import { prisma } from "@/server/db/prisma";
 
 export const runtime = "nodejs";
+
+function toSnapshot(raw: unknown) {
+  const parsed = documentVersionSnapshotSchema.safeParse(raw);
+  if (!parsed.success) return null;
+  return parsed.data as Parameters<typeof renderDocumentPdf>[0]["snapshot"];
+}
 
 export async function GET(
   req: NextRequest,
@@ -34,37 +41,49 @@ export async function GET(
     return NextResponse.json({ error: "Dokument nicht gefunden" }, { status: 404 });
   }
 
-  const key =
-    kind === "signed"
-      ? document.signatures[0]?.signedPdfStorageKey
-      : document.pdfStorageKey;
-  if (!key) {
-    if (!document.currentVersion || kind === "signed") {
-      return NextResponse.json({ error: "Keine PDF-Datei vorhanden" }, { status: 404 });
+  const storageKey = kind === "signed" ? document.signatures[0]?.signedPdfStorageKey : document.pdfStorageKey;
+  let buffer: Buffer | null = null;
+
+  if (storageKey) {
+    try {
+      buffer = await downloadPrivateDocument({
+        bucket: kind === "signed" ? privateSignedDocumentBucket() : privateDocumentBucket(),
+        key: storageKey,
+      });
+    } catch {
+      buffer = null;
     }
-
-    const buffer = await renderDocumentPdf({
-      type: document.type,
-      number: document.number || document.id,
-      snapshot: document.currentVersion.dataSnapshot as Parameters<typeof renderDocumentPdf>[0]["snapshot"],
-      includeAgbAppendix: document.includeAgbAppendix,
-    });
-
-    return new NextResponse(buffer, {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="${document.number || document.id}.pdf"`,
-        "Cache-Control": "private, no-store",
-      },
-    });
   }
 
-  const buffer = await downloadPrivateDocument({
-    bucket: kind === "signed" ? privateSignedDocumentBucket() : privateDocumentBucket(),
-    key,
-  });
+  if (!buffer) {
+    if (!document.currentVersion || kind === "signed") {
+      return NextResponse.json({ error: "Keine PDF-Datei vorhanden." }, { status: 404 });
+    }
 
-  return new NextResponse(buffer, {
+    const snapshot = toSnapshot(document.currentVersion.dataSnapshot);
+    if (!snapshot) {
+      return NextResponse.json(
+        { error: "Die aktuelle Dokumentversion enthält keine vollständigen PDF-Daten." },
+        { status: 422 },
+      );
+    }
+
+    try {
+      buffer = await renderDocumentPdf({
+        type: document.type,
+        number: document.number || document.id,
+        snapshot,
+        includeAgbAppendix: document.includeAgbAppendix,
+      });
+    } catch {
+      return NextResponse.json(
+        { error: "PDF konnte aus der aktuellen Dokumentversion nicht erzeugt werden." },
+        { status: 422 },
+      );
+    }
+  }
+
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="${document.number || document.id}.pdf"`,

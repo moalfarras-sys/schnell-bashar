@@ -7,6 +7,13 @@ import { Clock4, Gauge, Sparkles, Wallet } from "lucide-react";
 import { formatEuroFromCents, type PriceCalcResponse } from "@/app/booking-v2/lib/pricing";
 import styles from "@/app/booking-v2/booking-v2.module.css";
 
+function tierLabel(tier?: string | null) {
+  if (tier === "ECONOMY") return "Economy";
+  if (tier === "STANDARD") return "Standard";
+  if (tier === "EXPRESS") return "Express";
+  return tier ?? "-";
+}
+
 function AnimatedCurrency(props: { valueCents: number }) {
   const [shown, setShown] = useState(props.valueCents);
 
@@ -74,7 +81,7 @@ export function LivePriceEngineCard(props: {
             <AnimatedCurrency valueCents={totals.grossCents} />
           </motion.div>
           <div className="mt-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
-            Bereich: {formatEuroFromCents(totals.minCents)} - {formatEuroFromCents(totals.maxCents)}
+            Richtpreisbereich: {formatEuroFromCents(totals.minCents)} - {formatEuroFromCents(totals.maxCents)}
           </div>
         </>
       ) : (
@@ -124,7 +131,7 @@ export function LivePriceEngineCard(props: {
               <div className="flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900/45">
                 <Gauge className="h-4 w-4 text-cyan-700 dark:text-cyan-300" />
                 <span className="font-semibold text-slate-700 dark:text-slate-200">Leistungsniveau</span>
-                <span className="ml-auto font-bold text-slate-900 dark:text-white">{totals.tier}</span>
+                <span className="ml-auto font-bold text-slate-900 dark:text-white">{tierLabel(totals.tier)}</span>
               </div>
             ) : null}
             <div className="flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/55 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900/45">
@@ -143,4 +150,3 @@ export function LivePriceEngineCard(props: {
     </aside>
   );
 }
-

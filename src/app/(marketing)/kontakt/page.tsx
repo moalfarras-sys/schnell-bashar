@@ -33,8 +33,8 @@ export default async function KontaktPage() {
           Kontakt aufnehmen
         </h1>
         <p className="mt-4 text-base font-medium leading-7 text-slate-700 dark:text-slate-200">
-          Teilen Sie uns Ihre Anfrage mit, und wir melden uns schnellstmöglich.
-          Sie erhalten eine klare Rückmeldung zu Preis, Ablauf und Terminoptionen.
+          Teilen Sie uns Ihr Anliegen mit. Sie erhalten eine klare Rückmeldung zu Ablauf,
+          Terminoptionen und dem passenden nächsten Schritt für Ihre Anfrage.
         </p>
       </div>
 
@@ -42,15 +42,16 @@ export default async function KontaktPage() {
         <div className="premium-surface-emphasis rounded-3xl p-6 sm:p-8">
           <div className="text-lg font-extrabold text-slate-950 dark:text-white">Anfrage senden</div>
           <p className="mt-2 text-sm font-semibold leading-6 text-slate-700 dark:text-slate-300">
-            Für eine direkte Online-Buchung nutzen Sie bitte unser Buchungsformular.
-            Für allgemeine Fragen, Rückrufe oder Sonderfälle verwenden Sie dieses Kontaktformular.
+            Für strukturierte Umzugs-, Entsorgungs- oder Montageanfragen nutzen Sie bitte die
+            Online-Anfrage. Für Rückrufe, Rückfragen und besondere Anliegen können Sie dieses
+            Kontaktformular verwenden.
           </p>
           <div className="mt-5">
             <ContactForm />
           </div>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <Link href="/preise">
-              <Button size="lg">Zum Buchungsformular</Button>
+            <Link href="/booking">
+              <Button size="lg">Zur Online-Anfrage</Button>
             </Link>
             <a href="https://wa.me/491729573681" target="_blank" rel="noreferrer">
               <Button size="lg" variant="outline">
@@ -64,7 +65,10 @@ export default async function KontaktPage() {
           <Info
             icon={Phone}
             title="Telefon"
-            lines={[{ label: "+49 172 9573681", href: "tel:+491729573681" }]}
+            lines={[
+              { label: "+49 172 9573681", href: "tel:+491729573681" },
+              { label: "Telefonisch 24/7 erreichbar. Termine nach Vereinbarung." },
+            ]}
           />
           <Info
             icon={Mail}
@@ -76,7 +80,7 @@ export default async function KontaktPage() {
             title="Standort"
             lines={[
               { label: "Anzengruber Straße 9, 12043 Berlin" },
-              { label: "Telefonisch 24/7 erreichbar. Termine nach Vereinbarung." },
+              { label: "Berlin & deutschlandweit im Einsatz." },
             ]}
           />
         </div>

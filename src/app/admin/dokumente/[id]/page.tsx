@@ -1,8 +1,10 @@
 import { notFound, redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import Link from "next/link";
 
 import { ApprovalPanel } from "@/components/admin/documents/approval-panel";
 import { DocumentEditor } from "@/components/admin/documents/document-editor";
+import { DocumentFileActions } from "@/components/admin/documents/document-file-actions";
 import { DocumentStatusBadge } from "@/components/admin/documents/document-status-badge";
 import { Container } from "@/components/container";
 import { adminCookieName, verifyAdminToken } from "@/server/auth/admin-session";
@@ -75,6 +77,10 @@ export default async function AdminDocumentDetailPage({
 
           <div className="space-y-6">
             <ApprovalPanel documentId={document.id} status={document.status} />
+            <DocumentFileActions
+              documentId={document.id}
+              hasSignedPdf={Boolean(document.signingTokens.some((tokenRow) => tokenRow.status === "USED"))}
+            />
 
             <div className="rounded-2xl border border-slate-200 bg-white p-5">
               <h2 className="text-lg font-bold text-slate-900">Verknüpfte Anfrage</h2>
@@ -84,6 +90,16 @@ export default async function AdminDocumentDetailPage({
               <p className="mt-1 text-sm text-slate-600">
                 Workflow: {document.order?.workflowStatus || "-"}
               </p>
+              {document.order?.publicId ? (
+                <div className="mt-4">
+                  <Link
+                    href={`/admin/orders/${document.order.publicId}`}
+                    className="text-sm font-semibold text-brand-700 hover:underline"
+                  >
+                    Anfrage öffnen
+                  </Link>
+                </div>
+              ) : null}
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-white p-5">

@@ -16,15 +16,15 @@ export const metadata = {
 const faqItems = [
   {
     q: "Welche Leistungen bietet Schnell Sicher Umzug?",
-    a: "Wir bieten Umzug, Montage, Entrümpelung sowie fachgerechte Entsorgung und Sperrmüll-Abholung.",
+    a: "Wir unterstützen bei Umzug, Sperrmüll-Entsorgung, Möbelmontage, Küchenmontage und kombinierten Leistungen.",
   },
   {
     q: "Wie schnell bekomme ich ein Angebot?",
-    a: "Ein Anruf genügt – in der Regel erhalten Sie sehr schnell eine Rückmeldung. Alternativ können Sie online direkt anfragen.",
+    a: "Nach Ihrer Anfrage prüfen wir die Angaben und melden uns mit einer passenden Rückmeldung zum Ablauf und zum Angebot.",
   },
   {
-    q: "Kann ich ohne lange Texte buchen?",
-    a: "Ja. In unserem Buchungsformular wählen Sie strukturierte Optionen aus. Freitext ist nur optional.",
+    q: "Wie läuft die Online-Anfrage ab?",
+    a: "Sie wählen die gewünschte Leistung aus, senden die Eckdaten und erhalten danach eine geprüfte Rückmeldung von unserem Team.",
   },
   {
     q: "Welche Materialien sind bei Entsorgung ausgeschlossen?",
@@ -49,7 +49,7 @@ export default function FaqPage() {
           Häufige Fragen (FAQ)
         </h1>
         <p className="mt-4 text-base text-slate-800 dark:text-slate-200">
-          Antworten auf die wichtigsten Fragen rund um Umzug, Entsorgung, Preise und Kontakt.
+          Antworten auf zentrale Fragen zu Leistungen, Anfrageprozess, Terminen und Kontakt.
         </p>
       </div>
 
