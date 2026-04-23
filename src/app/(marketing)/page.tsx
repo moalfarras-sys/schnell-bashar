@@ -59,14 +59,18 @@ export default function HomePage() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(56,136,240,0.18),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(14,165,233,0.14),_transparent_32%),linear-gradient(180deg,#f8fbff_0%,#eef5fb_100%)] dark:bg-[linear-gradient(180deg,#0f172a_0%,#020617_100%)]" />
         <Container className="relative py-20 sm:py-24 lg:py-28">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)] lg:items-center">
-            <div className="max-w-4xl">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1.02fr)_minmax(420px,0.98fr)] lg:items-center">
+            <div className="max-w-5xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/80 px-4 py-1.5 text-xs font-bold text-brand-700 shadow-sm">
                 <CheckCircle2 className="h-4 w-4" />
                 24/7 erreichbar • Berlin & deutschlandweit
               </div>
-              <h1 className="mt-6 max-w-4xl text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-5xl lg:text-6xl">
+              <h1 className="mt-6 max-w-5xl text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-5xl lg:text-[4.3rem] lg:leading-[0.96]">
+                <span className="block">Umzugsunternehmen Berlin</span>
+                <span className="block">Umzug, Entsorgung & Montage 24/7</span>
+                <span className="sr-only">
                 Umzugsunternehmen Berlin – Umzug, Entsorgung & Montage 24/7
+                </span>
               </h1>
               <p className="mt-6 max-w-3xl text-base leading-relaxed text-slate-700 dark:text-slate-200 sm:text-lg">
                 Schnell Sicher Umzug unterstützt private und gewerbliche Kunden in Berlin und
@@ -101,16 +105,16 @@ export default function HomePage() {
               <div className="absolute -left-6 top-6 h-28 w-28 rounded-full bg-brand-200/40 blur-3xl" />
               <div className="absolute -bottom-8 right-0 h-36 w-36 rounded-full bg-sky-300/30 blur-3xl" />
               <div className="relative overflow-hidden rounded-[32px] border border-white/70 bg-white/70 p-2 shadow-[0_30px_90px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-[24px] bg-slate-200">
+                <div className="relative aspect-[6/5] overflow-hidden rounded-[24px] bg-slate-200 lg:aspect-[13/12]">
                   <Image
                     src="/media/gallery/truck-road.jpeg"
                     alt="Umzugslastwagen von Schnell Sicher Umzug auf dem Weg zum Einsatz"
                     fill
                     priority
                     sizes="(min-width: 1024px) 40vw, 100vw"
-                    className="object-cover"
+                    className="object-contain object-center"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/15 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/10 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-6 text-white">
                     <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-slate-950/35 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-100/90 backdrop-blur">
                       Schnell Sicher Umzug
