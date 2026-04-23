@@ -3,6 +3,11 @@ import path from "path";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { existsSync } from "fs";
+import {
+  cleanDisplayText,
+  formatAddress,
+  normalizeContactFields,
+} from "@/lib/documents/formatting";
 import { getImageSlot, publicSrcToAbsolute } from "@/server/content/slots";
 import {
   PDF_THEME,
@@ -128,27 +133,45 @@ const COMPACT_PROFILE: InvoiceSpacingProfile = {
 
 function buildReferences(data: InvoiceData): [string, string][] {
   if (data.manualReferenceRows && data.manualReferenceRows.length > 0) {
-    return data.manualReferenceRows.map((row) => [row.label, row.value]);
+    return data.manualReferenceRows
+      .map((row) => {
+        const label = cleanDisplayText(row.label);
+        const value = cleanDisplayText(row.value, { allowInternalIdentifier: false });
+        return label && value ? ([label, value] as [string, string]) : null;
+      })
+      .filter((row): row is [string, string] => Boolean(row));
   }
   return [
-    data.orderNo ? ["Auftrag", data.orderNo] : null,
-    data.offerNo ? ["Angebot", data.offerNo] : null,
-    data.contractNo ? ["Vertrag", data.contractNo] : null,
+    cleanDisplayText(data.orderNo, { allowInternalIdentifier: false })
+      ? ["Auftrag", cleanDisplayText(data.orderNo, { allowInternalIdentifier: false })!]
+      : null,
+    cleanDisplayText(data.offerNo, { allowInternalIdentifier: false })
+      ? ["Angebot", cleanDisplayText(data.offerNo, { allowInternalIdentifier: false })!]
+      : null,
+    cleanDisplayText(data.contractNo, { allowInternalIdentifier: false })
+      ? ["Vertrag", cleanDisplayText(data.contractNo, { allowInternalIdentifier: false })!]
+      : null,
   ].filter(Boolean) as [string, string][];
 }
 
 function buildTableRows(data: InvoiceData) {
   return (data.lineItems ?? []).map((item) => ({
-    name: item.name,
-    detailLines: item.detailLines ?? [],
+    name: cleanDisplayText(item.name) || "Position",
+    detailLines: (item.detailLines ?? [])
+      .map((line) => cleanDisplayText(line))
+      .filter((line): line is string => Boolean(line)),
     quantity: item.quantity ?? 1,
-    unit: item.unit || "Paket",
+    unit: cleanDisplayText(item.unit) || "Paket",
     total: item.priceCents ?? 0,
   }));
 }
 
 function compactTableCellText(row: { name: string; detailLines: string[] }) {
   return [row.name, ...row.detailLines.filter(Boolean).map((line) => `• ${line}`)].join("\n");
+}
+
+function safeDocumentNumber(value: string | undefined, fallback: string) {
+  return cleanDisplayText(value, { allowInternalIdentifier: false }) || fallback;
 }
 
 function measureHeaderHeight(doc: PDFKit.PDFDocument, width: number, profile: InvoiceSpacingProfile) {
@@ -369,7 +392,7 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
       bufferPages: true,
       margins: { top: 0, right: 0, bottom: 0, left: 0 },
       info: {
-        Title: `Rechnung ${data.invoiceNo || data.invoiceId}`,
+        Title: `Rechnung ${safeDocumentNumber(data.invoiceNo, "Rechnung")}`,
         Author: "Schnell Sicher Umzug",
         Subject: "Rechnung",
       },
@@ -406,7 +429,7 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
       title: "RECHNUNG",
       documentTag: "ABRECHNUNG",
       metaRows: [
-        { label: "Rechnungsnr.", value: data.invoiceNo || data.invoiceId },
+        { label: "Rechnungsnr.", value: safeDocumentNumber(data.invoiceNo, "Noch nicht vergeben") },
         { label: "Datum", value: fmtDate(data.issuedAt) },
         { label: "Fällig", value: fmtDate(data.dueAt) },
       ],
@@ -421,13 +444,17 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
       compact: profile.compact,
     });
 
+    const contacts = normalizeContactFields({
+      email: data.customerEmail,
+      phone: data.customerPhone,
+    });
     const gap = 14;
     const colW = (width - gap) / 2;
     const leftCardLines = [
-      data.customerName,
-      data.address,
-      data.customerPhone ? `Tel.: ${data.customerPhone}` : null,
-      `E-Mail: ${data.customerEmail}`,
+      cleanDisplayText(data.customerName, { kind: "name" }),
+      formatAddress(data.address),
+      contacts.phone ? `Tel.: ${contacts.phone}` : null,
+      contacts.email ? `E-Mail: ${contacts.email}` : null,
     ].filter(Boolean) as string[];
 
     const leftCardHeight = measureInfoCardsHeight(doc, width, data, refs, profile);

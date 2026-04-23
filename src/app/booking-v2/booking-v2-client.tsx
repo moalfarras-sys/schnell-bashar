@@ -501,7 +501,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
 
   return (
     <section className={styles.page}>
-      <Container className="relative z-10 py-10 pb-16 sm:py-14 sm:pb-20">
+      <Container className="relative z-10 py-10 pb-20 sm:py-14 sm:pb-28">
         <div className="mx-auto max-w-6xl" ref={topRef}>
           <div className={`${styles.glass} rounded-3xl p-5 sm:p-7`}>
             <div className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-700 dark:text-cyan-200">Online-Anfrage</div>
@@ -510,12 +510,12 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
               In wenigen Schritten senden Sie alle wichtigen Angaben an unser Team. Wir prüfen Ihre Anfrage,
               melden uns mit einer passenden Einschätzung und bleiben telefonisch 24/7 erreichbar.
             </p>
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <a
                 href="https://wa.me/491729573681"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-300/80 bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-500/40 dark:bg-emerald-900/20 dark:text-emerald-100 dark:hover:bg-emerald-900/30"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-300/80 bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-500/40 dark:bg-emerald-900/20 dark:text-emerald-100 dark:hover:bg-emerald-900/30 sm:min-w-[250px] sm:w-auto"
               >
                 <MessageCircle className="h-4 w-4" />
                 Jetzt per WhatsApp schreiben
@@ -523,7 +523,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
               <a
                 href="tel:+491729573681"
                 aria-label="Direkt anrufen unter +49 172 9573681"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-300/80 bg-white/70 px-4 py-2.5 text-sm font-bold text-cyan-800 transition hover:bg-cyan-50 dark:border-cyan-500/40 dark:bg-slate-900/45 dark:text-cyan-100 dark:hover:bg-slate-900/70"
+                className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-cyan-300/80 bg-white/70 px-4 py-2.5 text-sm font-bold text-cyan-800 transition hover:bg-cyan-50 dark:border-cyan-500/40 dark:bg-slate-900/45 dark:text-cyan-100 dark:hover:bg-slate-900/70 sm:min-w-[220px] sm:w-auto"
               >
                 <Phone className="h-4 w-4" />
                 Direkt anrufen
@@ -685,7 +685,7 @@ export function BookingV2Client(props: { initialContext?: string; initialQuoteId
             />
           </div>
 
-          <div className="mt-10 h-px bg-linear-to-r from-transparent via-sky-200/80 to-transparent dark:via-slate-700/80" />
+          <div className="mt-12 h-px bg-linear-to-r from-transparent via-sky-200/80 to-transparent dark:via-slate-700/80" />
         </div>
       </Container>
     </section>

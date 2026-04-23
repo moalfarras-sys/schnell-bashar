@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 
 import { adminCookieName, verifyAdminToken } from "@/server/auth/admin-session";
 import { prisma } from "@/server/db/prisma";
+import { cleanDisplayText } from "@/lib/documents/formatting";
 import { generateContractPDF } from "@/server/pdf/generate-contract";
 import {
   contractDisplayNo,
@@ -42,7 +43,7 @@ export async function GET(
   }
 
   const services = Array.isArray(contract.offer.services) ? contract.offer.services : [];
-  const orderNo = contract.offer.order ? orderDisplayNo(contract.offer.order) : contract.offer.id;
+  const orderNo = contract.offer.order ? orderDisplayNo(contract.offer.order) : undefined;
   const displayOfferNo = offerDisplayNo({
     offerNo: contract.offer.offerNo,
     id: contract.offer.id,
@@ -55,12 +56,17 @@ export async function GET(
     orderNo: contract.offer.order?.orderNo ?? null,
     orderPublicId: contract.offer.order?.publicId ?? null,
   });
+  const safeOrderNo = cleanDisplayText(orderNo, { allowInternalIdentifier: false }) ?? undefined;
+  const safeOfferNo =
+    cleanDisplayText(displayOfferNo, { allowInternalIdentifier: false }) ?? undefined;
+  const safeContractNo =
+    cleanDisplayText(displayContractNo, { allowInternalIdentifier: false }) ?? undefined;
 
   const pdfBuffer = await generateContractPDF({
     contractId: contract.id,
-    contractNo: displayContractNo,
-    offerNo: displayOfferNo,
-    orderNo,
+    contractNo: safeContractNo,
+    offerNo: safeOfferNo,
+    orderNo: safeOrderNo,
     contractDate: contract.createdAt,
     signedAt: contract.signedAt ?? undefined,
     customerName: contract.offer.customerName,
@@ -84,7 +90,7 @@ export async function GET(
   return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="Vertrag-${displayContractNo}.pdf"`,
+      "Content-Disposition": `inline; filename="Vertrag-${safeContractNo || "Vertrag"}.pdf"`,
       "Cache-Control": "no-store",
     },
   });

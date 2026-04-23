@@ -73,15 +73,15 @@ export default function HomePage() {
                 deutschlandweit bei Umzug, Sperrmüll-Entsorgung, Möbelmontage und strukturierten
                 Online-Anfragen. Telefonisch rund um die Uhr erreichbar, Termine nach Vereinbarung.
               </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link href="/booking">
-                  <Button size="xl" className="gap-2">
+                  <Button size="xl" className="w-full gap-2 sm:min-w-[250px] sm:w-auto">
                     Kostenloses Angebot anfragen
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
                 <a href="https://wa.me/491729573681" target="_blank" rel="noopener noreferrer">
-                  <Button size="xl" variant="outline" className="gap-2">
+                  <Button size="xl" variant="outline" className="w-full gap-2 sm:min-w-[250px] sm:w-auto">
                     <MessageCircle className="h-4 w-4" />
                     Jetzt per WhatsApp schreiben
                   </Button>
@@ -89,7 +89,7 @@ export default function HomePage() {
                 <a
                   href="tel:+491729573681"
                   aria-label="Direkt anrufen unter +49 172 9573681"
-                  className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl border border-[rgba(255,255,255,0.60)] bg-[rgba(255,255,255,0.55)] px-8 text-base font-bold text-slate-900 shadow-[0_0_0_0.5px_rgba(10,16,32,0.04),0_2px_8px_rgba(10,16,32,0.04),inset_0_1px_0_rgba(255,255,255,0.70)] backdrop-blur-md transition-all duration-220 ease-premium hover:-translate-y-px hover:bg-[rgba(255,255,255,0.75)] hover:shadow-[0_0_0_0.5px_rgba(10,16,32,0.05),0_4px_14px_rgba(10,16,32,0.06),inset_0_1px_0_rgba(255,255,255,0.80)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:border-brand-500/50 dark:hover:bg-slate-800/90 dark:hover:shadow-[0_0_24px_rgba(59,130,246,0.12)] dark:focus-visible:ring-brand-500/30 sm:text-lg"
+                  className="inline-flex h-14 w-full items-center justify-center gap-2 whitespace-nowrap rounded-2xl border border-[rgba(255,255,255,0.60)] bg-[rgba(255,255,255,0.55)] px-8 text-base font-bold text-slate-900 shadow-[0_0_0_0.5px_rgba(10,16,32,0.04),0_2px_8px_rgba(10,16,32,0.04),inset_0_1px_0_rgba(255,255,255,0.70)] backdrop-blur-md transition-all duration-220 ease-premium hover:-translate-y-px hover:bg-[rgba(255,255,255,0.75)] hover:shadow-[0_0_0_0.5px_rgba(10,16,32,0.05),0_4px_14px_rgba(10,16,32,0.06),inset_0_1px_0_rgba(255,255,255,0.80)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:border-brand-500/50 dark:hover:bg-slate-800/90 dark:hover:shadow-[0_0_24px_rgba(59,130,246,0.12)] dark:focus-visible:ring-brand-500/30 sm:min-w-[220px] sm:w-auto sm:text-lg"
                 >
                   <Phone className="h-4 w-4" />
                   Direkt anrufen
@@ -156,7 +156,57 @@ export default function HomePage() {
               Leistungen für Berlin und ganz Deutschland
             </h2>
           </div>
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+          <div className="mt-10 grid gap-6 lg:grid-cols-[0.96fr_1.04fr] lg:items-center">
+            <div className="rounded-[28px] border border-slate-200 bg-white p-7 shadow-sm">
+              <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-brand-700">
+                Reale Einsätze
+              </div>
+              <h3 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-950">
+                Planung, Trageleistung und saubere Ausführung statt generischer Vermittlung
+              </h3>
+              <p className="mt-4 text-sm leading-relaxed text-slate-600">
+                Unsere Anfrageaufnahme ist auf echte Einsätze ausgelegt: klare Absprachen,
+                nachvollziehbare Preisorientierung und dokumentierte Prüfung vor Angebot oder
+                Vertrag. Das gilt für Umzug, Entsorgung und Montage gleichermaßen.
+              </p>
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
+                  Transport & Trageleistung
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
+                  Vorprüfung & Angebot
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
+                  Berlin & deutschlandweit
+                </div>
+              </div>
+            </div>
+            <div className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-slate-900 shadow-[0_24px_70px_-28px_rgba(15,23,42,0.45)]">
+              <div className="relative aspect-[16/11]">
+                <Image
+                  src="/media/gallery/move-action-03.jpeg"
+                  alt="Umzugsteam von Schnell Sicher Umzug bei Trageleistung und Be- und Entladung"
+                  fill
+                  sizes="(min-width: 1024px) 42vw, 100vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/82 via-slate-950/18 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-200/85">
+                    Einsatz vor Ort
+                  </div>
+                  <div className="mt-2 max-w-md text-2xl font-extrabold leading-tight">
+                    Mehr Bildstärke auf der Startseite, ohne die Anfrageführung zu überladen.
+                  </div>
+                  <div className="mt-3 text-sm leading-relaxed text-slate-100/85">
+                    Reales Servicebild aus dem Projektbestand für eine ausgewogenere, weniger
+                    textlastige Startseite.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-8 grid gap-6 lg:grid-cols-3">
             {services.map((service) => (
               <Link
                 key={service.title}

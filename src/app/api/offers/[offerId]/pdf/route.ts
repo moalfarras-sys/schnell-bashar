@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/server/db/prisma";
+import { cleanDisplayText } from "@/lib/documents/formatting";
 import { generateOfferPDF } from "@/server/pdf/generate-offer";
 import { offerDisplayNo, orderDisplayNo } from "@/server/ids/document-number";
 
@@ -33,11 +34,13 @@ export async function GET(
     orderNo: offer.order?.orderNo ?? null,
     orderPublicId: offer.order?.publicId ?? null,
   });
+  const safeOfferNo =
+    cleanDisplayText(displayOfferNo, { allowInternalIdentifier: false }) ?? "Angebot";
 
   try {
     const pdfBuffer = await generateOfferPDF({
       offerId: offer.id,
-      offerNo: displayOfferNo,
+      offerNo: safeOfferNo,
       orderNo,
       offerDate: offer.createdAt,
       validUntil: offer.validUntil,
@@ -68,7 +71,7 @@ export async function GET(
     return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="Angebot-${displayOfferNo}.pdf"`,
+        "Content-Disposition": `inline; filename="Angebot-${safeOfferNo}.pdf"`,
       },
     });
   } catch (err) {

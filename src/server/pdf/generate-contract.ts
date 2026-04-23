@@ -126,7 +126,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
       metaRows: [
         { label: "Vertragsnr.", value: metaValueOrFallback(data.contractNo, "Noch nicht vergeben") },
         { label: "Angebot", value: data.offerNo || "—" },
-        { label: "Auftrag", value: data.orderNo || "—" },
+        { label: "Auftrag", value: metaValueOrFallback(data.orderNo, "Noch offen") },
         { label: "Datum", value: fmtDate(data.signedAt || data.contractDate) },
       ],
       logoPath,

@@ -24,12 +24,12 @@ export function SiteFooter() {
             Umzug, Entsorgung und Möbelmontage in Berlin und deutschlandweit. Telefonisch 24/7
             erreichbar, Termine nach Vereinbarung.
           </p>
-          <div className="mt-5 flex gap-3">
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             <a
               href="https://wa.me/491729573681"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs font-bold text-emerald-700 transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-100 hover:shadow-md dark:border-emerald-800/40 dark:bg-emerald-950/30 dark:text-emerald-300 dark:hover:border-emerald-700/50 dark:hover:bg-emerald-950/50"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs font-bold text-emerald-700 transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-100 hover:shadow-md dark:border-emerald-800/40 dark:bg-emerald-950/30 dark:text-emerald-300 dark:hover:border-emerald-700/50 dark:hover:bg-emerald-950/50"
             >
               <MessageCircle className="h-4 w-4" />
               WhatsApp
@@ -37,7 +37,7 @@ export function SiteFooter() {
             <a
               href="tel:+491729573681"
               aria-label="Direkt anrufen unter +49 172 9573681"
-              className="inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-4 py-2.5 text-xs font-bold text-brand-700 transition-all duration-300 hover:border-brand-300 hover:bg-brand-100 hover:shadow-md dark:border-brand-800/40 dark:bg-brand-950/30 dark:text-brand-300 dark:hover:border-brand-700/50 dark:hover:bg-brand-950/50"
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-brand-200 bg-brand-50 px-4 py-2.5 text-xs font-bold text-brand-700 transition-all duration-300 hover:border-brand-300 hover:bg-brand-100 hover:shadow-md dark:border-brand-800/40 dark:bg-brand-950/30 dark:text-brand-300 dark:hover:border-brand-700/50 dark:hover:bg-brand-950/50"
             >
               <Phone className="h-4 w-4" />
               Direkt anrufen

@@ -98,7 +98,7 @@ export async function GET(
     status: 200,
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="${invoice.invoiceNo || invoice.id}.pdf"`,
+      "Content-Disposition": `inline; filename="${invoice.invoiceNo || "Rechnung"}.pdf"`,
     },
   });
 }

@@ -95,7 +95,7 @@ export function normalizeContactFields(raw: {
 
 export function joinClean(
   parts: Array<unknown>,
-  separator = " · ",
+  separator = " - ",
   options?: { allowInternalIdentifier?: boolean },
 ) {
   const cleaned = parts
@@ -115,7 +115,7 @@ export function buildLineItemDescription(title: unknown, description?: unknown) 
   const cleanDescription = cleanDisplayText(description);
 
   if (cleanTitle && cleanDescription) {
-    return cleanTitle === cleanDescription ? cleanTitle : `${cleanTitle} · ${cleanDescription}`;
+    return cleanTitle === cleanDescription ? cleanTitle : `${cleanTitle} - ${cleanDescription}`;
   }
 
   return cleanTitle || cleanDescription || null;
