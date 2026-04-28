@@ -15,13 +15,46 @@ import { writeAuditLog } from "@/server/audit/log";
 
 export type LoginState = { error?: string | null };
 
+async function getEnvAdminClaims(email: string, password: string) {
+  const envEmail = (process.env.ADMIN_EMAIL ?? "").trim().toLowerCase();
+  const plain = String(process.env.ADMIN_PASSWORD ?? "").trim();
+  const hash = String(process.env.ADMIN_PASSWORD_HASH ?? "").trim();
+
+  if (!envEmail || email !== envEmail) return null;
+  const passwordOk =
+    (hash && /^\$2[aby]\$/.test(hash) && (await bcrypt.compare(password, hash))) ||
+    (plain && password === plain);
+
+  if (!passwordOk) return null;
+
+  return {
+    user: {
+      id: "env-owner",
+      email: envEmail,
+      isActive: true,
+      lockedUntil: null,
+      passwordHash: hash || plain,
+    },
+    roles: ["owner"],
+    permissions: [],
+  };
+}
+
 export async function loginAction(_prev: LoginState, formData: FormData): Promise<LoginState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   const next = String(formData.get("next") ?? "/admin");
 
-  await ensureBootstrapAdminFromEnv();
-  const claims = await getAdminClaimsByEmail(email);
+  let claims = null;
+  let usedEnvFallback = false;
+  try {
+    await ensureBootstrapAdminFromEnv();
+    claims = await getAdminClaimsByEmail(email);
+  } catch (error) {
+    console.error("[admin/login] database auth failed, trying env fallback", error);
+    claims = await getEnvAdminClaims(email, password);
+    usedEnvFallback = Boolean(claims);
+  }
 
   if (!claims?.user) return { error: "Falsche Zugangsdaten." };
   if (!claims.user.isActive) return { error: "Konto ist deaktiviert." };
@@ -29,7 +62,7 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
     return { error: "Zu viele Fehlversuche. Bitte später erneut versuchen." };
   }
 
-  const ok = await bcrypt.compare(password, claims.user.passwordHash);
+  const ok = usedEnvFallback ? true : await bcrypt.compare(password, claims.user.passwordHash);
   if (!ok) {
     await markLoginFailure(claims.user.id);
     await writeAuditLog({
@@ -43,7 +76,9 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
     return { error: "Falsche Zugangsdaten." };
   }
 
-  await markLoginSuccess(claims.user.id);
+  if (!usedEnvFallback) {
+    await markLoginSuccess(claims.user.id);
+  }
 
   const token = await signAdminToken({
     uid: claims.user.id,
@@ -59,16 +94,17 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
     path: "/",
   });
 
-  await writeAuditLog({
-    actorUserId: claims.user.id,
-    action: "auth.login_success",
-    entityType: "AdminUser",
-    entityId: claims.user.id,
-    after: { email: claims.user.email },
-    path: "/admin/login",
-  });
+  if (!usedEnvFallback) {
+    await writeAuditLog({
+      actorUserId: claims.user.id,
+      action: "auth.login_success",
+      entityType: "AdminUser",
+      entityId: claims.user.id,
+      after: { email: claims.user.email },
+      path: "/admin/login",
+    });
+  }
 
   redirect(next.startsWith("/admin") ? next : "/admin");
 }
-
 
