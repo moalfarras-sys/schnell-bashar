@@ -24,6 +24,18 @@ type SettingsModel = {
 
 type HealthModel = {
   ok: boolean;
+  env?: {
+    databaseUrl?: { configured: boolean; kind: string; host?: string; port?: string };
+    directUrl?: { configured: boolean; kind: string; host?: string; port?: string };
+    supabaseUrl?: boolean;
+    supabaseAnonKey?: boolean;
+    supabaseServiceRoleKey?: boolean;
+  };
+  checks?: {
+    db?: { ok: boolean; ms: number; message?: string };
+    storage?: { ok: boolean; ms: number; message?: string; result?: Array<{ name: string; exists: boolean }> };
+    smtp?: { ok: boolean; code?: string; message?: string };
+  };
   integrations?: {
     smtp?: {
       ready: boolean;
@@ -56,7 +68,7 @@ export function SettingsClient(props: { initialSettings: SettingsModel }) {
     async function loadHealth() {
       setHealthLoading(true);
       try {
-        const res = await fetch("/api/integrations/health?deep=1", { cache: "no-store" });
+        const res = await fetch("/api/admin/system/diagnostics", { cache: "no-store" });
         const data = (await res.json()) as HealthModel;
         if (!cancelled) setHealth(data);
       } catch {
@@ -164,8 +176,11 @@ export function SettingsClient(props: { initialSettings: SettingsModel }) {
     }
   }
 
-  const smtp = health?.integrations?.smtp;
-  const smtpReady = Boolean(smtp?.ready);
+  const smtpCheck = health?.checks?.smtp;
+  const smtpLegacy = health?.integrations?.smtp;
+  const smtpReady = Boolean(smtpCheck?.ok || smtpLegacy?.ready);
+  const dbReady = Boolean(health?.checks?.db?.ok);
+  const storageReady = Boolean(health?.checks?.storage?.ok);
 
   return (
     <div className="grid gap-6">
@@ -188,16 +203,30 @@ export function SettingsClient(props: { initialSettings: SettingsModel }) {
           </div>
           <div
             className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-extrabold ${
-              smtpReady
+              dbReady && smtpReady && storageReady
                 ? "bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-400/30"
                 : "bg-amber-500/15 text-amber-100 ring-1 ring-amber-400/30"
             }`}
           >
-            {smtpReady ? <ShieldCheck className="h-4 w-4" /> : <TriangleAlert className="h-4 w-4" />}
-            {healthLoading ? "Prüfung läuft" : smtpReady ? "SMTP bereit" : "SMTP prüfen"}
+            {dbReady && smtpReady && storageReady ? <ShieldCheck className="h-4 w-4" /> : <TriangleAlert className="h-4 w-4" />}
+            {healthLoading ? "Prüfung läuft" : dbReady && smtpReady && storageReady ? "System bereit" : "System prüfen"}
           </div>
         </div>
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <div className="rounded-xl border border-slate-700 bg-slate-800/70 p-4">
+            <div className="text-sm font-bold text-white">Datenbank</div>
+            <div className="mt-2 text-xs font-semibold text-slate-300">
+              {healthLoading
+                ? "Datenbank wird geprüft..."
+                : dbReady
+                  ? `Verbunden (${health?.checks?.db?.ms ?? 0} ms).`
+                  : health?.checks?.db?.message || "Datenbank ist nicht bereit."}
+            </div>
+            <div className="mt-2 text-[11px] font-semibold text-slate-400">
+              Verbindung: {health?.env?.databaseUrl?.kind ?? "unbekannt"}
+              {health?.env?.databaseUrl?.host ? ` (${health.env.databaseUrl.host}:${health.env.databaseUrl.port})` : ""}
+            </div>
+          </div>
           <div className="rounded-xl border border-slate-700 bg-slate-800/70 p-4">
             <div className="flex items-center gap-2 text-sm font-bold text-white">
               <MailCheck className="h-4 w-4 text-brand-300" />
@@ -208,7 +237,7 @@ export function SettingsClient(props: { initialSettings: SettingsModel }) {
                 ? "SMTP wird geprüft..."
                 : smtpReady
                   ? "E-Mails können gesendet werden."
-                  : smtp?.deep?.message || "SMTP ist nicht bereit oder nicht vollständig konfiguriert."}
+                  : smtpCheck?.message || smtpLegacy?.deep?.message || "SMTP ist nicht bereit oder nicht vollständig konfiguriert."}
             </div>
             <div className="mt-3 flex flex-col gap-2 sm:flex-row">
               <input
@@ -229,13 +258,16 @@ export function SettingsClient(props: { initialSettings: SettingsModel }) {
             </div>
           </div>
           <div className="rounded-xl border border-slate-700 bg-slate-800/70 p-4">
-            <div className="text-sm font-bold text-white">Routen & Entfernung</div>
+            <div className="text-sm font-bold text-white">Supabase Storage</div>
             <div className="mt-2 text-xs font-semibold text-slate-300">
               {healthLoading
                 ? "Wird geprüft..."
-                : health?.integrations?.ors?.ready
-                  ? "Routenberechnung ist bereit."
-                  : "ORS API-Key fehlt oder ist nicht bereit."}
+                : storageReady
+                  ? "Buckets sind erreichbar."
+                  : health?.checks?.storage?.message || "Supabase Storage ist nicht vollständig konfiguriert."}
+            </div>
+            <div className="mt-2 text-[11px] font-semibold text-slate-400">
+              URL: {health?.env?.supabaseUrl ? "vorhanden" : "fehlt"} · Service Role: {health?.env?.supabaseServiceRoleKey ? "vorhanden" : "fehlt"}
             </div>
           </div>
         </div>
