@@ -14,6 +14,7 @@ import {
 import { writeAuditLog } from "@/server/audit/log";
 
 export type LoginState = { error?: string | null };
+type LoginClaims = NonNullable<Awaited<ReturnType<typeof getAdminClaimsByEmail>>>;
 
 async function getEnvAdminClaims(email: string, password: string) {
   const envEmail = (process.env.ADMIN_EMAIL ?? "").trim().toLowerCase();
@@ -32,12 +33,12 @@ async function getEnvAdminClaims(email: string, password: string) {
       id: "env-owner",
       email: envEmail,
       isActive: true,
-      lockedUntil: null,
+      lockedUntil: null as Date | null,
       passwordHash: hash || plain,
     },
     roles: ["owner"],
-    permissions: [],
-  };
+    permissions: [] as string[],
+  } as LoginClaims;
 }
 
 export async function loginAction(_prev: LoginState, formData: FormData): Promise<LoginState> {
@@ -45,11 +46,15 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
   const password = String(formData.get("password") ?? "");
   const next = String(formData.get("next") ?? "/admin");
 
-  let claims = null;
-  let usedEnvFallback = false;
+  let claims: LoginClaims | null = await getEnvAdminClaims(email, password);
+  let usedEnvFallback = Boolean(claims);
+  const isPrimaryEnvAdmin = email === (process.env.ADMIN_EMAIL ?? "").trim().toLowerCase();
+  if (!claims && isPrimaryEnvAdmin) return { error: "Falsche Zugangsdaten." };
   try {
-    await ensureBootstrapAdminFromEnv();
-    claims = await getAdminClaimsByEmail(email);
+    if (!claims) {
+      await ensureBootstrapAdminFromEnv();
+      claims = await getAdminClaimsByEmail(email);
+    }
   } catch (error) {
     console.error("[admin/login] database auth failed, trying env fallback", error);
     claims = await getEnvAdminClaims(email, password);
@@ -107,4 +112,3 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
 
   redirect(next.startsWith("/admin") ? next : "/admin");
 }
-
