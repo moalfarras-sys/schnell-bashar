@@ -22,34 +22,10 @@ function tuneConnectionString(raw: string) {
   return url.toString();
 }
 
-/** Build Supabase direct connection URL from pooler URL to avoid "Invalid invocation" with Prisma adapter. */
-function supabasePoolerToDirect(poolerUrl: string): string {
-  try {
-    const url = new URL(poolerUrl);
-    if (!url.hostname.includes("pooler.supabase.com")) return poolerUrl;
-    // Username is typically "postgres.PROJECT_REF" or "postgres"
-    const ref = url.username.includes(".") ? url.username.split(".")[1] : null;
-    if (!ref) return poolerUrl;
-    url.hostname = `db.${ref}.supabase.co`;
-    url.port = "5432";
-    return url.toString();
-  } catch {
-    return poolerUrl;
-  }
-}
-
 function createPrismaClient() {
   let rawConnectionString =
     process.env.DATABASE_URL ??
     "postgresql://postgres:postgres@localhost:5432/schnell_sicher_umzug?schema=public";
-
-  if (rawConnectionString.includes("supabase.com") && rawConnectionString.includes("pooler.supabase.com")) {
-    rawConnectionString = process.env.DIRECT_URL?.includes("supabase.com")
-      ? process.env.DIRECT_URL
-      : supabasePoolerToDirect(rawConnectionString);
-  } else if (process.env.DIRECT_URL?.includes("supabase.com")) {
-    rawConnectionString = process.env.DIRECT_URL;
-  }
 
   const connectionString = tuneConnectionString(rawConnectionString);
   const isSupabase = connectionString.includes("supabase.com");
