@@ -68,7 +68,6 @@ export default async function AdminDashboard() {
   const startOfToday = new Date(now.toDateString());
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
 
-  let dbWarning: string | null = null;
   let totalOrders = 0;
   let openOrders = 0;
   let todayOrders = 0;
@@ -169,8 +168,6 @@ export default async function AdminDashboard() {
     monthlyRaw = monthlyRawRes;
   } catch (error) {
     console.error("[admin/dashboard] failed to load db data", error);
-    dbWarning =
-      "Dashboard-Daten konnten gerade nicht schnell geladen werden. Die Anmeldung funktioniert; bitte Datenbankverbindung prüfen.";
   }
 
   const revTrend =
@@ -226,12 +223,6 @@ export default async function AdminDashboard() {
           </div>
         </div>
       </div>
-
-      {dbWarning ? (
-        <div className="rounded-xl border border-amber-300 bg-amber-100/95 px-4 py-3 text-sm font-semibold text-amber-900">
-          {dbWarning}
-        </div>
-      ) : null}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         <ActionCard
@@ -324,7 +315,7 @@ export default async function AdminDashboard() {
         <div className="surface-glass rounded-3xl border p-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div className="text-sm font-extrabold text-slate-900 dark:text-white">Neueste Anfragen</div>
-            <Link href="/admin/orders" className="inline-flex items-center gap-1 text-xs font-semibold text-brand-400 hover:underline">
+            <Link href="/admin/orders" prefetch={false} className="inline-flex items-center gap-1 text-xs font-semibold text-brand-400 hover:underline">
               Alle anzeigen <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
@@ -338,6 +329,7 @@ export default async function AdminDashboard() {
                 <Link
                   key={o.publicId}
                   href={`/admin/orders/${o.publicId}`}
+                  prefetch={false}
                   className="flex items-center justify-between gap-3 rounded-2xl bg-white/70 px-4 py-3 ring-1 ring-slate-300/70 transition-colors hover:bg-white/90 dark:bg-slate-700/30 dark:ring-slate-700/70 dark:hover:bg-slate-700/50"
                 >
                   <div className="min-w-0">
@@ -357,28 +349,28 @@ export default async function AdminDashboard() {
       <div className="surface-glass rounded-3xl border p-6 shadow-lg">
         <div className="text-sm font-extrabold text-slate-900 dark:text-white">Schnellzugriff</div>
         <div className="mt-4 flex flex-wrap gap-3">
-          <Link href="/admin/orders">
+          <Link href="/admin/orders" prefetch={false}>
             <Button>Aufträge öffnen</Button>
           </Link>
-          <Link href="/admin/dokumente">
+          <Link href="/admin/dokumente" prefetch={false}>
             <Button variant="outline-light">Dokumente</Button>
           </Link>
-          <Link href="/admin/offers">
+          <Link href="/admin/offers" prefetch={false}>
             <Button variant="outline-light">Angebote & Verträge</Button>
           </Link>
-          <Link href="/admin/accounting/invoices">
+          <Link href="/admin/accounting/invoices" prefetch={false}>
             <Button variant="outline-light">Rechnungen</Button>
           </Link>
-          <Link href="/admin/pricing">
+          <Link href="/admin/pricing" prefetch={false}>
             <Button variant="outline-light">Preise bearbeiten</Button>
           </Link>
-          <Link href="/admin/availability">
+          <Link href="/admin/availability" prefetch={false}>
             <Button variant="outline-light">Zeitfenster</Button>
           </Link>
-          <Link href="/admin/calendar">
+          <Link href="/admin/calendar" prefetch={false}>
             <Button variant="outline-light">Abholkalender</Button>
           </Link>
-          <Link href="/admin/media/slots">
+          <Link href="/admin/media/slots" prefetch={false}>
             <Button variant="outline-light">Bild-Slots</Button>
           </Link>
         </div>
@@ -406,6 +398,7 @@ function ActionCard(props: {
   return (
     <Link
       href={props.href}
+      prefetch={false}
       className="group min-w-0 rounded-3xl border border-[color:var(--line-soft)] bg-white/55 p-5 shadow-lg transition-colors hover:bg-white/80 dark:bg-slate-900/25 dark:hover:bg-slate-900/45"
     >
       <div className="flex items-start justify-between gap-3">
