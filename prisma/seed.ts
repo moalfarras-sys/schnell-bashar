@@ -9,7 +9,9 @@ const connectionString =
 
 // Supabase (and other cloud Postgres) require SSL
 const isSupabase = connectionString.includes("supabase.com");
-const ssl = isSupabase ? { rejectUnauthorized: true } as const : undefined;
+const ssl = isSupabase
+  ? { rejectUnauthorized: process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== "false" } as const
+  : undefined;
 const adapter = new PrismaPg({ connectionString, ...(ssl ? { ssl } : {}) });
 const prisma = new PrismaClient({ adapter });
 
@@ -778,4 +780,3 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
-

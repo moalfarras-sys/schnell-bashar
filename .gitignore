@@ -29,6 +29,7 @@ tmp/pdf-renders
 visual-dev.log
 visual-dev.err.log
 *.tsbuildinfo
+supabase/.temp/
 
 # Prisma
 prisma/dev.db
