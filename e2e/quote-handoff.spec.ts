@@ -94,12 +94,12 @@ test.describe("Quote handoff", () => {
     await page.goto("/booking?quoteId=q_test_handoff_123");
 
     await expect(page.getByText("Angebot übernommen")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Zurück zum Preisrechner" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Preise und Richtwerte ansehen" })).toHaveAttribute(
       "href",
       "/preise?quoteId=q_test_handoff_123",
     );
 
-    await page.getByRole("button", { name: "Weiter" }).click();
+    await page.getByRole("button", { name: "Weiter" }).last().click();
     await expect(page.locator('input[value="Musterstraße 12, 12099 Berlin"]')).toBeVisible();
     await expect(page.locator('input[value="Hauptstraße 7, 10115 Berlin"]')).toBeVisible();
   });

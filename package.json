@@ -45,6 +45,7 @@
     "pdf:samples": "tsx scripts/export-pdf-samples.ts",
     "pdf:samples:documents": "tsx scripts/export-document-samples.ts",
     "pdf:renders": "tsx scripts/render-pdf-previews.ts",
+    "predeploy:check": "tsx scripts/predeploy-check.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

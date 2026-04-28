@@ -13,20 +13,16 @@ import { resolveCompanyStampPath } from "@/server/pdf/company-seal-assets";
 import { getImageSlots, publicSrcToAbsolute } from "@/server/content/slots";
 import {
   PDF_THEME,
-  TableColumn,
   drawBodyText,
   drawPageHeader,
   drawSectionCard,
   drawSectionHeading,
-  drawTable,
   ensurePageSpace,
   pdfContentWidth,
   pdfPageLayout,
   renderFooterOnAllPages,
-  sanitizePdfParagraphs,
   sanitizePdfText,
 } from "@/server/pdf/layout";
-import { MOVING_AGB_SECTIONS } from "@/server/pdf/legal";
 
 export interface ContractData {
   contractId: string;
@@ -112,14 +108,18 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
 
     const left = PDF_THEME.page.marginX;
     const width = pdfContentWidth();
-    const layout = pdfPageLayout();
+    const layout = pdfPageLayout({
+      top: PDF_THEME.invoiceLayout.compact.pageTop,
+      footerHeight: PDF_THEME.invoiceLayout.compact.footerHeight,
+      safeBottomPad: PDF_THEME.invoiceLayout.compact.safeBottomPad,
+    });
     const logoPath =
       slotLogoPath && existsSync(slotLogoPath)
         ? slotLogoPath
         : path.join(process.cwd(), "public", "media", "brand", "hero-logo.jpeg");
 
     let y = drawPageHeader(doc, {
-      y: 18,
+      y: PDF_THEME.invoiceLayout.compact.topOffset,
       contentWidth: width,
       title: "UMZUGSVERTRAG",
       documentTag: "VERBINDLICHE VEREINBARUNG",
@@ -137,6 +137,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
         { text: "kontakt@schnellsicherumzug.de" },
         { text: "USt-IdNr.: DE454603297" },
       ],
+      compact: true,
     });
 
     const gap = 14;
@@ -158,7 +159,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
       customerContacts.email ? `E-Mail: ${customerContacts.email}` : null,
     ].filter(Boolean) as string[];
     const partyCardH = Math.max(
-      104,
+      84,
       34 +
         Math.max(
           contractorLines.reduce(
@@ -224,23 +225,27 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     y = drawSectionHeading(doc, "§ 1 Vertragsgegenstand", left, y, width);
     const moveParagraphs = [
       data.moveFrom && data.moveTo
-        ? `Der Auftragnehmer verpflichtet sich, den Umzug des Auftraggebers von ${data.moveFrom} nach ${data.moveTo} fachgerecht, sorgfältig und entsprechend der vereinbarten Leistungen durchzuführen.`
-        : "Der Auftragnehmer verpflichtet sich, die vereinbarten Umzugs- und Zusatzleistungen fachgerecht und termingerecht auszuführen.",
-      data.moveDate ? `Geplanter Umzugstermin: ${fmtDate(data.moveDate)}.` : "",
-      data.floorFrom != null ? `Auszug: ${data.floorFrom}. Etage${data.elevatorFrom ? " mit Aufzug" : " ohne Aufzug"}.` : "",
-      data.floorTo != null ? `Einzug: ${data.floorTo}. Etage${data.elevatorTo ? " mit Aufzug" : " ohne Aufzug"}.` : "",
+        ? `Umzug von ${formatAddress(data.moveFrom)} nach ${formatAddress(data.moveTo)}.`
+        : "Vereinbarte Umzugs- und Zusatzleistungen.",
+      [
+        data.moveDate ? `Termin: ${fmtDate(data.moveDate)}` : null,
+        data.floorFrom != null ? `Auszug: ${data.floorFrom}. Etage${data.elevatorFrom ? " mit Aufzug" : " ohne Aufzug"}` : null,
+        data.floorTo != null ? `Einzug: ${data.floorTo}. Etage${data.elevatorTo ? " mit Aufzug" : " ohne Aufzug"}` : null,
+      ]
+        .filter(Boolean)
+        .join(" · "),
     ].filter(Boolean);
     drawSectionCard(doc, {
       x: left,
       y,
       width,
       height:
-        20 +
+        18 +
         moveParagraphs.reduce(
           (sum, paragraph) =>
             sum +
-            doc.font("Helvetica").fontSize(8.9).heightOfString(paragraph, { width: width - 28, lineGap: 1.7, align: "justify" }) +
-            8,
+            doc.font("Helvetica").fontSize(8.15).heightOfString(paragraph, { width: width - 28, lineGap: 1.2 }) +
+            5,
           0,
         ),
       fill: PDF_THEME.colors.card,
@@ -251,42 +256,52 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     let moveY = y + 14;
     moveParagraphs.forEach((paragraph) => {
       moveY = drawBodyText(doc, paragraph, left + 14, moveY, width - 28, {
-        size: 8.9,
-        lineGap: 1.7,
+        size: 8.15,
+        lineGap: 1.2,
         color: PDF_THEME.colors.body,
-        align: "justify",
       });
-      moveY += 8;
+      moveY += 5;
     });
-    y = moveY + 8;
+    y = moveY + 6;
 
-    y = ensurePageSpace(doc, y, 160, layout);
+    y = ensurePageSpace(doc, y, 150, layout);
     y = drawSectionHeading(doc, "§ 2 Leistungsumfang und Vergütung", left, y, width);
-    const serviceRows = data.services.map((service) => ({
-      description: service.description ? `${service.name} · ${service.description}` : service.name,
-      quantity: service.quantity ?? 1,
-      unit: service.unit || "Pauschal",
-    }));
-    const columns: TableColumn<(typeof serviceRows)[number]>[] = [
-      { key: "description", header: "Leistung", width: 332, value: (row) => row.description },
-      { key: "quantity", header: "Menge", width: 62, align: "center", value: (row) => String(row.quantity) },
-      { key: "unit", header: "Einheit", width: width - 332 - 62, align: "center", value: (row) => row.unit },
-    ];
-    y = drawTable({
-      doc,
-      y,
-      layout,
+    const serviceSummary = data.services
+      .slice(0, 4)
+      .map((service) => {
+        const title = buildLineItemDescription(service.name, service.description) || "Leistung";
+        return `${service.quantity ?? 1} ${service.unit || "Pauschal"} - ${title}`;
+      })
+      .join("\n");
+    const extraServices = data.services.length > 4 ? `\nWeitere Positionen: ${data.services.length - 4}` : "";
+    const noteText = data.notes ? `\nHinweis: ${sanitizePdfText(data.notes).slice(0, 180)}` : "";
+    const serviceText = `${serviceSummary || "Vereinbarte Umzugs- und Zusatzleistungen."}${extraServices}${noteText}`;
+    const serviceH =
+      34 +
+      doc.font("Helvetica").fontSize(8.25).heightOfString(sanitizePdfText(serviceText), {
+        width: width - 32,
+        lineGap: 1.25,
+      });
+    drawSectionCard(doc, {
       x: left,
+      y,
       width,
-      columns,
-      rows: serviceRows,
-      card: true,
-      zebra: true,
+      height: serviceH,
+      fill: PDF_THEME.colors.card,
+      border: PDF_THEME.colors.border,
+      borderWidth: 0.8,
+      radius: PDF_THEME.radius.card,
     });
-
-    y += 14;
-    const priceCardH = 110;
-    y = ensurePageSpace(doc, y, priceCardH + 14 + 76 + 16, layout);
+    doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.2).fillColor(PDF_THEME.colors.muted);
+    doc.text("LEISTUNGEN", left + 16, y + 12);
+    drawBodyText(doc, serviceText, left + 16, y + 25, width - 32, {
+      size: 8.25,
+      lineGap: 1.25,
+      color: PDF_THEME.colors.body,
+    });
+    y += serviceH + 10;
+    const priceCardH = 102;
+    y = ensurePageSpace(doc, y, priceCardH + 12, layout);
     drawSectionCard(doc, {
       x: left,
       y,
@@ -297,134 +312,27 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
       borderWidth: 0.8,
       radius: PDF_THEME.radius.card,
     });
-    doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.4).fillColor(PDF_THEME.colors.muted);
-    doc.text("VERGÜTUNG", left + 16, y + 14);
-    doc.font(PDF_THEME.type.body.font).fontSize(9).fillColor(PDF_THEME.colors.body);
-    doc.text("Nettobetrag", left + 16, y + 38);
-    doc.text(eur(data.netCents), left + 16, y + 38, { width: width - 32, align: "right" });
-    doc.text("MwSt. (19 %)", left + 16, y + 56);
-    doc.text(eur(data.vatCents), left + 16, y + 56, { width: width - 32, align: "right" });
-    doc.strokeColor(PDF_THEME.colors.border).lineWidth(0.65).moveTo(left + 16, y + 76).lineTo(left + width - 16, y + 76).stroke();
-    doc.font(PDF_THEME.type.total.font).fontSize(15).fillColor(PDF_THEME.colors.ink);
-    doc.text("Gesamtbetrag", left + 16, y + 82);
-    doc.text(eur(data.grossCents), left + 16, y + 82, { width: width - 32, align: "right" });
-    y += priceCardH + 14;
-    drawSectionCard(doc, {
-      x: left,
-      y,
-      width,
-      height: 62,
-      fill: "#f8fbff",
-      border: "#cfe0f1",
-      borderWidth: 0.85,
-      radius: PDF_THEME.radius.card,
-    });
-    doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.4).fillColor(PDF_THEME.colors.brand);
-    doc.text("ZAHLUNGSREGELUNG", left + 16, y + 14);
-    drawBodyText(doc, CONTRACT_PAYMENT_TERMS, left + 16, y + 28, width - 32, {
-      size: 8.8,
-      lineGap: 1.7,
+    doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.2).fillColor(PDF_THEME.colors.muted);
+    doc.text("VERGÜTUNG", left + 16, y + 12);
+    doc.font(PDF_THEME.type.body.font).fontSize(8.4).fillColor(PDF_THEME.colors.body);
+    doc.text("Nettobetrag", left + 16, y + 31);
+    doc.text(eur(data.netCents), left + 16, y + 31, { width: width - 32, align: "right" });
+    doc.text("MwSt. (19 %)", left + 16, y + 46);
+    doc.text(eur(data.vatCents), left + 16, y + 46, { width: width - 32, align: "right" });
+    doc.strokeColor(PDF_THEME.colors.border).lineWidth(0.65).moveTo(left + 16, y + 61).lineTo(left + width - 16, y + 61).stroke();
+    doc.font(PDF_THEME.type.total.font).fontSize(13.2).fillColor(PDF_THEME.colors.ink);
+    doc.text("Gesamtbetrag", left + 16, y + 65);
+    doc.text(eur(data.grossCents), left + 16, y + 65, { width: width - 32, align: "right" });
+    drawBodyText(doc, CONTRACT_PAYMENT_TERMS, left + 16, y + 83, width - 32, {
+      size: 7.35,
+      lineGap: 1.05,
       color: PDF_THEME.colors.body,
-      align: "justify",
     });
-    y += 76;
+    y += priceCardH + 8;
 
-    if (data.notes) {
-      y = ensurePageSpace(doc, y, 70, layout);
-      drawSectionCard(doc, {
-        x: left,
-        y,
-        width,
-        height:
-          30 +
-          doc.font("Helvetica").fontSize(8.8).heightOfString(sanitizePdfText(data.notes), { width: width - 28, lineGap: 1.6 }) +
-          10,
-        fill: PDF_THEME.colors.card,
-        border: PDF_THEME.colors.border,
-        borderWidth: 0.8,
-        radius: PDF_THEME.radius.card,
-      });
-      doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.4).fillColor(PDF_THEME.colors.muted);
-      doc.text("BESONDERE HINWEISE", left + 16, y + 14);
-      y = drawBodyText(doc, data.notes, left + 16, y + 28, width - 32, {
-        size: 8.8,
-        lineGap: 1.6,
-        color: PDF_THEME.colors.body,
-        align: "justify",
-      });
-      y += 16;
-    }
-
-    const legalSections = [
-      {
-        title: "§ 3 Pflichten des Auftraggebers",
-        paragraphs: [
-          "Der Auftraggeber stellt sicher, dass alle Zugangswege frei, sicher und begehbar sind. Er informiert rechtzeitig über Besonderheiten wie eingeschränkte Zufahrten, empfindliche Gegenstände oder gesonderte Sicherheitsanforderungen.",
-          "Wertgegenstände, Bargeld, Schmuck, wichtige Dokumente und Datenträger werden vom Auftraggeber selbst transportiert.",
-        ],
-      },
-      {
-        title: "§ 4 Haftung",
-        paragraphs: [
-          "Der Auftragnehmer haftet für Schäden nur im Rahmen der gesetzlichen Vorschriften. Für nicht ordnungsgemäß verpackte Gegenstände oder nicht gemeldete Besonderheiten wird keine Haftung übernommen.",
-        ],
-      },
-      {
-        title: "§ 5 Stornierung und Rücktritt",
-        paragraphs: [
-          "Bei Rücktritt vor dem Umzugstermin gelten die in den AGB geregelten Stornostaffeln. Dem Kunden bleibt der Nachweis vorbehalten, dass ein geringerer Schaden entstanden ist.",
-        ],
-      },
-      {
-        title: "§ 6 Schlussbestimmungen",
-        paragraphs: [
-          "Es gilt das Recht der Bundesrepublik Deutschland. Änderungen und Ergänzungen dieses Vertrages bedürfen der Schriftform. Gerichtsstand ist Berlin, soweit gesetzlich zulässig.",
-        ],
-      },
-    ];
-
-    for (const section of legalSections) {
-      const estimatedHeight =
-        26 +
-        section.paragraphs.reduce(
-          (sum, paragraph) =>
-            sum +
-            doc.font("Helvetica").fontSize(8.85).heightOfString(paragraph, {
-              width,
-              lineGap: 1.7,
-              align: "justify",
-            }) +
-            8,
-          0,
-        );
-      y = ensurePageSpace(doc, y, estimatedHeight, layout);
-      y = drawSectionHeading(doc, section.title, left, y, width);
-      drawSectionCard(doc, {
-        x: left,
-        y,
-        width,
-        height: estimatedHeight,
-        fill: PDF_THEME.colors.card,
-        border: PDF_THEME.colors.border,
-        borderWidth: 0.8,
-        radius: PDF_THEME.radius.card,
-      });
-      let innerY = y + 14;
-      section.paragraphs.forEach((paragraph) => {
-        innerY = drawBodyText(doc, paragraph, left + 16, innerY, width - 32, {
-          size: 8.85,
-          lineGap: 1.7,
-          color: PDF_THEME.colors.body,
-          align: "justify",
-        });
-        innerY += 8;
-      });
-      y = innerY + 10;
-    }
-
-    y = ensurePageSpace(doc, y, 170, layout);
+    y = ensurePageSpace(doc, y, 134, layout);
     y = drawSectionHeading(doc, "Unterschriften", left, y, width);
-    const signatureCardH = 138;
+    const signatureCardH = 118;
     drawSectionCard(doc, {
       x: left,
       y,
@@ -438,28 +346,28 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
 
     const sigGap = 24;
     const sigW = (width - sigGap - 32) / 2;
-    const sigLineY = y + 88;
+    const sigLineY = y + 76;
     doc.strokeColor(PDF_THEME.colors.border).lineWidth(0.8);
     doc.moveTo(left + 16, sigLineY).lineTo(left + 16 + sigW, sigLineY).stroke();
     doc.moveTo(left + 16 + sigW + sigGap, sigLineY).lineTo(left + width - 16, sigLineY).stroke();
     doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.4).fillColor(PDF_THEME.colors.muted);
-    doc.text("AUFTRAGNEHMER", left + 16, y + 18);
-    doc.text("AUFTRAGGEBER", left + 16 + sigW + sigGap, y + 18);
+    doc.text("AUFTRAGNEHMER", left + 16, y + 16);
+    doc.text("AUFTRAGGEBER", left + 16 + sigW + sigGap, y + 16);
 
     const stampPath = slotStampPath && existsSync(slotStampPath) ? slotStampPath : resolveCompanyStampPath();
     if (stampPath) {
       try {
-        doc.image(stampPath, left + 24, y + 28, {
-          fit: [120, 58],
+        doc.image(stampPath, left + 28, y + 28, {
+          fit: [112, 38],
           valign: "center",
         });
       } catch {
         doc.font("Helvetica-Bold").fontSize(13).fillColor(PDF_THEME.colors.brand);
-        doc.text("Schnell Sicher Umzug", left + 24, y + 48);
+        doc.text("Schnell Sicher Umzug", left + 28, y + 43);
       }
     } else {
       doc.font("Helvetica-Bold").fontSize(13).fillColor(PDF_THEME.colors.brand);
-      doc.text("Schnell Sicher Umzug", left + 24, y + 48);
+      doc.text("Schnell Sicher Umzug", left + 28, y + 43);
     }
 
     if (data.customerSignatureDataUrl) {
@@ -467,18 +375,18 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
         const base64Data = data.customerSignatureDataUrl.replace(/^data:image\/\w+;base64,/, "");
         const sigBuffer = Buffer.from(base64Data, "base64");
         doc.image(sigBuffer, left + 16 + sigW + sigGap + 8, y + 32, {
-          fit: [sigW - 16, 46],
+          fit: [sigW - 16, 32],
           valign: "center",
         });
       } catch {
         if (data.customerSignedName) {
           doc.font("Helvetica-Oblique").fontSize(13).fillColor(PDF_THEME.colors.ink);
-          doc.text(data.customerSignedName, left + 16 + sigW + sigGap + 8, y + 50, { width: sigW - 16 });
+          doc.text(data.customerSignedName, left + 16 + sigW + sigGap + 8, y + 45, { width: sigW - 16 });
         }
       }
     } else if (data.customerSignedName) {
       doc.font("Helvetica-Oblique").fontSize(13).fillColor(PDF_THEME.colors.ink);
-      doc.text(data.customerSignedName, left + 16 + sigW + sigGap + 8, y + 50, { width: sigW - 16 });
+      doc.text(data.customerSignedName, left + 16 + sigW + sigGap + 8, y + 45, { width: sigW - 16 });
     }
 
     doc.font("Helvetica").fontSize(8.1).fillColor(PDF_THEME.colors.body);
@@ -489,58 +397,15 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
       doc.text(data.customerSignedName, left + 16 + sigW + sigGap, sigLineY + 22, { width: sigW });
     }
 
-    y += 22;
-    y = ensurePageSpace(doc, y, 180, layout);
-    y = drawSectionHeading(doc, "Allgemeine Geschäftsbedingungen", left, y, width);
-    drawBodyText(
-      doc,
-      "Die nachfolgenden AGB sind Bestandteil des Vertrags. Sie sind mit bewusst ruhiger Typografie und klaren Abschnittswechseln gesetzt, damit sie auch im Ausdruck sauber lesbar bleiben.",
-      left,
-      y,
-      width,
-      { size: 8.8, lineGap: 1.7, color: PDF_THEME.colors.body },
+    doc.font("Helvetica").fontSize(6.7).fillColor(PDF_THEME.colors.muted);
+    doc.text(
+      "Die AGB sind Bestandteil des Vertrags und werden als separates Dokument bereitgestellt.",
+      left + 16,
+      y + signatureCardH - 14,
+      { width: width - 32, align: "center" },
     );
-    y += 28;
 
-    for (const section of MOVING_AGB_SECTIONS) {
-      const paragraphs = section.paragraphs.flatMap((paragraph) => sanitizePdfParagraphs(paragraph));
-      const estimatedHeight =
-        24 +
-        paragraphs.reduce(
-          (sum, paragraph) =>
-            sum +
-            doc.font("Helvetica").fontSize(PDF_THEME.type.legalBody.size).heightOfString(paragraph, {
-              width: width - 32,
-              lineGap: PDF_THEME.type.legalBody.lineGap,
-              align: "justify",
-            }) +
-            8,
-          0,
-        );
-      y = ensurePageSpace(doc, y, estimatedHeight + 10, layout);
-      drawSectionCard(doc, {
-        x: left,
-        y,
-        width,
-        height: estimatedHeight + 8,
-        fill: PDF_THEME.colors.card,
-        border: PDF_THEME.colors.border,
-        borderWidth: 0.75,
-        radius: PDF_THEME.radius.card,
-      });
-      let secY = y + 14;
-      secY = drawSectionHeading(doc, `§ ${section.number} ${section.title}`, left + 16, secY, width - 32);
-      paragraphs.forEach((paragraph) => {
-        secY = drawBodyText(doc, paragraph, left + 16, secY, width - 32, {
-          size: PDF_THEME.type.legalBody.size,
-          lineGap: PDF_THEME.type.legalBody.lineGap,
-          color: PDF_THEME.colors.body,
-          align: "justify",
-        });
-        secY += 8;
-      });
-      y = secY + 10;
-    }
+    y += signatureCardH + 10;
 
     renderFooterOnAllPages(doc);
     doc.end();

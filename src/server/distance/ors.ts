@@ -450,7 +450,11 @@ export async function resolveRouteDistance(input: RouteDistanceInput): Promise<R
   const toPostalCode = normalizePostalCode(input.to.postalCode) || to.postalCode;
 
   if (fromPostalCode && toPostalCode) {
-    const cachedKm = await getCachedDistance(fromPostalCode, toPostalCode, profile);
+    const cachedKm = await getCachedDistance(fromPostalCode, toPostalCode, profile).catch((error) => {
+      if (!input.allowFallback) throw error;
+      console.warn("[distance/ors] distance cache unavailable, continuing without cache", error);
+      return null;
+    });
     if (cachedKm != null) {
       return {
         distanceKm: cachedKm,
@@ -489,7 +493,10 @@ export async function resolveRouteDistance(input: RouteDistanceInput): Promise<R
   }
 
   if (fromPostalCode && toPostalCode) {
-    await setCachedDistance(fromPostalCode, toPostalCode, profile, orsKm);
+    await setCachedDistance(fromPostalCode, toPostalCode, profile, orsKm).catch((error) => {
+      if (!input.allowFallback) throw error;
+      console.warn("[distance/ors] failed to write distance cache", error);
+    });
   }
 
   return {
@@ -500,4 +507,3 @@ export async function resolveRouteDistance(input: RouteDistanceInput): Promise<R
     profile,
   };
 }
-

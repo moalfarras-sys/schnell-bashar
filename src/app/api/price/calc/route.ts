@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
   try {
     const { result } = await calculateQuote(draft, {
-      allowDistanceFallback: false,
+      allowDistanceFallback: true,
       promoCode: parsed.data.promoCode,
     });
     return NextResponse.json({

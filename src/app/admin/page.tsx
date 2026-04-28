@@ -7,6 +7,9 @@ import {
   FileText,
   FileCheck2,
   Users,
+  FileSignature,
+  Euro,
+  ClipboardList,
 } from "lucide-react";
 
 import { prisma } from "@/server/db/prisma";
@@ -60,7 +63,11 @@ export default async function AdminDashboard() {
   let todayOrders = 0;
   let totalOffers = 0;
   let acceptedOffers = 0;
+  let pendingOffers = 0;
+  let pendingContracts = 0;
   let signedContracts = 0;
+  let openInvoices = 0;
+  let overdueInvoices = 0;
   let revenueThisMonth = 0;
   let revenuePrevMonth = 0;
   let recentOrders: Array<{
@@ -79,7 +86,11 @@ export default async function AdminDashboard() {
       todayOrdersRes,
       totalOffersRes,
       acceptedOffersRes,
+      pendingOffersRes,
+      pendingContractsRes,
       signedContractsRes,
+      openInvoicesRes,
+      overdueInvoicesRes,
       revenueThisMonthRes,
       revenuePrevMonthRes,
       recentOrdersRes,
@@ -90,7 +101,11 @@ export default async function AdminDashboard() {
       prisma.order.count({ where: { createdAt: { gte: startOfToday } } }),
       prisma.offer.count(),
       prisma.offer.count({ where: { status: "ACCEPTED" } }),
+      prisma.offer.count({ where: { status: "PENDING" } }),
+      prisma.contract.count({ where: { status: "PENDING_SIGNATURE" } }),
       prisma.contract.count({ where: { status: "SIGNED" } }),
+      prisma.invoice.count({ where: { status: { in: ["UNPAID", "PARTIAL", "OVERDUE"] } } }),
+      prisma.invoice.count({ where: { OR: [{ status: "OVERDUE" }, { status: { in: ["UNPAID", "PARTIAL"] }, dueAt: { lt: now } }] } }),
       prisma.offer.aggregate({
         _sum: { grossCents: true },
         where: {
@@ -129,7 +144,11 @@ export default async function AdminDashboard() {
     todayOrders = todayOrdersRes;
     totalOffers = totalOffersRes;
     acceptedOffers = acceptedOffersRes;
+    pendingOffers = pendingOffersRes;
+    pendingContracts = pendingContractsRes;
     signedContracts = signedContractsRes;
+    openInvoices = openInvoicesRes;
+    overdueInvoices = overdueInvoicesRes;
     revenueThisMonth = revenueThisMonthRes._sum.grossCents ?? 0;
     revenuePrevMonth = revenuePrevMonthRes._sum.grossCents ?? 0;
     recentOrders = recentOrdersRes;
@@ -183,7 +202,7 @@ export default async function AdminDashboard() {
             </div>
             <h1 className="mt-3 text-2xl font-extrabold md:text-3xl">Admin Dashboard</h1>
             <p className="mt-1 text-sm font-medium text-slate-600 dark:text-slate-300">
-              Überblick über Aufträge, Umsatz und Kundenaktivität.
+              Alles Wichtige für den Arbeitstag: neue Anfragen, offene Dokumente und Rechnungen.
             </p>
           </div>
           <div className="rounded-2xl bg-white/70 px-4 py-3 text-right text-xs font-semibold text-slate-600 ring-1 ring-slate-300/70 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700/70">
@@ -218,6 +237,41 @@ export default async function AdminDashboard() {
         <div className="min-w-0">
           <StatCard title="Gesamt" value={totalOrders} hint="alle Aufträge" icon={<FileCheck2 className="h-5 w-5" />} />
         </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <ActionCard
+          title="Neue Aufträge"
+          value={openOrders}
+          href="/admin/orders"
+          action="Prüfen"
+          tone="blue"
+          icon={<ClipboardList className="h-5 w-5" />}
+        />
+        <ActionCard
+          title="Angebote offen"
+          value={pendingOffers}
+          href="/admin/offers"
+          action="Bearbeiten"
+          tone="amber"
+          icon={<FileText className="h-5 w-5" />}
+        />
+        <ActionCard
+          title="Warten auf Unterschrift"
+          value={pendingContracts}
+          href="/admin/offers"
+          action="Nachfassen"
+          tone="purple"
+          icon={<FileSignature className="h-5 w-5" />}
+        />
+        <ActionCard
+          title="Rechnungen offen"
+          value={openInvoices}
+          href="/admin/accounting/invoices"
+          action={overdueInvoices > 0 ? `${overdueInvoices} überfällig` : "Öffnen"}
+          tone={overdueInvoices > 0 ? "red" : "emerald"}
+          icon={<Euro className="h-5 w-5" />}
+        />
       </div>
 
       <div className="surface-glass rounded-3xl border p-6 shadow-lg">
@@ -283,8 +337,14 @@ export default async function AdminDashboard() {
           <Link href="/admin/orders">
             <Button>Aufträge öffnen</Button>
           </Link>
+          <Link href="/admin/dokumente">
+            <Button variant="outline-light">Dokumente</Button>
+          </Link>
           <Link href="/admin/offers">
             <Button variant="outline-light">Angebote & Verträge</Button>
+          </Link>
+          <Link href="/admin/accounting/invoices">
+            <Button variant="outline-light">Rechnungen</Button>
           </Link>
           <Link href="/admin/pricing">
             <Button variant="outline-light">Preise bearbeiten</Button>
@@ -301,6 +361,43 @@ export default async function AdminDashboard() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ActionCard(props: {
+  title: string;
+  value: number;
+  href: string;
+  action: string;
+  tone: "blue" | "amber" | "purple" | "emerald" | "red";
+  icon: React.ReactNode;
+}) {
+  const toneClass = {
+    blue: "bg-blue-500/15 text-blue-800 ring-blue-400/30 dark:text-blue-200",
+    amber: "bg-amber-500/20 text-amber-900 ring-amber-400/35 dark:text-amber-200",
+    purple: "bg-purple-500/15 text-purple-900 ring-purple-400/30 dark:text-purple-200",
+    emerald: "bg-emerald-500/15 text-emerald-900 ring-emerald-400/30 dark:text-emerald-200",
+    red: "bg-red-500/15 text-red-900 ring-red-400/30 dark:text-red-200",
+  }[props.tone];
+
+  return (
+    <Link
+      href={props.href}
+      className="group min-w-0 rounded-3xl border border-[color:var(--line-soft)] bg-white/55 p-5 shadow-lg transition-colors hover:bg-white/80 dark:bg-slate-900/25 dark:hover:bg-slate-900/45"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="truncate text-sm font-extrabold text-slate-900 dark:text-white">{props.title}</div>
+          <div className="mt-2 text-3xl font-black tracking-tight text-slate-950 dark:text-white">{props.value}</div>
+        </div>
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ring-1 ${toneClass}`}>
+          {props.icon}
+        </div>
+      </div>
+      <div className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-brand-700 group-hover:underline dark:text-brand-200">
+        {props.action} <ArrowRight className="h-3.5 w-3.5" />
+      </div>
+    </Link>
   );
 }
 

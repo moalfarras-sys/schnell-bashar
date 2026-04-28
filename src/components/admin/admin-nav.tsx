@@ -7,10 +7,8 @@ import {
   ClipboardList,
   FileText,
   Tag,
-  Package,
   Calendar,
   ImageIcon,
-  LayoutTemplate,
   Briefcase,
   Type,
   Receipt,
@@ -30,40 +28,40 @@ type NavItem = {
   label: string;
   icon: LucideIcon;
   badge?: number;
-  section?: "main" | "operations" | "content" | "system" | "accounting";
+  section: "work" | "money" | "planning" | "site" | "settings";
 };
 
 const navItems: NavItem[] = [
-  { href: "/admin", label: "Übersicht", icon: LayoutDashboard, section: "main" },
-  { href: "/admin/orders", label: "Aufträge", icon: ClipboardList, section: "main" },
-  { href: "/admin/offers", label: "Angebote & Verträge", icon: FileText, section: "main" },
-  { href: "/admin/dokumente", label: "Dokumente", icon: FileText, section: "main" },
-  { href: "/admin/dokumente/neu", label: "Neues Dokument", icon: PlusCircle, section: "operations" },
-  { href: "/admin/offers/new", label: "Neues Angebot", icon: PlusCircle, section: "operations" },
-  { href: "/admin/contracts/manual", label: "Neuer Vertrag (manuell)", icon: PlusCircle, section: "operations" },
-  { href: "/admin/catalog", label: "Katalog", icon: Package, section: "operations" },
-  { href: "/admin/services", label: "Services & Promo-Regeln", icon: Wrench, section: "operations" },
-  { href: "/admin/pricing", label: "Preise", icon: Tag, section: "operations" },
-  { href: "/admin/availability", label: "Zeitfenster", icon: Calendar, section: "operations" },
-  { href: "/admin/calendar", label: "Abholkalender", icon: Calendar, section: "operations" },
-  { href: "/admin/media", label: "Mediathek", icon: ImageIcon, section: "content" },
-  { href: "/admin/media/slots", label: "Bild-Slots", icon: LayoutTemplate, section: "content" },
-  { href: "/admin/content", label: "Inhalte", icon: Type, section: "content" },
-  { href: "/admin/jobs", label: "Stellenangebote", icon: Briefcase, section: "content" },
-  { href: "/admin/users", label: "Benutzer", icon: Users, section: "system" },
-  { href: "/admin/roles", label: "Rollen & Rechte", icon: Shield, section: "system" },
-  { href: "/admin/audit", label: "Audit-Log", icon: ScrollText, section: "system" },
-  { href: "/admin/settings", label: "Einstellungen", icon: Settings, section: "system" },
-  { href: "/admin/accounting", label: "Buchhaltung", icon: Wallet, section: "accounting" },
-  { href: "/admin/accounting/invoices", label: "Rechnungen", icon: Receipt, section: "accounting" },
-  { href: "/admin/accounting/invoices/new", label: "Neue Rechnung (manuell)", icon: PlusCircle, section: "accounting" },
-  { href: "/admin/accounting/expenses", label: "Ausgaben", icon: Wallet, section: "accounting" },
-  { href: "/admin/accounting/expense-categories", label: "Ausgabenkategorien", icon: Settings, section: "accounting" },
-  { href: "/admin/accounting/quarterly-report", label: "Quartalsbericht", icon: BarChart3, section: "accounting" },
-  { href: "/admin/accounting/reports", label: "Berichte", icon: BarChart3, section: "accounting" },
+  { href: "/admin", label: "Start", icon: LayoutDashboard, section: "work" },
+  { href: "/admin/orders", label: "Aufträge", icon: ClipboardList, section: "work" },
+  { href: "/admin/offers", label: "Angebote & Verträge", icon: FileText, section: "work" },
+  { href: "/admin/dokumente", label: "Dokumente", icon: FileText, section: "work" },
+  { href: "/admin/offers/new", label: "Angebot erstellen", icon: PlusCircle, section: "work" },
+  { href: "/admin/accounting", label: "Buchhaltung", icon: Wallet, section: "money" },
+  { href: "/admin/accounting/invoices", label: "Rechnungen", icon: Receipt, section: "money" },
+  { href: "/admin/accounting/invoices/new", label: "Rechnung erstellen", icon: PlusCircle, section: "money" },
+  { href: "/admin/accounting/expenses", label: "Ausgaben", icon: Wallet, section: "money" },
+  { href: "/admin/accounting/quarterly-report", label: "Quartalsbericht", icon: BarChart3, section: "money" },
+  { href: "/admin/calendar", label: "Kalender", icon: Calendar, section: "planning" },
+  { href: "/admin/availability", label: "Zeitfenster", icon: Calendar, section: "planning" },
+  { href: "/admin/pricing", label: "Preise", icon: Tag, section: "planning" },
+  { href: "/admin/services", label: "Leistungen & Regeln", icon: Wrench, section: "planning" },
+  { href: "/admin/media", label: "Mediathek", icon: ImageIcon, section: "site" },
+  { href: "/admin/content", label: "Website-Texte", icon: Type, section: "site" },
+  { href: "/admin/jobs", label: "Stellenangebote", icon: Briefcase, section: "site" },
+  { href: "/admin/settings", label: "Einstellungen", icon: Settings, section: "settings" },
+  { href: "/admin/users", label: "Benutzer", icon: Users, section: "settings" },
+  { href: "/admin/roles", label: "Rollen & Rechte", icon: Shield, section: "settings" },
+  { href: "/admin/audit", label: "Audit-Log", icon: ScrollText, section: "settings" },
 ];
 
-export function AdminNav({ newOrderCount }: { newOrderCount?: number }) {
+export function AdminNav({
+  newOrderCount,
+  allowedHrefs,
+}: {
+  newOrderCount?: number;
+  allowedHrefs?: string[];
+}) {
   const pathname = usePathname();
 
   function isActive(href: string) {
@@ -71,17 +69,20 @@ export function AdminNav({ newOrderCount }: { newOrderCount?: number }) {
     return pathname.startsWith(href);
   }
 
-  const items = navItems.map((item) => ({
-    ...item,
-    badge: item.href === "/admin/orders" ? newOrderCount : undefined,
-  }));
+  const allowedSet = allowedHrefs ? new Set(allowedHrefs) : null;
+  const items = navItems
+    .filter((item) => !allowedSet || allowedSet.has(item.href))
+    .map((item) => ({
+      ...item,
+      badge: item.href === "/admin/orders" ? newOrderCount : undefined,
+    }));
 
-  const sectionMeta: Record<NonNullable<NavItem["section"]>, string> = {
-    main: "Kernbereich",
-    operations: "Betrieb",
-    content: "Inhalte",
-    system: "System",
-    accounting: "Buchhaltung",
+  const sectionMeta: Record<NavItem["section"], string> = {
+    work: "Tagesarbeit",
+    money: "Geld & Rechnungen",
+    planning: "Planung",
+    site: "Website",
+    settings: "System",
   };
 
   function renderItem(n: (typeof items)[number]) {
@@ -116,7 +117,7 @@ export function AdminNav({ newOrderCount }: { newOrderCount?: number }) {
 
   return (
     <nav className="grid gap-3">
-      {(Object.keys(sectionMeta) as Array<NonNullable<NavItem["section"]>>).map((sectionKey) => {
+      {(Object.keys(sectionMeta) as Array<NavItem["section"]>).map((sectionKey) => {
         const sectionItems = items.filter((n) => n.section === sectionKey);
         if (sectionItems.length === 0) return null;
         return (

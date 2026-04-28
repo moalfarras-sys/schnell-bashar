@@ -15,8 +15,11 @@ const SKIP_DIRS = new Set(["node_modules", ".next", ".git", "prisma", "generated
 const BAD_PATTERNS: Array<{ name: string; re: RegExp }> = [
   // Common mojibake artifacts from UTF-8 interpreted as Latin-1/Windows-1252.
   { name: "latin1-utf8-artifact", re: /Ã[\u0080-\u00BF]/g },
+  { name: "latin1-visible-umlaut-artifact", re: /\u00C3[\u00A0-\u00BF]/g },
   { name: "latin1-prefix", re: /Â[^\s]/g },
+  { name: "latin1-visible-prefix", re: /\u00C2[\u00A0-\u00BF]/g },
   { name: "cp1252-quote-dash", re: /â[€™œž€“—]/g },
+  { name: "cp1252-visible-punctuation", re: /\u00E2[\u0080-\u00BF\u20AC\u2122\u0153\u20AC\u201C\u201D]/g },
   { name: "replacement-char", re: /�|ï¿½/g },
   { name: "bom-artifact", re: /ï»¿/g },
   { name: "control-char", re: /[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g },

@@ -39,7 +39,7 @@ function buildResponse(volumeM3: number, withPacking: boolean) {
   };
 }
 
-test("Packservice aktualisiert Live-Kalkulation in /booking", async ({ page }) => {
+test("Packservice aktualisiert Preisorientierung in /booking", async ({ page }) => {
   await page.route("**/api/price/calc", async (route) => {
     const payload = route.request().postDataJSON() as { volumeM3?: number; addons?: string[] };
     const volume = Number(payload?.volumeM3 ?? 24);
@@ -52,21 +52,22 @@ test("Packservice aktualisiert Live-Kalkulation in /booking", async ({ page }) =
   });
 
   await page.goto("/booking");
-  await page.getByRole("button", { name: "Weiter" }).click();
+  await page.getByRole("button", { name: "Weiter" }).last().click();
 
-  const inputs = page.getByPlaceholder("Straße, Hausnummer, PLZ, Ort");
+  const inputs = page.locator("main input");
   await inputs.nth(0).fill("Musterstraße 1, 10115 Berlin");
   await inputs.nth(1).fill("Hauptstraße 2, 12043 Berlin");
   await page.getByRole("button", { name: "Volumen" }).click();
   await page.getByRole("button", { name: "Extras" }).click();
 
-  const liveCard = page.getByText("Live-Kalkulation").locator("xpath=ancestor::aside[1]");
-  await expect(liveCard.getByText("240,00 €").first()).toBeVisible();
+  const liveCard = page
+    .getByText("Unverbindliche Preisorientierung")
+    .locator("xpath=ancestor::aside[1]");
+  await expect(liveCard.getByText(/240,00\s*€/).first()).toBeVisible();
 
   await page.getByText("Packservice", { exact: true }).click();
-  await expect(liveCard.getByText("265,00 €").first()).toBeVisible();
+  await expect(liveCard.getByText(/265,00\s*€/).first()).toBeVisible();
 
   await page.getByText("Packservice", { exact: true }).click();
-  await expect(liveCard.getByText("240,00 €").first()).toBeVisible();
+  await expect(liveCard.getByText(/240,00\s*€/).first()).toBeVisible();
 });
-

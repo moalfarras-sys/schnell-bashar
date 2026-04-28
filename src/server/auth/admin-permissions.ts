@@ -7,6 +7,8 @@
   "offers.create",
   "offers.update",
   "offers.delete",
+  "documents.read",
+  "documents.update",
   "pricing.read",
   "pricing.update",
   "availability.read",
@@ -30,6 +32,8 @@
   "users.update",
   "roles.read",
   "roles.update",
+  "settings.read",
+  "settings.update",
   "audit.read",
 ] as const;
 
@@ -39,6 +43,7 @@ const PREFIX_RULES: Array<{ prefix: string; permission: AdminPermissionKey }> = 
   { prefix: "/admin/accounting", permission: "accounting.read" },
   { prefix: "/admin/orders", permission: "orders.read" },
   { prefix: "/admin/offers", permission: "offers.read" },
+  { prefix: "/admin/dokumente", permission: "documents.read" },
   { prefix: "/admin/pricing", permission: "pricing.read" },
   { prefix: "/admin/availability", permission: "availability.read" },
   { prefix: "/admin/calendar", permission: "availability.read" },
@@ -49,6 +54,7 @@ const PREFIX_RULES: Array<{ prefix: string; permission: AdminPermissionKey }> = 
   { prefix: "/admin/jobs", permission: "jobs.read" },
   { prefix: "/admin/users", permission: "users.read" },
   { prefix: "/admin/roles", permission: "roles.read" },
+  { prefix: "/admin/settings", permission: "settings.read" },
   { prefix: "/admin/audit", permission: "audit.read" },
 ];
 
@@ -79,6 +85,8 @@ export const DEFAULT_ROLE_PERMISSION_MAP: Record<string, AdminPermissionKey[]> =
     "offers.read",
     "offers.create",
     "offers.update",
+    "documents.read",
+    "documents.update",
     "pricing.read",
     "pricing.update",
     "availability.read",
@@ -98,6 +106,8 @@ export const DEFAULT_ROLE_PERMISSION_MAP: Record<string, AdminPermissionKey[]> =
     "accounting.read",
     "accounting.update",
     "accounting.export",
+    "settings.read",
+    "settings.update",
   ],
   accountant: [
     "dashboard.view",
@@ -106,6 +116,7 @@ export const DEFAULT_ROLE_PERMISSION_MAP: Record<string, AdminPermissionKey[]> =
     "accounting.export",
     "orders.read",
     "offers.read",
+    "documents.read",
   ],
   ops: [
     "dashboard.view",
@@ -113,6 +124,8 @@ export const DEFAULT_ROLE_PERMISSION_MAP: Record<string, AdminPermissionKey[]> =
     "orders.update",
     "offers.read",
     "offers.update",
+    "documents.read",
+    "documents.update",
     "availability.read",
     "availability.update",
     "jobs.read",
@@ -122,4 +135,3 @@ export const DEFAULT_ROLE_PERMISSION_MAP: Record<string, AdminPermissionKey[]> =
     "services.read",
   ],
 };
-

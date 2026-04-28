@@ -132,7 +132,11 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
 
     const left = PDF_THEME.page.marginX;
     const width = pdfContentWidth();
-    const layout = pdfPageLayout();
+    const layout = pdfPageLayout({
+      top: PDF_THEME.invoiceLayout.compact.pageTop,
+      footerHeight: PDF_THEME.invoiceLayout.compact.footerHeight,
+      safeBottomPad: PDF_THEME.invoiceLayout.compact.safeBottomPad,
+    });
     const logoPath =
       (data.logoPath && existsSync(data.logoPath) && data.logoPath) ||
       (slotLogoPath && existsSync(slotLogoPath)
@@ -164,7 +168,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     ].map((line) => cleanDisplayText(line)).filter((line): line is string => Boolean(line));
 
     let y = drawPageHeader(doc, {
-      y: 18,
+      y: PDF_THEME.invoiceLayout.compact.topOffset,
       contentWidth: width,
       title: "ANGEBOT",
       documentTag: "UMZUGSANGEBOT",
@@ -182,6 +186,7 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
         { text: "kontakt@schnellsicherumzug.de" },
         { text: "USt-IdNr.: DE454603297" },
       ],
+      compact: true,
     });
 
     const gap = 14;
@@ -275,14 +280,14 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
     if (optionalBlocks.length > 0) {
       const blockHeights = optionalBlocks.map(
         (block) =>
-          28 +
-          doc.font("Helvetica").fontSize(8.6).heightOfString(sanitizePdfText(block.text), {
+          22 +
+          doc.font("Helvetica").fontSize(7.8).heightOfString(sanitizePdfText(block.text).slice(0, 220), {
             width: width - 28,
-            lineGap: 1.6,
+            lineGap: 1.2,
           }) +
-          10,
+          6,
       );
-      const panelH = blockHeights.reduce((sum, value) => sum + value, 0) + (optionalBlocks.length - 1) * 8;
+      const panelH = blockHeights.reduce((sum, value) => sum + value, 0) + (optionalBlocks.length - 1) * 5;
       y = ensurePageSpace(doc, y, panelH + 6, layout);
       drawSectionCard(doc, {
         x: left,
@@ -298,14 +303,14 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       optionalBlocks.forEach((block, index) => {
         doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.3).fillColor(PDF_THEME.colors.muted);
         doc.text(block.title.toUpperCase(), left + 14, contentY);
-        contentY = drawBodyText(doc, block.text, left + 14, contentY + 12, width - 28, {
-          size: 8.6,
-          lineGap: 1.6,
+        contentY = drawBodyText(doc, sanitizePdfText(block.text).slice(0, 220), left + 14, contentY + 10, width - 28, {
+          size: 7.8,
+          lineGap: 1.2,
           color: PDF_THEME.colors.body,
         });
-        if (index < optionalBlocks.length - 1) contentY += 10;
+        if (index < optionalBlocks.length - 1) contentY += 6;
       });
-      y = contentY + 10;
+      y = contentY + 6;
     }
 
     y = ensurePageSpace(doc, y, 120, layout);
@@ -335,9 +340,9 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       card: true,
     });
 
-    y += 14;
+    y += 10;
     y = ensurePageSpace(doc, y, 160, layout);
-    const sumH = 84;
+    const sumH = 76;
     drawSectionCard(doc, {
       x: left,
       y,
@@ -348,20 +353,20 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       borderWidth: 0.8,
       radius: PDF_THEME.radius.card,
     });
-    doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.4).fillColor(PDF_THEME.colors.muted);
-    doc.text("PREISÜBERSICHT", left + 16, y + 14);
-    doc.font(PDF_THEME.type.body.font).fontSize(9).fillColor(PDF_THEME.colors.body);
-    doc.text("Nettobetrag", left + 16, y + 34);
-    doc.text(eur(data.netCents), left + 16, y + 34, { width: width - 32, align: "right" });
-    doc.text("MwSt. (19 %)", left + 16, y + 50);
-    doc.text(eur(data.vatCents), left + 16, y + 50, { width: width - 32, align: "right" });
-    doc.strokeColor(PDF_THEME.colors.border).lineWidth(0.65).moveTo(left + 16, y + 66).lineTo(left + width - 16, y + 66).stroke();
-    doc.font(PDF_THEME.type.total.font).fontSize(15).fillColor(PDF_THEME.colors.ink);
-    doc.text("Gesamtbetrag", left + 16, y + 70);
-    doc.text(eur(data.grossCents), left + 16, y + 70, { width: width - 32, align: "right" });
+    doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.2).fillColor(PDF_THEME.colors.muted);
+    doc.text("PREISÜBERSICHT", left + 16, y + 12);
+    doc.font(PDF_THEME.type.body.font).fontSize(8.4).fillColor(PDF_THEME.colors.body);
+    doc.text("Nettobetrag", left + 16, y + 30);
+    doc.text(eur(data.netCents), left + 16, y + 30, { width: width - 32, align: "right" });
+    doc.text("MwSt. (19 %)", left + 16, y + 44);
+    doc.text(eur(data.vatCents), left + 16, y + 44, { width: width - 32, align: "right" });
+    doc.strokeColor(PDF_THEME.colors.border).lineWidth(0.65).moveTo(left + 16, y + 58).lineTo(left + width - 16, y + 58).stroke();
+    doc.font(PDF_THEME.type.total.font).fontSize(13.2).fillColor(PDF_THEME.colors.ink);
+    doc.text("Gesamtbetrag", left + 16, y + 62);
+    doc.text(eur(data.grossCents), left + 16, y + 62, { width: width - 32, align: "right" });
 
-    y += sumH + 14;
-    const termsH = 46;
+    y += sumH + 10;
+    const termsH = 40;
     drawSectionCard(doc, {
       x: left,
       y,
@@ -373,10 +378,10 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       radius: PDF_THEME.radius.card,
     });
     doc.font(PDF_THEME.type.cardTitle.font).fontSize(7.5).fillColor("#9a6700");
-    doc.text("WICHTIGE HINWEISE", left + 16, y + 12);
+    doc.text("WICHTIGE HINWEISE", left + 16, y + 10);
     drawBodyText(doc, OFFER_TERMS, left + 16, y + 23, width - 32, {
-      size: 8.3,
-      lineGap: 1.45,
+      size: 7.7,
+      lineGap: 1.15,
       color: PDF_THEME.colors.ink,
     });
 

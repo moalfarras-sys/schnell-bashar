@@ -23,6 +23,94 @@ type CacheState = {
 const MAX_AGE_MS = 120_000;
 const MARKER_CHECK_MS = 15_000;
 
+const FALLBACK_RUNTIME_CONFIG: RuntimePricingConfig = {
+  pricing: {
+    currency: "EUR",
+    movingBaseFeeCents: 19000,
+    disposalBaseFeeCents: 14000,
+    hourlyRateCents: 6500,
+    perM3MovingCents: 3400,
+    perM3DisposalCents: 4800,
+    perKmCents: 250,
+    heavyItemSurchargeCents: 5500,
+    stairsSurchargePerFloorCents: 2500,
+    carryDistanceSurchargePer25mCents: 1500,
+    parkingSurchargeMediumCents: 6000,
+    parkingSurchargeHardCents: 12000,
+    elevatorDiscountSmallCents: 800,
+    elevatorDiscountLargeCents: 1500,
+    uncertaintyPercent: 12,
+    economyMultiplier: 0.9,
+    standardMultiplier: 1,
+    expressMultiplier: 1.3,
+    montageBaseFeeCents: 14900,
+    entsorgungBaseFeeCents: 11900,
+    montageStandardMultiplier: 0.98,
+    montagePlusMultiplier: 1,
+    montagePremiumMultiplier: 1.12,
+    entsorgungStandardMultiplier: 0.96,
+    entsorgungPlusMultiplier: 1,
+    entsorgungPremiumMultiplier: 1.1,
+    montageMinimumOrderCents: 9900,
+    entsorgungMinimumOrderCents: 8900,
+  },
+  serviceOptions: [
+    {
+      code: "PACKING",
+      moduleSlug: "SPECIAL",
+      pricingType: "FLAT",
+      defaultPriceCents: 2500,
+      defaultLaborMinutes: 30,
+      isHeavy: false,
+      requiresQuantity: false,
+    },
+    {
+      code: "DISMANTLE_ASSEMBLE",
+      moduleSlug: "MONTAGE",
+      pricingType: "FLAT",
+      defaultPriceCents: 3500,
+      defaultLaborMinutes: 45,
+      isHeavy: false,
+      requiresQuantity: false,
+    },
+    {
+      code: "OLD_KITCHEN_DISPOSAL",
+      moduleSlug: "ENTSORGUNG",
+      pricingType: "FLAT",
+      defaultPriceCents: 14900,
+      defaultLaborMinutes: 90,
+      isHeavy: true,
+      requiresQuantity: false,
+    },
+    {
+      code: "BASEMENT_ATTIC_CLEARING",
+      moduleSlug: "ENTSORGUNG",
+      pricingType: "FLAT",
+      defaultPriceCents: 9900,
+      defaultLaborMinutes: 75,
+      isHeavy: false,
+      requiresQuantity: false,
+    },
+    {
+      code: "MONTAGE_KUECHE",
+      moduleSlug: "MONTAGE",
+      pricingType: "FLAT",
+      defaultPriceCents: 29900,
+      defaultLaborMinutes: 240,
+      isHeavy: true,
+      requiresQuantity: false,
+    },
+  ],
+  promoRules: [],
+  leadDays: {
+    economy: 10,
+    standard: 5,
+    express: 2,
+  },
+  version: "fallback-seed-pricing",
+  updatedAt: new Date(0).toISOString(),
+};
+
 declare global {
   var __ssuPricingRuntimeCache: CacheState | undefined;
 }
@@ -191,6 +279,15 @@ async function fetchFreshRuntimeConfig(version: string): Promise<RuntimePricingC
   };
 }
 
+function cacheFallbackRuntimeConfig(now: number): RuntimePricingConfig {
+  globalThis.__ssuPricingRuntimeCache = {
+    data: FALLBACK_RUNTIME_CONFIG,
+    expiresAt: now + 15_000,
+    markerCheckedAt: now,
+  };
+  return FALLBACK_RUNTIME_CONFIG;
+}
+
 export async function getRuntimePricingConfig(): Promise<RuntimePricingConfig> {
   const now = Date.now();
   const cache = globalThis.__ssuPricingRuntimeCache;
@@ -199,7 +296,13 @@ export async function getRuntimePricingConfig(): Promise<RuntimePricingConfig> {
     return cache.data;
   }
 
-  const currentVersion = await resolveMarkerVersion();
+  let currentVersion: string;
+  try {
+    currentVersion = await resolveMarkerVersion();
+  } catch (error) {
+    console.warn("[pricing] failed to load runtime pricing from database, using fallback seed pricing", error);
+    return cacheFallbackRuntimeConfig(now);
+  }
 
   if (cache && now < cache.expiresAt && cache.data.version === currentVersion) {
     globalThis.__ssuPricingRuntimeCache = {
@@ -209,7 +312,13 @@ export async function getRuntimePricingConfig(): Promise<RuntimePricingConfig> {
     return cache.data;
   }
 
-  const fresh = await fetchFreshRuntimeConfig(currentVersion);
+  let fresh: RuntimePricingConfig;
+  try {
+    fresh = await fetchFreshRuntimeConfig(currentVersion);
+  } catch (error) {
+    console.warn("[pricing] failed to refresh runtime pricing from database, using fallback seed pricing", error);
+    return cacheFallbackRuntimeConfig(now);
+  }
   globalThis.__ssuPricingRuntimeCache = {
     data: fresh,
     expiresAt: now + MAX_AGE_MS,

@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { AdminNav } from "@/components/admin/admin-nav";
 import { AdminPwaRegister } from "@/components/admin/admin-pwa-register";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { hasPermission, requiredPermissionForPath } from "@/server/auth/admin-permissions";
+import { getAdminSessionClaims } from "@/server/auth/require-admin";
 import { prisma } from "@/server/db/prisma";
 
 export const metadata: Metadata = {
@@ -37,6 +39,36 @@ export const viewport: Viewport = {
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   let newOrderCount = 0;
+  const claims = await getAdminSessionClaims();
+  const navHrefs = [
+    "/admin",
+    "/admin/orders",
+    "/admin/offers",
+    "/admin/dokumente",
+    "/admin/offers/new",
+    "/admin/accounting",
+    "/admin/accounting/invoices",
+    "/admin/accounting/invoices/new",
+    "/admin/accounting/expenses",
+    "/admin/accounting/quarterly-report",
+    "/admin/calendar",
+    "/admin/availability",
+    "/admin/pricing",
+    "/admin/services",
+    "/admin/media",
+    "/admin/content",
+    "/admin/jobs",
+    "/admin/settings",
+    "/admin/users",
+    "/admin/roles",
+    "/admin/audit",
+  ];
+  const allowedHrefs = claims
+    ? navHrefs.filter((href) =>
+        hasPermission(claims.roles, claims.permissions, requiredPermissionForPath(href)),
+      )
+    : ["/admin"];
+
   try {
     newOrderCount = await prisma.order.count({ where: { status: "NEW" } });
   } catch {
@@ -96,9 +128,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </summary>
           <div className="admin-mobile-nav-panel mt-3 border-t border-[color:var(--line-soft)] pt-3">
             <div className="mb-3 rounded-2xl bg-slate-100/75 p-3 text-xs font-semibold text-slate-700 dark:bg-slate-900/45 dark:text-slate-300">
-              Verwaltung, Buchhaltung und Inhalte in einer Übersicht.
+              Tagesarbeit, Rechnungen und Website-Inhalte in einer klaren Reihenfolge.
             </div>
-            <AdminNav newOrderCount={newOrderCount} />
+            <AdminNav newOrderCount={newOrderCount} allowedHrefs={allowedHrefs} />
             <form action={logoutAction} className="mt-3">
               <Button type="submit" variant="outline-light" size="sm" className="w-full">
                 Abmelden
@@ -109,9 +141,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         <aside className="hidden h-fit rounded-3xl border p-4 lg:sticky lg:top-24 lg:block lg:bg-[color:var(--surface-glass)] lg:backdrop-blur-xl">
           <div className="mb-3 rounded-2xl bg-slate-100/75 p-3 text-xs font-semibold text-slate-700 dark:bg-slate-900/45 dark:text-slate-300">
-            Verwaltung, Buchhaltung und Inhalte in einer Übersicht.
+            Tagesarbeit, Rechnungen und Website-Inhalte in einer klaren Reihenfolge.
           </div>
-          <AdminNav newOrderCount={newOrderCount} />
+          <AdminNav newOrderCount={newOrderCount} allowedHrefs={allowedHrefs} />
         </aside>
 
         <main className="admin-main min-w-0 max-w-full overflow-x-auto rounded-3xl border border-[color:var(--line-soft)] bg-white/35 p-3 backdrop-blur-sm dark:bg-slate-900/20 lg:p-4">

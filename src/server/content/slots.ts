@@ -19,6 +19,10 @@ export type ResolvedImageSlot = {
   source: "asset" | "slot-value" | "registry-default" | "fallback";
 };
 
+function isProductionStaticBuild(): boolean {
+  return process.env.NEXT_PHASE === "phase-production-build";
+}
+
 function normalizePublicSrc(value?: string | null): string | null {
   if (!value) return null;
   const trimmed = value.trim();
@@ -87,6 +91,15 @@ const getSlotRecordCached = unstable_cache(
 );
 
 export async function getImageSlot(input: SlotLookup): Promise<ResolvedImageSlot> {
+  if (isProductionStaticBuild()) {
+    return {
+      key: input.key,
+      src: normalizePublicSrc(input.fallbackSrc) ?? "",
+      alt: input.fallbackAlt ?? "",
+      source: "fallback",
+    };
+  }
+
   const { slot, registry } = await getSlotRecordCached(input.key);
 
   const assetPath = normalizeUsablePublicSrc(slot?.asset?.path);
@@ -155,6 +168,7 @@ const getTextSlotCached = unstable_cache(
 );
 
 export async function getTextSlot(key: string, fallback: string): Promise<string> {
+  if (isProductionStaticBuild()) return fallback;
   const val = await getTextSlotCached(key);
   return val ?? fallback;
 }

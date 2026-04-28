@@ -3,18 +3,18 @@
 test.describe("Booking smoke", () => {
   test("shows booking page with integrated shell", async ({ page }) => {
     await page.goto("/booking");
-    await expect(page.getByRole("heading", { name: "Jetzt buchen" })).toBeVisible();
-    await expect(page.getByText("Live-Kalkulation", { exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Weiter" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Umzug, Entsorgung oder Montage online anfragen" })).toBeVisible();
+    await expect(page.getByText("Unverbindliche Preisorientierung", { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Weiter" }).last()).toBeVisible();
   });
 
   test("blocks address step when mandatory fields are missing", async ({ page }) => {
     await page.goto("/booking?context=MOVING");
 
-    await page.getByRole("button", { name: "Weiter" }).click();
+    await page.getByRole("button", { name: "Weiter" }).last().click();
     await expect(page.getByRole("heading", { name: "2. Adressen" })).toBeVisible();
 
-    await page.getByRole("button", { name: "Weiter" }).click();
+    await page.getByRole("button", { name: "Weiter" }).last().click();
     await expect(page.getByText("Bitte geben Sie Start- und Zieladresse vollständig an.")).toBeVisible();
   });
 
@@ -25,7 +25,7 @@ test.describe("Booking smoke", () => {
     await expect(page.getByRole("heading", { name: "5. Kontakt & Termin" })).toBeVisible();
     await expect(page.getByText("Bitte prüfen Sie die markierten Angaben.")).toBeVisible();
 
-    await expect(page.getByRole("button", { name: "Anfrage senden" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Anfrage senden" }).last()).toBeDisabled();
     await expect(page.locator("input[aria-invalid='true']").first()).toBeVisible();
   });
 

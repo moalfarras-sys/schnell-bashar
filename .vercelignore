@@ -1,0 +1,10 @@
+baschar.tar.gz
+node_modules
+.next
+tmp
+uploads
+*.log
+*.pid
+*.tsbuildinfo
+test-results
+playwright-report
