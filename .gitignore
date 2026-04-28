@@ -40,6 +40,7 @@ public/uploads/
 *.private.pdf
 offer-preview.pdf
 public/offer-preview.pdf
+baschar.tar.gz
 
 # Never commit runtime private keys
 docusign-private.key
