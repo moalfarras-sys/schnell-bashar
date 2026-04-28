@@ -92,6 +92,7 @@ export function AdminNav({
       <Link
         key={n.href}
         href={n.href}
+        prefetch={false}
         className={`group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-all duration-200 ${
           active
             ? "bg-brand-500/20 text-brand-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] ring-1 ring-brand-400/45 dark:text-brand-100 dark:bg-brand-500/25"
