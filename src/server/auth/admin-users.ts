@@ -56,25 +56,12 @@ export async function ensureBootstrapAdminFromEnv() {
 
   if (!email) return null;
 
-  await ensureDefaultRbac();
-
-  const ownerRole = await prisma.role.findUnique({ where: { slug: "owner" } });
-  if (!ownerRole) return null;
-
   const existing = await prisma.adminUser.findUnique({
     where: { email },
     include: {
       roles: {
         where: { deletedAt: null },
-        include: {
-          role: {
-            include: {
-              permissions: {
-                include: { permission: true },
-              },
-            },
-          },
-        },
+        include: { role: true },
       },
     },
   });
@@ -90,6 +77,15 @@ export async function ensureBootstrapAdminFromEnv() {
 
   if (!passwordHash) return existing;
 
+  const ownerRole = await prisma.role.upsert({
+    where: { slug: "owner" },
+    update: { name: "Owner" },
+    create: {
+      slug: "owner",
+      name: "Owner",
+    },
+  });
+
   const user =
     existing ??
     (await prisma.adminUser.create({
@@ -100,7 +96,8 @@ export async function ensureBootstrapAdminFromEnv() {
       },
     }));
 
-  if (!existing) {
+  const hasActiveRole = existing ? existing.roles.length > 0 : false;
+  if (!hasActiveRole) {
     await prisma.userRole.upsert({
       where: { userId_roleId: { userId: user.id, roleId: ownerRole.id } },
       update: { deletedAt: null },
@@ -143,15 +140,7 @@ export async function getAdminClaimsByEmail(email: string) {
     include: {
       roles: {
         where: { deletedAt: null },
-        include: {
-          role: {
-            include: {
-              permissions: {
-                include: { permission: true },
-              },
-            },
-          },
-        },
+        include: { role: true },
       },
     },
   });
@@ -159,11 +148,21 @@ export async function getAdminClaimsByEmail(email: string) {
   if (!user) return null;
 
   const roles = user.roles.map((r) => r.role.slug);
+  if (roles.includes("owner")) {
+    return {
+      user,
+      roles,
+      permissions: [],
+    };
+  }
+
+  const rolePermissions = await prisma.rolePermission.findMany({
+    where: { role: { slug: { in: roles } } },
+    include: { permission: true },
+  });
   const permissions = new Set<string>();
-  for (const role of user.roles) {
-    for (const rp of role.role.permissions) {
-      permissions.add(rp.permission.key);
-    }
+  for (const rp of rolePermissions) {
+    permissions.add(rp.permission.key);
   }
 
   return {
@@ -197,4 +196,3 @@ export async function markLoginSuccess(userId: string) {
     },
   });
 }
-
