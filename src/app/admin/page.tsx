@@ -10,11 +10,13 @@ import {
   FileSignature,
   Euro,
   ClipboardList,
+  MailCheck,
 } from "lucide-react";
 
 import { prisma } from "@/server/db/prisma";
 import { Button } from "@/components/ui/button";
 import { MonthlyOrdersChart } from "@/components/admin/monthly-orders-chart";
+import { isEmailConfigured } from "@/server/email/mailer";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -182,6 +184,7 @@ export default async function AdminDashboard() {
     label: monthLabels[parseInt(key.split("-")[1])],
     count,
   }));
+  const smtpReady = isEmailConfigured();
 
   const statusColors: Record<string, string> = {
     NEW: "bg-blue-500/15 text-blue-800 dark:bg-blue-500/20 dark:text-blue-300",
@@ -198,11 +201,11 @@ export default async function AdminDashboard() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-brand-500/15 px-3 py-1 text-xs font-bold text-brand-800 ring-1 ring-brand-400/35 dark:text-brand-200">
-              Zentrale Steuerung
+              Tagesplan
             </div>
-            <h1 className="mt-3 text-2xl font-extrabold md:text-3xl">Admin Dashboard</h1>
+            <h1 className="mt-3 text-2xl font-extrabold md:text-3xl">Was muss ich jetzt tun?</h1>
             <p className="mt-1 text-sm font-medium text-slate-600 dark:text-slate-300">
-              Alles Wichtige für den Arbeitstag: neue Anfragen, offene Dokumente und Rechnungen.
+              Beginnen Sie links mit neuen Anfragen, bestätigen Sie Termine und prüfen Sie danach Angebote, Rechnungen und E-Mail.
             </p>
           </div>
           <div className="rounded-2xl bg-white/70 px-4 py-3 text-right text-xs font-semibold text-slate-600 ring-1 ring-slate-300/70 dark:bg-slate-900/50 dark:text-slate-300 dark:ring-slate-700/70">
@@ -217,6 +220,49 @@ export default async function AdminDashboard() {
           {dbWarning}
         </div>
       ) : null}
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <ActionCard
+          title="Neue Anfragen"
+          value={openOrders}
+          href="/admin/orders"
+          action="Auftrag öffnen"
+          tone="blue"
+          icon={<ClipboardList className="h-5 w-5" />}
+        />
+        <ActionCard
+          title="Heute Termine"
+          value={todayOrders}
+          href="/admin/calendar"
+          action="Kalender öffnen"
+          tone="emerald"
+          icon={<FileCheck2 className="h-5 w-5" />}
+        />
+        <ActionCard
+          title="Offene Angebote"
+          value={pendingOffers}
+          href="/admin/offers"
+          action="Angebot senden"
+          tone="amber"
+          icon={<FileText className="h-5 w-5" />}
+        />
+        <ActionCard
+          title="Rechnungen"
+          value={openInvoices}
+          href="/admin/accounting/invoices"
+          action={overdueInvoices > 0 ? `${overdueInvoices} überfällig` : "Rechnung erstellen"}
+          tone={overdueInvoices > 0 ? "red" : "purple"}
+          icon={<Euro className="h-5 w-5" />}
+        />
+        <ActionCard
+          title="E-Mail Status"
+          value={smtpReady ? "OK" : "Prüfen"}
+          href="/admin/settings"
+          action="SMTP prüfen"
+          tone={smtpReady ? "emerald" : "red"}
+          icon={<MailCheck className="h-5 w-5" />}
+        />
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="min-w-0">
@@ -237,41 +283,6 @@ export default async function AdminDashboard() {
         <div className="min-w-0">
           <StatCard title="Gesamt" value={totalOrders} hint="alle Aufträge" icon={<FileCheck2 className="h-5 w-5" />} />
         </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <ActionCard
-          title="Neue Aufträge"
-          value={openOrders}
-          href="/admin/orders"
-          action="Prüfen"
-          tone="blue"
-          icon={<ClipboardList className="h-5 w-5" />}
-        />
-        <ActionCard
-          title="Angebote offen"
-          value={pendingOffers}
-          href="/admin/offers"
-          action="Bearbeiten"
-          tone="amber"
-          icon={<FileText className="h-5 w-5" />}
-        />
-        <ActionCard
-          title="Warten auf Unterschrift"
-          value={pendingContracts}
-          href="/admin/offers"
-          action="Nachfassen"
-          tone="purple"
-          icon={<FileSignature className="h-5 w-5" />}
-        />
-        <ActionCard
-          title="Rechnungen offen"
-          value={openInvoices}
-          href="/admin/accounting/invoices"
-          action={overdueInvoices > 0 ? `${overdueInvoices} überfällig` : "Öffnen"}
-          tone={overdueInvoices > 0 ? "red" : "emerald"}
-          icon={<Euro className="h-5 w-5" />}
-        />
       </div>
 
       <div className="surface-glass rounded-3xl border p-6 shadow-lg">
@@ -366,7 +377,7 @@ export default async function AdminDashboard() {
 
 function ActionCard(props: {
   title: string;
-  value: number;
+  value: number | string;
   href: string;
   action: string;
   tone: "blue" | "amber" | "purple" | "emerald" | "red";

@@ -55,17 +55,24 @@ export async function POST(
     select: { publicId: true, status: true, slotStart: true, slotEnd: true },
   });
 
-  try {
-    await sendScheduleConfirmationEmail({
-      publicId: order.publicId,
-      customerName: order.customerName,
-      customerEmail: order.customerEmail,
-      slotStart,
-      slotEnd,
-      note: parsed.data.note,
-    });
-  } catch (e) {
+  const emailResult = await sendScheduleConfirmationEmail({
+    publicId: order.publicId,
+    customerName: order.customerName,
+    customerEmail: order.customerEmail,
+    slotStart,
+    slotEnd,
+    note: parsed.data.note,
+  }).catch((e) => {
     console.error("[admin/orders/schedule] schedule email failed:", e);
+    return { ok: false as const, skipped: false as const };
+  });
+
+  if (!emailResult.ok) {
+    console.warn("[admin/orders/schedule] schedule saved without email", {
+      publicId: order.publicId,
+      customerEmail: order.customerEmail,
+      skipped: "skipped" in emailResult ? emailResult.skipped : false,
+    });
   }
 
   revalidatePath("/admin/orders");
@@ -76,6 +83,12 @@ export async function POST(
     ok: true,
     publicId: updated.publicId,
     status: updated.status,
+    email: emailResult.ok
+      ? { ok: true, message: "E-Mail wurde an den Kunden gesendet." }
+      : {
+          ok: false,
+          message:
+            "Termin wurde gespeichert, aber die E-Mail konnte nicht gesendet werden. Bitte SMTP prüfen.",
+        },
   });
 }
-

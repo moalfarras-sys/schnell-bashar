@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Loader2, Save, Send } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Loader2, MailCheck, Save, Send, ShieldCheck, TriangleAlert } from "lucide-react";
 
 type SettingsModel = {
   internalOrderEmailEnabled: boolean;
@@ -22,12 +22,54 @@ type SettingsModel = {
   signingMode: "INTERNAL_ONLY" | "HYBRID";
 };
 
+type HealthModel = {
+  ok: boolean;
+  integrations?: {
+    smtp?: {
+      ready: boolean;
+      configured: boolean;
+      deep?: {
+        ok: boolean;
+        code: string;
+        message: string;
+      };
+    };
+    ors?: {
+      ready: boolean;
+    };
+  };
+};
+
 export function SettingsClient(props: { initialSettings: SettingsModel }) {
   const [form, setForm] = useState<SettingsModel>(props.initialSettings);
   const [saving, setSaving] = useState(false);
   const [sendingTest, setSendingTest] = useState(false);
+  const [sendingEmailTest, setSendingEmailTest] = useState(false);
   const [testPhone, setTestPhone] = useState("");
+  const [testEmail, setTestEmail] = useState(props.initialSettings.supportEmail || "");
   const [status, setStatus] = useState<string | null>(null);
+  const [health, setHealth] = useState<HealthModel | null>(null);
+  const [healthLoading, setHealthLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadHealth() {
+      setHealthLoading(true);
+      try {
+        const res = await fetch("/api/integrations/health?deep=1", { cache: "no-store" });
+        const data = (await res.json()) as HealthModel;
+        if (!cancelled) setHealth(data);
+      } catch {
+        if (!cancelled) setHealth(null);
+      } finally {
+        if (!cancelled) setHealthLoading(false);
+      }
+    }
+    loadHealth();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function patch<K extends keyof SettingsModel>(key: K, value: SettingsModel[K]) {
     setStatus(null);
@@ -86,6 +128,45 @@ export function SettingsClient(props: { initialSettings: SettingsModel }) {
     }
   }
 
+  async function sendEmailTest() {
+    setSendingEmailTest(true);
+    setStatus(null);
+    try {
+      const res = await fetch("/api/admin/settings/test-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: testEmail.trim() || undefined }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; message?: string; error?: string };
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || "Test-E-Mail konnte nicht gesendet werden.");
+      }
+      setStatus(data.message || "Test-E-Mail wurde gesendet.");
+      setHealth((prev) =>
+        prev
+          ? {
+              ...prev,
+              integrations: {
+                ...prev.integrations,
+                smtp: {
+                  ready: true,
+                  configured: true,
+                  deep: { ok: true, code: "OK", message: "SMTP test sent." },
+                },
+              },
+            }
+          : prev,
+      );
+    } catch (e) {
+      setStatus(e instanceof Error ? e.message : "Test-E-Mail fehlgeschlagen.");
+    } finally {
+      setSendingEmailTest(false);
+    }
+  }
+
+  const smtp = health?.integrations?.smtp;
+  const smtpReady = Boolean(smtp?.ready);
+
   return (
     <div className="grid gap-6">
       <section className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-6">
@@ -93,6 +174,71 @@ export function SettingsClient(props: { initialSettings: SettingsModel }) {
         <p className="mt-1 text-sm text-slate-300">
           Steuerung für Benachrichtigungen, öffentliche Preise und WhatsApp Meta.
         </p>
+      </section>
+
+      <section className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-wide text-slate-300">
+              Systemstatus
+            </h2>
+            <p className="mt-1 text-sm text-slate-300">
+              Prüfen Sie hier, ob E-Mail und wichtige Integrationen bereit sind.
+            </p>
+          </div>
+          <div
+            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-extrabold ${
+              smtpReady
+                ? "bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-400/30"
+                : "bg-amber-500/15 text-amber-100 ring-1 ring-amber-400/30"
+            }`}
+          >
+            {smtpReady ? <ShieldCheck className="h-4 w-4" /> : <TriangleAlert className="h-4 w-4" />}
+            {healthLoading ? "Prüfung läuft" : smtpReady ? "SMTP bereit" : "SMTP prüfen"}
+          </div>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <div className="rounded-xl border border-slate-700 bg-slate-800/70 p-4">
+            <div className="flex items-center gap-2 text-sm font-bold text-white">
+              <MailCheck className="h-4 w-4 text-brand-300" />
+              E-Mail Versand
+            </div>
+            <div className="mt-2 text-xs font-semibold text-slate-300">
+              {healthLoading
+                ? "SMTP wird geprüft..."
+                : smtpReady
+                  ? "E-Mails können gesendet werden."
+                  : smtp?.deep?.message || "SMTP ist nicht bereit oder nicht vollständig konfiguriert."}
+            </div>
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <input
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+                className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white"
+                placeholder="kontakt@schnellsicherumzug.de"
+              />
+              <button
+                type="button"
+                onClick={sendEmailTest}
+                disabled={sendingEmailTest}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60"
+              >
+                {sendingEmailTest ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                Test senden
+              </button>
+            </div>
+          </div>
+          <div className="rounded-xl border border-slate-700 bg-slate-800/70 p-4">
+            <div className="text-sm font-bold text-white">Routen & Entfernung</div>
+            <div className="mt-2 text-xs font-semibold text-slate-300">
+              {healthLoading
+                ? "Wird geprüft..."
+                : health?.integrations?.ors?.ready
+                  ? "Routenberechnung ist bereit."
+                  : "ORS API-Key fehlt oder ist nicht bereit."}
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-6">

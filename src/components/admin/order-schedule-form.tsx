@@ -14,11 +14,13 @@ export function OrderScheduleForm(props: { publicId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
+  const [emailStatus, setEmailStatus] = useState<"sent" | "failed" | null>(null);
 
   async function submitSchedule() {
     setLoading(true);
     setError(null);
     setOk(null);
+    setEmailStatus(null);
     try {
       const res = await fetch(`/api/admin/orders/${encodeURIComponent(props.publicId)}/schedule`, {
         method: "POST",
@@ -33,7 +35,13 @@ export function OrderScheduleForm(props: { publicId: string }) {
       if (!res.ok) {
         throw new Error(json?.error || "Termin konnte nicht bestätigt werden.");
       }
-      setOk("Termin bestätigt und E-Mail gesendet.");
+      const emailOk = Boolean(json?.email?.ok);
+      setEmailStatus(emailOk ? "sent" : "failed");
+      setOk(
+        emailOk
+          ? "Termin bestätigt. Die E-Mail wurde an den Kunden gesendet."
+          : "Termin bestätigt. Die E-Mail konnte nicht gesendet werden.",
+      );
       router.refresh();
     } catch (e: any) {
       setError(e?.message || "Termin konnte nicht bestätigt werden.");
@@ -78,6 +86,11 @@ export function OrderScheduleForm(props: { publicId: string }) {
       </div>
       {error ? <div className="mt-3 text-xs font-semibold text-red-300">{error}</div> : null}
       {ok ? <div className="mt-3 text-xs font-semibold text-emerald-300">{ok}</div> : null}
+      {emailStatus === "failed" ? (
+        <div className="mt-2 rounded-xl border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-100">
+          Nächster Schritt: SMTP in den Einstellungen prüfen oder den Kunden manuell informieren.
+        </div>
+      ) : null}
       <div className="mt-4">
         <Button
           size="sm"
@@ -91,4 +104,3 @@ export function OrderScheduleForm(props: { publicId: string }) {
     </div>
   );
 }
-

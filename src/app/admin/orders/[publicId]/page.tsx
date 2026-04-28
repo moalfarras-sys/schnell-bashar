@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { formatInTimeZone } from "date-fns-tz";
+import { CalendarCheck, CheckCircle2, ClipboardCheck, ExternalLink, Mail, Send } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { prisma } from "@/server/db/prisma";
 import { Button } from "@/components/ui/button";
@@ -99,6 +101,10 @@ export default async function AdminOrderDetailPage({
     `Hallo! Wir haben Ihre Anfrage (${order.publicId}) erhalten. Kurze Rückfrage: ...`,
   );
   const waUrl = `https://wa.me/${String(order.customerPhone).replace(/[^\d]/g, "")}?text=${waText}`;
+  const trackingPath = `/anfrage/${order.publicId}`;
+  const isScheduled = Boolean(order.slotStart && order.slotEnd);
+  const hasOffer = Boolean(order.offer);
+  const hasSignedContract = order.offer?.contract?.status === "SIGNED";
 
   const moveLines = order.lines.filter((l: any) => !l.isDisposal);
   const disposalLines = order.lines.filter((l: any) => l.isDisposal);
@@ -124,6 +130,9 @@ export default async function AdminOrderDetailPage({
             <a href={`mailto:${order.customerEmail}?subject=Angebot ${order.publicId}`}>
               <Button variant="outline-light">E-Mail an Kunden</Button>
             </a>
+            <Link href={trackingPath} target="_blank">
+              <Button variant="outline-light">Kundenansicht</Button>
+            </Link>
             <Link href="/admin/orders">
               <Button variant="outline-light">Zur Liste</Button>
             </Link>
@@ -156,6 +165,59 @@ export default async function AdminOrderDetailPage({
                   ? eur(wizard.offerContext.appliedDiscountCents)
                   : "Kein Rabatt"
             }
+          />
+        </div>
+      </div>
+
+      <div className="rounded-3xl border border-brand-400/30 bg-brand-500/10 p-5 shadow-lg">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="text-sm font-extrabold text-slate-900 dark:text-white">
+              Nächste Schritte
+            </div>
+            <p className="mt-1 text-sm font-semibold text-slate-700 dark:text-slate-300">
+              Arbeiten Sie von links nach rechts. Alles Wichtige für diesen Auftrag ist hier verlinkt.
+            </p>
+          </div>
+          <Link
+            href={trackingPath}
+            target="_blank"
+            className="inline-flex items-center gap-2 rounded-2xl border border-white/25 bg-white/15 px-4 py-2 text-sm font-bold text-slate-900 hover:bg-white/25 dark:text-white"
+          >
+            <ExternalLink className="h-4 w-4" />
+            Tracking für Kunden öffnen
+          </Link>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-5">
+          <WorkflowStep
+            icon={<ClipboardCheck className="h-4 w-4" />}
+            title="1. Anfrage prüfen"
+            done
+            hint="Kundendaten und Leistung ansehen"
+          />
+          <WorkflowStep
+            icon={<CalendarCheck className="h-4 w-4" />}
+            title="2. Termin bestätigen"
+            done={isScheduled}
+            hint={isScheduled ? "Termin ist gesetzt" : "Unten Start und Ende wählen"}
+          />
+          <WorkflowStep
+            icon={<Send className="h-4 w-4" />}
+            title="3. Angebot senden"
+            done={hasOffer}
+            hint={hasOffer ? "Angebot vorhanden" : "Button Angebot erstellen nutzen"}
+          />
+          <WorkflowStep
+            icon={<Mail className="h-4 w-4" />}
+            title="4. Kunde informieren"
+            done={order.status !== "NEW"}
+            hint="E-Mail oder WhatsApp nutzen"
+          />
+          <WorkflowStep
+            icon={<CheckCircle2 className="h-4 w-4" />}
+            title="5. Abschließen"
+            done={order.status === "DONE" || hasSignedContract}
+            hint="Nach erledigter Arbeit schließen"
           />
         </div>
       </div>
@@ -385,6 +447,39 @@ function InfoCard(props: { title: string; value: string }) {
   );
 }
 
+function WorkflowStep(props: {
+  icon: ReactNode;
+  title: string;
+  done: boolean;
+  hint: string;
+}) {
+  return (
+    <div
+      className={`rounded-2xl border p-3 ${
+        props.done
+          ? "border-emerald-400/40 bg-emerald-500/15"
+          : "border-amber-400/40 bg-amber-500/10"
+      }`}
+    >
+      <div className="flex items-center gap-2 text-sm font-extrabold text-slate-900 dark:text-white">
+        <span
+          className={`flex h-7 w-7 items-center justify-center rounded-xl ${
+            props.done
+              ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-200"
+              : "bg-amber-500/20 text-amber-700 dark:text-amber-200"
+          }`}
+        >
+          {props.icon}
+        </span>
+        <span>{props.title}</span>
+      </div>
+      <div className="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+        {props.hint}
+      </div>
+    </div>
+  );
+}
+
 type OrderLineLike = {
   id: string;
   qty: number;
@@ -410,6 +505,4 @@ function LineGroup(props: { title: string; lines: OrderLineLike[] }) {
     </div>
   );
 }
-
-
 
