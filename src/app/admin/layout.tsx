@@ -37,6 +37,15 @@ export const viewport: Viewport = {
   themeColor: "#0b1f44",
 };
 
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return await Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`Timed out after ${ms}ms`)), ms),
+    ),
+  ]);
+}
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   let newOrderCount = 0;
   const claims = await getAdminSessionClaims();
@@ -70,7 +79,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     : ["/admin"];
 
   try {
-    newOrderCount = await prisma.order.count({ where: { status: "NEW" } });
+    newOrderCount = await withTimeout(prisma.order.count({ where: { status: "NEW" } }), 1500);
   } catch {
     /* DB unavailable - nav still renders */
   }

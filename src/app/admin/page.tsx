@@ -33,6 +33,15 @@ function pct(a: number, b: number) {
   return `${Math.round((a / b) * 100)}%`;
 }
 
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return await Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`Timed out after ${ms}ms`)), ms),
+    ),
+  ]);
+}
+
 function statusLabel(status: "NEW" | "REQUESTED" | "CONFIRMED" | "IN_PROGRESS" | "DONE" | "CANCELLED") {
   return {
     NEW: "Neu",
@@ -97,49 +106,52 @@ export default async function AdminDashboard() {
       revenuePrevMonthRes,
       recentOrdersRes,
       monthlyRawRes,
-    ] = await Promise.all([
-      prisma.order.count(),
-      prisma.order.count({ where: { status: { in: ["NEW", "REQUESTED"] } } }),
-      prisma.order.count({ where: { createdAt: { gte: startOfToday } } }),
-      prisma.offer.count(),
-      prisma.offer.count({ where: { status: "ACCEPTED" } }),
-      prisma.offer.count({ where: { status: "PENDING" } }),
-      prisma.contract.count({ where: { status: "PENDING_SIGNATURE" } }),
-      prisma.contract.count({ where: { status: "SIGNED" } }),
-      prisma.invoice.count({ where: { status: { in: ["UNPAID", "PARTIAL", "OVERDUE"] } } }),
-      prisma.invoice.count({ where: { OR: [{ status: "OVERDUE" }, { status: { in: ["UNPAID", "PARTIAL"] }, dueAt: { lt: now } }] } }),
-      prisma.offer.aggregate({
-        _sum: { grossCents: true },
-        where: {
-          contract: { status: "SIGNED", signedAt: { gte: startOfMonth } },
-        },
-      }),
-      prisma.offer.aggregate({
-        _sum: { grossCents: true },
-        where: {
-          contract: {
-            status: "SIGNED",
-            signedAt: { gte: startOfPrevMonth, lt: startOfMonth },
+    ] = await withTimeout(
+      Promise.all([
+        prisma.order.count(),
+        prisma.order.count({ where: { status: { in: ["NEW", "REQUESTED"] } } }),
+        prisma.order.count({ where: { createdAt: { gte: startOfToday } } }),
+        prisma.offer.count(),
+        prisma.offer.count({ where: { status: "ACCEPTED" } }),
+        prisma.offer.count({ where: { status: "PENDING" } }),
+        prisma.contract.count({ where: { status: "PENDING_SIGNATURE" } }),
+        prisma.contract.count({ where: { status: "SIGNED" } }),
+        prisma.invoice.count({ where: { status: { in: ["UNPAID", "PARTIAL", "OVERDUE"] } } }),
+        prisma.invoice.count({ where: { OR: [{ status: "OVERDUE" }, { status: { in: ["UNPAID", "PARTIAL"] }, dueAt: { lt: now } }] } }),
+        prisma.offer.aggregate({
+          _sum: { grossCents: true },
+          where: {
+            contract: { status: "SIGNED", signedAt: { gte: startOfMonth } },
           },
-        },
-      }),
-      prisma.order.findMany({
-        orderBy: { createdAt: "desc" },
-        take: 5,
-        select: {
-          publicId: true,
-          orderNo: true,
-          customerName: true,
-          status: true,
-          serviceType: true,
-        },
-      }),
-      prisma.order.findMany({
-        where: { createdAt: { gte: sixMonthsAgo } },
-        select: { createdAt: true },
-        orderBy: { createdAt: "asc" },
-      }),
-    ]);
+        }),
+        prisma.offer.aggregate({
+          _sum: { grossCents: true },
+          where: {
+            contract: {
+              status: "SIGNED",
+              signedAt: { gte: startOfPrevMonth, lt: startOfMonth },
+            },
+          },
+        }),
+        prisma.order.findMany({
+          orderBy: { createdAt: "desc" },
+          take: 5,
+          select: {
+            publicId: true,
+            orderNo: true,
+            customerName: true,
+            status: true,
+            serviceType: true,
+          },
+        }),
+        prisma.order.findMany({
+          where: { createdAt: { gte: sixMonthsAgo } },
+          select: { createdAt: true },
+          orderBy: { createdAt: "asc" },
+        }),
+      ]),
+      3500,
+    );
 
     totalOrders = totalOrdersRes;
     openOrders = openOrdersRes;
@@ -158,7 +170,7 @@ export default async function AdminDashboard() {
   } catch (error) {
     console.error("[admin/dashboard] failed to load db data", error);
     dbWarning =
-      "Dashboard-Daten konnten gerade nicht geladen werden. Bitte Datenbankverbindung prüfen.";
+      "Dashboard-Daten konnten gerade nicht schnell geladen werden. Die Anmeldung funktioniert; bitte Datenbankverbindung prüfen.";
   }
 
   const revTrend =
