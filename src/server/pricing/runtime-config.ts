@@ -22,6 +22,7 @@ type CacheState = {
 
 const MAX_AGE_MS = 120_000;
 const MARKER_CHECK_MS = 15_000;
+const DB_LOAD_TIMEOUT_MS = 1_800;
 
 const FALLBACK_RUNTIME_CONFIG: RuntimePricingConfig = {
   pricing: {
@@ -279,6 +280,22 @@ async function fetchFreshRuntimeConfig(version: string): Promise<RuntimePricingC
   };
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timeout);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timeout);
+        reject(error);
+      },
+    );
+  });
+}
+
 function cacheFallbackRuntimeConfig(now: number): RuntimePricingConfig {
   globalThis.__ssuPricingRuntimeCache = {
     data: FALLBACK_RUNTIME_CONFIG,
@@ -298,7 +315,7 @@ export async function getRuntimePricingConfig(): Promise<RuntimePricingConfig> {
 
   let currentVersion: string;
   try {
-    currentVersion = await resolveMarkerVersion();
+    currentVersion = await withTimeout(resolveMarkerVersion(), DB_LOAD_TIMEOUT_MS, "pricing marker lookup");
   } catch (error) {
     console.warn("[pricing] failed to load runtime pricing from database, using fallback seed pricing", error);
     return cacheFallbackRuntimeConfig(now);
@@ -314,7 +331,7 @@ export async function getRuntimePricingConfig(): Promise<RuntimePricingConfig> {
 
   let fresh: RuntimePricingConfig;
   try {
-    fresh = await fetchFreshRuntimeConfig(currentVersion);
+    fresh = await withTimeout(fetchFreshRuntimeConfig(currentVersion), DB_LOAD_TIMEOUT_MS, "pricing config refresh");
   } catch (error) {
     console.warn("[pricing] failed to refresh runtime pricing from database, using fallback seed pricing", error);
     return cacheFallbackRuntimeConfig(now);
