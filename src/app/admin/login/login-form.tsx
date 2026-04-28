@@ -1,20 +1,47 @@
 ﻿"use client";
 
-import { useActionState, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 
-import { LoginState, loginAction } from "@/app/admin/login/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const initialState: LoginState = { error: null };
-
 export function LoginForm({ next }: { next: string }) {
-  const [state, formAction, pending] = useActionState(loginAction, initialState);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setPending(true);
+    setError(null);
+
+    const formData = new FormData(event.currentTarget);
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        body: formData,
+        credentials: "same-origin",
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        next?: string;
+        error?: string;
+      };
+      if (!res.ok || !data.ok) {
+        setError(data.error || "Anmeldung fehlgeschlagen. Bitte Zugangsdaten prüfen.");
+        return;
+      }
+      window.location.assign(data.next || "/admin");
+    } catch {
+      setError("Anmeldung fehlgeschlagen. Bitte Verbindung prüfen.");
+    } finally {
+      setPending(false);
+    }
+  }
+
   return (
-    <form action={formAction} className="mt-6 grid gap-4" noValidate>
+    <form onSubmit={handleSubmit} className="mt-6 grid gap-4" noValidate>
       <input type="hidden" name="next" value={next} />
 
       <div>
@@ -67,9 +94,9 @@ export function LoginForm({ next }: { next: string }) {
         </div>
       </div>
 
-      {state?.error ? (
+      {error ? (
         <div className="rounded-2xl border border-red-300 bg-red-50 p-3 text-sm font-semibold text-red-700 dark:border-red-600/40 dark:bg-red-900/30 dark:text-red-200">
-          {state.error}
+          {error}
         </div>
       ) : null}
 
