@@ -49,7 +49,7 @@ function packageSet(
 
 export async function calculateQuote(
   input: QuoteDraft,
-  options?: { allowDistanceFallback?: boolean; promoCode?: string | null },
+  options?: { allowDistanceFallback?: boolean; promoCode?: string | null; skipRouteLookup?: boolean },
 ): Promise<{
   draft: QuoteDraft;
   result: QuoteResult;
@@ -62,7 +62,7 @@ export async function calculateQuote(
   let distanceKm: number | undefined;
   let distanceSource: "approx" | "ors" | "cache" | "fallback" | undefined;
 
-  if (needsRoute && parsed.fromAddress && parsed.toAddress) {
+  if (needsRoute && parsed.fromAddress && parsed.toAddress && !options?.skipRouteLookup) {
     const route = await resolveRouteDistance({
       from: {
         lat: parsed.fromAddress.lat,
@@ -143,6 +143,8 @@ export async function calculateQuote(
   }
 
   const selectedEstimate = estimateBySpeed.get(parsed.packageSpeed) ?? estimateBySpeed.get("STANDARD")!;
+  const effectiveDistanceKm = distanceKm ?? selectedEstimate.breakdown.distanceKm;
+  const effectiveDistanceSource = distanceSource ?? selectedEstimate.breakdown.distanceSource;
   const perM3MovingCents = runtimeConfig.pricing.perM3MovingCents ?? 0;
   const perM3DisposalCents = runtimeConfig.pricing.perM3DisposalCents ?? 0;
   const perKmCents = runtimeConfig.pricing.perKmCents ?? 0;
@@ -186,7 +188,7 @@ export async function calculateQuote(
       baseCents =
         movingBaseFeeCents +
         Math.round(parsed.volumeM3 * perM3MovingCents) +
-        (distanceKm ? Math.round(distanceKm * perKmCents) : 0);
+        (effectiveDistanceKm ? Math.round(effectiveDistanceKm * perKmCents) : 0);
     } else if (service.kind === "ENTSORGUNG") {
       baseCents =
         entsorgungBaseFeeCents +
@@ -210,8 +212,8 @@ export async function calculateQuote(
   });
 
   const result: QuoteResult = {
-    distanceKm,
-    distanceSource,
+    distanceKm: effectiveDistanceKm,
+    distanceSource: effectiveDistanceSource,
     driveCostCents: selectedEstimate.breakdown.driveChargeCents ?? 0,
     subtotalCents: selectedEstimate.breakdown.subtotalCents,
     totalCents: selectedEstimate.breakdown.totalCents,
