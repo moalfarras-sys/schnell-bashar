@@ -6,6 +6,30 @@ yarn-debug.log*
 yarn-error.log*
 .env
 .env.*.local
+.env.local
+.env.production
+.env.development
+
+# Local runtime logs and process markers
+*.log
+*.pid
+dev-*.log
+next-dev*.log
+
+# Build/typecheck/test artifacts
+*.tsbuildinfo
+test-results/
+tmp/
+
+# Signing/private integration files
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Generated previews
+offer-preview.pdf
+public/offer-preview.pdf
 
 # Prisma
 prisma/dev.db
