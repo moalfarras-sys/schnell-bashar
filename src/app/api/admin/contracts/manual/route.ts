@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ZodError } from "zod";
 
 import { calculateLineItem } from "@/lib/documents/calculations";
 import { createDocumentDraft } from "@/lib/documents/service";
@@ -18,39 +19,55 @@ export async function POST(req: NextRequest) {
   const netCents =
     typeof body.netCents === "number" ? body.netCents : Math.round(grossCents / 1.19);
 
-  const document = await createDocumentDraft(
-    {
-      type: "AUFTRAG_VERTRAG",
-      customerData: {
-        name: String(body.customerName || ""),
-        email: body.customerEmail ? String(body.customerEmail) : null,
-        phone: body.customerPhone ? String(body.customerPhone) : null,
-        billingAddress: body.customerAddress ? String(body.customerAddress) : null,
+  let document: Awaited<ReturnType<typeof createDocumentDraft>>;
+  try {
+    document = await createDocumentDraft(
+      {
+        type: "AUFTRAG_VERTRAG",
+        customerData: {
+          name: String(body.customerName || ""),
+          email: body.customerEmail ? String(body.customerEmail) : null,
+          phone: body.customerPhone ? String(body.customerPhone) : null,
+          billingAddress: body.customerAddress ? String(body.customerAddress) : null,
+        },
+        serviceData: {
+          serviceType: services.join(", ") || "Auftrag / Vertrag",
+          serviceDate: body.moveDate ? String(body.moveDate) : null,
+        },
+        addressData: {
+          fromAddress: body.moveFrom ? String(body.moveFrom) : null,
+          toAddress: body.moveTo ? String(body.moveTo) : null,
+        },
+        visibleNotes: body.notes ? String(body.notes) : null,
+        internalNotes: "Manuell aus Alt-Formular erstellt.",
+        lineItems: [
+          calculateLineItem({
+            position: 1,
+            title: services[0] || "Auftrag / Vertrag",
+            description: services.slice(1).join(", ") || null,
+            quantity: 1,
+            unit: "Pauschale",
+            unitPriceNetCents: netCents,
+            vatRate: 19,
+          }),
+        ],
       },
-      serviceData: {
-        serviceType: services.join(", ") || "Auftrag / Vertrag",
-        serviceDate: body.moveDate ? String(body.moveDate) : null,
-      },
-      addressData: {
-        fromAddress: body.moveFrom ? String(body.moveFrom) : null,
-        toAddress: body.moveTo ? String(body.moveTo) : null,
-      },
-      visibleNotes: body.notes ? String(body.notes) : null,
-      internalNotes: "Manuell aus Alt-Formular erstellt.",
-      lineItems: [
-        calculateLineItem({
-          position: 1,
-          title: services[0] || "Auftrag / Vertrag",
-          description: services.slice(1).join(", ") || null,
-          quantity: 1,
-          unit: "Pauschale",
-          unitPriceNetCents: netCents,
-          vatRate: 19,
-        }),
-      ],
-    },
-    claims.uid,
-  );
+      claims.uid,
+    );
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { error: error.issues[0]?.message || "Bitte die Eingaben prüfen." },
+        { status: 400 },
+      );
+    }
+
+    console.error("[admin/contracts/manual] create failed", error);
+    return NextResponse.json(
+      { error: "Der manuelle Vertrag konnte nicht erstellt werden." },
+      { status: 500 },
+    );
+  }
 
   return NextResponse.json(
     {

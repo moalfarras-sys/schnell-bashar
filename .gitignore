@@ -46,3 +46,5 @@ baschar.tar.gz
 # Never commit runtime private keys
 docusign-private.key
 docusign-private.key.pub
+
+.vercel

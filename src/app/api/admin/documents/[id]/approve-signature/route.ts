@@ -15,23 +15,31 @@ export async function POST(
   }
 
   const { id } = await context.params;
-  const result = await approveDocumentForSignature({
-    documentId: id,
-    approvedByUserId: claims.uid,
-  });
-
-  if (result.document.orderId) {
-    await prisma.order.update({
-      where: { id: result.document.orderId },
-      data: {
-        workflowStatus: "CONTRACT_APPROVED_FOR_SIGNATURE",
-      },
+  try {
+    const result = await approveDocumentForSignature({
+      documentId: id,
+      approvedByUserId: claims.uid,
     });
-  }
 
-  return NextResponse.json({
-    success: true,
-    signingUrl: buildSigningUrl(result.token),
-    expiresAt: result.expiresAt,
-  });
+    if (result.document.orderId) {
+      await prisma.order.update({
+        where: { id: result.document.orderId },
+        data: {
+          workflowStatus: "CONTRACT_APPROVED_FOR_SIGNATURE",
+        },
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      signingUrl: buildSigningUrl(result.token),
+      expiresAt: result.expiresAt,
+    });
+  } catch (error) {
+    console.error("[admin/documents] approve signature failed", error);
+    return NextResponse.json(
+      { error: "Signaturfreigabe konnte nicht erstellt werden." },
+      { status: 500 },
+    );
+  }
 }

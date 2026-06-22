@@ -10,7 +10,8 @@ import {
   formatAddress,
   normalizeContactFields,
 } from "@/lib/documents/formatting";
-import { getImageSlot, publicSrcToAbsolute } from "@/server/content/slots";
+import { getImageSlot } from "@/server/content/slots";
+import { fetchPdfImage } from "@/server/pdf/fetch-image";
 import {
   PDF_THEME,
   TableColumn,
@@ -102,15 +103,15 @@ const OFFER_TERMS =
   "Dieses Angebot ist 7 Tage gültig. Die Durchführung erfolgt gemäß unseren AGB. Änderungen des Leistungsumfangs vor Ort können eine Preisanpassung erfordern.";
 
 export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
-  let slotLogoPath: string | null = null;
+  let logoBuffer: Buffer | null = null;
   try {
     const logoSlot = await getImageSlot({
       key: "img.pdf.brand.logo",
       fallbackSrc: "/media/brand/hero-logo.jpeg",
     });
-    slotLogoPath = publicSrcToAbsolute(logoSlot.src);
+    logoBuffer = await fetchPdfImage(logoSlot.src || "/media/brand/hero-logo.jpeg");
   } catch {
-    slotLogoPath = null;
+    logoBuffer = null;
   }
 
   return new Promise((resolve, reject) => {
@@ -138,10 +139,9 @@ export async function generateOfferPDF(data: OfferData): Promise<Buffer> {
       safeBottomPad: PDF_THEME.invoiceLayout.compact.safeBottomPad,
     });
     const logoPath =
-      (data.logoPath && existsSync(data.logoPath) && data.logoPath) ||
-      (slotLogoPath && existsSync(slotLogoPath)
-        ? slotLogoPath
-        : path.join(process.cwd(), "public", "media", "brand", "hero-logo.jpeg"));
+      data.logoPath && existsSync(data.logoPath) 
+        ? data.logoPath 
+        : logoBuffer;
 
     const contacts = normalizeContactFields({
       email: data.customerEmail,

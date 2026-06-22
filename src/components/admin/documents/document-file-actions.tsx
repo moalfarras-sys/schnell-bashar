@@ -11,7 +11,7 @@ export function DocumentFileActions({
   documentId: string;
   hasSignedPdf: boolean;
 }) {
-  const [loading, setLoading] = useState<"generate" | "download" | "signed" | null>(null);
+  const [loading, setLoading] = useState<"generate" | "download" | "signed" | "word" | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
   async function openResponsePdf(response: Response) {
@@ -38,11 +38,11 @@ export function DocumentFileActions({
     setLoading(null);
   }
 
-  async function openPdf(kind: "document" | "signed") {
-    setLoading(kind === "signed" ? "signed" : "download");
+  async function openPdf(kind: "document" | "signed" | "word") {
+    setLoading(kind === "signed" ? "signed" : kind === "word" ? "word" : "download");
     setMessage(null);
     const response = await fetch(
-      `/api/admin/documents/${documentId}/download${kind === "signed" ? "?kind=signed" : ""}`,
+      `/api/admin/documents/${documentId}/download${kind === "signed" ? "?kind=signed" : kind === "word" ? "?format=word" : ""}`,
     );
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
@@ -50,8 +50,16 @@ export function DocumentFileActions({
       setLoading(null);
       return;
     }
-    await openResponsePdf(response);
-    setMessage(kind === "signed" ? "Signierte PDF geöffnet." : "Dokument-PDF geöffnet.");
+    if (kind === "word") {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(await response.blob());
+      a.download = `Dokument-${documentId}.doc`;
+      a.click();
+      setMessage("Word-Dokument heruntergeladen.");
+    } else {
+      await openResponsePdf(response);
+      setMessage(kind === "signed" ? "Signierte PDF geöffnet." : "Dokument-PDF geöffnet.");
+    }
     setLoading(null);
   }
 
@@ -66,7 +74,10 @@ export function DocumentFileActions({
           {loading === "generate" ? "PDF wird erzeugt..." : "PDF generieren"}
         </Button>
         <Button type="button" variant="outline" onClick={() => openPdf("document")} disabled={loading !== null}>
-          {loading === "download" ? "Wird geöffnet..." : "PDF öffnen"}
+          {loading === "download" ? "Wird geöffnet..." : "PDF öffnen (Vorschau)"}
+        </Button>
+        <Button type="button" variant="outline" onClick={() => openPdf("word")} disabled={loading !== null}>
+          {loading === "word" ? "Lädt herunter..." : "Word herunterladen"}
         </Button>
         <Button
           type="button"

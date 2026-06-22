@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+.next
+.next/
+.vercel
+.vercel/
+node_modules
+node_modules/
+output/
+ui-final-clean-check-mobile.png
+login-check.png

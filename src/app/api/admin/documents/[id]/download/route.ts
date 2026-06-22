@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { renderDocumentPdf } from "@/lib/documents/renderer";
+import { renderDocumentWord } from "@/lib/documents/renderer-word";
 import { documentVersionSnapshotSchema } from "@/lib/documents/schemas";
 import { downloadPrivateDocument, privateDocumentBucket, privateSignedDocumentBucket } from "@/lib/documents/storage";
 import { getAdminSessionClaims } from "@/server/auth/require-admin";
@@ -25,6 +26,7 @@ export async function GET(
 
   const { id } = await context.params;
   const kind = req.nextUrl.searchParams.get("kind") === "signed" ? "signed" : "document";
+  const format = req.nextUrl.searchParams.get("format") === "word" ? "word" : "pdf";
 
   const document = await prisma.document.findUnique({
     where: { id },
@@ -57,7 +59,7 @@ export async function GET(
 
   if (!buffer) {
     if (!document.currentVersion || kind === "signed") {
-      return NextResponse.json({ error: "Keine PDF-Datei vorhanden." }, { status: 404 });
+      return NextResponse.json({ error: "Keine Datei vorhanden." }, { status: 404 });
     }
 
     const snapshot = toSnapshot(document.currentVersion.dataSnapshot);
@@ -69,18 +71,37 @@ export async function GET(
     }
 
     try {
-      buffer = await renderDocumentPdf({
-        type: document.type,
-        number: document.number || "Dokument",
-        snapshot,
-        includeAgbAppendix: document.includeAgbAppendix,
-      });
-    } catch {
+      if (format === "word") {
+        buffer = renderDocumentWord({
+          type: document.type as any,
+          number: document.number || "Dokument",
+          snapshot,
+        });
+      } else {
+        buffer = await renderDocumentPdf({
+          type: document.type as any,
+          number: document.number || "Dokument",
+          snapshot,
+          includeAgbAppendix: document.includeAgbAppendix,
+        });
+      }
+    } catch (e) {
+      console.error("render failed", e);
       return NextResponse.json(
-        { error: "PDF konnte aus der aktuellen Dokumentversion nicht erzeugt werden." },
+        { error: "Dokument konnte aus der aktuellen Version nicht erzeugt werden." },
         { status: 422 },
       );
     }
+  }
+
+  if (format === "word") {
+    return new NextResponse(new Uint8Array(buffer), {
+      headers: {
+        "Content-Type": "application/msword",
+        "Content-Disposition": `attachment; filename="${document.number || "Dokument"}.doc"`,
+        "Cache-Control": "private, no-store",
+      },
+    });
   }
 
   return new NextResponse(new Uint8Array(buffer), {

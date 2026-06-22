@@ -5,6 +5,7 @@ import type { NextConfig } from "next";
 const isWindows = process.platform === "win32";
 const isVercel = process.env.VERCEL === "1" || process.env.VERCEL === "true";
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
+const pdfAnlageOrigin = process.env.PDF_ANLAGE_ORIGIN?.replace(/\/$/, "");
 const supabaseHost = (() => {
   const raw = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!raw) return null;
@@ -20,6 +21,12 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
   serverExternalPackages: ["pdfkit", "docusign-esign"],
+  outputFileTracingIncludes: {
+    "/*": [
+      "node_modules/@sparticuz/chromium/bin/**/*",
+      "public/media/brand/**/*"
+    ],
+  },
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
@@ -37,6 +44,22 @@ const nextConfig: NextConfig = {
           },
         ]
       : [],
+  },
+  async rewrites() {
+    if (!pdfAnlageOrigin) {
+      return [];
+    }
+
+    return [
+      {
+        source: "/pdf-anlage/_next/:path*",
+        destination: `${pdfAnlageOrigin}/_next/:path*`,
+      },
+      {
+        source: "/pdf-anlage/:path*",
+        destination: `${pdfAnlageOrigin}/:path*`,
+      },
+    ];
   },
   async headers() {
     return [

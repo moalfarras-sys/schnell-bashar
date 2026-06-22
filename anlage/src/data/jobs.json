@@ -1,0 +1,145 @@
+[
+  {
+    "id": "punktlich-umzuege-job-001",
+    "companyId": "punktlich-umzuege",
+    "status": "entwurf",
+    "jobType": "umzug",
+    "customer": {
+      "id": "punktlich-umzuege-customer-001",
+      "companyId": "punktlich-umzuege",
+      "name": "Musterkunde GmbH",
+      "street": "Prenzlauer Allee 45",
+      "postalCode": "10405",
+      "city": "Berlin",
+      "phone": "030 1234567",
+      "mobile": "0176 12345678",
+      "email": "kontakt@musterkunde.de",
+      "notes": ""
+    },
+    "moveOutAddress": {
+      "street": "Prenzlauer Allee 45",
+      "postalCode": "10405",
+      "city": "Berlin",
+      "floor": "3. OG",
+      "carryDistance": "25 m",
+      "hasElevator": false
+    },
+    "moveInAddress": {
+      "street": "Kollwitzstraße 12",
+      "postalCode": "10435",
+      "city": "Berlin",
+      "floor": "1. OG",
+      "carryDistance": "15 m",
+      "hasElevator": true
+    },
+    "moveDate": "2026-05-18",
+    "moveTime": "08:00",
+    "distanceKm": 8,
+    "volumeCbm": 42,
+    "parkingPermit": true,
+    "paymentMethod": "Überweisung",
+    "offerNumber": "ANG-PU-2026-001",
+    "invoiceNumber": "RE-PU-2026-001",
+    "contractNumber": "VER-PU-2026-001",
+    "validUntil": "2026-06-01",
+    "invoiceDate": "2026-05-18",
+    "serviceDate": "2026-05-18",
+    "paymentDueDate": "2026-05-25",
+    "description": "Umzug inklusive Transport, Montageleistungen und vereinbarter Zusatzleistungen.",
+    "vatRate": 0.19,
+    "items": [
+      {
+        "id": "pu-item-001",
+        "description": "Umzugstransport inkl. 3 Mitarbeiter und LKW",
+        "unit": "Pauschal",
+        "quantity": 1,
+        "unitPriceCents": 98000
+      },
+      {
+        "id": "pu-item-002",
+        "description": "Demontage und Montage Standardmöbel",
+        "unit": "Std.",
+        "quantity": 4,
+        "unitPriceCents": 5500
+      },
+      {
+        "id": "pu-item-003",
+        "description": "Einrichtung Halteverbotszone",
+        "unit": "Pauschal",
+        "quantity": 1,
+        "unitPriceCents": 14500
+      }
+    ],
+    "notes": "Kartons werden durch den Kunden vorab gepackt. Empfindliche Gegenstände bitte separat kennzeichnen.",
+    "paymentAgreement": "Die Zahlung erfolgt spätestens 3 Tage vor dem Umzugstag per Überweisung oder am Umzugstag per Echtzeitüberweisung bzw. in bar: 50 % vor dem Beladen und 50 % vor dem Entladen.",
+    "bankChangeNotice": false
+  },
+  {
+    "id": "schnell-sicher-umzug-job-001",
+    "companyId": "schnell-sicher-umzug",
+    "status": "entwurf",
+    "jobType": "umzug",
+    "customer": {
+      "id": "schnell-sicher-umzug-customer-001",
+      "companyId": "schnell-sicher-umzug",
+      "name": "Beispielkunde Schnell Sicher",
+      "street": "Karl-Marx-Straße 80",
+      "postalCode": "12043",
+      "city": "Berlin",
+      "phone": "+49 30 000000",
+      "mobile": "+49 176 00000000",
+      "email": "kunde@example.com",
+      "notes": ""
+    },
+    "moveOutAddress": {
+      "street": "Karl-Marx-Straße 80",
+      "postalCode": "12043",
+      "city": "Berlin",
+      "floor": "2. OG",
+      "carryDistance": "20 m",
+      "hasElevator": false
+    },
+    "moveInAddress": {
+      "street": "Sonnenallee 120",
+      "postalCode": "12045",
+      "city": "Berlin",
+      "floor": "EG",
+      "carryDistance": "10 m",
+      "hasElevator": false
+    },
+    "moveDate": "2026-05-20",
+    "moveTime": "09:00",
+    "distanceKm": 4,
+    "volumeCbm": 28,
+    "parkingPermit": false,
+    "paymentMethod": "Überweisung",
+    "offerNumber": "ANG-BT-2026-001",
+    "invoiceNumber": "RE-BT-2026-001",
+    "contractNumber": "VER-BT-2026-001",
+    "validUntil": "2026-06-03",
+    "invoiceDate": "2026-05-20",
+    "serviceDate": "2026-05-20",
+    "paymentDueDate": "2026-05-27",
+    "description": "Umzug mit Transport und Trageleistungen.",
+    "vatRate": 0.19,
+    "items": [
+      {
+        "id": "bt-item-001",
+        "description": "Umzugstransport inkl. Team und Fahrzeug",
+        "unit": "Pauschal",
+        "quantity": 1,
+        "unitPriceCents": 85000
+      },
+      {
+        "id": "bt-item-002",
+        "description": "Montagearbeiten nach Aufwand",
+        "unit": "Std.",
+        "quantity": 3,
+        "unitPriceCents": 5900
+      }
+    ],
+    "notes": "Leistungsumfang gemäß Absprache. Zusätzliche Leistungen werden separat berechnet.",
+    "paymentAgreement": "Die Zahlung erfolgt spätestens 3 Tage vor dem Umzugstag per Überweisung oder am Umzugstag per Echtzeitüberweisung bzw. in bar: 50 % vor dem Beladen und 50 % vor dem Entladen.",
+    "bankChangeNotice": false
+  }
+]

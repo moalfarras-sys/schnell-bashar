@@ -1,0 +1,26 @@
+[
+  {
+    "id": "punktlich-umzuege-customer-001",
+    "companyId": "punktlich-umzuege",
+    "name": "Musterkunde GmbH",
+    "street": "Prenzlauer Allee 45",
+    "postalCode": "10405",
+    "city": "Berlin",
+    "phone": "030 1234567",
+    "mobile": "0176 12345678",
+    "email": "kontakt@musterkunde.de",
+    "notes": ""
+  },
+  {
+    "id": "schnell-sicher-umzug-customer-001",
+    "companyId": "schnell-sicher-umzug",
+    "name": "Beispielkunde Schnell Sicher",
+    "street": "Karl-Marx-Straße 80",
+    "postalCode": "12043",
+    "city": "Berlin",
+    "phone": "+49 30 000000",
+    "mobile": "+49 176 00000000",
+    "email": "kunde@example.com",
+    "notes": ""
+  }
+]

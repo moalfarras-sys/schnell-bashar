@@ -487,39 +487,64 @@ export async function POST(req: Request) {
   const orderNo = await nextDocumentNumber("ORDER");
   const publicId = orderNo;
 
-  const uploadDir =
-    process.env.UPLOAD_DIR && process.env.UPLOAD_DIR.trim().length > 0
-      ? process.env.UPLOAD_DIR
-      : path.join(process.cwd(), "public", "uploads");
-
-  const orderFolder = path.join(uploadDir, publicId);
-  await fs.mkdir(orderFolder, { recursive: true });
-
   const savedUploads: { fileName: string; filePath: string; mimeType: string; sizeBytes: number }[] =
     [];
 
-  for (const f of files) {
-    if (f.size > 8 * 1024 * 1024) {
-      return NextResponse.json({ error: "Datei zu groß (max. 8MB pro Foto)." }, { status: 400 });
+  if (files.length > 0) {
+    const useSupabaseUploads = !!process.env.SUPABASE_SERVICE_ROLE_KEY && !!process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const uploadDir =
+      process.env.UPLOAD_DIR && process.env.UPLOAD_DIR.trim().length > 0
+        ? process.env.UPLOAD_DIR
+        : path.join(process.cwd(), "public", "uploads");
+    const orderFolder = path.join(uploadDir, publicId);
+
+    if (!useSupabaseUploads) {
+      await fs.mkdir(orderFolder, { recursive: true });
     }
-    const ext = path.extname(f.name).slice(0, 10) || ".jpg";
-    const safeName = `${crypto.randomUUID()}${ext}`;
-    const buf = Buffer.from(await f.arrayBuffer());
-    const absPath = path.join(orderFolder, safeName);
-    await fs.writeFile(absPath, buf);
 
-    // Store path as relative URL if uploads are inside public/
-    const rel =
-      uploadDir.endsWith(path.join("public", "uploads")) || uploadDir.includes(`${path.sep}public${path.sep}uploads`)
-        ? `/uploads/${publicId}/${safeName}`
-        : absPath;
+    for (const f of files) {
+      if (f.size > 8 * 1024 * 1024) {
+        return NextResponse.json({ error: "Datei zu groß (max. 8MB pro Foto)." }, { status: 400 });
+      }
+      const ext = path.extname(f.name).slice(0, 10) || ".jpg";
+      const safeName = `${crypto.randomUUID()}${ext}`;
+      const buf = Buffer.from(await f.arrayBuffer());
+      let filePath: string;
 
-    savedUploads.push({
-      fileName: f.name,
-      filePath: rel,
-      mimeType: f.type || "application/octet-stream",
-      sizeBytes: f.size,
-    });
+      if (useSupabaseUploads) {
+        const objectPath = `orders/${publicId}/${safeName}`;
+        const admin = getSupabaseAdmin();
+        const { error: uploadError } = await admin.storage
+          .from(STORAGE_BUCKETS.MEDIA_PUBLIC)
+          .upload(objectPath, buf, {
+            contentType: f.type || "application/octet-stream",
+            upsert: false,
+          });
+        if (uploadError) {
+          console.error("[orders] upload failed", uploadError);
+          return NextResponse.json(
+            { error: "Foto-Upload fehlgeschlagen. Bitte versuchen Sie es erneut." },
+            { status: 500 },
+          );
+        }
+        filePath = admin.storage.from(STORAGE_BUCKETS.MEDIA_PUBLIC).getPublicUrl(objectPath).data.publicUrl;
+      } else {
+        const absPath = path.join(orderFolder, safeName);
+        await fs.writeFile(absPath, buf);
+        filePath =
+          uploadDir.endsWith(path.join("public", "uploads")) ||
+          uploadDir.includes(`${path.sep}public${path.sep}uploads`)
+            ? `/uploads/${publicId}/${safeName}`
+            : absPath;
+      }
+
+      savedUploads.push({
+        fileName: f.name,
+        filePath,
+        mimeType: f.type || "application/octet-stream",
+        sizeBytes: f.size,
+      });
+    }
   }
 
   const moveLineCreates = Object.entries(payload.itemsMove ?? {})
@@ -956,5 +981,4 @@ export async function POST(req: Request) {
     whatsappUrl: waUrl,
   });
 }
-
 

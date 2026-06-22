@@ -10,7 +10,8 @@ import {
   normalizeContactFields,
 } from "@/lib/documents/formatting";
 import { resolveCompanyStampPath } from "@/server/pdf/company-seal-assets";
-import { getImageSlots, publicSrcToAbsolute } from "@/server/content/slots";
+import { getImageSlots } from "@/server/content/slots";
+import { fetchPdfImage } from "@/server/pdf/fetch-image";
 import {
   PDF_THEME,
   drawBodyText,
@@ -75,18 +76,20 @@ const CONTRACT_PAYMENT_TERMS =
   "Die Zahlung spätestens 3 Tage vor dem Umzugstag per Überweisung oder am Umzugstag per Echtzeitüberweisung bzw. in bar: 50 % vor dem Beladen und 50 % vor dem Entladen.";
 
 export async function generateContractPDF(data: ContractData): Promise<Buffer> {
-  let slotLogoPath: string | null = null;
-  let slotStampPath: string | null = null;
+  let logoBuffer: Buffer | null = null;
+  let stampBuffer: Buffer | null = null;
   try {
     const slotImages = await getImageSlots([
       { key: "img.pdf.brand.logo", fallbackSrc: "/media/brand/hero-logo.jpeg" },
       { key: "img.pdf.contract.stamp", fallbackSrc: "/media/brand/company-stamp-clean.png" },
     ]);
-    slotLogoPath = publicSrcToAbsolute(slotImages["img.pdf.brand.logo"]?.src || "");
-    slotStampPath = publicSrcToAbsolute(slotImages["img.pdf.contract.stamp"]?.src || "");
+    const logoSrc = slotImages["img.pdf.brand.logo"]?.src || "/media/brand/hero-logo.jpeg";
+    const stampSrc = slotImages["img.pdf.contract.stamp"]?.src || "/media/brand/company-stamp-clean.png";
+    logoBuffer = await fetchPdfImage(logoSrc);
+    stampBuffer = await fetchPdfImage(stampSrc);
   } catch {
-    slotLogoPath = null;
-    slotStampPath = null;
+    logoBuffer = null;
+    stampBuffer = null;
   }
 
   return new Promise((resolve, reject) => {
@@ -113,10 +116,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
       footerHeight: PDF_THEME.invoiceLayout.compact.footerHeight,
       safeBottomPad: PDF_THEME.invoiceLayout.compact.safeBottomPad,
     });
-    const logoPath =
-      slotLogoPath && existsSync(slotLogoPath)
-        ? slotLogoPath
-        : path.join(process.cwd(), "public", "media", "brand", "hero-logo.jpeg");
+    const logoPath = logoBuffer;
 
     let y = drawPageHeader(doc, {
       y: PDF_THEME.invoiceLayout.compact.topOffset,
@@ -332,7 +332,7 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
 
     y = ensurePageSpace(doc, y, 134, layout);
     y = drawSectionHeading(doc, "Unterschriften", left, y, width);
-    const signatureCardH = 118;
+    const signatureCardH = 140;
     drawSectionCard(doc, {
       x: left,
       y,
@@ -354,11 +354,11 @@ export async function generateContractPDF(data: ContractData): Promise<Buffer> {
     doc.text("AUFTRAGNEHMER", left + 16, y + 16);
     doc.text("AUFTRAGGEBER", left + 16 + sigW + sigGap, y + 16);
 
-    const stampPath = slotStampPath && existsSync(slotStampPath) ? slotStampPath : resolveCompanyStampPath();
+    const stampPath = stampBuffer;
     if (stampPath) {
       try {
-        doc.image(stampPath, left + 28, y + 28, {
-          fit: [112, 38],
+        doc.image(stampPath, left + 28, y + 24, {
+          fit: [170, 70],
           valign: "center",
         });
       } catch {

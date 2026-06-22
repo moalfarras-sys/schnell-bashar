@@ -51,7 +51,8 @@ export async function POST(
       snapshot,
       includeAgbAppendix: document.includeAgbAppendix,
     });
-  } catch {
+  } catch (error) {
+    console.error("[admin/documents] pdf generation failed", error);
     return NextResponse.json(
       { error: "PDF konnte aus der aktuellen Dokumentversion nicht erzeugt werden." },
       { status: 422 },

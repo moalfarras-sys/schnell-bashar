@@ -24,6 +24,17 @@ type Props = {
 const inputClassName =
   "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-400 dark:focus:ring-brand-500/25";
 
+function formatEuroInput(cents: number) {
+  return (cents / 100).toFixed(2).replace(".", ",");
+}
+
+function parseEuroToCents(value: string) {
+  const normalized = value.trim().replace(/\./g, "").replace(",", ".");
+  const amount = Number(normalized);
+  if (!Number.isFinite(amount) || amount < 0) return null;
+  return Math.round(amount * 100);
+}
+
 export function DocumentEditor({ mode, documentId, initial }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -36,14 +47,38 @@ export function DocumentEditor({ mode, documentId, initial }: Props) {
   const [serviceType, setServiceType] = useState(initial?.serviceType || "");
   const [visibleNotes, setVisibleNotes] = useState(initial?.visibleNotes || "");
   const [internalNotes, setInternalNotes] = useState(initial?.internalNotes || "");
-  const [grossCents, setGrossCents] = useState(String(initial?.grossCents ?? 0));
+  const [netAmount, setNetAmount] = useState(formatEuroInput(Math.round((initial?.grossCents ?? 0) / 1.19)));
+  const [grossAmount, setGrossAmount] = useState(formatEuroInput(initial?.grossCents ?? 0));
+
+  function handleNetChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value;
+    setNetAmount(val);
+    const cents = parseEuroToCents(val);
+    if (cents !== null) {
+      setGrossAmount(formatEuroInput(Math.round(cents * 1.19)));
+    }
+  }
+
+  function handleGrossChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value;
+    setGrossAmount(val);
+    const cents = parseEuroToCents(val);
+    if (cents !== null) {
+      setNetAmount(formatEuroInput(Math.round(cents / 1.19)));
+    }
+  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setError(null);
 
-    const gross = Number(grossCents);
+    const gross = parseEuroToCents(grossAmount);
+    if (gross === null) {
+      setError("Bitte einen gültigen Bruttobetrag in Euro eingeben.");
+      setLoading(false);
+      return;
+    }
     const net = Math.round(gross / 1.19);
     const vat = gross - net;
     const body = {
@@ -107,8 +142,31 @@ export function DocumentEditor({ mode, documentId, initial }: Props) {
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-200">Gesamtbetrag brutto in Cent</label>
-          <input value={grossCents} onChange={(e) => setGrossCents(e.target.value)} className={inputClassName} />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-800 dark:text-slate-200">Netto (€)</label>
+              <input
+                value={netAmount}
+                onChange={handleNetChange}
+                className={inputClassName}
+                inputMode="decimal"
+                placeholder="2.184,87"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-800 dark:text-slate-200">Brutto (€)</label>
+              <input
+                value={grossAmount}
+                onChange={handleGrossChange}
+                className={inputClassName}
+                inputMode="decimal"
+                placeholder="2.600,00"
+              />
+            </div>
+          </div>
+          <div className="mt-1 text-xs text-slate-500">
+            MwSt (19%): {formatEuroInput((parseEuroToCents(grossAmount) || 0) - (parseEuroToCents(netAmount) || 0))} €
+          </div>
         </div>
       </div>
 
@@ -119,7 +177,13 @@ export function DocumentEditor({ mode, documentId, initial }: Props) {
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-200">E-Mail</label>
-          <input value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} className={inputClassName} />
+          <input
+            type="email"
+            value={customerEmail}
+            onChange={(e) => setCustomerEmail(e.target.value)}
+            className={inputClassName}
+            placeholder="kunde@example.de"
+          />
         </div>
       </div>
 

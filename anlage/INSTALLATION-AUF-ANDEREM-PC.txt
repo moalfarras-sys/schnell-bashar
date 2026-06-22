@@ -1,0 +1,32 @@
+Puenktlich Umzuege Dokumenten-System - Installation auf anderem Windows-PC
+
+Kurz gesagt:
+1. Den kompletten Ordner "anlage" auf den anderen Computer kopieren.
+2. Auf dem anderen Computer Node.js LTS installieren:
+   https://nodejs.org
+3. Im kopierten Ordner doppelklicken:
+   START-Puenktlich-Umzuege.cmd
+4. Beim ersten Start werden die Abhaengigkeiten installiert.
+5. Danach oeffnet sich das Programm unter:
+   http://localhost:3000
+
+Wichtig:
+- Kein Domainname noetig.
+- Das Programm laeuft lokal auf dem jeweiligen Computer.
+- Die Daten werden lokal im Ordner gespeichert:
+  src/data/jobs.json
+- Erzeugte PDFs liegen in:
+  output/angebote
+  output/vertraege
+  output/rechnungen
+
+Wenn das Starten nicht klappt:
+- Pruefen, ob Node.js installiert ist:
+  Windows-Taste druecken, "cmd" oeffnen, dann:
+  node -v
+  npm -v
+- Wenn diese Befehle nicht funktionieren: Node.js LTS installieren.
+
+Stoppen:
+- Fenster mit dem laufenden Server schliessen oder
+- STOP-Puenktlich-Umzuege.cmd ausfuehren.

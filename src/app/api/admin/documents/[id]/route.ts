@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ZodError } from "zod";
 
 import { reviseDocumentDraft } from "@/lib/documents/service";
 import { getAdminSessionClaims } from "@/server/auth/require-admin";
@@ -53,11 +54,32 @@ export async function PATCH(
 
   const { id } = await context.params;
   const body = await req.json().catch(() => ({}));
-  const document = await reviseDocumentDraft({
-    documentId: id,
-    payload: body,
-    actorUserId: claims.uid,
-  });
+  try {
+    const document = await reviseDocumentDraft({
+      documentId: id,
+      payload: body,
+      actorUserId: claims.uid,
+    });
 
-  return NextResponse.json({ success: true, id: document.id });
+    return NextResponse.json({ success: true, id: document.id });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      const first = error.issues[0];
+      return NextResponse.json(
+        {
+          error:
+            first?.path.join(".") === "customerData.email"
+              ? "Bitte eine gültige E-Mail-Adresse eingeben oder das Feld leer lassen."
+              : first?.message || "Bitte die Eingaben prüfen.",
+        },
+        { status: 400 },
+      );
+    }
+
+    console.error("[admin/documents] update failed", error);
+    return NextResponse.json(
+      { error: "Dokument konnte nicht gespeichert werden. Bitte später erneut versuchen." },
+      { status: 500 },
+    );
+  }
 }

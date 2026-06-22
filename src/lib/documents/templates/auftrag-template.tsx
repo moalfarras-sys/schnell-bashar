@@ -1,5 +1,6 @@
 import { BaseDocumentLayout } from "@/lib/documents/templates/base-layout";
 import {
+  buildLineItemDescription,
   cleanDisplayText,
   formatAddress,
   formatGermanCurrency,
@@ -46,6 +47,29 @@ export function AuftragTemplate({ number, snapshot }: { number: string; snapshot
 
       <section className="card">
         <h2 className="section-title">Vergütung</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Leistung</th>
+              <th>Menge</th>
+              <th>Netto</th>
+            </tr>
+          </thead>
+          <tbody>
+            {snapshot.lineItems.map((item) => (
+              <tr key={`${item.position}-${item.title}`}>
+                <td>
+                  <div>{cleanDisplayText(item.title) || "Leistung"}</div>
+                  {buildLineItemDescription(null, item.description) ? (
+                    <div className="muted">{buildLineItemDescription(null, item.description)}</div>
+                  ) : null}
+                </td>
+                <td>{item.quantity} {item.unit}</td>
+                <td>{formatGermanCurrency(item.totalNetCents)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
         <div className="totals">
           <div className="totals-row"><span>Netto</span><span>{formatGermanCurrency(snapshot.subtotalCents)}</span></div>
           <div className="totals-row"><span>MwSt.</span><span>{formatGermanCurrency(snapshot.taxCents)}</span></div>
@@ -58,9 +82,16 @@ export function AuftragTemplate({ number, snapshot }: { number: string; snapshot
         <p className="muted">
           Die elektronische Bestätigung ist erst nach ausdrücklicher Freigabe durch Schnell Sicher Umzug möglich.
         </p>
-        <div className="two-col">
-          <div className="signature-line">Schnell Sicher Umzug</div>
-          <div className="signature-line">Auftraggeber</div>
+        <div className="signature-grid">
+          <div>
+            <div className="stamp-box" style={{ border: "none", padding: 0 }}>
+              <img src="https://schnellsicherumzug.de/media/brand/company-stamp-clean.png" alt="Company Stamp" style={{ maxHeight: "70px", maxWidth: "170px" }} />
+            </div>
+            <div className="signature-line">Ort, Datum / Unternehmen</div>
+          </div>
+          <div>
+            <div className="signature-line customer-line">Auftraggeber</div>
+          </div>
         </div>
       </section>
     </BaseDocumentLayout>

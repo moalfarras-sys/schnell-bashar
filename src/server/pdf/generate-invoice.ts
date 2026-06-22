@@ -8,7 +8,8 @@ import {
   formatAddress,
   normalizeContactFields,
 } from "@/lib/documents/formatting";
-import { getImageSlot, publicSrcToAbsolute } from "@/server/content/slots";
+import { getImageSlot } from "@/server/content/slots";
+import { fetchPdfImage } from "@/server/pdf/fetch-image";
 import {
   PDF_THEME,
   TableColumn,
@@ -375,15 +376,15 @@ function chooseInvoiceLayoutMode(
 }
 
 export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
-  let slotLogoPath: string | null = null;
+  let logoBuffer: Buffer | null = null;
   try {
     const logoSlot = await getImageSlot({
       key: "img.pdf.brand.logo",
       fallbackSrc: "/media/brand/hero-logo.jpeg",
     });
-    slotLogoPath = publicSrcToAbsolute(logoSlot.src);
+    logoBuffer = await fetchPdfImage(logoSlot.src || "/media/brand/hero-logo.jpeg");
   } catch {
-    slotLogoPath = null;
+    logoBuffer = null;
   }
 
   return new Promise((resolve, reject) => {
@@ -416,10 +417,7 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
       safeBottomPad: profile.safeBottomPad,
     });
 
-    const logoPath =
-      slotLogoPath && existsSync(slotLogoPath)
-        ? slotLogoPath
-        : path.join(process.cwd(), "public", "media", "brand", "hero-logo.jpeg");
+    const logoPath = logoBuffer;
 
     let y = drawPageHeader(doc, {
       y: profile.compact

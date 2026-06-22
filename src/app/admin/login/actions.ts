@@ -52,19 +52,24 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
   const password = String(formData.get("password") ?? "");
   const next = String(formData.get("next") ?? "/admin");
 
-  let claims: LoginClaims | null = await getEnvAdminClaims(email, password);
-  let usedEnvFallback = Boolean(claims);
+  let claims: LoginClaims | null = null;
+  let usedEnvFallback = false;
   const isPrimaryEnvAdmin = email === cleanEnvValue(process.env.ADMIN_EMAIL).toLowerCase();
-  if (!claims && isPrimaryEnvAdmin) return { error: "Falsche Zugangsdaten." };
   try {
-    if (!claims) {
-      await ensureBootstrapAdminFromEnv();
-      claims = await getAdminClaimsByEmail(email);
-    }
+    await ensureBootstrapAdminFromEnv();
+    claims = await getAdminClaimsByEmail(email);
   } catch (error) {
     console.error("[admin/login] database auth failed, trying env fallback", error);
     claims = await getEnvAdminClaims(email, password);
     usedEnvFallback = Boolean(claims);
+  }
+  if (!claims && isPrimaryEnvAdmin) {
+    claims = await getEnvAdminClaims(email, password);
+    usedEnvFallback = Boolean(claims);
+  }
+  const envClaims = isPrimaryEnvAdmin ? await getEnvAdminClaims(email, password) : null;
+  if (claims && envClaims) {
+    usedEnvFallback = true;
   }
 
   if (!claims?.user) return { error: "Falsche Zugangsdaten." };

@@ -17,9 +17,9 @@ export const PDF_THEME = {
       pageTop: 30,
       footerHeight: 42,
       safeBottomPad: 8,
-      headerBandHeight: 100,
-      headerRuleY: 96,
-      bannerY: 118,
+      headerBandHeight: 140,
+      headerRuleY: 136,
+      bannerY: 158,
       bannerHeight: 60,
       afterHeaderGap: 16,
       sectionGap: 14,
@@ -33,9 +33,9 @@ export const PDF_THEME = {
       pageTop: 22,
       footerHeight: 34,
       safeBottomPad: 4,
-      headerBandHeight: 82,
-      headerRuleY: 78,
-      bannerY: 92,
+      headerBandHeight: 120,
+      headerRuleY: 116,
+      bannerY: 130,
       bannerHeight: 50,
       afterHeaderGap: 12,
       sectionGap: 10,
@@ -282,7 +282,7 @@ export function drawPageHeader(
     contentWidth: number;
     title: string;
     metaRows: HeaderMetaRow[];
-    logoPath?: string | null;
+    logoPath?: string | Buffer | null;
     companyLines: CompanyLine[];
     documentTag?: string;
     compact?: boolean;
@@ -291,8 +291,8 @@ export function drawPageHeader(
   const left = PDF_THEME.page.marginX;
   const right = left + input.contentWidth;
   const mode = input.compact ? PDF_THEME.invoiceLayout.compact : PDF_THEME.invoiceLayout.standard;
-  const logoW = input.compact ? 88 : 98;
-  const logoH = input.compact ? 60 : 72;
+  const logoW = input.compact ? 140 : 170;
+  const logoH = input.compact ? 95 : 120;
   const headerTop = input.y;
 
   doc.save();

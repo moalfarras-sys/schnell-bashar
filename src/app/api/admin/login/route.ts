@@ -66,22 +66,26 @@ export async function POST(request: NextRequest) {
   const { email, password, next } = await readLoginBody(request);
   const safeNext = next.startsWith("/admin") ? next : "/admin";
 
-  let claims: LoginClaims | null = await getEnvAdminClaims(email, password);
-  const usedEnvFallback = Boolean(claims);
+  let claims: LoginClaims | null = null;
+  let usedEnvFallback = false;
   const isPrimaryEnvAdmin = email === cleanEnvValue(process.env.ADMIN_EMAIL).toLowerCase();
 
-  if (!claims && isPrimaryEnvAdmin) {
-    return NextResponse.json({ ok: false, error: "Falsche Zugangsdaten." }, { status: 401 });
-  }
-
   try {
-    if (!claims) {
-      await ensureBootstrapAdminFromEnv();
-      claims = await getAdminClaimsByEmail(email);
-    }
+    await ensureBootstrapAdminFromEnv();
+    claims = await getAdminClaimsByEmail(email);
   } catch (error) {
     console.error("[admin/login-api] database auth failed, trying env fallback", error);
     claims = await getEnvAdminClaims(email, password);
+    usedEnvFallback = Boolean(claims);
+  }
+
+  if (!claims && isPrimaryEnvAdmin) {
+    claims = await getEnvAdminClaims(email, password);
+    usedEnvFallback = Boolean(claims);
+  }
+  const envClaims = isPrimaryEnvAdmin ? await getEnvAdminClaims(email, password) : null;
+  if (claims && envClaims) {
+    usedEnvFallback = true;
   }
 
   if (!claims?.user) {
